@@ -26,7 +26,8 @@ class RoversDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDeleg
 
         fun bind(item: Rover) = with(itemView) {
             roverPhoto.loadImage(item.iamgeUrl)
-            roverStatus.text = item.status
+            roverName.text = item.name
+            roverStatus.text = "Status: ${item.status}"
             totalPhotos.text = "Total photos: ${item.totalPhotos}"
             lastPhotoDate.text = "Last photo date: ${item.maxDate}"
         }

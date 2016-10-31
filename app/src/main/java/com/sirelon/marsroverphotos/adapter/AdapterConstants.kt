@@ -8,4 +8,5 @@ package com.sirelon.marsroverphotos.adapter
 object AdapterConstants {
     val MARS_PHOTO = 1
     val LOADING = 2
+    val ROVER = 3
 }

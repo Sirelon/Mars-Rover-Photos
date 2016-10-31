@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos.models
 
+import com.sirelon.marsroverphotos.adapter.AdapterConstants
 import com.squareup.moshi.Json
 
 /**
@@ -31,6 +32,8 @@ data class Rover(
         var maxDate: String,
 
         @Json(name = "total_photos")
-        var totalPhotos: Int) {
+        var totalPhotos: Int) : ViewType {
+
+    override fun getViewType(): Int = AdapterConstants.ROVER
 
 }
