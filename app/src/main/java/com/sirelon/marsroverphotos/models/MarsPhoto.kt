@@ -23,10 +23,7 @@ data class MarsPhoto(
         val imageUrl: String,
 
         @Json(name = "earth_date")
-        val earthDate: String,
-
-        @Json(name = "rover")
-        val rover: Rover?) : ViewType, Parcelable {
+        val earthDate: String) : ViewType, Parcelable {
 
     override fun getViewType(): Int = AdapterConstants.MARS_PHOTO
 
@@ -51,7 +48,6 @@ data class MarsPhoto(
             parcel.readLong(),
             parcel.readString(),
             parcel.readString(),
-            parcel.readString(),
-            null
+            parcel.readString()
     )
 }

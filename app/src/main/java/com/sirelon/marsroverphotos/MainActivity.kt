@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.StaggeredGridLayoutManager
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
-import com.sirelon.marsroverphotos.adapter.MarsPhotosAdapter
+import com.sirelon.marsroverphotos.adapter.ViewTypeAdapter
 import com.sirelon.marsroverphotos.adapter.MarsPhotosDelegateAdapter
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.models.OnModelChooseListener
@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity(), OnModelChooseListener {
 
         photosList.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
 
-        val adapter = MarsPhotosAdapter()
+        val adapter = ViewTypeAdapter()
         adapter.addDelegateAdapter(AdapterConstants.MARS_PHOTO, MarsPhotosDelegateAdapter(this))
         photosList.adapter = adapter
 

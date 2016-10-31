@@ -3,7 +3,6 @@ package com.sirelon.marsroverphotos.adapter
 import android.support.v4.util.SparseArrayCompat
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
-import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.models.ViewType
 import java.util.*
 
@@ -11,7 +10,7 @@ import java.util.*
  * @author romanishin
  * @since 31.10.16 on 11:32
  */
-class MarsPhotosAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ViewTypeAdapter(val withLoadingView: Boolean = true) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var items: ArrayList<ViewType>
     private var delegates = SparseArrayCompat<ViewTypeDelegateAdapter?>()
@@ -20,9 +19,11 @@ class MarsPhotosAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     init {
-        delegates.put(AdapterConstants.LOADING, LoadingDelegateAdapter())
         items = ArrayList()
-        items.add(loadingItem)
+        if (withLoadingView) {
+            items.add(loadingItem)
+            delegates.put(AdapterConstants.LOADING, LoadingDelegateAdapter())
+        }
     }
 
     fun addDelegateAdapter(id: Int, delegateAdapter: ViewTypeDelegateAdapter) {
@@ -43,15 +44,23 @@ class MarsPhotosAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun getItemCount(): Int = items.size
 
-    fun addData(data: List<MarsPhoto>) {
-        // first remove loading and notify
-        val initPosition = items.size - 1
-        items.removeAt(initPosition)
-        notifyItemRemoved(initPosition)
+    fun addData(data: List<ViewType>) {
 
-        // insert news and the loading at the end of the list
-        items.addAll(data)
-        items.add(loadingItem)
-        notifyItemRangeChanged(initPosition, items.size + 1 /* plus loading item */)
+        if (withLoadingView) {
+
+            // first remove loading and notify
+            val initPosition = items.size - 1
+            items.removeAt(initPosition)
+            notifyItemRemoved(initPosition)
+
+            // insert news and the loading at the end of the list
+            items.addAll(data)
+            items.add(loadingItem)
+            notifyItemRangeChanged(initPosition, items.size + 1 /* plus loading item */)
+        } else {
+            val startPos = items.size
+            items.addAll(data)
+            notifyItemRangeInserted(startPos, items.size)
+        }
     }
 }
