@@ -1,4 +1,4 @@
-package com.sirelon.marsroverphotos
+package com.sirelon.marsroverphotos.models
 
 /**
  * @author romanishin

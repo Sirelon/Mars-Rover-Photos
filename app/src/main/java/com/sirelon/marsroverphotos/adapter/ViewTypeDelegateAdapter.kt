@@ -1,8 +1,8 @@
 package com.sirelon.marsroverphotos.adapter
 
 import android.support.v7.widget.RecyclerView
-import android.view.ViewParent
-import com.sirelon.marsroverphotos.ViewType
+import android.view.ViewGroup
+import com.sirelon.marsroverphotos.models.ViewType
 
 /**
  * @author romanishin
@@ -10,7 +10,7 @@ import com.sirelon.marsroverphotos.ViewType
  */
 interface ViewTypeDelegateAdapter {
 
-    fun onCreateViewHolder(parent: ViewParent) : RecyclerView.ViewHolder
+    fun onCreateViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder
 
     fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType)
 
