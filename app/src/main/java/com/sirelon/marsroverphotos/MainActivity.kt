@@ -2,7 +2,7 @@ package com.sirelon.marsroverphotos
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.StaggeredGridLayoutManager
 import com.sirelon.marsroverphotos.adapter.MarsPhotosAdapter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
 
         photosList.setHasFixedSize(true)
 
-        photosList.layoutManager = GridLayoutManager(this, 2)
+        photosList.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
 
         val adapter = MarsPhotosAdapter()
 

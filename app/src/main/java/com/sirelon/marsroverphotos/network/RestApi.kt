@@ -21,7 +21,7 @@ class RestApi {
         nasaApi = retrofit.create(NasaApi::class.java)
     }
 
-    fun getCuriosityPhotos(sol: Int, camera: String): Call<PhotosResponse> {
+    fun getCuriosityPhotos(sol: Int, camera: String?): Call<PhotosResponse> {
         return nasaApi.getCuriosityPhotos(sol, camera)
     }
 }

@@ -13,7 +13,7 @@ interface NasaApi {
     @GET("/mars-photos/api/v1/rovers/curiosity/photos")
     fun getCuriosityPhotos(
             @Query("sol") sol : Int,
-            @Query("camera") camera : String,
+            @Query("camera") camera : String?,
             @Query("api_key") apiKey : String = "DEMO_KEY") : Call<PhotosResponse>
 
 }
