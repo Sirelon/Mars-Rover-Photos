@@ -14,24 +14,27 @@ import java.util.*
 class MarsPhotosAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var items: ArrayList<ViewType>
-    private var delegates = SparseArrayCompat<ViewTypeDelegateAdapter>()
+    private var delegates = SparseArrayCompat<ViewTypeDelegateAdapter?>()
     private val loadingItem = object : ViewType {
         override fun getViewType(): Int = AdapterConstants.LOADING
     }
 
     init {
         delegates.put(AdapterConstants.LOADING, LoadingDelegateAdapter())
-        delegates.put(AdapterConstants.MARS_PHOTO, MarsPhotosDelegateAdapter())
         items = ArrayList()
         items.add(loadingItem)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return delegates.get(viewType).onCreateViewHolder(parent)
+    fun addDelegateAdapter(id: Int, delegateAdapter: ViewTypeDelegateAdapter) {
+        delegates.put(id, delegateAdapter)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder? {
+        return delegates.get(viewType)?.onCreateViewHolder(parent)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        delegates.get(getItemViewType(position)).onBindViewHolder(holder, items[position])
+        delegates.get(getItemViewType(position))?.onBindViewHolder(holder, items[position])
     }
 
     override fun getItemViewType(position: Int): Int {

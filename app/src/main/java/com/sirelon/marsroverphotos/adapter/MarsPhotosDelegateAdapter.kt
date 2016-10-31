@@ -7,6 +7,7 @@ import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.inflate
 import com.sirelon.marsroverphotos.loadImage
 import com.sirelon.marsroverphotos.models.MarsPhoto
+import com.sirelon.marsroverphotos.models.OnModelChooseListener
 import com.sirelon.marsroverphotos.models.ViewType
 import kotlinx.android.synthetic.main.item_mars_photo.view.*
 
@@ -14,13 +15,16 @@ import kotlinx.android.synthetic.main.item_mars_photo.view.*
  * @author romanishin
  * @since 31.10.16 on 11:41
  */
-class MarsPhotosDelegateAdapter : ViewTypeDelegateAdapter {
+class MarsPhotosDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDelegateAdapter {
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder = MarsPhotoViewHolder(parent)
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType) {
         val marsPhotoViewHolder = holder as MarsPhotoViewHolder
         marsPhotoViewHolder.bind(item as MarsPhoto)
+        marsPhotoViewHolder.itemView.photo.setOnClickListener {
+            callback.onModelChoose(item)
+        }
     }
 
     class MarsPhotoViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate(R.layout.item_mars_photo)) {
