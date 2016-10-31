@@ -1,6 +1,5 @@
-package com.sirelon.marsroverphotos
+package com.sirelon.marsroverphotos.network
 
-import com.sirelon.marsroverphotos.models.MarsPhoto
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -15,7 +14,6 @@ interface NasaApi {
     fun getCuriosityPhotos(
             @Query("sol") sol : Int,
             @Query("camera") camera : String,
-            @Query("api_key") apiKey : String = "DEMO_KEY") : Call<List<MarsPhoto>>
-
+            @Query("api_key") apiKey : String = "DEMO_KEY") : Call<PhotosResponse>
 
 }

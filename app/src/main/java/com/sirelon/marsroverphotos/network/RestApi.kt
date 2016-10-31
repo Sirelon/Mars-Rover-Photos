@@ -1,6 +1,5 @@
-package com.sirelon.marsroverphotos
+package com.sirelon.marsroverphotos.network
 
-import com.sirelon.marsroverphotos.models.MarsPhoto
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -22,7 +21,7 @@ class RestApi {
         nasaApi = retrofit.create(NasaApi::class.java)
     }
 
-    fun getCuriosityPhotos(sol: Int, camera: String): Call<List<MarsPhoto>> {
+    fun getCuriosityPhotos(sol: Int, camera: String): Call<PhotosResponse> {
         return nasaApi.getCuriosityPhotos(sol, camera)
     }
 }

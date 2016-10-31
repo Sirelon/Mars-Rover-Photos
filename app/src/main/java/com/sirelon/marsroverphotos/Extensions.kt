@@ -18,7 +18,7 @@ fun ViewGroup.inflate(layoutId: Int, attachToRoot: Boolean = false): View {
     return LayoutInflater.from(context).inflate(layoutId, this, attachToRoot)
 }
 
-fun ImageView.loadImage(imageUrl: String) {
+fun ImageView.loadImage(imageUrl: String?) {
     if (TextUtils.isEmpty(imageUrl))
         this.setImageResource(R.drawable.img_placeholder)
     else
