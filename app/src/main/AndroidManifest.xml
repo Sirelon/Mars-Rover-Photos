@@ -12,7 +12,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".PhotosActivity">
             <!--<intent-filter>-->
             <!--<action android:name="android.intent.action.MAIN" />-->
 
@@ -23,18 +23,18 @@
             android:name=".ImageActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_image"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".PhotosActivity"
             android:theme="@style/FullscreenTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".PhotosActivity" />
         </activity>
         <activity
             android:name=".RoversActivity"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".PhotosActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".PhotosActivity" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

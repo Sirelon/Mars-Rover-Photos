@@ -4,17 +4,18 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.StaggeredGridLayoutManager
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
-import com.sirelon.marsroverphotos.adapter.ViewTypeAdapter
 import com.sirelon.marsroverphotos.adapter.MarsPhotosDelegateAdapter
+import com.sirelon.marsroverphotos.adapter.ViewTypeAdapter
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.models.OnModelChooseListener
+import com.sirelon.marsroverphotos.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.models.ViewType
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(), OnModelChooseListener {
+class PhotosActivity : AppCompatActivity(), OnModelChooseListener {
     override fun onModelChoose(model: ViewType) {
         if (model is MarsPhoto) {
             startActivity(ImageActivity.createIntent(this, model))
@@ -35,7 +36,9 @@ class MainActivity : AppCompatActivity(), OnModelChooseListener {
         adapter.addDelegateAdapter(AdapterConstants.MARS_PHOTO, MarsPhotosDelegateAdapter(this))
         photosList.adapter = adapter
 
-        val subscription = dataManager.getMarsPhotos()
+        val queryRequest = PhotosQueryRequest("curiosity", 1000, null)
+
+        val subscription = dataManager.getMarsPhotos(queryRequest)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ adapter.addData(it) }, Throwable::printStackTrace)

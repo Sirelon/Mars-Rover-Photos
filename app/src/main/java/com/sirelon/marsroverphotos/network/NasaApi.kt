@@ -2,6 +2,7 @@ package com.sirelon.marsroverphotos.network
 
 import retrofit2.Call
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 /**
@@ -10,10 +11,15 @@ import retrofit2.http.Query
  */
 interface NasaApi {
 
-    @GET("/mars-photos/api/v1/rovers/curiosity/photos")
-    fun getCuriosityPhotos(
-            @Query("sol") sol : Int,
-            @Query("camera") camera : String?,
-            @Query("api_key") apiKey : String = "DEMO_KEY") : Call<PhotosResponse>
+    companion object {
+        val APIKEY = "zyVCPOCqaNBoEambV3n4awUf6TuaPZsHn1trst5E"
+    }
+
+    @GET("/mars-photos/api/v1/rovers/{roverName}/photos")
+    fun getRoverPhotos(
+            @Path("roverName") roverName: String,
+            @Query("sol") sol: Long?,
+            @Query("camera") camera: String?,
+            @Query("api_key") apiKey: String = APIKEY): Call<PhotosResponse>
 
 }

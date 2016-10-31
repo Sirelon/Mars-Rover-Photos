@@ -1,6 +1,7 @@
 package com.sirelon.marsroverphotos
 
 import com.sirelon.marsroverphotos.models.MarsPhoto
+import com.sirelon.marsroverphotos.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.network.RestApi
 import io.reactivex.Observable
@@ -11,11 +12,11 @@ import io.reactivex.Observable
  */
 class DataManager(private val api: RestApi = RestApi()) {
 
-    fun getMarsPhotos(): Observable<List<MarsPhoto>> {
+    fun getMarsPhotos(queryRequest: PhotosQueryRequest): Observable<List<MarsPhoto>> {
         return Observable.create {
             subscriber ->
 
-            val callResponse = api.getCuriosityPhotos(1000, null)
+            val callResponse = api.getRoversPhotos(queryRequest)
             val response = callResponse.execute()
             if (response.isSuccessful) {
                 val marsPhotos = response.body().photos
@@ -32,7 +33,7 @@ class DataManager(private val api: RestApi = RestApi()) {
 
             subscriber.onNext(localRovers())
 
-//            val callResponse = api.getCuriosityPhotos(1000, null)
+//            val callResponse = api.getRoverPhotos(1000, null)
 //            val response = callResponse.execute()
 //            if (response.isSuccessful) {
 //                val marsPhotos = response.body().photos

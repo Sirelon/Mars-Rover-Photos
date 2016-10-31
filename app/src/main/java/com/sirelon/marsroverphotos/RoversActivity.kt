@@ -45,7 +45,7 @@ class RoversActivity : AppCompatActivity(), OnModelChooseListener {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         if (item?.itemId == android.R.id.home) {
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this, PhotosActivity::class.java)
             startActivity(intent)
             return true
         } else
