@@ -18,5 +18,5 @@ class LoadingDelegateAdapter : ViewTypeDelegateAdapter {
 
     }
 
-    class LoadingViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate(R.layout.item_mars_photo))
+    class LoadingViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate(R.layout.item_loading))
 }
