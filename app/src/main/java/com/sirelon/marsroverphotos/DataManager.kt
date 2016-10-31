@@ -19,12 +19,12 @@ class DataManager {
     private fun mockPhotos(): MutableList<MarsPhoto> {
         val photos = mutableListOf<MarsPhoto>()
 
-        for (i in 1..25) {
-            photos.add(MarsPhoto(
-                    "Name $i",
-                    "http://lorempixel.com/200/200/?fake=$i"
-            ))
-        }
+//        for (i in 1..25) {
+//            photos.add(MarsPhoto(
+//                    "Name $i",
+//                    "http://lorempixel.com/200/200/?fake=$i"
+//            ))
+//        }
         return photos
     }
 }
