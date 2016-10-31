@@ -13,6 +13,8 @@ data class Rover(
         @Json(name = "name")
         var name: String,
 
+        var iamgeUrl: String?,
+
         @Json(name = "landing_date")
         var landingDate: String,
 
