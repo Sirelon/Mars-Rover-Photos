@@ -4,7 +4,8 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import com.sirelon.marsroverphotos.adapter.MarsPhotosAdapter
-import com.sirelon.marsroverphotos.models.MarsPhoto
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -18,19 +19,16 @@ class MainActivity : AppCompatActivity() {
         photosList.layoutManager = GridLayoutManager(this, 2)
 
         val adapter = MarsPhotosAdapter()
+
         photosList.adapter = adapter
 
-        val photos = mutableListOf<MarsPhoto>()
-
-        for (i in 1..25) {
-            photos.add(MarsPhoto(
-                    "Name $i",
-                    "http://lorempixel.com/200/200/?fake=$i"
-            ))
-        }
-
-        adapter.addData(photos)
+        val subscription = dataManager.getMarsPhotos()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ adapter.addData(it) }, Throwable::printStackTrace)
     }
+
+    private val dataManager by lazy { DataManager() }
 
     private val photosList by lazy { photos_list }
 }
