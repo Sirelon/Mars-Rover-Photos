@@ -5,10 +5,13 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import com.sirelon.marsroverphotos.adapter.MarsPhotosAdapter
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
+
+    var subscriptions = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,6 +29,19 @@ class MainActivity : AppCompatActivity() {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ adapter.addData(it) }, Throwable::printStackTrace)
+
+
+        subscriptions.add(subscription)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        subscriptions = CompositeDisposable()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        subscriptions.clear()
     }
 
     private val dataManager by lazy { DataManager() }
