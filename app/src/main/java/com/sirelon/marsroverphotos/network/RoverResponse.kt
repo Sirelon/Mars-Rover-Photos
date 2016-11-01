@@ -6,12 +6,12 @@ import com.squareup.moshi.Json
  * @author romanishin
  * @since 01.11.16 on 11:25
  */
-class RoverResponse(
+data class RoverResponse(
         @Json(name = "photo_manifest")
         var roverInfo: RoverInfo
 )
 
-class RoverInfo(
+data class RoverInfo(
         @Json(name = "name")
         var name: String,
 

@@ -1,10 +1,12 @@
 package com.sirelon.marsroverphotos
 
+import android.util.Log
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.network.RestApi
 import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
 
 /**
  * @author romanishin
@@ -28,22 +30,34 @@ class DataManager(private val api: RestApi = RestApi()) {
     }
 
     fun getRovers(): Observable<Rover> {
-        return Observable.fromIterable(localRovers());
-
-
-//        return Observable.create {
-//            subscriber ->
-//            subscriber.onNext(localRovers())
-//
-////            val callResponse = api.getRoverPhotos(1000, null)
-////            val response = callResponse.execute()
-////            if (response.isSuccessful) {
-////                val marsPhotos = response.body().photos
-////                subscriber.onNext(marsPhotos)
-////                subscriber.onComplete()
-////            } else
-////                subscriber.onError(Throwable(response.message()))
-//        }
+        return Observable.create({
+            subscription ->
+            Observable
+                    .fromIterable(localRovers())
+                    // Return local rover to subscription
+                    .map {
+                        subscription.onNext(it)
+                        it
+                    }
+                    .observeOn(Schedulers.io())
+                    // Execute API for getting info for rover, and call onNext for it
+                    .map {
+                        val callResponse = api.getRoverInfo(it.name)
+                        val response = callResponse.execute()
+                        Log.w("Sirelon", "Response is " + response.body().roverInfo)
+                        if (response.isSuccessful) {
+                            val roverResponse = response.body().roverInfo
+                            it.landingDate = roverResponse.landingDate
+                            it.launchDate = roverResponse.launchDate
+                            it.maxDate = roverResponse.maxDate
+                            it.maxSol = roverResponse.maxSol
+                            it.totalPhotos = roverResponse.totalPhotos
+                            it.status = roverResponse.status
+                            subscription.onNext(it)
+                        }
+                    }
+                    .subscribe({}, { subscription.onError(it) }, { subscription.onComplete() })
+        })
     }
 
     private fun localRovers(): List<Rover> {
