@@ -95,4 +95,12 @@ class ViewTypeAdapter(var withLoadingView: Boolean = true) : RecyclerView.Adapte
         items.add(headerViewType)
         notifyItemInserted(items.size)
     }
+
+    fun clearAll() {
+        val initPosition = items.size
+        items.clear()
+        notifyItemRangeRemoved(0, initPosition)
+        items.add(loadingItem)
+        notifyItemInserted(0)
+    }
 }

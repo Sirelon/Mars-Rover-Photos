@@ -18,14 +18,18 @@ class DataManager(private val api: RestApi = RestApi()) {
         return Observable.create {
             subscriber ->
 
-            val callResponse = api.getRoversPhotos(queryRequest)
-            val response = callResponse.execute()
-            if (response.isSuccessful) {
-                val marsPhotos = response.body().photos
-                subscriber.onNext(marsPhotos)
-                subscriber.onComplete()
-            } else
-                subscriber.onError(Throwable(response.message()))
+            try {
+                val callResponse = api.getRoversPhotos(queryRequest)
+                val response = callResponse.execute()
+                if (response.isSuccessful) {
+                    val marsPhotos = response.body().photos
+                    subscriber.onNext(marsPhotos)
+                    subscriber.onComplete()
+                } else
+                    subscriber.onError(Throwable(response.message()))
+            } catch (e: Exception) {
+                subscriber.onError(e)
+            }
         }
     }
 
