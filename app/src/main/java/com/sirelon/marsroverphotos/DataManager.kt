@@ -27,21 +27,23 @@ class DataManager(private val api: RestApi = RestApi()) {
         }
     }
 
-    fun getRovers(): Observable<List<Rover>> {
-        return Observable.create {
-            subscriber ->
+    fun getRovers(): Observable<Rover> {
+        return Observable.fromIterable(localRovers());
 
-            subscriber.onNext(localRovers())
 
-//            val callResponse = api.getRoverPhotos(1000, null)
-//            val response = callResponse.execute()
-//            if (response.isSuccessful) {
-//                val marsPhotos = response.body().photos
-//                subscriber.onNext(marsPhotos)
-//                subscriber.onComplete()
-//            } else
-//                subscriber.onError(Throwable(response.message()))
-        }
+//        return Observable.create {
+//            subscriber ->
+//            subscriber.onNext(localRovers())
+//
+////            val callResponse = api.getRoverPhotos(1000, null)
+////            val response = callResponse.execute()
+////            if (response.isSuccessful) {
+////                val marsPhotos = response.body().photos
+////                subscriber.onNext(marsPhotos)
+////                subscriber.onComplete()
+////            } else
+////                subscriber.onError(Throwable(response.message()))
+//        }
     }
 
     private fun localRovers(): List<Rover> {

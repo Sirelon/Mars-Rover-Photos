@@ -38,7 +38,9 @@ class RoversActivity : RxActivity(), OnModelChooseListener {
         val subscription = dataManager.getRovers()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ adapter.addData(it) }, Throwable::printStackTrace)
+                .subscribe({
+                    adapter.addOrReplace(it)
+                }, Throwable::printStackTrace)
 
         subscriptions.add(subscription)
     }

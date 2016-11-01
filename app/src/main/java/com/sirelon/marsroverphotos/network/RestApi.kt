@@ -25,4 +25,8 @@ class RestApi {
     fun getRoversPhotos(query: PhotosQueryRequest): Call<PhotosResponse> {
         return nasaApi.getRoverPhotos(query.roverName, query.sol, query.camera)
     }
+
+    fun getRoverInfo(roverName: String): Call<RoverResponse>{
+        return nasaApi.getRoverInfo(roverName)
+    }
 }

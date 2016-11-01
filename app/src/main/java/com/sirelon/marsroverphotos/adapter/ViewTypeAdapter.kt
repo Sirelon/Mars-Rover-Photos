@@ -63,4 +63,16 @@ class ViewTypeAdapter(val withLoadingView: Boolean = true) : RecyclerView.Adapte
             notifyItemRangeInserted(startPos, items.size)
         }
     }
+
+    fun  addOrReplace(viewType: ViewType) {
+        if (items.contains(viewType)) {
+            val position = items.indexOf(viewType)
+            items[position] = viewType
+            notifyItemChanged(position)
+        }
+        else {
+            items.add(viewType)
+            notifyItemInserted(items.size);
+        }
+    }
 }

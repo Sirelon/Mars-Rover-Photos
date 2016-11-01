@@ -22,4 +22,9 @@ interface NasaApi {
             @Query("camera") camera: String?,
             @Query("api_key") apiKey: String = APIKEY): Call<PhotosResponse>
 
+    @GET("/mars-photos/api/v1/manifests/{roverName}")
+    fun getRoverInfo(
+            @Path("roverName") roverName: String,
+            @Query("api_key") apiKey: String = APIKEY): Call<RoverResponse>
+
 }
