@@ -36,4 +36,15 @@ data class Rover(
 
     override fun getViewType(): Int = AdapterConstants.ROVER
 
+    override fun hashCode(): Int {
+        return id.hashCode();
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (other is Rover)
+            if (other.id == this.id)
+                return true
+
+        return false
+    }
 }

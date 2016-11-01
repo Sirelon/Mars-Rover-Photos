@@ -10,8 +10,8 @@ import com.sirelon.marsroverphotos.models.ViewType
  */
 interface ViewTypeDelegateAdapter {
 
-    fun onCreateViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder
+    fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder
 
-    fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType)
+    fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType, payloads: MutableList<Any>? = null)
 
 }

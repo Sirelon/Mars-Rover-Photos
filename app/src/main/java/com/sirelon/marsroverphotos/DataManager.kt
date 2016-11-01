@@ -47,13 +47,15 @@ class DataManager(private val api: RestApi = RestApi()) {
                         Log.w("Sirelon", "Response is " + response.body().roverInfo)
                         if (response.isSuccessful) {
                             val roverResponse = response.body().roverInfo
-                            it.landingDate = roverResponse.landingDate
-                            it.launchDate = roverResponse.launchDate
-                            it.maxDate = roverResponse.maxDate
-                            it.maxSol = roverResponse.maxSol
-                            it.totalPhotos = roverResponse.totalPhotos
-                            it.status = roverResponse.status
-                            subscription.onNext(it)
+                            val newRover = it.copy()
+
+                            newRover.landingDate = roverResponse.landingDate
+                            newRover.launchDate = roverResponse.launchDate
+                            newRover.maxDate = roverResponse.maxDate
+                            newRover.maxSol = roverResponse.maxSol
+                            newRover.totalPhotos = roverResponse.totalPhotos
+                            newRover.status = roverResponse.status
+                            subscription.onNext(newRover)
                         }
                     }
                     .subscribe({}, { subscription.onError(it) }, { subscription.onComplete() })
@@ -71,7 +73,7 @@ class DataManager(private val api: RestApi = RestApi()) {
                         "active",
                         1505,
                         "2016-10-30",
-                        285544
+                        285665
                 ),
                 Rover(
                         6,

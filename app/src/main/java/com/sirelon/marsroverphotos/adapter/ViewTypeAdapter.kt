@@ -3,6 +3,7 @@ package com.sirelon.marsroverphotos.adapter
 import android.support.v4.util.SparseArrayCompat
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
+import com.sirelon.marsroverphotos.adapter.diffutils.getChangePayload
 import com.sirelon.marsroverphotos.models.ViewType
 import java.util.*
 
@@ -11,7 +12,6 @@ import java.util.*
  * @since 31.10.16 on 11:32
  */
 class ViewTypeAdapter(val withLoadingView: Boolean = true) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
     private var items: ArrayList<ViewType>
     private var delegates = SparseArrayCompat<ViewTypeDelegateAdapter?>()
     private val loadingItem = object : ViewType {
@@ -34,8 +34,12 @@ class ViewTypeAdapter(val withLoadingView: Boolean = true) : RecyclerView.Adapte
         return delegates.get(viewType)?.onCreateViewHolder(parent)
     }
 
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>?) {
+        delegates.get(getItemViewType(position))?.onBindViewHolder(holder, items[position], payloads)
+    }
+
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        delegates.get(getItemViewType(position))?.onBindViewHolder(holder, items[position])
+        onBindViewHolder(holder, position, null)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -64,15 +68,16 @@ class ViewTypeAdapter(val withLoadingView: Boolean = true) : RecyclerView.Adapte
         }
     }
 
-    fun  addOrReplace(viewType: ViewType) {
+    fun addOrReplace(viewType: ViewType) {
         if (items.contains(viewType)) {
             val position = items.indexOf(viewType)
+            val oldModel = items[position]
+            val changePayload = getChangePayload(oldModel, viewType)
             items[position] = viewType
-            notifyItemChanged(position)
-        }
-        else {
+            notifyItemChanged(position, changePayload)
+        } else {
             items.add(viewType)
-            notifyItemInserted(items.size);
+            notifyItemInserted(items.size)
         }
     }
 }

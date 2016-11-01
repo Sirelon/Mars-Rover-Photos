@@ -19,7 +19,7 @@ class MarsPhotosDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeD
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder = MarsPhotoViewHolder(parent)
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType, payloads: MutableList<Any>?) {
         val marsPhotoViewHolder = holder as MarsPhotoViewHolder
         marsPhotoViewHolder.bind(item as MarsPhoto)
         marsPhotoViewHolder.itemView.photo.setOnClickListener {

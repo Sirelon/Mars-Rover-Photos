@@ -3,7 +3,6 @@ package com.sirelon.marsroverphotos
 import android.os.Bundle
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
-import android.util.Log
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
 import com.sirelon.marsroverphotos.adapter.RoversDelegateAdapter
 import com.sirelon.marsroverphotos.adapter.ViewTypeAdapter
@@ -39,10 +38,7 @@ class RoversActivity : RxActivity(), OnModelChooseListener {
         val subscription = dataManager.getRovers()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    Log.e("Sirelon", "OnSubscribe" + it)
-                    adapter.addOrReplace(it)
-                }, Throwable::printStackTrace)
+                .subscribe({adapter.addOrReplace(it)}, Throwable::printStackTrace)
 
         subscriptions.add(subscription)
     }
