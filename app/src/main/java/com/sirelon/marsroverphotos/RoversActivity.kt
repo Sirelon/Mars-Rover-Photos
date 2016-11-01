@@ -18,7 +18,7 @@ class RoversActivity : RxActivity(), OnModelChooseListener {
 
     override fun onModelChoose(model: ViewType) {
         val queryRequest = PhotosQueryRequest((model as Rover).name, 1000, null)
-        startActivity(PhotosActivity.createIntent(this, queryRequest))
+        startActivity(PhotosActivity.createIntent(this, model as Rover))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

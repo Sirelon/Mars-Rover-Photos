@@ -9,7 +9,7 @@ import android.os.Parcelable
  */
 data class PhotosQueryRequest(
         var roverName: String,
-        var sol: Long?,
+        var sol: Long,
         var camera: String?
 ) : Parcelable {
     companion object {
@@ -25,7 +25,7 @@ data class PhotosQueryRequest(
 
     override fun writeToParcel(dest: Parcel?, flags: Int) {
         dest?.writeString(roverName)
-        dest?.writeLong(sol ?: null!!)
+        dest?.writeLong(sol)
         dest?.writeString(camera)
     }
 }
