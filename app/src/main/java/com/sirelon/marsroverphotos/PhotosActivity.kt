@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.StaggeredGridLayoutManager
-import android.util.Log
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
 import com.sirelon.marsroverphotos.adapter.MarsPhotosDelegateAdapter
 import com.sirelon.marsroverphotos.adapter.ViewTypeAdapter
@@ -37,15 +36,14 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        initHeaderView();
+
         photosList.setHasFixedSize(true)
 
         photosList.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
 
         val adapter = ViewTypeAdapter()
         adapter.addDelegateAdapter(AdapterConstants.MARS_PHOTO, MarsPhotosDelegateAdapter(this))
-        val headerView = photosList.inflate(R.layout.item_photo_header)
-
-        headerView.setOnClickListener { Log.d("Sirelon", "HEADER CLICK ") }
 
         photosList.adapter = adapter
 
@@ -61,6 +59,10 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
 
 
         subscriptions.add(subscription)
+    }
+
+    private fun initHeaderView() {
+
     }
 
     private val photosList by lazy { photos_list }
