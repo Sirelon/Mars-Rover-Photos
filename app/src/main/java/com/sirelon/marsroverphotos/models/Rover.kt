@@ -1,6 +1,9 @@
 package com.sirelon.marsroverphotos.models
 
+import android.os.Parcel
+import android.os.Parcelable
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
+import com.sirelon.marsroverphotos.createParcel
 import com.squareup.moshi.Json
 
 /**
@@ -32,7 +35,7 @@ data class Rover(
         var maxDate: String,
 
         @Json(name = "total_photos")
-        var totalPhotos: Int) : ViewType {
+        var totalPhotos: Int) : ViewType, Parcelable {
 
     override fun getViewType(): Int = AdapterConstants.ROVER
 
@@ -47,4 +50,35 @@ data class Rover(
 
         return false
     }
+
+    override fun writeToParcel(dest: Parcel, p1: Int) {
+        dest.writeLong(id)
+        dest.writeString(name)
+        dest.writeString(iamgeUrl)
+        dest.writeString(landingDate)
+        dest.writeString(launchDate)
+        dest.writeString(status)
+        dest.writeLong(maxSol)
+        dest.writeString(maxDate)
+        dest.writeInt(totalPhotos)
+    }
+
+    override fun describeContents(): Int = 0
+
+    companion object {
+        @JvmField @Suppress("unused")
+        val CREATOR = createParcel(::Rover)
+    }
+
+    protected constructor(parcel: Parcel) : this(
+            parcel.readLong(),
+            parcel.readString(),
+            parcel.readString(),
+            parcel.readString(),
+            parcel.readString(),
+            parcel.readString(),
+            parcel.readLong(),
+            parcel.readString(),
+            parcel.readInt()
+    )
 }

@@ -8,7 +8,6 @@
     android:gravity="center"
     android:orientation="horizontal">
 
-
     <Button
         android:id="@+id/dateSolChoose"
         style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
