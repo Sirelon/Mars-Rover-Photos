@@ -14,7 +14,7 @@ import io.reactivex.schedulers.Schedulers
  */
 class DataManager(private val api: RestApi = RestApi()) {
 
-    fun getMarsPhotos(queryRequest: PhotosQueryRequest): Observable<List<MarsPhoto>> {
+    fun getMarsPhotos(queryRequest: PhotosQueryRequest): Observable<MutableList<MarsPhoto>> {
         return Observable.create {
             subscriber ->
 

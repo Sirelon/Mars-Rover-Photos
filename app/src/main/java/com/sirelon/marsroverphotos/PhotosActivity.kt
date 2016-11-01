@@ -7,6 +7,8 @@ import android.support.v7.widget.StaggeredGridLayoutManager
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
 import com.sirelon.marsroverphotos.adapter.MarsPhotosDelegateAdapter
 import com.sirelon.marsroverphotos.adapter.ViewTypeAdapter
+import com.sirelon.marsroverphotos.adapter.headers.HeaderDelegateAdapter
+import com.sirelon.marsroverphotos.adapter.headers.PhotoHeader
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.models.OnModelChooseListener
 import com.sirelon.marsroverphotos.models.PhotosQueryRequest
@@ -42,14 +44,19 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
 
         val adapter = ViewTypeAdapter()
         adapter.addDelegateAdapter(AdapterConstants.MARS_PHOTO, MarsPhotosDelegateAdapter(this))
+        adapter.addDelegateAdapter(AdapterConstants.HEADER, HeaderDelegateAdapter())
         photosList.adapter = adapter
+
+        photosList.addItemDecoration(PhotoHeader(photosList, AdapterConstants.HEADER))
 
         val queryRequest = intent?.getParcelableExtra<PhotosQueryRequest>(EXTRA_QUERY_REQUEST) ?: PhotosQueryRequest("curiosity", 1000, null)
 
         val subscription = dataManager.getMarsPhotos(queryRequest)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ adapter.addData(it) }, Throwable::printStackTrace)
+                .subscribe({
+//                    adapter.addHeader(HeaderViewType())
+                    adapter.addData(it) }, Throwable::printStackTrace)
 
 
         subscriptions.add(subscription)

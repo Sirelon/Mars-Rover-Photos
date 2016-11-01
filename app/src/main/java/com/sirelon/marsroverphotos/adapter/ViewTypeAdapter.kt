@@ -4,6 +4,7 @@ import android.support.v4.util.SparseArrayCompat
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import com.sirelon.marsroverphotos.adapter.diffutils.getChangePayload
+import com.sirelon.marsroverphotos.adapter.headers.HeaderViewType
 import com.sirelon.marsroverphotos.models.ViewType
 import java.util.*
 
@@ -11,7 +12,7 @@ import java.util.*
  * @author romanishin
  * @since 31.10.16 on 11:32
  */
-class ViewTypeAdapter(val withLoadingView: Boolean = true) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ViewTypeAdapter(var withLoadingView: Boolean = true) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var items: ArrayList<ViewType>
     private var delegates = SparseArrayCompat<ViewTypeDelegateAdapter?>()
     private val loadingItem = object : ViewType {
@@ -79,5 +80,19 @@ class ViewTypeAdapter(val withLoadingView: Boolean = true) : RecyclerView.Adapte
             items.add(viewType)
             notifyItemInserted(items.size)
         }
+    }
+
+    fun addHeader(headerViewType: HeaderViewType) {
+        if (withLoadingView) {
+
+            // first remove loading and notify
+            val initPosition = items.size - 1
+            items.removeAt(initPosition)
+            notifyItemRemoved(initPosition)
+            withLoadingView = false
+        }
+
+        items.add(headerViewType)
+        notifyItemInserted(items.size)
     }
 }
