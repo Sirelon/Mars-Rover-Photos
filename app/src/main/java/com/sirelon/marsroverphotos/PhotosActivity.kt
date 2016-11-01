@@ -4,11 +4,10 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.StaggeredGridLayoutManager
+import android.util.Log
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
 import com.sirelon.marsroverphotos.adapter.MarsPhotosDelegateAdapter
 import com.sirelon.marsroverphotos.adapter.ViewTypeAdapter
-import com.sirelon.marsroverphotos.adapter.headers.HeaderDelegateAdapter
-import com.sirelon.marsroverphotos.adapter.headers.PhotoHeader
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.models.OnModelChooseListener
 import com.sirelon.marsroverphotos.models.PhotosQueryRequest
@@ -44,10 +43,11 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
 
         val adapter = ViewTypeAdapter()
         adapter.addDelegateAdapter(AdapterConstants.MARS_PHOTO, MarsPhotosDelegateAdapter(this))
-        adapter.addDelegateAdapter(AdapterConstants.HEADER, HeaderDelegateAdapter())
-        photosList.adapter = adapter
+        val headerView = photosList.inflate(R.layout.item_photo_header)
 
-        photosList.addItemDecoration(PhotoHeader(photosList, AdapterConstants.HEADER))
+        headerView.setOnClickListener { Log.d("Sirelon", "HEADER CLICK ") }
+
+        photosList.adapter = adapter
 
         val queryRequest = intent?.getParcelableExtra<PhotosQueryRequest>(EXTRA_QUERY_REQUEST) ?: PhotosQueryRequest("curiosity", 1000, null)
 
@@ -56,7 +56,8 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
 //                    adapter.addHeader(HeaderViewType())
-                    adapter.addData(it) }, Throwable::printStackTrace)
+                    adapter.addData(it)
+                }, Throwable::printStackTrace)
 
 
         subscriptions.add(subscription)

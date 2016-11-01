@@ -3,27 +3,24 @@ package com.sirelon.marsroverphotos.adapter.headers
 import android.graphics.Canvas
 import android.graphics.Rect
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.View
-import com.sirelon.marsroverphotos.R
-import com.sirelon.marsroverphotos.inflate
 
 /**
  * @author romanishin
  * @since 01.11.16 on 14:51
  */
-class PhotoHeader(recycler: RecyclerView, val headerId: Int) : RecyclerView.ItemDecoration() {
+class PhotoHeader( var headerView: View, val headerId: Int) : RecyclerView.ItemDecoration() {
 
-    private var headerView: View
+//    private var headerView: View
 
     init {
-        headerView = recycler.inflate(R.layout.item_photo_header)
-//        Log.w("Sirelon", "HEADER WIDTH = ${headerView.width} Recycler WIDTH = ${recycler.measuredWidth}")
+//        headerView = recycler.inflate(R.layout.item_photo_header)
+////        Log.w("Sirelon", "HEADER WIDTH = ${headerView.width} Recycler WIDTH = ${recycler.measuredWidth}")
         headerView.measure(
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED))
-
-        headerView.setOnClickListener {   Log.w("Sirelon", "ON CLICK OCCURED") }
+//
+//        headerView.setOnClickListener {   Log.w("Sirelon", "ON CLICK OCCURED") }
     }
 
     override fun getItemOffsets(outRect: Rect?, view: View, parent: RecyclerView, state: RecyclerView.State?) {
@@ -56,13 +53,15 @@ class PhotoHeader(recycler: RecyclerView, val headerId: Int) : RecyclerView.Item
             if (position == RecyclerView.NO_POSITION)
                 continue
 
-            if (position == 0) {
+            if (parent.adapter.getItemViewType(position) == headerId){
 
-                val transX = parent.x
-                val transY = view.top
+//            if (position == 0) {
+
+                val transX = parent.left
+                val transY = Math.max(view.top - headerView.height, 0)
 
                 c.save()
-//                c.translate(0.toFloat(), 180.toFloat())
+                c.translate(transX.toFloat(), transY.toFloat())
                 headerView.draw(c)
                 c.restore()
             }
