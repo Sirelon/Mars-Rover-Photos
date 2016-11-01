@@ -1,7 +1,8 @@
 package com.sirelon.marsroverphotos
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.StaggeredGridLayoutManager
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
 import com.sirelon.marsroverphotos.adapter.MarsPhotosDelegateAdapter
@@ -11,18 +12,25 @@ import com.sirelon.marsroverphotos.models.OnModelChooseListener
 import com.sirelon.marsroverphotos.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.models.ViewType
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 
-class PhotosActivity : AppCompatActivity(), OnModelChooseListener {
+class PhotosActivity : RxActivity(), OnModelChooseListener {
+
+    companion object {
+        val EXTRA_QUERY_REQUEST = ".extraQueryRequest"
+        fun createIntent(context: Context, queryRequest: PhotosQueryRequest): Intent {
+            val intent = Intent(context, PhotosActivity::class.java)
+            intent.putExtra(EXTRA_QUERY_REQUEST, queryRequest)
+            return intent
+        }
+    }
+
     override fun onModelChoose(model: ViewType) {
         if (model is MarsPhoto) {
             startActivity(ImageActivity.createIntent(this, model))
         }
     }
-
-    var subscriptions = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +44,7 @@ class PhotosActivity : AppCompatActivity(), OnModelChooseListener {
         adapter.addDelegateAdapter(AdapterConstants.MARS_PHOTO, MarsPhotosDelegateAdapter(this))
         photosList.adapter = adapter
 
-        val queryRequest = PhotosQueryRequest("curiosity", 1000, null)
+        val queryRequest = intent?.getParcelableExtra<PhotosQueryRequest>(EXTRA_QUERY_REQUEST) ?: PhotosQueryRequest("curiosity", 1000, null)
 
         val subscription = dataManager.getMarsPhotos(queryRequest)
                 .subscribeOn(Schedulers.io())
@@ -46,18 +54,6 @@ class PhotosActivity : AppCompatActivity(), OnModelChooseListener {
 
         subscriptions.add(subscription)
     }
-
-    override fun onResume() {
-        super.onResume()
-        subscriptions = CompositeDisposable()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        subscriptions.clear()
-    }
-
-    private val dataManager by lazy { DataManager() }
 
     private val photosList by lazy { photos_list }
 }

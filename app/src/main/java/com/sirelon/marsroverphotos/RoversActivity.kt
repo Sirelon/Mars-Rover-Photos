@@ -1,24 +1,24 @@
 package com.sirelon.marsroverphotos
 
-import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
-import android.view.MenuItem
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
 import com.sirelon.marsroverphotos.adapter.RoversDelegateAdapter
 import com.sirelon.marsroverphotos.adapter.ViewTypeAdapter
 import com.sirelon.marsroverphotos.models.OnModelChooseListener
+import com.sirelon.marsroverphotos.models.PhotosQueryRequest
+import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.ViewType
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_rovers.*
 
-class RoversActivity : AppCompatActivity(), OnModelChooseListener {
+class RoversActivity : RxActivity(), OnModelChooseListener {
 
     override fun onModelChoose(model: ViewType) {
-        // TODO
+        val queryRequest = PhotosQueryRequest((model as Rover).name, 1000, null)
+        startActivity(PhotosActivity.createIntent(this, queryRequest))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,16 +39,7 @@ class RoversActivity : AppCompatActivity(), OnModelChooseListener {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ adapter.addData(it) }, Throwable::printStackTrace)
-    }
 
-    private val dataManager by lazy { DataManager() }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        if (item?.itemId == android.R.id.home) {
-            val intent = Intent(this, PhotosActivity::class.java)
-            startActivity(intent)
-            return true
-        } else
-            return super.onOptionsItemSelected(item)
+        subscriptions.add(subscription)
     }
 }
