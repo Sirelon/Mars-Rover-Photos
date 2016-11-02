@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos
 
+import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -20,6 +21,8 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_photo_header.*
 import kotlinx.android.synthetic.main.view_choose_sol.view.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 class PhotosActivity : RxActivity(), OnModelChooseListener {
 
@@ -76,6 +79,52 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
     }
 
     private fun initHeaderView() {
+        setupViewsForSetSol()
+
+        setupViewsForEarthDate()
+    }
+
+    private fun setupViewsForEarthDate() {
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+
+        val timestampMax: Date?
+        val timestampMin: Date?
+
+        timestampMax = try {
+            sdf.parse(rover.maxDate)
+        } catch (e: Exception) {
+            null
+        }
+
+        timestampMin = try {
+            sdf.parse(rover.landingDate)
+        } catch (e: Exception) {
+            null
+        }
+
+        val calender = Calendar.getInstance()
+        calender.timeInMillis = timestampMax?.time ?: System.currentTimeMillis()
+
+        val datePicker = DatePickerDialog(
+                this,
+                DatePickerDialog.OnDateSetListener
+                { datePicker, year, monthOfYear, dayOfMonth ->
+                    calender.set(year, monthOfYear, dayOfMonth)
+                    dateEarthChoose.text = sdf.format(calender.timeInMillis)
+                },
+                calender.get(Calendar.YEAR),
+                calender.get(Calendar.MONTH),
+                calender.get(Calendar.DAY_OF_MONTH))
+
+        datePicker.datePicker.maxDate = timestampMax?.time ?: -1
+        datePicker.datePicker.minDate = timestampMin?.time ?: -1
+
+        dateEarthChoose.setOnClickListener {
+            datePicker.show()
+        }
+    }
+
+    private fun setupViewsForSetSol() {
         val dialogView = layoutInflater.inflate(R.layout.view_choose_sol, null, false)
 
         val dialog = AlertDialog.Builder(this)
