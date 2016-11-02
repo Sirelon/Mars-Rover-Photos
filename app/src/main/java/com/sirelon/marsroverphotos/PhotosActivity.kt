@@ -9,7 +9,6 @@ import android.support.v7.widget.StaggeredGridLayoutManager
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
-import android.util.Log
 import android.widget.SeekBar
 import android.widget.Toast
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
@@ -22,7 +21,6 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_photo_header.*
 import kotlinx.android.synthetic.main.view_choose_sol.view.*
-import java.text.SimpleDateFormat
 import java.util.*
 
 class PhotosActivity : RxActivity(), OnModelChooseListener {
@@ -43,8 +41,11 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         }
     }
 
+    private val photosList by lazy { photos_list }
+
     private lateinit var queryRequest: PhotosQueryRequest
     private lateinit var rover: Rover
+    private lateinit var dateUtil: RoverDateUtil
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +53,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
 
         rover = intent.getParcelableExtra<Rover>(EXTRA_ROVER)
         queryRequest = PhotosQueryRequest(rover.name, 1, null)
+        dateUtil = RoverDateUtil(rover)
 
         initHeaderView()
 
@@ -86,26 +88,9 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
     }
 
     private fun setupViewsForEarthDate() {
-        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-
-        val timestampMax: Date?
-        val timestampMin: Date?
-
-        timestampMax = try {
-            sdf.parse(rover.maxDate)
-        } catch (e: Exception) {
-            null
-        }
-
-        timestampMin = try {
-            sdf.parse(rover.landingDate)
-        } catch (e: Exception) {
-            null
-        }
-
         val calender = Calendar.getInstance(TimeZone.getDefault())
         calender.clear()
-        calender.timeInMillis = timestampMax?.time ?: System.currentTimeMillis()
+        calender.timeInMillis = dateUtil.roverLastDate
 
         val datePicker = DatePickerDialog(
                 this,
@@ -114,21 +99,15 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                     calender.clear()
                     calender.set(year, monthOfYear, dayOfMonth)
                     val chooseDateMil = calender.timeInMillis
-                    dateEarthChoose.text = sdf.format(chooseDateMil)
-
-                    // + include end and curent days
-                    val days = (chooseDateMil - timestampMin!!.time) / (1000 * 60 * 60 * 24) + 2
-
-                    val sol = days / 1.0275
-                    Log.d("Sirelon", "DEFERENCE BETWEEN DATES EARTH DAYS = $days SOL = $sol")
-                    loadDataBySol(sol.toLong())
+                    dateEarthChoose.text = dateUtil.parseTime(chooseDateMil)
+                    loadDataBySol(dateUtil.solFromDate(chooseDateMil))
                 },
                 calender.get(Calendar.YEAR),
                 calender.get(Calendar.MONTH),
                 calender.get(Calendar.DAY_OF_MONTH))
 
-        datePicker.datePicker.maxDate = timestampMax?.time ?: -1
-        datePicker.datePicker.minDate = timestampMin?.time ?: -1
+        datePicker.datePicker.maxDate = dateUtil.roverLastDate
+        datePicker.datePicker.minDate = dateUtil.roverLandingDate
 
         dateEarthChoose.setOnClickListener {
             datePicker.show()
@@ -143,7 +122,8 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                 .setNegativeButton("Cancel", null)
                 .setPositiveButton("Ok", {
                     dialogInterface, i ->
-                    val sol = dialogView.solInput.text.toString().toLong();
+                    val sol = dialogView.solInput.text.toString().toLong()
+                    dateEarthChoose.text = dateUtil.parseTime(dateUtil.dateFromSol(sol))
                     loadDataBySol(sol)
                 }).create()
 
@@ -215,6 +195,4 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         (photosList.adapter as ViewTypeAdapter).clearAll()
         loadData()
     }
-
-    private val photosList by lazy { photos_list }
 }
