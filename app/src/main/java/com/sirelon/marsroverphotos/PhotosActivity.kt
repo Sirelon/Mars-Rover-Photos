@@ -90,7 +90,11 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
     private fun setupViewsForEarthDate() {
         val calender = Calendar.getInstance(TimeZone.getDefault())
         calender.clear()
-        calender.timeInMillis = dateUtil.roverLastDate
+
+        val time = dateUtil.dateFromSol(queryRequest.sol)
+        dateEarthChoose.text = "Earth date: ${dateUtil.parseTime(time)}"
+
+        calender.timeInMillis = time
 
         val datePicker = DatePickerDialog(
                 this,
@@ -99,7 +103,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                     calender.clear()
                     calender.set(year, monthOfYear, dayOfMonth)
                     val chooseDateMil = calender.timeInMillis
-                    dateEarthChoose.text = dateUtil.parseTime(chooseDateMil)
+                    dateEarthChoose.text = "Earth date: ${dateUtil.parseTime(chooseDateMil)}"
                     loadDataBySol(dateUtil.solFromDate(chooseDateMil))
                 },
                 calender.get(Calendar.YEAR),
@@ -110,6 +114,17 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         datePicker.datePicker.minDate = dateUtil.roverLandingDate
 
         dateEarthChoose.setOnClickListener {
+            // UPDATE TIME
+            val timeFromSol = dateUtil.dateFromSol(queryRequest.sol)
+
+            calender.timeInMillis = timeFromSol
+
+            datePicker.updateDate(
+                    calender.get(Calendar.YEAR),
+                    calender.get(Calendar.MONTH),
+                    calender.get(Calendar.DAY_OF_MONTH))
+
+            // SHOW DIALOG
             datePicker.show()
         }
     }
@@ -123,7 +138,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                 .setPositiveButton("Ok", {
                     dialogInterface, i ->
                     val sol = dialogView.solInput.text.toString().toLong()
-                    dateEarthChoose.text = dateUtil.parseTime(dateUtil.dateFromSol(sol))
+                    dateEarthChoose.text = "Earth date: ${dateUtil.parseTime(dateUtil.dateFromSol(sol))}"
                     loadDataBySol(sol)
                 }).create()
 
