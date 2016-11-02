@@ -44,7 +44,9 @@ class RoversDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDeleg
             when (payloadFinal) {
                 RoverDiff.IMAGE -> roverPhoto.loadImage(item.iamgeUrl)
                 RoverDiff.TOTAL_PHOTOS -> totalPhotos.text = "Total photos: ${item.totalPhotos}"
-                RoverDiff.MAX_DATE -> lastPhotoDate.text = "Last photo date: ${item.maxDate}"
+                RoverDiff.LAST_PHOTO_DATE -> lastPhotoDate.text = "Last photo date: ${item.maxDate}"
+                RoverDiff.LAUNCH_DATE -> launchDate.text = "Launch date from Earth: ${item.launchDate}"
+                RoverDiff.LANDING_DATE -> roverLandingDate.text = "Landing date on Mars: ${item.landingDate}"
                 else -> {
                 }
             }
@@ -56,6 +58,8 @@ class RoversDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDeleg
             roverStatus.text = "Status: ${item.status}"
             totalPhotos.text = "Total photos: ${item.totalPhotos}"
             lastPhotoDate.text = "Last photo date: ${item.maxDate}"
+            launchDate.text = "Launch date from Earth: ${item.launchDate}"
+            roverLandingDate.text = "Landing date on Mars: ${item.landingDate}"
         }
     }
 
