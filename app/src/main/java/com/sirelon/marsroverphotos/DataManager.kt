@@ -26,7 +26,7 @@ class DataManager(private val api: RestApi = RestApi()) {
                     subscriber.onNext(marsPhotos)
                     subscriber.onComplete()
                 } else
-                    subscriber.onError(Throwable(response.message()))
+                    subscriber.onError(Throwable(response.errorBody().string()))
             } catch (e: Exception) {
                 subscriber.onError(e)
             }

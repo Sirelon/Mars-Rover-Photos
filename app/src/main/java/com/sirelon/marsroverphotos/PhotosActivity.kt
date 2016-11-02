@@ -8,6 +8,7 @@ import android.support.v7.widget.StaggeredGridLayoutManager
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
+import android.widget.SeekBar
 import android.widget.Toast
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
 import com.sirelon.marsroverphotos.adapter.MarsPhotosDelegateAdapter
@@ -46,6 +47,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         setContentView(R.layout.activity_main)
 
         rover = intent.getParcelableExtra<Rover>(EXTRA_ROVER)
+        queryRequest = PhotosQueryRequest(rover.name, 1, null)
 
         initHeaderView()
 
@@ -57,8 +59,6 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         adapter.addDelegateAdapter(AdapterConstants.MARS_PHOTO, MarsPhotosDelegateAdapter(this))
 
         photosList.adapter = adapter
-
-        queryRequest = PhotosQueryRequest(rover.name, 1, null)
 
         loadData()
     }
@@ -85,11 +85,13 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                     dialogInterface, i ->
                     subscriptions.clear()
                     queryRequest.sol = dialogView.solInput.text.toString().toLong()
+                    dateSolChoose.text = "Sol date: ${queryRequest.sol}"
                     // Clear adapter
                     (photosList.adapter as ViewTypeAdapter).clearAll()
                     loadData()
                 }).create()
 
+        dateSolChoose.text = "Sol date: ${queryRequest.sol}"
         dateSolChoose.setOnClickListener {
             // Update views
             dialogView.solSeekBar.max = rover.maxSol.toInt()
@@ -131,6 +133,21 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                 .subscribe({ dialogView.solSeekBar.progress = it }, { it.printStackTrace() })
 
         subscriptions.add(changeSubscription)
+
+        dialogView.solSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onStartTrackingTouch(p0: SeekBar?) {
+            }
+
+            override fun onStopTrackingTouch(p0: SeekBar?) {
+            }
+
+            override fun onProgressChanged(p0: SeekBar?, progress: Int, p2: Boolean) {
+                @Suppress("NAME_SHADOWING")
+                var progress = progress
+                if (progress >= 0) progress = 1
+                dialogView.solInput.setText("$progress")
+            }
+        })
     }
 
     private val photosList by lazy { photos_list }
