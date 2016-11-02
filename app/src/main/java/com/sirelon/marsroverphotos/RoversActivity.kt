@@ -7,7 +7,6 @@ import com.sirelon.marsroverphotos.adapter.AdapterConstants
 import com.sirelon.marsroverphotos.adapter.RoversDelegateAdapter
 import com.sirelon.marsroverphotos.adapter.ViewTypeAdapter
 import com.sirelon.marsroverphotos.models.OnModelChooseListener
-import com.sirelon.marsroverphotos.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.ViewType
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -17,7 +16,6 @@ import kotlinx.android.synthetic.main.activity_rovers.*
 class RoversActivity : RxActivity(), OnModelChooseListener {
 
     override fun onModelChoose(model: ViewType) {
-        val queryRequest = PhotosQueryRequest((model as Rover).name, 1000, null)
         startActivity(PhotosActivity.createIntent(this, model as Rover))
     }
 
@@ -38,7 +36,7 @@ class RoversActivity : RxActivity(), OnModelChooseListener {
         val subscription = dataManager.getRovers()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({adapter.addOrReplace(it)}, Throwable::printStackTrace)
+                .subscribe({ adapter.addOrReplace(it) }, Throwable::printStackTrace)
 
         subscriptions.add(subscription)
     }
