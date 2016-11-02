@@ -14,6 +14,7 @@
         android:theme="@style/AppTheme">
 
         <activity android:name=".RoversActivity">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,7 +23,13 @@
 
         </activity>
 
-        <activity android:name=".PhotosActivity"></activity>
+        <activity
+            android:name=".PhotosActivity"
+            android:parentActivityName=".RoversActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".RoversActivity" />
+        </activity>
         <activity
             android:name=".ImageActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"

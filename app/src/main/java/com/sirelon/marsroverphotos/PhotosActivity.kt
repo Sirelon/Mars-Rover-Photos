@@ -23,6 +23,7 @@ import kotlinx.android.synthetic.main.item_photo_header.*
 import kotlinx.android.synthetic.main.view_choose_sol.view.*
 import java.util.*
 
+
 class PhotosActivity : RxActivity(), OnModelChooseListener {
 
     companion object {
@@ -54,6 +55,9 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         rover = intent.getParcelableExtra<Rover>(EXTRA_ROVER)
         queryRequest = PhotosQueryRequest(rover.name, 1, null)
         dateUtil = RoverDateUtil(rover)
+
+        // Set Toolbar title
+        title = "${rover.name}'s photos"
 
         initHeaderView()
 
