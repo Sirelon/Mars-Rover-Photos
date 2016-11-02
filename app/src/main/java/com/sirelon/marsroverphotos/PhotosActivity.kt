@@ -5,10 +5,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.StaggeredGridLayoutManager
+import android.text.Editable
+import android.text.TextUtils
+import android.text.TextWatcher
+import android.widget.Toast
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
 import com.sirelon.marsroverphotos.adapter.MarsPhotosDelegateAdapter
 import com.sirelon.marsroverphotos.adapter.ViewTypeAdapter
 import com.sirelon.marsroverphotos.models.*
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
@@ -63,7 +68,6 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    (photosList.adapter as ViewTypeAdapter).clearAll()
                     (photosList.adapter as ViewTypeAdapter).addData(it)
                 }, Throwable::printStackTrace)
 
@@ -74,22 +78,59 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
     private fun initHeaderView() {
         val dialogView = layoutInflater.inflate(R.layout.view_choose_sol, null, false)
 
-        dateSolChoose.setOnClickListener {
+        val dialog = AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("Ok", {
+                    dialogInterface, i ->
+                    subscriptions.clear()
+                    queryRequest.sol = dialogView.solInput.text.toString().toLong()
+                    // Clear adapter
+                    (photosList.adapter as ViewTypeAdapter).clearAll()
+                    loadData()
+                }).create()
 
+        dateSolChoose.setOnClickListener {
+            // Update views
             dialogView.solSeekBar.max = rover.maxSol.toInt()
             dialogView.solSeekBar.progress = queryRequest.sol.toInt()
-            dialogView.solInput.setText(queryRequest.sol.toString())
-
-            AlertDialog.Builder(this)
-                    .setView(dialogView)
-                    .setPositiveButton("Ok", {
-                        dialogInterface, i ->
-                        subscriptions.clear()
-                        queryRequest.sol = dialogView.solInput.text.toString().toLong()
-                        loadData()
-                    })
-                    .show()
+            val solStr = queryRequest.sol.toString()
+            dialogView.solInput.setText(solStr)
+            dialogView.solInput.setSelection(solStr.length)
+            // Show dialog
+            dialog.show()
         }
+
+        val changeSubscription = Observable.create<CharSequence> {
+            // Some setup for seek and edittext
+            dialogView.solInput.addTextChangedListener(object : TextWatcher {
+                override fun afterTextChanged(p0: Editable?) {
+                }
+
+                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                }
+
+                override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    it.onNext(text)
+                }
+            })
+        }
+                .filter { it.isNotEmpty() }
+                .filter { TextUtils.isDigitsOnly(it) }
+                .map { it.toString().toInt() }
+                .filter {
+                    if (it > rover.maxSol) {
+                        Toast.makeText(this, "The max sol for ${rover.name}'s rover is ${rover.maxSol}", Toast.LENGTH_SHORT).show()
+                        dialogView.solInput.setText("${rover.maxSol}")
+                        false
+                    } else {
+                        true
+                    }
+                }
+                .retry()
+                .subscribe({ dialogView.solSeekBar.progress = it }, { it.printStackTrace() })
+
+        subscriptions.add(changeSubscription)
     }
 
     private val photosList by lazy { photos_list }

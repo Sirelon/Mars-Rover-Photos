@@ -100,7 +100,10 @@ class ViewTypeAdapter(var withLoadingView: Boolean = true) : RecyclerView.Adapte
         val initPosition = items.size
         items.clear()
         notifyItemRangeRemoved(0, initPosition)
-        items.add(loadingItem)
-        notifyItemInserted(0)
+
+        if (withLoadingView) {
+            items.add(loadingItem)
+            notifyItemInserted(0)
+        }
     }
 }
