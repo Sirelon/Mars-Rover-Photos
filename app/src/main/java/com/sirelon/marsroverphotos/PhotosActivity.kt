@@ -144,8 +144,9 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
             override fun onProgressChanged(p0: SeekBar?, progress: Int, p2: Boolean) {
                 @Suppress("NAME_SHADOWING")
                 var progress = progress
-                if (progress >= 0) progress = 1
+                if (progress <= 0) progress = 1
                 dialogView.solInput.setText("$progress")
+                dialogView.solInput.setSelection(dialogView.solInput.text.length)
             }
         })
     }
