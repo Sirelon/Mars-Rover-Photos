@@ -1,6 +1,7 @@
 package com.sirelon.marsroverphotos.adapter
 
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.StaggeredGridLayoutManager
 import android.view.ViewGroup
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.inflate
@@ -18,5 +19,11 @@ class LoadingDelegateAdapter : ViewTypeDelegateAdapter {
 
     }
 
-    class LoadingViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate(R.layout.item_loading))
+    class LoadingViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate(R.layout.item_loading)) {
+        init {
+            if (itemView.layoutParams is StaggeredGridLayoutManager.LayoutParams) {
+                (itemView.layoutParams as StaggeredGridLayoutManager.LayoutParams).isFullSpan = true
+            }
+        }
+    }
 }

@@ -60,8 +60,9 @@ class ViewTypeAdapter(var withLoadingView: Boolean = true) : RecyclerView.Adapte
 
             // insert news and the loading at the end of the list
             items.addAll(data)
-            items.add(loadingItem)
-            notifyItemRangeChanged(initPosition, items.size + 1 /* plus loading item */)
+            
+//            items.add(loadingItem)
+//            notifyItemRangeChanged(initPosition, items.size + 1 /* plus loading item */)
         } else {
             val startPos = items.size
             items.addAll(data)
