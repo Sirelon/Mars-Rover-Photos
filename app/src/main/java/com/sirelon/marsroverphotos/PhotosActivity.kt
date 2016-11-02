@@ -9,6 +9,7 @@ import android.support.v7.widget.StaggeredGridLayoutManager
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
+import android.util.Log
 import android.widget.SeekBar
 import android.widget.Toast
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
@@ -102,15 +103,25 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
             null
         }
 
-        val calender = Calendar.getInstance()
+        val calender = Calendar.getInstance(TimeZone.getDefault())
+        calender.clear()
         calender.timeInMillis = timestampMax?.time ?: System.currentTimeMillis()
 
         val datePicker = DatePickerDialog(
                 this,
                 DatePickerDialog.OnDateSetListener
                 { datePicker, year, monthOfYear, dayOfMonth ->
+                    calender.clear()
                     calender.set(year, monthOfYear, dayOfMonth)
-                    dateEarthChoose.text = sdf.format(calender.timeInMillis)
+                    val chooseDateMil = calender.timeInMillis
+                    dateEarthChoose.text = sdf.format(chooseDateMil)
+
+                    // + include end and curent days
+                    val days = (chooseDateMil - timestampMin!!.time) / (1000 * 60 * 60 * 24) + 2
+
+                    val sol = days / 1.0275
+                    Log.d("Sirelon", "DEFERENCE BETWEEN DATES EARTH DAYS = $days SOL = $sol")
+                    loadDataBySol(sol.toLong())
                 },
                 calender.get(Calendar.YEAR),
                 calender.get(Calendar.MONTH),
@@ -132,12 +143,8 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                 .setNegativeButton("Cancel", null)
                 .setPositiveButton("Ok", {
                     dialogInterface, i ->
-                    subscriptions.clear()
-                    queryRequest.sol = dialogView.solInput.text.toString().toLong()
-                    dateSolChoose.text = "Sol date: ${queryRequest.sol}"
-                    // Clear adapter
-                    (photosList.adapter as ViewTypeAdapter).clearAll()
-                    loadData()
+                    val sol = dialogView.solInput.text.toString().toLong();
+                    loadDataBySol(sol)
                 }).create()
 
         dateSolChoose.text = "Sol date: ${queryRequest.sol}"
@@ -198,6 +205,15 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                 dialogView.solInput.setSelection(dialogView.solInput.text.length)
             }
         })
+    }
+
+    private fun loadDataBySol(sol: Long) {
+        queryRequest.sol = sol;
+        subscriptions.clear()
+        dateSolChoose.text = "Sol date: ${queryRequest.sol}"
+        // Clear adapter
+        (photosList.adapter as ViewTypeAdapter).clearAll()
+        loadData()
     }
 
     private val photosList by lazy { photos_list }
