@@ -23,7 +23,12 @@ data class MarsPhoto(
         val imageUrl: String,
 
         @Json(name = "earth_date")
-        val earthDate: String) : ViewType, Parcelable {
+        val earthDate: String,
+
+        @Json(name = "camera")
+        val camera: RoverCamera)
+
+: ViewType, Parcelable {
 
     override fun getViewType(): Int = AdapterConstants.MARS_PHOTO
 
@@ -33,7 +38,7 @@ data class MarsPhoto(
         dest.writeString(name)
         dest.writeString(imageUrl)
         dest.writeString(earthDate)
-//        dest.writeTypedObject()
+        dest.writeTypedObject(camera, p1)
     }
 
     override fun describeContents(): Int = 0
@@ -43,11 +48,12 @@ data class MarsPhoto(
         val CREATOR = createParcel(::MarsPhoto)
     }
 
-    protected constructor(parcel: Parcel) : this(
+    protected constructor (parcel: Parcel) : this(
             parcel.readLong(),
             parcel.readLong(),
             parcel.readString(),
             parcel.readString(),
-            parcel.readString()
+            parcel.readString(),
+            parcel.readTypedObject(RoverCamera.CREATOR)
     )
 }
