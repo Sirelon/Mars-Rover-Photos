@@ -5,6 +5,7 @@ import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.MenuItem
 import com.sirelon.marsroverphotos.BuildConfig
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.extensions.spannable
@@ -16,6 +17,8 @@ class AboutAppActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_about_app)
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         about_rights.text = getString(R.string.all_rights_reserved_fmt, Calendar.getInstance().get(Calendar.YEAR))
 
@@ -38,5 +41,12 @@ class AboutAppActivity : AppCompatActivity() {
             }
             +"sasha.sirelon@gmail.com"
         }.toCharSequence()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            finish()
+            return true
+        } else return super.onOptionsItemSelected(item)
     }
 }
