@@ -2,18 +2,18 @@ package com.sirelon.marsroverphotos
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Matrix
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
-import android.view.MotionEvent
-import android.view.ScaleGestureDetector
-import android.widget.ImageView
+import android.view.View
 import com.sirelon.marsroverphotos.models.MarsPhoto
+import com.squareup.picasso.Callback
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_image.*
+import uk.co.senab.photoview.PhotoViewAttacher
 
 class ImageActivity : AppCompatActivity() {
-
 
     companion object {
         val EXTRA_PHOTO = ".extraPhoto"
@@ -31,31 +31,23 @@ class ImageActivity : AppCompatActivity() {
 
         val marsPhoto = intent.getParcelableExtra<MarsPhoto>(EXTRA_PHOTO)
 
-        fullscreenImage.loadImage(marsPhoto.imageUrl)
-    }
+        title = "Photo id ${marsPhoto.id}. Date ${marsPhoto.earthDate}"
 
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-        scaleGesture.onTouchEvent(event)
-        return true
-    }
+        val photoViewAttacher = PhotoViewAttacher(fullscreenImage)
 
-    private val scaleGesture by lazy {
-        ScaleGestureDetector(this, ScaleListener(fullscreenImage))
-    }
+        Picasso.with(this).load(marsPhoto.imageUrl).into(fullscreenImage, object : Callback {
+            override fun onSuccess() {
+                fullscreenImageProgress.visibility = View.GONE
+                photoViewAttacher.update()
+            }
 
-    inner class ScaleListener(val imageView: ImageView) : ScaleGestureDetector.SimpleOnScaleGestureListener() {
-
-        private var scale = 1f
-        private val matrix = Matrix()
-
-        override fun onScale(detector: ScaleGestureDetector): Boolean {
-            scale *= detector.scaleFactor
-            scale = Math.max(0.1f, Math.min(scale, 5.0f))
-            matrix.setScale(scale, scale)
-            imageView.imageMatrix = matrix;
-
-            return true
-        }
+            override fun onError() {
+                fullscreenImageProgress.visibility = View.GONE
+                Snackbar.make(fullscreenImageRoot, "Cannot show this image", Snackbar.LENGTH_INDEFINITE)
+                        .setAction("Close", { finish() })
+                        .show()
+            }
+        })
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {

@@ -23,7 +23,7 @@ fun ImageView.loadImage(imageUrl: String?) {
     if (TextUtils.isEmpty(imageUrl))
         this.setImageResource(R.drawable.img_placeholder)
     else {
-        Picasso.with(context).setIndicatorsEnabled(true)
+//        Picasso.with(context).setIndicatorsEnabled(true)
         Picasso.with(context).load(imageUrl).placeholder(R.drawable.img_placeholder).into(this)
     }
 }
