@@ -6,4 +6,5 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="share">Share</string>
     <string name="save">Save</string>
+    <string name="all_rights_reserved_fmt">All rights reserved \u00A9 %s</string>
 </resources>

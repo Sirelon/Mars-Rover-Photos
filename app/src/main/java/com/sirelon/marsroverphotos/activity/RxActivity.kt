@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos.activity
 
+import android.content.Intent
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
@@ -39,7 +40,7 @@ open class RxActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         if (item?.itemId == R.id.menu_item_about) {
-
+            startActivity(Intent(this, AboutAppActivity::class.java))
             return true
         } else
             return super.onOptionsItemSelected(item)
