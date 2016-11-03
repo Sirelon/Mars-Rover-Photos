@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos.adapter
 
+import android.graphics.Color
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import com.sirelon.marsroverphotos.R
@@ -9,6 +10,7 @@ import com.sirelon.marsroverphotos.loadImage
 import com.sirelon.marsroverphotos.models.OnModelChooseListener
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.ViewType
+import com.sirelon.marsroverphotos.spannable
 import kotlinx.android.synthetic.main.item_rover.view.*
 
 /**
@@ -43,10 +45,39 @@ class RoversDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDeleg
         private fun bindByPayload(item: Rover, payloadFinal: Any?) = with(itemView) {
             when (payloadFinal) {
                 RoverDiff.IMAGE -> roverPhoto.loadImage(item.iamgeUrl)
-                RoverDiff.TOTAL_PHOTOS -> totalPhotos.text = "Total photos: ${item.totalPhotos}"
-                RoverDiff.LAST_PHOTO_DATE -> lastPhotoDate.text = "Last photo date: ${item.maxDate}"
-                RoverDiff.LAUNCH_DATE -> launchDate.text = "Launch date from Earth: ${item.launchDate}"
-                RoverDiff.LANDING_DATE -> roverLandingDate.text = "Landing date on Mars: ${item.landingDate}"
+                RoverDiff.TOTAL_PHOTOS -> totalPhotos.text =
+                        spannable {
+                            typeface(android.graphics.Typeface.BOLD) {
+                                +"Total photos: "
+                            }
+                            +"${item.totalPhotos}"
+
+                        }.toCharSequence()
+
+                RoverDiff.LAST_PHOTO_DATE -> lastPhotoDate.text =
+                        spannable {
+                            typeface(android.graphics.Typeface.BOLD) {
+                                +"Last photo date: "
+                            }
+                            +item.maxDate
+                        }.toCharSequence()
+
+                RoverDiff.LAUNCH_DATE -> launchDate.text =
+                        spannable {
+                            typeface(android.graphics.Typeface.BOLD) {
+                                +"Launch date from Earth: "
+                            }
+                            +item.launchDate
+                        }.toCharSequence()
+
+                RoverDiff.LANDING_DATE -> roverLandingDate.text =
+                        spannable {
+                            typeface(android.graphics.Typeface.BOLD) {
+                                +"Landing date on Mars: "
+                            }
+                            +item.landingDate
+                        }.toCharSequence()
+
                 else -> {
                 }
             }
@@ -54,12 +85,51 @@ class RoversDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDeleg
 
         private fun bindFullInfo(item: Rover) = with(itemView) {
             roverPhoto.loadImage(item.iamgeUrl)
+
             roverName.text = item.name
-            roverStatus.text = "Status: ${item.status}"
-            totalPhotos.text = "Total photos: ${item.totalPhotos}"
-            lastPhotoDate.text = "Last photo date: ${item.maxDate}"
-            launchDate.text = "Launch date from Earth: ${item.launchDate}"
-            roverLandingDate.text = "Landing date on Mars: ${item.landingDate}"
+
+            val statusSpanColor = if ("active".equals(item.status, true)) Color.rgb(85, 139, 47) else Color.RED
+
+            roverStatus.text = spannable {
+                typeface(android.graphics.Typeface.BOLD) {
+                    +"Status: "
+                }
+                color(statusSpanColor) {
+                    +item.status
+                }
+            }.toCharSequence()
+
+            totalPhotos.text =
+                    spannable {
+                        typeface(android.graphics.Typeface.BOLD) {
+                            +"Total photos: "
+                        }
+                        +item.totalPhotos
+                    }.toCharSequence()
+
+            lastPhotoDate.text =
+                    spannable {
+                        typeface(android.graphics.Typeface.BOLD) {
+                            +"Last photo date: "
+                        }
+                        +item.maxDate
+                    }.toCharSequence()
+
+            launchDate.text =
+                    spannable {
+                        typeface(android.graphics.Typeface.BOLD) {
+                            +"Launch date from Earth: "
+                        }
+                        +item.launchDate
+                    }.toCharSequence()
+
+            roverLandingDate.text =
+                    spannable {
+                        typeface(android.graphics.Typeface.BOLD) {
+                            +"Landing date on Mars: "
+                        }
+                        +item.landingDate
+                    }.toCharSequence()
         }
     }
 
