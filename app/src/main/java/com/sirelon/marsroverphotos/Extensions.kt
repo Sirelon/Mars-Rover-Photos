@@ -3,7 +3,9 @@
 package com.sirelon.marsroverphotos
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
@@ -38,6 +40,12 @@ fun Activity.showAppSettings() {
     val uri = Uri.fromParts("package", this.packageName, null)
     intent.data = uri
     this.startActivityForResult(intent, 7898)
+}
+
+fun Activity.isConnected(): Boolean {
+    val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val activeNetwork = connectivityManager.getActiveNetworkInfo()
+    return activeNetwork != null && activeNetwork.isConnectedOrConnecting
 }
 
 // Inline function to create Parcel Creator

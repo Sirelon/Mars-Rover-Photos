@@ -74,13 +74,21 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
     }
 
     private fun loadData() {
-        val subscription = dataManager.getMarsPhotos(queryRequest)
+
+        val subscription = Observable
+                .just(isConnected())
+                .switchMap {
+                    if (it)
+                        dataManager.getMarsPhotos(queryRequest)
+                    else
+                        Observable.error { NoConnectionError() }
+                }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnError(errorConsumer({ loadData() }))
                 .subscribe({
                     (photosList.adapter as ViewTypeAdapter).addData(it)
                 }, Throwable::printStackTrace)
-
 
         subscriptions.add(subscription)
     }

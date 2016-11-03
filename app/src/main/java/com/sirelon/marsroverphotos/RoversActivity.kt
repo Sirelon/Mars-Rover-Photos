@@ -9,6 +9,7 @@ import com.sirelon.marsroverphotos.adapter.ViewTypeAdapter
 import com.sirelon.marsroverphotos.models.OnModelChooseListener
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.ViewType
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_rovers.*
@@ -33,10 +34,23 @@ class RoversActivity : RxActivity(), OnModelChooseListener {
             addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
         }
 
-        val subscription = dataManager.getRovers()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ adapter.addOrReplace(it) }, Throwable::printStackTrace)
+        loadData(adapter)
+    }
+
+    private fun loadData(adapter: ViewTypeAdapter) {
+        val subscription =
+                Observable
+                        .just(isConnected())
+                        .switchMap {
+                            if (it)
+                                dataManager.getRovers()
+                            else
+                                Observable.error { NoConnectionError() }
+                        }
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnError(errorConsumer { loadData(adapter) })
+                        .subscribe({ adapter.addOrReplace(it) }, Throwable::printStackTrace)
 
         subscriptions.add(subscription)
     }
