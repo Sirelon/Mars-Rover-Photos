@@ -4,4 +4,6 @@
     <string name="title_activity_image">ImageActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="share">Share</string>
+    <string name="save">Save</string>
 </resources>

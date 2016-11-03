@@ -2,8 +2,12 @@
 
 package com.sirelon.marsroverphotos
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
+import android.provider.Settings
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
@@ -26,6 +30,14 @@ fun ImageView.loadImage(imageUrl: String?) {
 //        Picasso.with(context).setIndicatorsEnabled(true)
         Picasso.with(context).load(imageUrl).placeholder(R.drawable.img_placeholder).into(this)
     }
+}
+
+fun Activity.showAppSettings() {
+    val intent = Intent()
+    intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+    val uri = Uri.fromParts("package", this.packageName, null)
+    intent.data = uri
+    this.startActivityForResult(intent, 7898)
 }
 
 // Inline function to create Parcel Creator
