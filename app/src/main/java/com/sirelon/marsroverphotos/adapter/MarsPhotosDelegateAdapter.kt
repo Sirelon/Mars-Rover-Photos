@@ -1,7 +1,6 @@
 package com.sirelon.marsroverphotos.adapter
 
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.ViewGroup
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.inflate
@@ -31,8 +30,7 @@ class MarsPhotosDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeD
 
         fun bind(item: MarsPhoto) = with(itemView) {
             photo.loadImage(item.imageUrl)
-            Log.d("Sirelon", "" + item)
-            name.text = item.name
+            cameraName.text = item.camera.fullName
         }
     }
 
