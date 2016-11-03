@@ -1,4 +1,4 @@
-package com.sirelon.marsroverphotos
+package com.sirelon.marsroverphotos.activity
 
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
@@ -6,6 +6,10 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import com.sirelon.marsroverphotos.DataManager
+import com.sirelon.marsroverphotos.NoConnectionError
+import com.sirelon.marsroverphotos.R
+import com.sirelon.marsroverphotos.extensions.isConnected
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Consumer
 import kotlinx.android.synthetic.main.activity_main.*
@@ -29,7 +33,7 @@ open class RxActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_main)
+        menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
 

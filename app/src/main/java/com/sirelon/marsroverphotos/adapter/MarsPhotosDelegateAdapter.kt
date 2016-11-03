@@ -3,8 +3,8 @@ package com.sirelon.marsroverphotos.adapter
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import com.sirelon.marsroverphotos.R
-import com.sirelon.marsroverphotos.inflate
-import com.sirelon.marsroverphotos.loadImage
+import com.sirelon.marsroverphotos.extensions.inflate
+import com.sirelon.marsroverphotos.extensions.loadImage
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.models.OnModelChooseListener
 import com.sirelon.marsroverphotos.models.ViewType

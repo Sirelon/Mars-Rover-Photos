@@ -4,7 +4,7 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.StaggeredGridLayoutManager
 import android.view.ViewGroup
 import com.sirelon.marsroverphotos.R
-import com.sirelon.marsroverphotos.inflate
+import com.sirelon.marsroverphotos.extensions.inflate
 import com.sirelon.marsroverphotos.models.ViewType
 
 /**

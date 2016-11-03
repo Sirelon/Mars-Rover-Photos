@@ -1,4 +1,4 @@
-package com.sirelon.marsroverphotos
+package com.sirelon.marsroverphotos.activity
 
 import android.Manifest
 import android.content.Context
@@ -15,7 +15,9 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.models.MarsPhoto
+import com.sirelon.marsroverphotos.extensions.showAppSettings
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import com.tbruyelle.rxpermissions2.RxPermissions

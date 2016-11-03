@@ -1,6 +1,6 @@
 @file:JvmName("ExtensionsUtils")
 
-package com.sirelon.marsroverphotos
+package com.sirelon.marsroverphotos.extensions
 
 import android.app.Activity
 import android.content.Context
@@ -15,6 +15,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import com.sirelon.marsroverphotos.R
 import com.squareup.picasso.Picasso
 
 /**

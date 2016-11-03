@@ -1,16 +1,17 @@
 package com.sirelon.marsroverphotos.adapter
 
 import android.graphics.Color
+import android.graphics.Typeface
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.adapter.diffutils.RoverDiff
-import com.sirelon.marsroverphotos.inflate
-import com.sirelon.marsroverphotos.loadImage
+import com.sirelon.marsroverphotos.extensions.inflate
+import com.sirelon.marsroverphotos.extensions.loadImage
 import com.sirelon.marsroverphotos.models.OnModelChooseListener
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.ViewType
-import com.sirelon.marsroverphotos.spannable
+import com.sirelon.marsroverphotos.extensions.spannable
 import kotlinx.android.synthetic.main.item_rover.view.*
 
 /**
@@ -47,7 +48,7 @@ class RoversDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDeleg
                 RoverDiff.IMAGE -> roverPhoto.loadImage(item.iamgeUrl)
                 RoverDiff.TOTAL_PHOTOS -> totalPhotos.text =
                         spannable {
-                            typeface(android.graphics.Typeface.BOLD) {
+                            typeface(Typeface.BOLD) {
                                 +"Total photos: "
                             }
                             +"${item.totalPhotos}"
@@ -56,7 +57,7 @@ class RoversDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDeleg
 
                 RoverDiff.LAST_PHOTO_DATE -> lastPhotoDate.text =
                         spannable {
-                            typeface(android.graphics.Typeface.BOLD) {
+                            typeface(Typeface.BOLD) {
                                 +"Last photo date: "
                             }
                             +item.maxDate
@@ -64,7 +65,7 @@ class RoversDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDeleg
 
                 RoverDiff.LAUNCH_DATE -> launchDate.text =
                         spannable {
-                            typeface(android.graphics.Typeface.BOLD) {
+                            typeface(Typeface.BOLD) {
                                 +"Launch date from Earth: "
                             }
                             +item.launchDate
@@ -72,7 +73,7 @@ class RoversDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDeleg
 
                 RoverDiff.LANDING_DATE -> roverLandingDate.text =
                         spannable {
-                            typeface(android.graphics.Typeface.BOLD) {
+                            typeface(Typeface.BOLD) {
                                 +"Landing date on Mars: "
                             }
                             +item.landingDate
@@ -91,7 +92,7 @@ class RoversDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDeleg
             val statusSpanColor = if ("active".equals(item.status, true)) Color.rgb(85, 139, 47) else Color.RED
 
             roverStatus.text = spannable {
-                typeface(android.graphics.Typeface.BOLD) {
+                typeface(Typeface.BOLD) {
                     +"Status: "
                 }
                 color(statusSpanColor) {
@@ -101,7 +102,7 @@ class RoversDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDeleg
 
             totalPhotos.text =
                     spannable {
-                        typeface(android.graphics.Typeface.BOLD) {
+                        typeface(Typeface.BOLD) {
                             +"Total photos: "
                         }
                         +item.totalPhotos
@@ -109,7 +110,7 @@ class RoversDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDeleg
 
             lastPhotoDate.text =
                     spannable {
-                        typeface(android.graphics.Typeface.BOLD) {
+                        typeface(Typeface.BOLD) {
                             +"Last photo date: "
                         }
                         +item.maxDate
@@ -117,7 +118,7 @@ class RoversDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDeleg
 
             launchDate.text =
                     spannable {
-                        typeface(android.graphics.Typeface.BOLD) {
+                        typeface(Typeface.BOLD) {
                             +"Launch date from Earth: "
                         }
                         +item.launchDate
@@ -125,7 +126,7 @@ class RoversDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDeleg
 
             roverLandingDate.text =
                     spannable {
-                        typeface(android.graphics.Typeface.BOLD) {
+                        typeface(Typeface.BOLD) {
                             +"Landing date on Mars: "
                         }
                         +item.landingDate

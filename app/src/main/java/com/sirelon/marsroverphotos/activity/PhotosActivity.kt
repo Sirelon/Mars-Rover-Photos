@@ -1,4 +1,4 @@
-package com.sirelon.marsroverphotos
+package com.sirelon.marsroverphotos.activity
 
 import android.app.DatePickerDialog
 import android.content.Context
@@ -11,9 +11,12 @@ import android.text.TextUtils
 import android.text.TextWatcher
 import android.widget.SeekBar
 import android.widget.Toast
+import com.sirelon.marsroverphotos.NoConnectionError
+import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
 import com.sirelon.marsroverphotos.adapter.MarsPhotosDelegateAdapter
 import com.sirelon.marsroverphotos.adapter.ViewTypeAdapter
+import com.sirelon.marsroverphotos.extensions.isConnected
 import com.sirelon.marsroverphotos.models.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers

@@ -18,7 +18,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerInParent="true"
         android:layout_gravity="center"
-        tools:context="com.sirelon.marsroverphotos.ImageActivity"
+        tools:context="com.sirelon.marsroverphotos.activity.ImageActivity"
         tools:src="@drawable/img_placeholder" />
 
     <ProgressBar

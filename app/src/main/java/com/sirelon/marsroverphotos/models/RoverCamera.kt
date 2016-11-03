@@ -2,7 +2,7 @@ package com.sirelon.marsroverphotos.models
 
 import android.os.Parcel
 import android.os.Parcelable
-import com.sirelon.marsroverphotos.createParcel
+import com.sirelon.marsroverphotos.extensions.createParcel
 import com.squareup.moshi.Json
 
 /**
