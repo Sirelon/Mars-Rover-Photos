@@ -66,7 +66,13 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         } else {
             // New Activity
             rover = intent.getParcelableExtra<Rover>(EXTRA_ROVER)
-            queryRequest = PhotosQueryRequest(rover.name, 1, null)
+
+            // Show random date
+            val random = Random()
+            val min = 1
+            val randomLong = random.nextInt((rover.maxSol - min).toInt() + 1) + min
+
+            queryRequest = PhotosQueryRequest(rover.name, randomLong.toLong(), null)
         }
         dateUtil = RoverDateUtil(rover)
 
