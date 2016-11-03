@@ -22,4 +22,13 @@
         android:text="No connection here"
         android:textColor="?attr/colorPrimaryDark" />
 
+
+    <TextView
+        style="@style/Base.TextAppearance.AppCompat.Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="16dp"
+        android:text="Tap to retry"
+        android:textColor="?attr/colorPrimary" />
 </LinearLayout>

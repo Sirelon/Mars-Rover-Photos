@@ -35,7 +35,7 @@ open class RxActivity : AppCompatActivity() {
                 showNoConnectionView(listener)
             } else {
                 it.printStackTrace()
-                Snackbar.make(activity_main_root, "Erorr ocured: ${it.message}", Snackbar.LENGTH_INDEFINITE)
+                Snackbar.make(activity_main_root, "Error occurred: ${it.message}", Snackbar.LENGTH_INDEFINITE)
                         .setAction("Retry", {
                             subscriptions.clear()
                             listener()
