@@ -107,4 +107,6 @@ class ViewTypeAdapter(var withLoadingView: Boolean = true) : RecyclerView.Adapte
             notifyItemInserted(0)
         }
     }
+
+    fun getData() : ArrayList<ViewType> = items
 }

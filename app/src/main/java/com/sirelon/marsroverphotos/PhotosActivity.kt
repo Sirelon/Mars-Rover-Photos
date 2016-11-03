@@ -28,12 +28,19 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
 
     companion object {
         val EXTRA_ROVER = ".extraRover"
+        val EXTRA_QUERY_REQUEST = ".extraQueryRequest"
 
         fun createIntent(context: Context, rover: Rover): Intent {
             val intent = Intent(context, PhotosActivity::class.java)
             intent.putExtra(EXTRA_ROVER, rover)
             return intent
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        outState?.putParcelable(EXTRA_QUERY_REQUEST, queryRequest)
+        outState?.putParcelable(EXTRA_ROVER, rover)
     }
 
     override fun onModelChoose(model: ViewType) {
@@ -52,8 +59,15 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        rover = intent.getParcelableExtra<Rover>(EXTRA_ROVER)
-        queryRequest = PhotosQueryRequest(rover.name, 1, null)
+        if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_QUERY_REQUEST)) {
+            // Activity after savedInstance
+            rover = savedInstanceState.getParcelable<Rover>(EXTRA_ROVER)
+            queryRequest = savedInstanceState.getParcelable<PhotosQueryRequest>(EXTRA_QUERY_REQUEST)
+        } else {
+            // New Activity
+            rover = intent.getParcelableExtra<Rover>(EXTRA_ROVER)
+            queryRequest = PhotosQueryRequest(rover.name, 1, null)
+        }
         dateUtil = RoverDateUtil(rover)
 
         // Set Toolbar title
@@ -61,14 +75,16 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
 
         initHeaderView()
 
-        photosList.setHasFixedSize(true)
-
-        photosList.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
-
         val adapter = ViewTypeAdapter()
         adapter.addDelegateAdapter(AdapterConstants.MARS_PHOTO, MarsPhotosDelegateAdapter(this))
 
-        photosList.adapter = adapter
+        photosList.apply {
+            setHasFixedSize(true)
+
+            layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+
+            this.adapter = adapter
+        }
 
         loadData()
     }
