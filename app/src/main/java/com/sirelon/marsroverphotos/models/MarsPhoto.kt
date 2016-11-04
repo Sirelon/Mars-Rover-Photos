@@ -38,7 +38,7 @@ data class MarsPhoto(
         dest.writeString(name)
         dest.writeString(imageUrl)
         dest.writeString(earthDate)
-        dest.writeTypedObject(camera, p1)
+        dest.writeParcelable(camera, p1)
     }
 
     override fun describeContents(): Int = 0
@@ -54,6 +54,6 @@ data class MarsPhoto(
             parcel.readString(),
             parcel.readString(),
             parcel.readString(),
-            parcel.readTypedObject(RoverCamera.CREATOR)
+            parcel.readParcelable<RoverCamera>(RoverCamera::class.java.classLoader)
     )
 }
