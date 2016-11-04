@@ -17,6 +17,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import com.sirelon.marsroverphotos.R
 import com.squareup.picasso.Picasso
+import java.util.*
 
 /**
  * @author romanishin
@@ -47,6 +48,12 @@ fun Activity.isConnected(): Boolean {
     val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     val activeNetwork = connectivityManager.getActiveNetworkInfo()
     return activeNetwork != null && activeNetwork.isConnectedOrConnecting
+}
+
+fun Int.random(max: Int): Int {
+    val random = Random()
+    val min = this
+    return random.nextInt((max - min).toInt() + 1) + min
 }
 
 // Inline function to create Parcel Creator

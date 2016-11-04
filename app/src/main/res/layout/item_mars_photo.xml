@@ -7,6 +7,9 @@
     android:layout_margin="4dp"
     android:clickable="true"
     android:foreground="?android:attr/selectableItemBackground"
+    android:paddingBottom="8dp"
+    android:paddingEnd="8dp"
+    android:paddingStart="8dp"
     app:cardCornerRadius="4dp">
 
     <LinearLayout
@@ -28,8 +31,9 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="2dp"
-            tools:text="asdas"
-            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            android:textColor="@android:color/secondary_text_dark"
+            tools:text="asdas" />
 
     </LinearLayout>
 </android.support.v7.widget.CardView>

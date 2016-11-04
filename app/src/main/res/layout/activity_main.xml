@@ -4,7 +4,7 @@
     android:id="@+id/activity_main_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PhotosActivity">
+    tools:context=".activity.PhotosActivity">
 
     <include
         android:id="@+id/item_photo_header"
@@ -14,9 +14,6 @@
         android:id="@+id/photos_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/item_photo_header"
-        android:paddingBottom="8dp"
-        android:paddingEnd="8dp"
-        android:paddingStart="8dp" />
+        android:layout_below="@+id/item_photo_header" />
 
 </RelativeLayout>
