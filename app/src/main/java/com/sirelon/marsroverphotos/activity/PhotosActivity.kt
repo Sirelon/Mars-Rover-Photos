@@ -126,8 +126,13 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
     private fun addAdToData(data: MutableList<ViewType>): Observable<MutableList<ViewType>> {
 
         var step = 30
+
+        if (step >= data.size / 2){
+            return Observable.just(data)
+        }
+
         if (step >= data.size) {
-            step = data.size / 2
+            step = data.size / 2 + 1
         }
 
         IntProgression.fromClosedRange(step, data.size, step).map {
