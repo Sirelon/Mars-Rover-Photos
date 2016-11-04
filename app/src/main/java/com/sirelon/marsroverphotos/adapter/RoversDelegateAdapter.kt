@@ -8,10 +8,10 @@ import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.adapter.diffutils.RoverDiff
 import com.sirelon.marsroverphotos.extensions.inflate
 import com.sirelon.marsroverphotos.extensions.loadImage
+import com.sirelon.marsroverphotos.extensions.spannable
 import com.sirelon.marsroverphotos.models.OnModelChooseListener
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.ViewType
-import com.sirelon.marsroverphotos.extensions.spannable
 import kotlinx.android.synthetic.main.item_rover.view.*
 
 /**
@@ -105,7 +105,7 @@ class RoversDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDeleg
                         typeface(Typeface.BOLD) {
                             +"Total photos: "
                         }
-                        +item.totalPhotos
+                        +"${item.totalPhotos}"
                     }.toCharSequence()
 
             lastPhotoDate.text =

@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.5326087"
-        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteX="196dp"
         tools:layout_editor_absoluteY="0dp" />
 
     <ImageView
@@ -29,7 +29,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:adjustViewBounds="true"
         android:contentDescription=""
         android:cropToPadding="false"
@@ -48,9 +48,9 @@
         android:id="@+id/roverName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginRight="8dp"
         android:layout_marginStart="16dp"
         android:textAlignment="center"
         android:textAllCaps="true"
@@ -86,7 +86,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:lineSpacingExtra="2dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
         app:layout_constraintLeft_toLeftOf="@+id/guideline"
