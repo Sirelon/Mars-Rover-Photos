@@ -14,23 +14,24 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.RoversActivity"
-                  android:label="@string/app_name">
+        <activity
+            android:name=".activity.RoversActivity"
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
 
+                <!--<action android:name="android.intent.action.VIEW" />-->
+                <!--<category android:name="android.intent.category.BROWSABLE" />-->
 
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="marsrovers.com"
-                    android:scheme="http" />
-                <data
-                    android:host="marsrovers"
-                    android:scheme="sirelon" />
+                <!--<data-->
+                    <!--android:host="marsrovers.com"-->
+                    <!--android:scheme="http" />-->
+                <!--<data-->
+                    <!--android:host="marsrovers"-->
+                    <!--android:scheme="sirelon" />-->
             </intent-filter>
         </activity>
         <activity
