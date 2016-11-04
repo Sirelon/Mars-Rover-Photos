@@ -10,5 +10,4 @@ object AdapterConstants {
     val LOADING = 2
     val ROVER = 3
     val HEADER = 4
-    val ADVERTIZING = 4
 }

@@ -15,11 +15,9 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.MobileAds
 import com.sirelon.marsroverphotos.R
-import com.sirelon.marsroverphotos.extensions.showAppSettings
 import com.sirelon.marsroverphotos.models.MarsPhoto
+import com.sirelon.marsroverphotos.extensions.showAppSettings
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import com.tbruyelle.rxpermissions2.RxPermissions
@@ -56,10 +54,6 @@ class ImageActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_image)
-
-        // Configure Ad
-        MobileAds.initialize(this, getString(R.string.ad_application_id))
-        adViewBanner.loadAd(AdRequest.Builder().build())
 
         marsPhoto = intent.getParcelableExtra<MarsPhoto>(EXTRA_PHOTO)
 
