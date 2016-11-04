@@ -149,7 +149,6 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
 
         datePicker.datePicker.maxDate = dateUtil.roverLastDate
         datePicker.datePicker.minDate = dateUtil.roverLandingDate
-
         dateEarthChoose.setOnClickListener {
             // UPDATE TIME
             val timeFromSol = dateUtil.dateFromSol(queryRequest.sol)
@@ -161,6 +160,8 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                     calender.get(Calendar.MONTH),
                     calender.get(Calendar.DAY_OF_MONTH))
 
+            // Hide title. Need to set AFTER all
+            datePicker.setTitle("")
             // SHOW DIALOG
             datePicker.show()
         }
