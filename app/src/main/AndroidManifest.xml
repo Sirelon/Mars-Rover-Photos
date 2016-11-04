@@ -35,7 +35,7 @@
         <activity
             android:name=".activity.PhotosActivity"
             android:parentActivityName=".activity.RoversActivity"
-            tools:targetApi="jelly_bean">
+            tools:ignore="UnusedAttribute">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.RoversActivity" />
@@ -46,7 +46,7 @@
             android:label="@string/title_activity_image"
             android:parentActivityName=".activity.PhotosActivity"
             android:theme="@style/FullscreenTheme"
-            tools:targetApi="jelly_bean">
+            tools:ignore="UnusedAttribute">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.PhotosActivity" />
