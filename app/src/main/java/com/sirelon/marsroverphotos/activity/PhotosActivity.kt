@@ -132,7 +132,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
     }
 
     private fun updateCameraFilter(photos: List<MarsPhoto>) {
-        Observable
+        val camerFilterSub = Observable
                 .fromIterable(photos)
                 .map { it.camera }
                 .distinct()
@@ -147,6 +147,8 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                         adapter = arrayAdapter
                     }
                 }, Throwable::printStackTrace)
+
+        subscriptions.add(camerFilterSub)
     }
 
     private fun initHeaderView() {
