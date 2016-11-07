@@ -9,6 +9,7 @@ import android.support.v7.widget.StaggeredGridLayoutManager
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
+import android.widget.ArrayAdapter
 import android.widget.SeekBar
 import android.widget.Toast
 import com.sirelon.marsroverphotos.NoConnectionError
@@ -124,9 +125,28 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                 .doOnError(errorConsumer({ loadData() }))
                 .subscribe({
                     (photosList.adapter as ViewTypeAdapter).addData(it)
+                    updateCameraFilter(it)
                 }, Throwable::printStackTrace)
 
         subscriptions.add(subscription)
+    }
+
+    private fun updateCameraFilter(photos: List<MarsPhoto>) {
+        Observable
+                .fromIterable(photos)
+                .map { it.camera }
+                .distinct()
+                .map { it.fullName }
+                .toList()
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    photosCamera.apply {
+                        val arrayAdapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, it)
+                        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                        adapter = arrayAdapter
+                    }
+                }, Throwable::printStackTrace)
     }
 
     private fun initHeaderView() {

@@ -12,9 +12,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
+        android:fitsSystemWindows="true"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        android:fitsSystemWindows="true"
         tools:targetApi="lollipop">
 
         <android.support.v7.widget.Toolbar
@@ -23,15 +23,16 @@
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"
             android:elevation="0dp"
+            android:minHeight="?attr/actionBarSize"
             android:stateListAnimator="@null"
             app:elevation="0dp"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            android:minHeight="?attr/actionBarSize">
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
             <Spinner
                 android:id="@+id/photosCamera"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
         </android.support.v7.widget.Toolbar>
 
