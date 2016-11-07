@@ -106,7 +106,6 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
     private fun randomPhotosQueryRequest() = PhotosQueryRequest(rover.name, 1.random(rover.maxSol.toInt()).toLong(), null)
 
     private fun loadData() {
-
         val subscription = Observable
                 .just(isConnected())
                 .switchMap {
