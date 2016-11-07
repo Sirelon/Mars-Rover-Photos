@@ -39,7 +39,10 @@ open class RxActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        if (item?.itemId == R.id.menu_item_about) {
+        if (item?.itemId == android.R.id.home) {
+            finish()
+            return true
+        } else if (item?.itemId == R.id.menu_item_about) {
             startActivity(Intent(this, AboutAppActivity::class.java))
             return true
         } else

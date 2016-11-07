@@ -63,6 +63,11 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+
         if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_QUERY_REQUEST)) {
             // Activity after savedInstance
             rover = savedInstanceState.getParcelable<Rover>(EXTRA_ROVER)
