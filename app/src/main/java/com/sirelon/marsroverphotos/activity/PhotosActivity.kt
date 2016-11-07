@@ -71,7 +71,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
             // New Activity
             rover = intent.getParcelableExtra<Rover>(EXTRA_ROVER)
 
-            queryRequest = PhotosQueryRequest(rover.name, 1.random(rover.maxSol.toInt()).toLong(), null)
+            queryRequest = randomPhotosQueryRequest()
         }
         dateUtil = RoverDateUtil(rover)
 
@@ -91,8 +91,19 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
             this.adapter = adapter
         }
 
+        actionRandom.setOnClickListener {
+            queryRequest = randomPhotosQueryRequest()
+            updateDateSolChoose()
+            updateDateEearthChoose(dateUtil.dateFromSol(queryRequest.sol))
+
+            (photosList.adapter as ViewTypeAdapter).clearAll()
+            loadData()
+        }
+
         loadData()
     }
+
+    private fun randomPhotosQueryRequest() = PhotosQueryRequest(rover.name, 1.random(rover.maxSol.toInt()).toLong(), null)
 
     private fun loadData() {
 
@@ -125,7 +136,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         calender.clear()
 
         val time = dateUtil.dateFromSol(queryRequest.sol)
-        dateEarthChoose.text = "Earth date: ${dateUtil.parseTime(time)}"
+        updateDateEearthChoose(time)
 
         calender.timeInMillis = time
 
@@ -136,7 +147,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                     calender.clear()
                     calender.set(year, monthOfYear, dayOfMonth)
                     val chooseDateMil = calender.timeInMillis
-                    dateEarthChoose.text = "Earth date: ${dateUtil.parseTime(chooseDateMil)}"
+                    updateDateEearthChoose(chooseDateMil)
                     loadDataBySol(dateUtil.solFromDate(chooseDateMil))
                 },
                 calender.get(Calendar.YEAR),
@@ -172,11 +183,11 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                 .setPositiveButton("Ok", {
                     dialogInterface, i ->
                     val sol = dialogView.solInput.text.toString().toLong()
-                    dateEarthChoose.text = "Earth date: ${dateUtil.parseTime(dateUtil.dateFromSol(sol))}"
+                    updateDateEearthChoose(dateUtil.dateFromSol(sol))
                     loadDataBySol(sol)
                 }).create()
 
-        dateSolChoose.text = "Sol date: ${queryRequest.sol}"
+        updateDateSolChoose()
         dateSolChoose.setOnClickListener {
             // Update views
             dialogView.solSeekBar.max = rover.maxSol.toInt()
@@ -236,10 +247,18 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         })
     }
 
-    private fun loadDataBySol(sol: Long) {
-        queryRequest.sol = sol;
-        subscriptions.clear()
+    private fun updateDateSolChoose() {
         dateSolChoose.text = "Sol date: ${queryRequest.sol}"
+    }
+
+    private fun updateDateEearthChoose(time: Long) {
+        dateEarthChoose.text = "Earth date: ${dateUtil.parseTime(time)}"
+    }
+
+    private fun loadDataBySol(sol: Long) {
+        queryRequest.sol = sol
+        subscriptions.clear()
+        updateDateSolChoose()
         // Clear adapter
         (photosList.adapter as ViewTypeAdapter).clearAll()
         loadData()
