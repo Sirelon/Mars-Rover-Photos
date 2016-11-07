@@ -9,6 +9,8 @@ import android.support.v7.widget.StaggeredGridLayoutManager
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
+import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.SeekBar
 import android.widget.Toast
@@ -84,6 +86,15 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         // Set Toolbar title
         title = "${rover.name}'s photos"
 
+        photosCamera.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+            }
+
+            override fun onItemSelected(p0: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                filterDataByCamera(position)
+            }
+        }
+
         initHeaderView()
 
         val adapter = ViewTypeAdapter()
@@ -142,6 +153,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     photosCamera.apply {
+                        it.add(0, "All cameras")
                         val arrayAdapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, it)
                         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                         adapter = arrayAdapter
@@ -149,6 +161,33 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                 }, Throwable::printStackTrace)
 
         subscriptions.add(camerFilterSub)
+    }
+
+    private fun filterDataByCamera(position: Int) {
+
+        var dataList = (photosList.adapter as ViewTypeAdapter).getSavedData()
+        if (position == 0) {
+            if (dataList == null)
+                return
+
+            (photosList.adapter as ViewTypeAdapter).clearAll()
+            (photosList.adapter as ViewTypeAdapter).addData(dataList)
+            return
+        }
+
+        if (dataList == null)
+            dataList = (photosList.adapter as ViewTypeAdapter).getData()
+
+        val cameraFullName: String? = photosCamera.adapter.getItem(position).toString()
+
+        val filteredData = dataList.filter {
+            if (it is MarsPhoto) {
+                it.camera.fullName.equals(cameraFullName)
+            } else
+                false
+        }
+
+        (photosList.adapter as ViewTypeAdapter).applyFilteredData(filteredData)
     }
 
     private fun initHeaderView() {
