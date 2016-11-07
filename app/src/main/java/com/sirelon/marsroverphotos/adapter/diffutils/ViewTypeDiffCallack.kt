@@ -16,8 +16,6 @@ class ViewTypeDiffCallack(val oldData: List<ViewType>, val newData: List<ViewTyp
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         val newItem = newData[newItemPosition]
         val oldItem = oldData[oldItemPosition]
-        val a1 = newItem.hashCode()
-        val a2 = oldItem.hashCode()
 
         return newItem.hashCode() == oldItem.hashCode()
     }
