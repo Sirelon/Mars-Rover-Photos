@@ -1,8 +1,10 @@
 package com.sirelon.marsroverphotos.adapter
 
 import android.support.v4.util.SparseArrayCompat
+import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
+import com.sirelon.marsroverphotos.adapter.diffutils.ViewTypeDiffCallack
 import com.sirelon.marsroverphotos.adapter.diffutils.getChangePayload
 import com.sirelon.marsroverphotos.adapter.headers.HeaderViewType
 import com.sirelon.marsroverphotos.models.ViewType
@@ -119,7 +121,13 @@ class ViewTypeAdapter(var withLoadingView: Boolean = true) : RecyclerView.Adapte
         if (savedItems == null)
             savedItems = ArrayList(items)
 
-        clearAll()
-        addData(filteredData)
+        replaceData(filteredData)
+    }
+
+    fun replaceData(newData: List<ViewType>) {
+        DiffUtil.calculateDiff(ViewTypeDiffCallack(items, newData)).dispatchUpdatesTo(this)
+
+        items.clear()
+        items.addAll(newData)
     }
 }
