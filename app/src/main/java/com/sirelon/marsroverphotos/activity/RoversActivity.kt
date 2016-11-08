@@ -32,7 +32,9 @@ class RoversActivity : RxActivity(), OnModelChooseListener {
 
         roversList.apply {
             setHasFixedSize(true)
+
             layoutManager = LinearLayoutManager(this@RoversActivity)
+
             this.adapter = adapter
             addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
         }

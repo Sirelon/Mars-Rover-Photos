@@ -9,6 +9,9 @@ import android.support.v7.widget.StaggeredGridLayoutManager
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.SeekBar
 import android.widget.Toast
 import com.sirelon.marsroverphotos.NoConnectionError
@@ -63,6 +66,11 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+
         if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_QUERY_REQUEST)) {
             // Activity after savedInstance
             rover = savedInstanceState.getParcelable<Rover>(EXTRA_ROVER)
@@ -77,6 +85,15 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
 
         // Set Toolbar title
         title = "${rover.name}'s photos"
+
+        photosCamera.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+            }
+
+            override fun onItemSelected(p0: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                filterDataByCamera(position)
+            }
+        }
 
         initHeaderView()
 
@@ -106,7 +123,6 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
     private fun randomPhotosQueryRequest() = PhotosQueryRequest(rover.name, 1.random(rover.maxSol.toInt()).toLong(), null)
 
     private fun loadData() {
-
         val subscription = Observable
                 .just(isConnected())
                 .switchMap {
@@ -120,9 +136,58 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                 .doOnError(errorConsumer({ loadData() }))
                 .subscribe({
                     (photosList.adapter as ViewTypeAdapter).addData(it)
+                    updateCameraFilter(it)
                 }, Throwable::printStackTrace)
 
         subscriptions.add(subscription)
+    }
+
+    private fun updateCameraFilter(photos: List<MarsPhoto>) {
+        val camerFilterSub = Observable
+                .fromIterable(photos)
+                .map { it.camera }
+                .distinct()
+                .map { it.fullName }
+                .toList()
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    photosCamera.apply {
+                        it.add(0, "All cameras")
+                        val arrayAdapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, it)
+                        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                        adapter = arrayAdapter
+                    }
+                }, Throwable::printStackTrace)
+
+        subscriptions.add(camerFilterSub)
+    }
+
+    private fun filterDataByCamera(position: Int) {
+
+        var dataList = (photosList.adapter as ViewTypeAdapter).getSavedData()
+        if (position == 0) {
+            if (dataList == null)
+                return
+
+            (photosList.adapter as ViewTypeAdapter).clearAll()
+            (photosList.adapter as ViewTypeAdapter).addData(dataList)
+            return
+        }
+
+        if (dataList == null)
+            dataList = (photosList.adapter as ViewTypeAdapter).getData()
+
+        val cameraFullName: String? = photosCamera.adapter.getItem(position).toString()
+
+        val filteredData = dataList.filter {
+            if (it is MarsPhoto) {
+                it.camera.fullName.equals(cameraFullName)
+            } else
+                false
+        }
+
+        (photosList.adapter as ViewTypeAdapter).applyFilteredData(filteredData)
     }
 
     private fun initHeaderView() {

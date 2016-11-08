@@ -37,6 +37,7 @@
         <activity
             android:name=".activity.PhotosActivity"
             android:parentActivityName=".activity.RoversActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             tools:ignore="UnusedAttribute">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

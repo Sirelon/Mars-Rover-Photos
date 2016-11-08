@@ -1,10 +1,8 @@
 package com.sirelon.marsroverphotos.activity
 
 import android.content.Intent
-import android.provider.Settings
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -41,14 +39,17 @@ open class RxActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        if (item?.itemId == R.id.menu_item_about) {
+        if (item?.itemId == android.R.id.home) {
+            finish()
+            return true
+        } else if (item?.itemId == R.id.menu_item_about) {
             startActivity(Intent(this, AboutAppActivity::class.java))
             return true
         } else
             return super.onOptionsItemSelected(item)
     }
 
-    val dataManager by lazy { DataManager() }
+    val dataManager by lazy { DataManager(this) }
 
     fun errorConsumer(listener: () -> Unit): Consumer<in Throwable> {
         return Consumer<Throwable> {
