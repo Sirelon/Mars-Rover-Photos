@@ -14,9 +14,11 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.SeekBar
 import android.widget.Toast
+import com.google.android.gms.ads.MobileAds
 import com.sirelon.marsroverphotos.NoConnectionError
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
+import com.sirelon.marsroverphotos.adapter.AdsDelegateAdapter
 import com.sirelon.marsroverphotos.adapter.MarsPhotosDelegateAdapter
 import com.sirelon.marsroverphotos.adapter.ViewTypeAdapter
 import com.sirelon.marsroverphotos.extensions.isConnected
@@ -100,6 +102,10 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         val adapter = ViewTypeAdapter()
         adapter.addDelegateAdapter(AdapterConstants.MARS_PHOTO, MarsPhotosDelegateAdapter(this))
 
+        // Configurate ads
+        MobileAds.initialize(this, getString(R.string.ad_application_id))
+        adapter.addDelegateAdapter(AdapterConstants.ADVERTIZING, AdsDelegateAdapter())
+
         photosList.apply {
             setHasFixedSize(true)
 
@@ -134,6 +140,9 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnError(errorConsumer({ loadData() }))
+
+                .switchMap { addAdToData(it as MutableList<ViewType>) }
+
                 .subscribe({
                     (photosList.adapter as ViewTypeAdapter).addData(it)
                     updateCameraFilter(it)
@@ -142,9 +151,31 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         subscriptions.add(subscription)
     }
 
-    private fun updateCameraFilter(photos: List<MarsPhoto>) {
+    private fun addAdToData(data: MutableList<ViewType>): Observable<MutableList<ViewType>> {
+
+        var step = 30
+
+        if (step >= data.size / 2){
+            return Observable.just(data)
+        }
+
+        if (step >= data.size) {
+            step = data.size / 2 + 1
+        }
+
+        IntProgression.fromClosedRange(step, data.size, step).map {
+            val advertizingItem = object : ViewType {
+                override fun getViewType(): Int = AdapterConstants.ADVERTIZING
+            }
+            data.add(it, advertizingItem)
+        }
+        return Observable.just(data)
+    }
+
+    private fun updateCameraFilter(photos: List<ViewType>) {
         val camerFilterSub = Observable
                 .fromIterable(photos)
+                .map { it as MarsPhoto }
                 .map { it.camera }
                 .distinct()
                 .map { it.fullName }

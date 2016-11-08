@@ -7,4 +7,9 @@
     <string name="share">Share</string>
     <string name="save">Save</string>
     <string name="all_rights_reserved_fmt">All rights reserved \u00A9 %s</string>
+
+    <string name="ad_image_activity">ca-app-pub-7516059448019339/4793138602</string>
+    <string name="ad_item_photo">ca-app-pub-7516059448019339/3235680204</string>
+    <string name="ad_application_id">ca-app-pub-7516059448019339~6607949007</string>
+
 </resources>
