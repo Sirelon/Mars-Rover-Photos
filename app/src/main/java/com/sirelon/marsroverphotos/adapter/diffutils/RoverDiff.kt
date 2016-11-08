@@ -8,7 +8,6 @@ import java.util.*
  * @author romanishin
  * @since 01.11.16 on 12:31
  */
-
 fun getChangePayload(oldModel: ViewType, newModel: ViewType): ArrayList<Int>? {
     if (oldModel is Rover && newModel is Rover)
         return getChangePayload(oldModel as Rover, newModel as Rover)

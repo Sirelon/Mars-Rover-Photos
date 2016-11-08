@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos
 
+import android.content.Context
 import android.util.Log
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.models.PhotosQueryRequest
@@ -12,7 +13,7 @@ import io.reactivex.schedulers.Schedulers
  * @author romanishin
  * @since 31.10.16 on 12:43
  */
-class DataManager(private val api: RestApi = RestApi()) {
+class DataManager(val context: Context, private val api: RestApi = RestApi()) {
 
     fun getMarsPhotos(queryRequest: PhotosQueryRequest): Observable<MutableList<MarsPhoto>> {
         return Observable.create {
@@ -59,6 +60,9 @@ class DataManager(private val api: RestApi = RestApi()) {
                             newRover.maxSol = roverResponse.maxSol
                             newRover.totalPhotos = roverResponse.totalPhotos
                             newRover.status = roverResponse.status
+
+                            roverRepo.saveRover(newRover)
+
                             subscription.onNext(newRover)
                         }
                     }
@@ -66,41 +70,9 @@ class DataManager(private val api: RestApi = RestApi()) {
         })
     }
 
-    private fun localRovers(): List<Rover> {
-        return mutableListOf(
-                Rover(
-                        5,
-                        "Curiosity",
-                        "http://estaticos.muyinteresante.es/uploads/images/article/55365b6b34099b0279c8fa99/marte-curiosity.jpg",
-                        "2012-08-06",
-                        "2011-11-26",
-                        "active",
-                        1505,
-                        "2016-10-30",
-                        285665
-                ),
-                Rover(
-                        6,
-                        "Opportunity",
-                        "http://www.spaceflightinsider.com/wp-content/uploads/2015/01/Mars-Exploration-Rover-Spirit-Opportunity-surface-of-Red-Planet-NASA-image-posted-on-SpaceFlight-Insider-647x518.jpg",
-                        "2004-01-25",
-                        "2003-07-07",
-                        "active",
-                        4535,
-                        "2016-10-27",
-                        184544
-                ),
-                Rover(
-                        7,
-                        "Spirit",
-                        "http://www.exploratorium.edu/mars/images/rover1_br.jpg",
-                        "2004-01-04",
-                        "2003-06-10",
-                        "complete",
-                        2208,
-                        "2010-03-21",
-                        124550
-                )
-        )
+    private fun localRovers(): List<Rover> = roverRepo.getAllRovers()
+
+    val roverRepo by lazy {
+        RoversRepository(context)
     }
 }

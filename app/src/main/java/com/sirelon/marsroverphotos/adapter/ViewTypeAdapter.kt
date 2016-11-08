@@ -1,8 +1,10 @@
 package com.sirelon.marsroverphotos.adapter
 
 import android.support.v4.util.SparseArrayCompat
+import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
+import com.sirelon.marsroverphotos.adapter.diffutils.ViewTypeDiffCallack
 import com.sirelon.marsroverphotos.adapter.diffutils.getChangePayload
 import com.sirelon.marsroverphotos.adapter.headers.HeaderViewType
 import com.sirelon.marsroverphotos.models.ViewType
@@ -13,6 +15,9 @@ import java.util.*
  * @since 31.10.16 on 11:32
  */
 class ViewTypeAdapter(var withLoadingView: Boolean = true) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    private var savedItems: ArrayList<ViewType>? = null
+
     private var items: ArrayList<ViewType>
     private var delegates = SparseArrayCompat<ViewTypeDelegateAdapter?>()
     private val loadingItem = object : ViewType {
@@ -60,7 +65,7 @@ class ViewTypeAdapter(var withLoadingView: Boolean = true) : RecyclerView.Adapte
 
             // insert news and the loading at the end of the list
             items.addAll(data)
-            
+
 //            items.add(loadingItem)
 //            notifyItemRangeChanged(initPosition, items.size + 1 /* plus loading item */)
         } else {
@@ -108,5 +113,21 @@ class ViewTypeAdapter(var withLoadingView: Boolean = true) : RecyclerView.Adapte
         }
     }
 
-    fun getData() : ArrayList<ViewType> = items
+    fun getData(): ArrayList<ViewType> = items
+
+    fun getSavedData(): ArrayList<ViewType>? = savedItems
+
+    fun applyFilteredData(filteredData: List<ViewType>) {
+        if (savedItems == null)
+            savedItems = ArrayList(items)
+
+        replaceData(filteredData)
+    }
+
+    fun replaceData(newData: List<ViewType>) {
+        DiffUtil.calculateDiff(ViewTypeDiffCallack(items, newData)).dispatchUpdatesTo(this)
+
+        items.clear()
+        items.addAll(newData)
+    }
 }
