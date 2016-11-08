@@ -27,7 +27,7 @@
             android:textColor="?attr/colorPrimaryDark" />
 
         <TextView
-            style="@style/Base.TextAppearance.AppCompat.Title"
+            style="@style/Base.TextAppearance.AppCompat.Body2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
