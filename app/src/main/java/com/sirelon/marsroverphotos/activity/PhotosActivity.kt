@@ -141,7 +141,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnError(errorConsumer({ loadData() }))
 
-                .switchMap { addAdToData(it as MutableList<ViewType>) }
+                .switchMap { addAdToData(it) }
 
                 .subscribe({
                     (photosList.adapter as ViewTypeAdapter).addData(it)
@@ -151,11 +151,13 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         subscriptions.add(subscription)
     }
 
-    private fun addAdToData(data: MutableList<ViewType>): Observable<MutableList<ViewType>> {
+    private fun addAdToData(data: List<ViewType>): Observable<List<ViewType>> {
 
-        var step = 30
+        data as MutableList<ViewType>
 
-        if (step >= data.size / 2){
+        var step = 23
+
+        if (step >= data.size / 2) {
             return Observable.just(data)
         }
 
@@ -175,6 +177,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
     private fun updateCameraFilter(photos: List<ViewType>) {
         val camerFilterSub = Observable
                 .fromIterable(photos)
+                .filter { it is MarsPhoto }
                 .map { it as MarsPhoto }
                 .map { it.camera }
                 .distinct()
@@ -218,7 +221,10 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                 false
         }
 
-        (photosList.adapter as ViewTypeAdapter).applyFilteredData(filteredData)
+        // Add ad data to list
+        addAdToData(filteredData)
+                .subscribe({ (photosList.adapter as ViewTypeAdapter).applyFilteredData(it) }, {})
+
     }
 
     private fun initHeaderView() {
