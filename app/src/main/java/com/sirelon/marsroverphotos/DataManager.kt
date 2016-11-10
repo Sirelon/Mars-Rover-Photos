@@ -19,12 +19,13 @@ class DataManager(val context: Context, private val api: RestApi = RestApi()) {
         return Observable.fromCallable {
             val callResponse = api.getRoversPhotos(queryRequest)
             val response = callResponse.execute()
-            response.body().photos
+            if (response.isSuccessful)
+                response.body().photos
+            else null
         }
     }
 
     fun getRovers(): Observable<Rover> {
-
         return Observable
                 .fromIterable(localRovers())
                 .flatMap {
@@ -36,17 +37,20 @@ class DataManager(val context: Context, private val api: RestApi = RestApi()) {
                             Observable.fromCallable {
                                 val callResponse = api.getRoverInfo(it.name)
                                 val response = callResponse.execute()
-                                Log.w("Sirelon", "Response is " + response.body().roverInfo)
-                                val roverResponse = response.body().roverInfo
-                                val newRover = it.copy()
+                                if (response.isSuccessful) {
+                                    Log.w("Sirelon", "Response is " + response.body().roverInfo)
+                                    val roverResponse = response.body().roverInfo
+                                    val newRover = it.copy()
 
-                                newRover.landingDate = roverResponse.landingDate
-                                newRover.launchDate = roverResponse.launchDate
-                                newRover.maxDate = roverResponse.maxDate
-                                newRover.maxSol = roverResponse.maxSol
-                                newRover.totalPhotos = roverResponse.totalPhotos
-                                newRover.status = roverResponse.status
-                                newRover
+                                    newRover.landingDate = roverResponse.landingDate
+                                    newRover.launchDate = roverResponse.launchDate
+                                    newRover.maxDate = roverResponse.maxDate
+                                    newRover.maxSol = roverResponse.maxSol
+                                    newRover.totalPhotos = roverResponse.totalPhotos
+                                    newRover.status = roverResponse.status
+                                    newRover
+                                } else
+                                    null
                             }.subscribeOn(Schedulers.newThread())
                     )
                 }

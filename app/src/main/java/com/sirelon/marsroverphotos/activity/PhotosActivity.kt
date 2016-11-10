@@ -123,6 +123,8 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
     private fun randomPhotosQueryRequest() = PhotosQueryRequest(rover.name, 1.random(rover.maxSol.toInt()).toLong(), null)
 
     private fun loadData() {
+        subscriptions.clear()
+
         val subscription = Observable
                 .just(isConnected())
                 .switchMap {
@@ -134,6 +136,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnError(errorConsumer({ loadData() }))
+                .filter { list -> list != null }
                 .subscribe({
                     (photosList.adapter as ViewTypeAdapter).addData(it)
                     updateCameraFilter(it)
@@ -322,7 +325,6 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
 
     private fun loadDataBySol(sol: Long) {
         queryRequest.sol = sol
-        subscriptions.clear()
         updateDateSolChoose()
         // Clear adapter
         (photosList.adapter as ViewTypeAdapter).clearAll()
