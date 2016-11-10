@@ -35,7 +35,8 @@
                 android:ellipsize="marquee"
                 android:marqueeRepeatLimit="marquee_forever"
                 android:scrollHorizontally="true"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+                app:popupTheme="@style/ThemeOverlay.AppCompat"
+                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
         </android.support.v7.widget.Toolbar>
 

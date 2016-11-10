@@ -158,7 +158,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                     photosCamera.apply {
                         it.add(0, "All cameras")
                         val arrayAdapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, it)
-                        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                        arrayAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
                         adapter = arrayAdapter
                     }
                 }, Throwable::printStackTrace)
