@@ -45,7 +45,7 @@ class RoversDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDeleg
 
         private fun bindByPayload(item: Rover, payloadFinal: Any?) = with(itemView) {
             when (payloadFinal) {
-                RoverDiff.IMAGE -> roverPhoto.loadImage(item.iamgeUrl)
+                RoverDiff.IMAGE -> roverPhoto loadImage item.iamgeUrl
                 RoverDiff.TOTAL_PHOTOS -> totalPhotos.text =
                         spannable {
                             typeface(Typeface.BOLD) {
