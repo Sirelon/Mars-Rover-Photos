@@ -1,26 +1,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    xmlns:ads="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fullscreenImageRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0099cc">
-
+    android:background="#0099cc"
+    android:orientation="vertical">
 
     <android.support.v4.view.ViewPager
         android:id="@+id/imagePager"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        ads:layout_constraintBottom_toBottomOf="parent"
-        ads:layout_constraintHorizontal_bias="0.0"
-        ads:layout_constraintLeft_toLeftOf="parent"
-        ads:layout_constraintRight_toRightOf="parent"
-        ads:layout_constraintTop_toTopOf="parent"
-        ads:layout_constraintVertical_bias="1.0"
-        tools:layout_constraintLeft_creator="1"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintTop_creator="1" />
+        android:layout_height="wrap_content" />
 
     <!--<include-->
     <!--layout="@layout/view_image"-->

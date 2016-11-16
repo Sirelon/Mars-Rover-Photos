@@ -20,7 +20,6 @@ class DataManager(val context: Context, private val api: RestApi = RestApi()) {
      */
     var lastPhotosRequest: Observable<MutableList<MarsPhoto>?>? = null
 
-
     fun loadMarsPhotos(queryRequest: PhotosQueryRequest): Observable<MutableList<MarsPhoto>?> {
         val mainObservable = Observable.fromCallable {
             val callResponse = api.getRoversPhotos(queryRequest)
