@@ -53,7 +53,7 @@ class ImageActivity : RxActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        dataManager.lastPhotosRequest.subscribe({ Log.w("Sirelon", "ONSUBSCRTIBE IMAGE + $it") }, { it.printStackTrace() })
+        dataManager.lastPhotosRequest?.subscribe({ Log.w("Sirelon", "ONSUBSCRTIBE IMAGE + $it") }, { it.printStackTrace() })
 
         setContentView(R.layout.activity_image)
 

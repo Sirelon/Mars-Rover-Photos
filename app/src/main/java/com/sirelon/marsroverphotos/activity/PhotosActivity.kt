@@ -125,7 +125,17 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
     private fun loadData() {
         subscriptions.clear()
 
-        val subscription = Observable
+        val subscription = photosObservable.subscribe({
+            it!!
+            (photosList.adapter as ViewTypeAdapter).addData(it)
+            updateCameraFilter(it)
+        }, Throwable::printStackTrace)
+
+        subscriptions.add(subscription)
+    }
+
+    val photosObservable: Observable<MutableList<MarsPhoto>> by lazy {
+        Observable
                 .just(isConnected())
                 .switchMap {
                     if (it)
@@ -137,13 +147,6 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnError(errorConsumer({ loadData() }))
                 .filter { it != null }
-                .subscribe({
-                    it!!
-                    (photosList.adapter as ViewTypeAdapter).addData(it)
-                    updateCameraFilter(it)
-                }, Throwable::printStackTrace)
-
-        subscriptions.add(subscription)
     }
 
     private fun updateCameraFilter(photos: List<MarsPhoto>) {

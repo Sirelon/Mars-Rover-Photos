@@ -15,10 +15,11 @@ import io.reactivex.schedulers.Schedulers
  */
 class DataManager(val context: Context, private val api: RestApi = RestApi()) {
 
-    lateinit var lastPhotosRequest: Observable<MutableList<MarsPhoto>?>
+    var lastPhotosRequest: Observable<MutableList<MarsPhoto>?>? = null
 
-    fun loadMarsPhotos(queryRequest: PhotosQueryRequest): Observable<MutableList<MarsPhoto>?> {
-        val mainObserver = Observable.fromCallable {
+    fun loadMarsPhotos(queryRequest: PhotosQueryRequest): Observable<MutableList<MarsPhoto>> {
+//        val mainObserver =
+        return Observable.fromCallable {
             val callResponse = api.getRoversPhotos(queryRequest)
             val response = callResponse.execute()
             Log.e("Sirelon", "loadMarsPhotos RESPONSE " + response)
@@ -27,9 +28,11 @@ class DataManager(val context: Context, private val api: RestApi = RestApi()) {
             else null
         }
 
-        lastPhotosRequest = mainObserver.cache()
-        return lastPhotosRequest
+//        lastPhotosRequest = mainObserver.cache()
+//        return lastPhotosRequest
+//        return mainObserver
     }
+
 
     fun getRovers(): Observable<Rover> {
         return Observable
