@@ -12,16 +12,22 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.widget.ShareActionProvider
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import com.sirelon.marsroverphotos.R
+import com.sirelon.marsroverphotos.extensions.inflate
 import com.sirelon.marsroverphotos.extensions.showAppSettings
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.widget.ViewsPagerAdapter
+import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.activity_about_app.*
 import kotlinx.android.synthetic.main.activity_image.*
+import kotlinx.android.synthetic.main.view_image.view.*
+import uk.co.senab.photoview.PhotoViewAttacher
 
 class ImageActivity : RxActivity() {
 
@@ -57,32 +63,47 @@ class ImageActivity : RxActivity() {
 //        Photo id ${marsPhoto.id}.
         title = "Mars photo"
 
-        dataManager.lastPhotosRequest?.subscribe(
-                {
-                    imagePager.adapter = ViewsPagerAdapter(this, it)
-                    it?.let {
-                        val index = it.indexOf(marsPhoto)
-                        imagePager.currentItem = index
-                    }
-                },
-                { it.printStackTrace() })
+        if (dataManager.lastPhotosRequest == null) {
+            showStandaloneImage()
+        } else {
+            dataManager.lastPhotosRequest?.subscribe(
+                    {
+                        imagePager.adapter = ViewsPagerAdapter(this, it)
+                        it?.let {
+                            val index = it.indexOf(marsPhoto)
+                            imagePager.currentItem = index
+                        }
+                    },
+                    {
+                        it.printStackTrace()
+                        // Show Standalone Image
+                        showStandaloneImage()
+                    })
+        }
+    }
 
+    private fun showStandaloneImage() {
+        fullscreenImageRoot.removeView(imagePager)
 
-//        val photoViewAttacher = PhotoViewAttacher(fullscreenImage)
-//
-//        Picasso.with(this).load(marsPhoto.imageUrl).into(fullscreenImage, object : Callback {
-//            override fun onSuccess() {
-//                fullscreenImageProgress.visibility = View.GONE
-//                photoViewAttacher.update()
-//            }
-//
-//            override fun onError() {
-//                fullscreenImageProgress.visibility = View.GONE
-//                Snackbar.make(fullscreenImageRoot, "Cannot show this image", Snackbar.LENGTH_INDEFINITE)
-//                        .setAction("Close", { finish() })
-//                        .show()
-//            }
-//        })
+        val imageRoot = fullscreenImageRoot.inflate(R.layout.view_image, false)
+
+        fullscreenImageRoot.addView(imageRoot)
+
+        val photoViewAttacher = PhotoViewAttacher(imageRoot.fullscreenImage)
+
+        Picasso.with(this).load(marsPhoto.imageUrl).tag(marsPhoto.id).into(imageRoot.fullscreenImage, object : Callback {
+            override fun onSuccess() {
+                imageRoot.fullscreenImageProgress.visibility = View.GONE
+                photoViewAttacher.update()
+            }
+
+            override fun onError() {
+                imageRoot.fullscreenImageProgress.visibility = View.GONE
+                Snackbar.make(imageView.rootView, "Cannot show this image", Snackbar.LENGTH_INDEFINITE)
+                        .setAction("Close", { finish() })
+                        .show()
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

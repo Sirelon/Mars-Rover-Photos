@@ -1,4 +1,5 @@
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fullscreenImageRoot"
@@ -17,7 +18,6 @@
         ads:layout_constraintRight_toRightOf="parent"
         ads:layout_constraintTop_toTopOf="parent"
         ads:layout_constraintVertical_bias="1.0"
-        tools:background="@color/colorPrimaryDark"
         tools:layout_constraintLeft_creator="1"
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintTop_creator="1" />
@@ -27,5 +27,5 @@
     <!--android:layout_width="0dp"-->
     <!--android:layout_height="0dp" />-->
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>
 
