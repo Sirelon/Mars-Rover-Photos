@@ -6,33 +6,26 @@
     android:layout_height="match_parent"
     android:background="#0099cc">
 
-    <uk.co.senab.photoview.PhotoView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/fullscreenImage"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/imagePager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        ads:layout_constraintBottom_toBottomOf="parent"
         ads:layout_constraintHorizontal_bias="0.0"
         ads:layout_constraintLeft_toLeftOf="parent"
         ads:layout_constraintRight_toRightOf="parent"
         ads:layout_constraintTop_toTopOf="parent"
         ads:layout_constraintVertical_bias="1.0"
-        tools:context="com.sirelon.marsroverphotos.activity.ImageActivity"
+        tools:background="@color/colorPrimaryDark"
         tools:layout_constraintLeft_creator="1"
         tools:layout_constraintRight_creator="1"
-        tools:layout_constraintTop_creator="1"
-        tools:src="@drawable/img_placeholder"
-        ads:layout_constraintBottom_toBottomOf="parent" />
+        tools:layout_constraintTop_creator="1" />
 
-    <ProgressBar
-        android:id="@+id/fullscreenImageProgress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        ads:layout_constraintLeft_toLeftOf="parent"
-        ads:layout_constraintRight_toRightOf="parent"
-        ads:layout_constraintTop_toTopOf="@+id/fullscreenImage"
-        tools:layout_constraintLeft_creator="1"
-        tools:layout_constraintRight_creator="1"
-        ads:layout_constraintBottom_toBottomOf="parent" />
+    <!--<include-->
+    <!--layout="@layout/view_image"-->
+    <!--android:layout_width="0dp"-->
+    <!--android:layout_height="0dp" />-->
 
 </android.support.constraint.ConstraintLayout>
 

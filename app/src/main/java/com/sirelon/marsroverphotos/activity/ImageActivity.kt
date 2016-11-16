@@ -10,21 +10,18 @@ import android.support.design.widget.Snackbar
 import android.support.v4.view.MenuItemCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.ShareActionProvider
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.Toast
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.extensions.showAppSettings
 import com.sirelon.marsroverphotos.models.MarsPhoto
-import com.squareup.picasso.Callback
+import com.sirelon.marsroverphotos.widget.ViewsPagerAdapter
 import com.squareup.picasso.Picasso
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_image.*
-import uk.co.senab.photoview.PhotoViewAttacher
 
 class ImageActivity : RxActivity() {
 
@@ -53,8 +50,6 @@ class ImageActivity : RxActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        dataManager.lastPhotosRequest?.subscribe({ Log.w("Sirelon", "ONSUBSCRTIBE IMAGE + $it") }, { it.printStackTrace() })
-
         setContentView(R.layout.activity_image)
 
         marsPhoto = intent.getParcelableExtra<MarsPhoto>(EXTRA_PHOTO)
@@ -62,21 +57,26 @@ class ImageActivity : RxActivity() {
 //        Photo id ${marsPhoto.id}.
         title = "Mars photo"
 
-        val photoViewAttacher = PhotoViewAttacher(fullscreenImage)
+        dataManager.lastPhotosRequest?.subscribe(
+                {imagePager.adapter = ViewsPagerAdapter(this, it)},
+                { it.printStackTrace() })
 
-        Picasso.with(this).load(marsPhoto.imageUrl).into(fullscreenImage, object : Callback {
-            override fun onSuccess() {
-                fullscreenImageProgress.visibility = View.GONE
-                photoViewAttacher.update()
-            }
 
-            override fun onError() {
-                fullscreenImageProgress.visibility = View.GONE
-                Snackbar.make(fullscreenImageRoot, "Cannot show this image", Snackbar.LENGTH_INDEFINITE)
-                        .setAction("Close", { finish() })
-                        .show()
-            }
-        })
+//        val photoViewAttacher = PhotoViewAttacher(fullscreenImage)
+//
+//        Picasso.with(this).load(marsPhoto.imageUrl).into(fullscreenImage, object : Callback {
+//            override fun onSuccess() {
+//                fullscreenImageProgress.visibility = View.GONE
+//                photoViewAttacher.update()
+//            }
+//
+//            override fun onError() {
+//                fullscreenImageProgress.visibility = View.GONE
+//                Snackbar.make(fullscreenImageRoot, "Cannot show this image", Snackbar.LENGTH_INDEFINITE)
+//                        .setAction("Close", { finish() })
+//                        .show()
+//            }
+//        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
