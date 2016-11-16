@@ -58,7 +58,13 @@ class ImageActivity : RxActivity() {
         title = "Mars photo"
 
         dataManager.lastPhotosRequest?.subscribe(
-                {imagePager.adapter = ViewsPagerAdapter(this, it)},
+                {
+                    imagePager.adapter = ViewsPagerAdapter(this, it)
+                    it?.let {
+                        val index = it.indexOf(marsPhoto)
+                        imagePager.currentItem = index
+                    }
+                },
                 { it.printStackTrace() })
 
 
