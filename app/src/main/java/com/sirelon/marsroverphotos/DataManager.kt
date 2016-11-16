@@ -15,14 +15,20 @@ import io.reactivex.schedulers.Schedulers
  */
 class DataManager(val context: Context, private val api: RestApi = RestApi()) {
 
-    fun getMarsPhotos(queryRequest: PhotosQueryRequest): Observable<MutableList<MarsPhoto>> {
-        return Observable.fromCallable {
+    lateinit var lastPhotosRequest: Observable<MutableList<MarsPhoto>?>
+
+    fun loadMarsPhotos(queryRequest: PhotosQueryRequest): Observable<MutableList<MarsPhoto>?> {
+        val mainObserver = Observable.fromCallable {
             val callResponse = api.getRoversPhotos(queryRequest)
             val response = callResponse.execute()
+            Log.e("Sirelon", "loadMarsPhotos RESPONSE " + response)
             if (response.isSuccessful)
                 response.body().photos
             else null
         }
+
+        lastPhotosRequest = mainObserver.cache()
+        return lastPhotosRequest
     }
 
     fun getRovers(): Observable<Rover> {

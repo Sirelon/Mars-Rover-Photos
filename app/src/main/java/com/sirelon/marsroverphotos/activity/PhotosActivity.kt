@@ -129,15 +129,16 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                 .just(isConnected())
                 .switchMap {
                     if (it)
-                        dataManager.getMarsPhotos(queryRequest)
+                        dataManager.loadMarsPhotos(queryRequest)
                     else
                         Observable.error { NoConnectionError() }
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnError(errorConsumer({ loadData() }))
-                .filter { list -> list != null }
+                .filter { it != null }
                 .subscribe({
+                    it!!
                     (photosList.adapter as ViewTypeAdapter).addData(it)
                     updateCameraFilter(it)
                 }, Throwable::printStackTrace)
@@ -146,7 +147,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
     }
 
     private fun updateCameraFilter(photos: List<MarsPhoto>) {
-        val camerFilterSub = Observable
+        val cameraFilterSub = Observable
                 .fromIterable(photos)
                 .map { it.camera }
                 .distinct()
@@ -163,7 +164,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                     }
                 }, Throwable::printStackTrace)
 
-        subscriptions.add(camerFilterSub)
+        subscriptions.add(cameraFilterSub)
     }
 
     private fun filterDataByCamera(position: Int) {

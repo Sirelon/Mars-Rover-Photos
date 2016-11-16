@@ -9,8 +9,8 @@ import android.provider.MediaStore
 import android.support.design.widget.Snackbar
 import android.support.v4.view.MenuItemCompat
 import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.ShareActionProvider
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -26,7 +26,7 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_image.*
 import uk.co.senab.photoview.PhotoViewAttacher
 
-class ImageActivity : AppCompatActivity() {
+class ImageActivity : RxActivity() {
 
     companion object {
         val EXTRA_PHOTO = ".extraPhoto"
@@ -53,6 +53,8 @@ class ImageActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        dataManager.lastPhotosRequest.subscribe({ Log.w("Sirelon", "ONSUBSCRTIBE IMAGE + $it") }, { it.printStackTrace() })
+
         setContentView(R.layout.activity_image)
 
         marsPhoto = intent.getParcelableExtra<MarsPhoto>(EXTRA_PHOTO)
@@ -77,19 +79,19 @@ class ImageActivity : AppCompatActivity() {
         })
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_image, menu)
-        val shareActionProvider = MenuItemCompat.getActionProvider(menu.findItem(R.id.menu_item_share)) as ShareActionProvider
+        val shareActionProvider = MenuItemCompat.getActionProvider(menu?.findItem(R.id.menu_item_share)) as ShareActionProvider
 
         shareActionProvider.setShareIntent(shareIntent)
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        if (item?.itemId == android.R.id.home) {
             finish()
             return true
-        } else if (item.itemId == R.id.menu_item_save) {
+        } else if (item?.itemId == R.id.menu_item_save) {
             saveImageToGallery()
             return true
         } else
