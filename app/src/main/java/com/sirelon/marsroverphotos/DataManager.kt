@@ -15,11 +15,14 @@ import io.reactivex.schedulers.Schedulers
  */
 class DataManager(val context: Context, private val api: RestApi = RestApi()) {
 
+    /**
+     * This var if you want to reuse the mainObservable without making new request on server
+     */
     var lastPhotosRequest: Observable<MutableList<MarsPhoto>?>? = null
 
-    fun loadMarsPhotos(queryRequest: PhotosQueryRequest): Observable<MutableList<MarsPhoto>> {
-//        val mainObserver =
-        return Observable.fromCallable {
+
+    fun loadMarsPhotos(queryRequest: PhotosQueryRequest): Observable<MutableList<MarsPhoto>?> {
+        val mainObservable = Observable.fromCallable {
             val callResponse = api.getRoversPhotos(queryRequest)
             val response = callResponse.execute()
             Log.e("Sirelon", "loadMarsPhotos RESPONSE " + response)
@@ -28,9 +31,9 @@ class DataManager(val context: Context, private val api: RestApi = RestApi()) {
             else null
         }
 
-//        lastPhotosRequest = mainObserver.cache()
-//        return lastPhotosRequest
-//        return mainObserver
+        lastPhotosRequest = mainObservable.cache()
+
+        return lastPhotosRequest!!
     }
 
 

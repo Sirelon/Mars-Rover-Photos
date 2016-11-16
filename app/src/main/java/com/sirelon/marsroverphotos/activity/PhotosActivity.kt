@@ -134,7 +134,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         subscriptions.add(subscription)
     }
 
-    val photosObservable: Observable<MutableList<MarsPhoto>> by lazy {
+    val photosObservable: Observable<MutableList<MarsPhoto>?> by lazy {
         Observable
                 .just(isConnected())
                 .switchMap {
