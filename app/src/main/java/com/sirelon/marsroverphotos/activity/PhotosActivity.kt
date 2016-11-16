@@ -114,24 +114,43 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
             updateDateEearthChoose(dateUtil.dateFromSol(queryRequest.sol))
 
             (photosList.adapter as ViewTypeAdapter).clearAll()
-            loadData()
+            loadFreshData()
         }
 
-        loadData()
+        // if we recreate activity - we want to use cache, if available
+        if (savedInstanceState != null)
+            loadCacheOrRequest()
+        else
+            loadFreshData()
     }
 
     private fun randomPhotosQueryRequest() = PhotosQueryRequest(rover.name, 1.random(rover.maxSol.toInt()).toLong(), null)
 
-    private fun loadData() {
-        subscriptions.clear()
+    private fun loadCacheOrRequest() {
+        // If we already have lastPhotosRequest - just use it, its returned to us cached results
+        val observable: Observable<MutableList<MarsPhoto>?>
+        if (dataManager.lastPhotosRequest != null)
+            observable = dataManager.lastPhotosRequest!!
+        else
+            observable = photosObservable
 
-        val subscription = photosObservable.subscribe({
+        loadDataWithObservable(observable)
+    }
+
+    // Load data from given observable
+    private fun loadDataWithObservable(observable: Observable<MutableList<MarsPhoto>?>) {
+        subscriptions.clear()
+        val subscription = observable.subscribe({
             it!!
             (photosList.adapter as ViewTypeAdapter).addData(it)
             updateCameraFilter(it)
         }, Throwable::printStackTrace)
 
         subscriptions.add(subscription)
+    }
+
+    private fun loadFreshData() {
+        loadDataWithObservable(photosObservable)
     }
 
     val photosObservable: Observable<MutableList<MarsPhoto>?> by lazy {
@@ -145,7 +164,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnError(errorConsumer({ loadData() }))
+                .doOnError(errorConsumer({ loadFreshData() }))
                 .filter { it != null }
     }
 
@@ -332,6 +351,6 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         updateDateSolChoose()
         // Clear adapter
         (photosList.adapter as ViewTypeAdapter).clearAll()
-        loadData()
+        loadFreshData()
     }
 }
