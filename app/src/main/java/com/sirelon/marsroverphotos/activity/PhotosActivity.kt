@@ -52,7 +52,10 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
 
     override fun onModelChoose(model: ViewType) {
         if (model is MarsPhoto) {
-            startActivity(ImageActivity.createIntent(this, model))
+            // Enable camera filter if the same camera was choose.
+            // If all camera choosed then no need to filtering
+            val cameraFilter = photosCamera.selectedItemPosition != 0
+            startActivity(ImageActivity.createIntent(this, model, cameraFilter))
         }
     }
 

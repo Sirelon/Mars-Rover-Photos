@@ -33,9 +33,11 @@ class ImageActivity : RxActivity() {
 
     companion object {
         val EXTRA_PHOTO = ".extraPhoto"
-        fun createIntent(context: Context, photo: MarsPhoto): Intent {
+        val EXTRA_FILTER_BY_CAMERA = ".extraCameraFilterEnable"
+        fun createIntent(context: Context, photo: MarsPhoto, cameraFilterEnable: Boolean): Intent {
             val intent = Intent(context, ImageActivity::class.java)
             intent.putExtra(EXTRA_PHOTO, photo)
+            intent.putExtra(EXTRA_FILTER_BY_CAMERA, cameraFilterEnable)
             return intent
         }
     }
@@ -60,25 +62,34 @@ class ImageActivity : RxActivity() {
 
         marsPhoto = intent.getParcelableExtra<MarsPhoto>(EXTRA_PHOTO)
 
-//        Photo id ${marsPhoto.id}.
+        val cameraFilterEnable = intent.getBooleanExtra(EXTRA_FILTER_BY_CAMERA, false)
         title = "Mars photo"
 
         if (dataManager.lastPhotosRequest == null) {
             showStandaloneImage()
         } else {
-            dataManager.lastPhotosRequest?.subscribe(
-                    {
-                        imagePager.adapter = ViewsPagerAdapter(this, it)
-                        it?.let {
-                            val index = it.indexOf(marsPhoto)
-                            imagePager.currentItem = index
-                        }
-                    },
-                    {
-                        it.printStackTrace()
-                        // Show Standalone Image
-                        showStandaloneImage()
+            dataManager.lastPhotosRequest!!
+                    .compose({
+                        items ->
+                        // Filter by cameras
+                        if (cameraFilterEnable)
+                            items.flatMapIterable { it }.filter { it.camera.id == marsPhoto.camera.id }.toList().toObservable()
+                        else
+                            items
                     })
+                    .subscribe(
+                            {
+                                imagePager.adapter = ViewsPagerAdapter(this, it)
+                                it?.let {
+                                    val index = it.indexOf(marsPhoto)
+                                    imagePager.currentItem = index
+                                }
+                            },
+                            {
+                                it.printStackTrace()
+                                // Show Standalone Image
+                                showStandaloneImage()
+                            })
         }
     }
 
