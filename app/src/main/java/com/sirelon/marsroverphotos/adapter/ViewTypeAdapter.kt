@@ -58,10 +58,7 @@ class ViewTypeAdapter(var withLoadingView: Boolean = true) : RecyclerView.Adapte
 
         if (withLoadingView) {
 
-            // first remove loading and notify
-            val initPosition = items.size - 1
-            items.removeAt(initPosition)
-            notifyItemRemoved(initPosition)
+            stopLoading()
 
             // insert news and the loading at the end of the list
             items.addAll(data)
@@ -88,13 +85,22 @@ class ViewTypeAdapter(var withLoadingView: Boolean = true) : RecyclerView.Adapte
         }
     }
 
+    fun stopLoading(){
+        if (withLoadingView){
+            // first remove loading and notify
+            val initPosition = items.size - 1
+
+            if (initPosition >= 0) {
+                items.removeAt(initPosition)
+                notifyItemRemoved(initPosition)
+            }
+        }
+    }
+
     fun addHeader(headerViewType: HeaderViewType) {
         if (withLoadingView) {
 
-            // first remove loading and notify
-            val initPosition = items.size - 1
-            items.removeAt(initPosition)
-            notifyItemRemoved(initPosition)
+            stopLoading()
             withLoadingView = false
         }
 

@@ -9,7 +9,6 @@ import android.provider.MediaStore
 import android.support.design.widget.Snackbar
 import android.support.v4.view.MenuItemCompat
 import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.ShareActionProvider
 import android.view.Menu
 import android.view.MenuItem
@@ -18,23 +17,29 @@ import android.widget.Toast
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
 import com.sirelon.marsroverphotos.R
+import com.sirelon.marsroverphotos.extensions.inflate
 import com.sirelon.marsroverphotos.extensions.showAppSettings
 import com.sirelon.marsroverphotos.models.MarsPhoto
+import com.sirelon.marsroverphotos.widget.ViewsPagerAdapter
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.activity_about_app.*
 import kotlinx.android.synthetic.main.activity_image.*
+import kotlinx.android.synthetic.main.view_image.view.*
 import uk.co.senab.photoview.PhotoViewAttacher
 
-class ImageActivity : AppCompatActivity() {
+class ImageActivity : RxActivity() {
 
     companion object {
         val EXTRA_PHOTO = ".extraPhoto"
-        fun createIntent(context: Context, photo: MarsPhoto): Intent {
+        val EXTRA_FILTER_BY_CAMERA = ".extraCameraFilterEnable"
+        fun createIntent(context: Context, photo: MarsPhoto, cameraFilterEnable: Boolean): Intent {
             val intent = Intent(context, ImageActivity::class.java)
             intent.putExtra(EXTRA_PHOTO, photo)
+            intent.putExtra(EXTRA_FILTER_BY_CAMERA, cameraFilterEnable)
             return intent
         }
     }
@@ -63,39 +68,78 @@ class ImageActivity : AppCompatActivity() {
         MobileAds.initialize(this, getString(R.string.ad_application_id))
         adViewBanner.loadAd(AdRequest.Builder().build())
 
-//        Photo id ${marsPhoto.id}.
+        val cameraFilterEnable = intent.getBooleanExtra(EXTRA_FILTER_BY_CAMERA, false)
         title = "Mars photo"
 
-        val photoViewAttacher = PhotoViewAttacher(fullscreenImage)
+        if (dataManager.lastPhotosRequest == null) {
+            showStandaloneImage()
+        } else {
+            val subscribe = dataManager.lastPhotosRequest!!
+                    .flatMapIterable { it }
+//                    .filter { it is MarsPhoto }
+                    .compose {
+                        // Filter by cameras
+                        if (cameraFilterEnable)
+                            it.filter { it.camera.id == marsPhoto.camera.id }
+                        else
+                            it
+                    }
+                    .toList()
+                    .subscribe(
+                            {
+                                imagePager.adapter = ViewsPagerAdapter(this, it)
+                                it?.let {
+                                    val index = it.indexOf(marsPhoto)
+                                    imagePager.currentItem = index
+                                }
+                            },
+                            {
+                                it.printStackTrace()
+                                // Show Standalone Image
+                                showStandaloneImage()
+                            })
 
-        Picasso.with(this).load(marsPhoto.imageUrl).into(fullscreenImage, object : Callback {
+            subscriptions.add(subscribe)
+        }
+    }
+
+    private fun showStandaloneImage() {
+        fullscreenImageRoot.removeView(imagePager)
+
+        val imageRoot = fullscreenImageRoot.inflate(R.layout.view_image, false)
+
+        fullscreenImageRoot.addView(imageRoot)
+
+        val photoViewAttacher = PhotoViewAttacher(imageRoot.fullscreenImage)
+
+        Picasso.with(this).load(marsPhoto.imageUrl).tag(marsPhoto.id).into(imageRoot.fullscreenImage, object : Callback {
             override fun onSuccess() {
-                fullscreenImageProgress.visibility = View.GONE
+                imageRoot.fullscreenImageProgress.visibility = View.GONE
                 photoViewAttacher.update()
             }
 
             override fun onError() {
-                fullscreenImageProgress.visibility = View.GONE
-                Snackbar.make(fullscreenImageRoot, "Cannot show this image", Snackbar.LENGTH_INDEFINITE)
+                imageRoot.fullscreenImageProgress.visibility = View.GONE
+                Snackbar.make(imageView.rootView, "Cannot show this image", Snackbar.LENGTH_INDEFINITE)
                         .setAction("Close", { finish() })
                         .show()
             }
         })
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_image, menu)
-        val shareActionProvider = MenuItemCompat.getActionProvider(menu.findItem(R.id.menu_item_share)) as ShareActionProvider
+        val shareActionProvider = MenuItemCompat.getActionProvider(menu?.findItem(R.id.menu_item_share)) as ShareActionProvider
 
         shareActionProvider.setShareIntent(shareIntent)
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        if (item?.itemId == android.R.id.home) {
             finish()
             return true
-        } else if (item.itemId == R.id.menu_item_save) {
+        } else if (item?.itemId == R.id.menu_item_save) {
             saveImageToGallery()
             return true
         } else

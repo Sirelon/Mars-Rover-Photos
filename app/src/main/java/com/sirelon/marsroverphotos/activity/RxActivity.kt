@@ -7,9 +7,9 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import com.sirelon.marsroverphotos.DataManager
 import com.sirelon.marsroverphotos.NoConnectionError
 import com.sirelon.marsroverphotos.R
+import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.isConnected
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Consumer
@@ -49,10 +49,10 @@ open class RxActivity : AppCompatActivity() {
             return super.onOptionsItemSelected(item)
     }
 
-    val dataManager by lazy { DataManager(this) }
+    val dataManager by lazy { RoverApplication.APP.dataManger }
 
     fun errorConsumer(listener: () -> Unit): Consumer<in Throwable> {
-        return Consumer<Throwable> {
+        return Consumer {
             it.printStackTrace()
             if (it is NoConnectionError) {
                 showNoConnectionView(listener)
