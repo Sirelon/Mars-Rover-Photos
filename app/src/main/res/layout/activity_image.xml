@@ -5,7 +5,7 @@
     android:background="#0099cc"
     android:orientation="vertical">
 
-    <android.support.v4.view.ViewPager
+    <com.sirelon.marsroverphotos.widget.HackyViewPager
         android:id="@+id/imagePager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

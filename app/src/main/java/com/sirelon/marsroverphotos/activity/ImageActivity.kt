@@ -68,7 +68,7 @@ class ImageActivity : RxActivity() {
         if (dataManager.lastPhotosRequest == null) {
             showStandaloneImage()
         } else {
-            dataManager.lastPhotosRequest!!
+            val subscribe = dataManager.lastPhotosRequest!!
                     .compose({
                         items ->
                         // Filter by cameras
@@ -90,6 +90,8 @@ class ImageActivity : RxActivity() {
                                 // Show Standalone Image
                                 showStandaloneImage()
                             })
+
+            subscriptions.add(subscribe)
         }
     }
 
