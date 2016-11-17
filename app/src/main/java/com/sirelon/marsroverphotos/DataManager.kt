@@ -27,7 +27,7 @@ class DataManager(val context: Context, private val api: RestApi = RestApi()) {
             Log.e("Sirelon", "loadMarsPhotos RESPONSE " + response)
             if (response.isSuccessful)
                 response.body().photos
-            else null
+            else throw RuntimeException(response.errorBody().string())
         }
 
         lastPhotosRequest = mainObservable.cache()

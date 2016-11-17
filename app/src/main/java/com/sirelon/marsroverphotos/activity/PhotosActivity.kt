@@ -167,6 +167,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnError { (photosList.adapter as ViewTypeAdapter).stopLoading() }
                 .doOnError(errorConsumer({ loadFreshData() }))
                 .filter { it != null }
     }
