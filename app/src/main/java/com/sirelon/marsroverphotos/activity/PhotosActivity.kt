@@ -52,7 +52,10 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
 
     override fun onModelChoose(model: ViewType) {
         if (model is MarsPhoto) {
-            startActivity(ImageActivity.createIntent(this, model))
+            // Enable camera filter if the same camera was choose.
+            // If all camera choosed then no need to filtering
+            val cameraFilter = photosCamera.selectedItemPosition != 0
+            startActivity(ImageActivity.createIntent(this, model, cameraFilter))
         }
     }
 
@@ -114,39 +117,62 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
             updateDateEearthChoose(dateUtil.dateFromSol(queryRequest.sol))
 
             (photosList.adapter as ViewTypeAdapter).clearAll()
-            loadData()
+            loadFreshData()
         }
 
-        loadData()
+        // if we recreate activity - we want to use cache, if available
+        if (savedInstanceState != null)
+            loadCacheOrRequest()
+        else
+            loadFreshData()
     }
 
     private fun randomPhotosQueryRequest() = PhotosQueryRequest(rover.name, 1.random(rover.maxSol.toInt()).toLong(), null)
 
-    private fun loadData() {
-        subscriptions.clear()
+    private fun loadCacheOrRequest() {
+        // If we already have lastPhotosRequest - just use it, its returned to us cached results
+        val observable: Observable<MutableList<MarsPhoto>?>
+        if (dataManager.lastPhotosRequest != null)
+            observable = dataManager.lastPhotosRequest!!
+        else
+            observable = photosObservable
 
-        val subscription = Observable
+        loadDataWithObservable(observable)
+    }
+
+    // Load data from given observable
+    private fun loadDataWithObservable(observable: Observable<MutableList<MarsPhoto>?>) {
+        subscriptions.clear()
+        val subscription = observable.subscribe({
+            it!!
+            (photosList.adapter as ViewTypeAdapter).addData(it)
+            updateCameraFilter(it)
+        }, Throwable::printStackTrace)
+
+        subscriptions.add(subscription)
+    }
+
+    private fun loadFreshData() {
+        loadDataWithObservable(photosObservable)
+    }
+
+    val photosObservable: Observable<MutableList<MarsPhoto>?> by lazy {
+        Observable
                 .just(isConnected())
                 .switchMap {
                     if (it)
-                        dataManager.getMarsPhotos(queryRequest)
+                        dataManager.loadMarsPhotos(queryRequest)
                     else
                         Observable.error { NoConnectionError() }
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnError(errorConsumer({ loadData() }))
-                .filter { list -> list != null }
-                .subscribe({
-                    (photosList.adapter as ViewTypeAdapter).addData(it)
-                    updateCameraFilter(it)
-                }, Throwable::printStackTrace)
-
-        subscriptions.add(subscription)
+                .doOnError(errorConsumer({ loadFreshData() }))
+                .filter { it != null }
     }
 
     private fun updateCameraFilter(photos: List<MarsPhoto>) {
-        val camerFilterSub = Observable
+        val cameraFilterSub = Observable
                 .fromIterable(photos)
                 .map { it.camera }
                 .distinct()
@@ -163,7 +189,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                     }
                 }, Throwable::printStackTrace)
 
-        subscriptions.add(camerFilterSub)
+        subscriptions.add(cameraFilterSub)
     }
 
     private fun filterDataByCamera(position: Int) {
@@ -328,6 +354,6 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         updateDateSolChoose()
         // Clear adapter
         (photosList.adapter as ViewTypeAdapter).clearAll()
-        loadData()
+        loadFreshData()
     }
 }
