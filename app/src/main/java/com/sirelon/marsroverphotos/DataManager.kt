@@ -62,7 +62,9 @@ class DataManager(val context: Context, private val api: RestApi = RestApi()) {
                                     newRover
                                 } else
                                     null
-                            }.onErrorReturnItem(null).subscribeOn(Schedulers.newThread())
+                            }
+                                    .onErrorReturnItem(it)
+                                    .subscribeOn(Schedulers.newThread())
                     )
                 }
     }
