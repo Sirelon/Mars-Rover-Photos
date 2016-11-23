@@ -46,10 +46,10 @@ class DataManager(val context: Context, private val api: RestApi = RestApi()) {
                             Observable.just(it),
                             // Load rover from Inet
                             Observable.fromCallable {
+
                                 val callResponse = api.getRoverInfo(it.name)
                                 val response = callResponse.execute()
                                 if (response.isSuccessful) {
-                                    Log.w("Sirelon", "Response is " + response.body().roverInfo)
                                     val roverResponse = response.body().roverInfo
                                     val newRover = it.copy()
 
@@ -62,7 +62,7 @@ class DataManager(val context: Context, private val api: RestApi = RestApi()) {
                                     newRover
                                 } else
                                     null
-                            }.subscribeOn(Schedulers.newThread())
+                            }.onErrorReturnItem(null).subscribeOn(Schedulers.newThread())
                     )
                 }
     }
