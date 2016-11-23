@@ -56,6 +56,11 @@
                 android:value=".activity.PhotosActivity" />
         </activity>
         <activity android:name=".activity.AboutAppActivity" />
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="a122b41ef36cbca5a4460276e8696075bbbdae18" />
+
     </application>
 
 </manifest>

@@ -1,6 +1,8 @@
 package com.sirelon.marsroverphotos
 
 import android.app.Application
+import com.crashlytics.android.Crashlytics
+import io.fabric.sdk.android.Fabric
 
 /**
  * @author romanishin
@@ -15,6 +17,8 @@ class RoverApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         APP = this
+
+        Fabric.with(this, Crashlytics())
     }
 
     val dataManger by lazy {
