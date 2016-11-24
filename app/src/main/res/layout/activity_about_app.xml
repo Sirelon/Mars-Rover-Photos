@@ -45,7 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
-            android:autoLink="all"
+            android:autoLink="web"
             android:text="API provided by https://api.nasa.gov/api.html#MarsPhotos"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
