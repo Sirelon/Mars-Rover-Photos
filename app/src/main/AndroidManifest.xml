@@ -8,13 +8,15 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <uses-permission android:name="com.samsung.android.providers.context.permission.WRITE_USE_APP_FEATURE_SURVEY" />
+
     <application
+        android:name=".RoverApplication"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:name=".RoverApplication">
+        android:theme="@style/AppTheme">
         <activity
             android:name=".activity.RoversActivity"
             android:icon="@mipmap/ic_launcher"
@@ -28,11 +30,11 @@
                 <!--<category android:name="android.intent.category.BROWSABLE" />-->
 
                 <!--<data-->
-                    <!--android:host="marsrovers.com"-->
-                    <!--android:scheme="http" />-->
+                <!--android:host="marsrovers.com"-->
+                <!--android:scheme="http" />-->
                 <!--<data-->
-                    <!--android:host="marsrovers"-->
-                    <!--android:scheme="sirelon" />-->
+                <!--android:host="marsrovers"-->
+                <!--android:scheme="sirelon" />-->
             </intent-filter>
         </activity>
         <activity
