@@ -116,3 +116,8 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
+.idea/
+app/.idea/
+app/gradle/
+app/gradlew
+app/gradlew.bat
