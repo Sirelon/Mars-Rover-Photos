@@ -148,14 +148,14 @@ class ImageActivity : RxActivity() {
 
     private fun saveImageToGallery() {
 
-        RxPermissions.getInstance(this)
+        RxPermissions(this)
                 // Request permission for saving file.
                 .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 // filter not granted permission
                 .filter {
-//                  If permission not granted and shouldShowRequestPermissionRationale = show explain dialog. else show snackbar with gotosettings
+                    //                  If permission not granted and shouldShowRequestPermissionRationale = show explain dialog. else show snackbar with gotosettings
                     if (!it) {
                         if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) showExplainDialog()
                         else {
