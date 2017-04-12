@@ -15,6 +15,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import com.google.firebase.database.DatabaseReference
 import com.sirelon.marsroverphotos.R
 import com.squareup.picasso.Picasso
 import java.util.*
@@ -63,3 +64,30 @@ inline fun <reified T : Parcelable> createParcel(
             override fun createFromParcel(source: Parcel): T? = createFromParcel(source)
             override fun newArray(size: Int): Array<out T?> = arrayOfNulls(size)
         }
+
+inline fun <reified T : Any> DatabaseReference.setValueObservable(arg: T): io.reactivex
+.Observable<T> {
+    return io.reactivex.Observable.create<T> { emitter ->
+        this.setValue(arg)
+                .addOnSuccessListener {
+                    emitter.onNext(arg)
+                    emitter.onComplete()
+                }
+                .addOnFailureListener {
+                    emitter.onError(it)
+                }
+    }
+}
+
+inline fun DatabaseReference.clearValueObservable(): io.reactivex.Observable<Boolean> {
+    return io.reactivex.Observable.create<Boolean> { emitter ->
+        this.setValue(null)
+                .addOnSuccessListener {
+                    emitter.onNext(true)
+                    emitter.onComplete()
+                }
+                .addOnFailureListener {
+                    emitter.onError(it)
+                }
+    }
+}

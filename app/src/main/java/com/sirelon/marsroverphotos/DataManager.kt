@@ -5,6 +5,7 @@ import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.network.RestApi
+import com.sirelon.marsroverphotos.network.firebasePhotos
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 
@@ -74,5 +75,8 @@ class DataManager(val context: Context, private val api: RestApi = RestApi()) {
     }
 
     fun updatePhotoSeenCounter(marsPhoto: MarsPhoto?) {
+        marsPhoto?.let {
+            firebasePhotos.addMarsPhoto(marsPhoto).subscribe {  }
+        }
     }
 }

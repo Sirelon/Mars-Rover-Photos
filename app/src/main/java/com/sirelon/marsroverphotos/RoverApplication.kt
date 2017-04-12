@@ -2,6 +2,8 @@ package com.sirelon.marsroverphotos
 
 import android.app.Application
 import com.crashlytics.android.Crashlytics
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.Logger
 import io.fabric.sdk.android.Fabric
 
 /**
@@ -18,7 +20,10 @@ class RoverApplication : Application() {
         super.onCreate()
         APP = this
 
-        Fabric.with(this, Crashlytics())
+        if (!BuildConfig.DEBUG)
+            Fabric.with(this, Crashlytics())
+
+        FirebaseDatabase.getInstance().setLogLevel(if (BuildConfig.DEBUG) Logger.Level.DEBUG else Logger.Level.NONE)
     }
 
     val dataManger by lazy {
