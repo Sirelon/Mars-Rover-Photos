@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.support.design.widget.Snackbar
 import android.support.v4.view.MenuItemCompat
+import android.support.v4.view.ViewPager
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.ShareActionProvider
 import android.view.Menu
@@ -92,6 +93,13 @@ class ImageActivity : RxActivity() {
                                     val index = it.indexOf(marsPhoto)
                                     imagePager.currentItem = index
                                 }
+                                imagePager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
+                                    override fun onPageSelected(position: Int) {
+                                        // Set the marsPhoto as current
+                                        marsPhoto = it[position]
+                                        dataManager.updatePhotoSeenCounter(marsPhoto)
+                                    }
+                                })
                             },
                             {
                                 it.printStackTrace()

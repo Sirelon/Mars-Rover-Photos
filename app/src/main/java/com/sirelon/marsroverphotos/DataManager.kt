@@ -72,4 +72,7 @@ class DataManager(val context: Context, private val api: RestApi = RestApi()) {
     val roverRepo by lazy {
         RoversRepository(context)
     }
+
+    fun updatePhotoSeenCounter(marsPhoto: MarsPhoto?) {
+    }
 }
