@@ -9,7 +9,8 @@ class FirebasePhoto(
         val name: String?,
         val imageUrl: String,
         val earthDate: String,
-        val seeCounter: Long
+        val seeCounter: Long,
+        val scaleCounter: Long
 ) {
 
     constructor(photo: MarsPhoto) : this(
@@ -18,7 +19,8 @@ class FirebasePhoto(
             name = photo.name,
             imageUrl = photo.imageUrl,
             earthDate = photo.earthDate,
-            seeCounter = 0
+            seeCounter = 0,
+            scaleCounter = 0
     )
 
     constructor() : this(
@@ -27,7 +29,8 @@ class FirebasePhoto(
             name = null,
             imageUrl = "",
             earthDate = "",
-            seeCounter = 0
+            seeCounter = 0,
+            scaleCounter = 0
     )
 
 }

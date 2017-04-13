@@ -12,5 +12,6 @@ object FirebaseConstants {
     const val PHOTOS_IMAGE = "img_src"
     const val PHOTOS_EARTH_DATE = "earth_date"
     const val PHOTOS_SEEN = "seeCounter"
+    const val PHOTOS_SCALE = "scaleCounter"
 
 }

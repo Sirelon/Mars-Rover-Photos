@@ -118,3 +118,7 @@ inline fun DatabaseReference.isExist(): io.reactivex.Observable<Boolean> {
 fun Any?.logD(){
     Log.d("Sirelon", this?.toString() ?: "NULL")
 }
+
+fun Throwable.logE() {
+    Log.e("Sirelon", this.message, this)
+}

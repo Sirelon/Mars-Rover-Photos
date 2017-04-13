@@ -4,6 +4,9 @@ import android.app.Application
 import com.crashlytics.android.Crashlytics
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.Logger
+import com.jakewharton.picasso.OkHttp3Downloader
+import com.sirelon.marsroverphotos.extensions.logE
+import com.squareup.picasso.Picasso
 import io.fabric.sdk.android.Fabric
 
 /**
@@ -29,4 +32,8 @@ class RoverApplication : Application() {
     val dataManger by lazy {
         DataManager(this)
     }
+
+    fun picasso(): Picasso = Picasso.Builder(this).listener { picasso, uri, exception ->
+         exception?.logE()
+     }.downloader(OkHttp3Downloader(this)).build()
 }

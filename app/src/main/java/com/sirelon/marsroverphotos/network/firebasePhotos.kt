@@ -19,6 +19,20 @@ object firebasePhotos {
         return ref.setValueObservable(photo.toFireBase()).map { photo }
     }
 
+    fun updatePhotoScaleCounter(photo: MarsPhoto): Observable<Long> {
+        val photoRef = FirebaseDatabase.getInstance().getReference(firebasePhotoRef(photo))
+
+        return Observable.just(photoRef)
+                .flatMap { photoRef.singleEventFirebase() }
+                .flatMap {
+                    if (!it.exists()) {
+                        addMarsPhoto(photo).map { 1L }
+                    } else {
+                        incrementScaleCount(photo)
+                    }
+                }
+    }
+
     fun updatePhotoSeenCounter(photo: MarsPhoto): Observable<Long> {
         val photoRef = FirebaseDatabase.getInstance().getReference(firebasePhotoRef(photo))
 
@@ -41,6 +55,14 @@ object firebasePhotos {
                 .flatMap { seenRef.setValueObservable<Long>(it) }
     }
 
+    private fun incrementScaleCount(photo: MarsPhoto): Observable<Long> {
+        val scaleRef = FirebaseDatabase.getInstance().getReference(firebasePhotoRef(photo) + "/" +
+                FirebaseConstants.PHOTOS_SCALE)
+        return scaleRef.singleEventFirebase()
+                .map { it.getValue(Long::class.java) + 1 }
+                .flatMap { scaleRef.setValueObservable<Long>(it) }
+    }
+
     private fun DataSnapshot.toFirebasePhoto(): FirebasePhoto {
         return this.getValue(FirebasePhoto::class.java)
     }
@@ -54,10 +76,8 @@ object firebasePhotos {
             RoverCamera.empty()
     )
 
-
     private fun firebasePhotoRef(photo: MarsPhoto) = "${FirebaseConstants.PHOTOS_TABLE}/${photo.id}"
 
     private fun MarsPhoto.toFireBase(): FirebasePhoto = FirebasePhoto(this)
-
 
 }

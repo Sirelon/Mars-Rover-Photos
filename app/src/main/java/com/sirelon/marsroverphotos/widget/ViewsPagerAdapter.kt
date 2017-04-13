@@ -6,8 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
+import com.jakewharton.picasso.OkHttp3Downloader
 import com.sirelon.marsroverphotos.R
+import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.inflate
+import com.sirelon.marsroverphotos.extensions.logE
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -22,8 +25,10 @@ class ViewsPagerAdapter(context: Context, val data: List<MarsPhoto>?) : PagerAda
 
     val picasso: Picasso
 
+    var scaleCallback : (() -> Unit)? = null
+
     init {
-        picasso = Picasso.with(context)
+        picasso = RoverApplication.APP.picasso()
     }
 
     override fun instantiateItem(container: ViewGroup?, position: Int): Any {
@@ -37,6 +42,10 @@ class ViewsPagerAdapter(context: Context, val data: List<MarsPhoto>?) : PagerAda
 
     private fun showImage(imageView: ImageView, fullscreenImageProgress: View, position: Int) {
         val photoViewAttacher = PhotoViewAttacher(imageView)
+
+        photoViewAttacher.setOnScaleChangeListener { scaleFactor, focusX, focusY ->
+            scaleCallback?.invoke()
+        }
 
         val marsPhoto = data?.get(position) ?: return
 
