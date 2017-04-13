@@ -20,7 +20,6 @@ import com.google.android.gms.ads.MobileAds
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.inflate
-import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.extensions.showAppSettings
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.widget.ViewsPagerAdapter
@@ -94,7 +93,6 @@ class ImageActivity : RxActivity() {
                                 val pagerAdapter = ViewsPagerAdapter(this, it)
                                 imagePager.adapter = pagerAdapter
                                 pagerAdapter.scaleCallback = {
-                                    scaleWasSet.logD()
                                     if (!scaleWasSet)
                                         dataManager.updatePhotoScaleCounter(marsPhoto)
 

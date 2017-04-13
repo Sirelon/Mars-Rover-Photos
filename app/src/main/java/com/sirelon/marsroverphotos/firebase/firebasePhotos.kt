@@ -1,10 +1,7 @@
-package com.sirelon.marsroverphotos.network
+package com.sirelon.marsroverphotos.firebase
 
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
-import com.sirelon.marsroverphotos.extensions.setValueObservable
-import com.sirelon.marsroverphotos.extensions.singleEventFirebase
-import com.sirelon.marsroverphotos.models.FirebasePhoto
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.models.RoverCamera
 import io.reactivex.Observable

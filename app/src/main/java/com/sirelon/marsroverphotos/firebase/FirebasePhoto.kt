@@ -1,4 +1,6 @@
-package com.sirelon.marsroverphotos.models
+package com.sirelon.marsroverphotos.firebase
+
+import com.sirelon.marsroverphotos.models.MarsPhoto
 
 /**
  * Created on 12/04/2017 19:05.

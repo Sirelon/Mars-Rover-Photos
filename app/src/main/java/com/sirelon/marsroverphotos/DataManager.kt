@@ -1,12 +1,11 @@
 package com.sirelon.marsroverphotos
 
 import android.content.Context
-import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.network.RestApi
-import com.sirelon.marsroverphotos.network.firebasePhotos
+import com.sirelon.marsroverphotos.firebase.firebasePhotos
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 
@@ -77,25 +76,25 @@ class DataManager(val context: Context, private val api: RestApi = RestApi()) {
 
     fun updatePhotoSeenCounter(marsPhoto: MarsPhoto?) {
         marsPhoto?.let {
-            firebasePhotos.updatePhotoSeenCounter(marsPhoto).subscribe(Long::logD)
+            firebasePhotos.updatePhotoSeenCounter(marsPhoto).onErrorReturn { 0 }.subscribe()
         }
     }
 
     fun updatePhotoScaleCounter(marsPhoto: MarsPhoto?) {
         marsPhoto?.let {
-            firebasePhotos.updatePhotoScaleCounter(marsPhoto).subscribe(Long::logD)
+            firebasePhotos.updatePhotoScaleCounter(marsPhoto).onErrorReturn { 0 }.subscribe()
         }
     }
 
     fun  updatePhotoSaveCounter(marsPhoto: MarsPhoto?) {
         marsPhoto?.let {
-            firebasePhotos.updatePhotoSaveCounter(marsPhoto).subscribe(Long::logD)
+            firebasePhotos.updatePhotoSaveCounter(marsPhoto).onErrorReturn { 0 }.subscribe()
         }
     }
 
     fun  updatePhotoShareCounter(marsPhoto: MarsPhoto?) {
         marsPhoto?.let {
-            firebasePhotos.updatePhotoShareCounter(marsPhoto).subscribe(Long::logD)
+            firebasePhotos.updatePhotoShareCounter(marsPhoto).onErrorReturn { 0 }.subscribe()
         }
     }
 }
