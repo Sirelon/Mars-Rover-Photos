@@ -19,6 +19,34 @@ object firebasePhotos {
         return ref.setValueObservable(photo.toFireBase()).map { photo }
     }
 
+    fun updatePhotoShareCounter(photo: MarsPhoto): Observable<Long> {
+        val photoRef = FirebaseDatabase.getInstance().getReference(firebasePhotoRef(photo))
+
+        return Observable.just(photoRef)
+                .flatMap { photoRef.singleEventFirebase() }
+                .flatMap {
+                    if (!it.exists()) {
+                        addMarsPhoto(photo).map { 1L }
+                    } else {
+                        incrementShareCount(photo)
+                    }
+                }
+    }
+
+    fun updatePhotoSaveCounter(photo: MarsPhoto): Observable<Long> {
+        val photoRef = FirebaseDatabase.getInstance().getReference(firebasePhotoRef(photo))
+
+        return Observable.just(photoRef)
+                .flatMap { photoRef.singleEventFirebase() }
+                .flatMap {
+                    if (!it.exists()) {
+                        addMarsPhoto(photo).map { 1L }
+                    } else {
+                        incrementSaveCount(photo)
+                    }
+                }
+    }
+
     fun updatePhotoScaleCounter(photo: MarsPhoto): Observable<Long> {
         val photoRef = FirebaseDatabase.getInstance().getReference(firebasePhotoRef(photo))
 
@@ -45,6 +73,23 @@ object firebasePhotos {
                         incrementSeenCount(photo)
                     }
                 }
+    }
+
+    private fun incrementShareCount(photo: MarsPhoto): Observable<Long> {
+        val saveRef = FirebaseDatabase.getInstance().getReference(firebasePhotoRef(photo) + "/" +
+                FirebaseConstants.PHOTOS_SHARE)
+        return saveRef.singleEventFirebase()
+                .map { it.getValue(Long::class.java) + 1 }
+                .flatMap { saveRef.setValueObservable<Long>(it) }
+    }
+
+
+    private fun incrementSaveCount(photo: MarsPhoto): Observable<Long> {
+        val saveRef = FirebaseDatabase.getInstance().getReference(firebasePhotoRef(photo) + "/" +
+                FirebaseConstants.PHOTOS_SAVE)
+        return saveRef.singleEventFirebase()
+                .map { it.getValue(Long::class.java) + 1 }
+                .flatMap { saveRef.setValueObservable<Long>(it) }
     }
 
     private fun incrementSeenCount(photo: MarsPhoto): Observable<Long> {

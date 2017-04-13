@@ -86,4 +86,16 @@ class DataManager(val context: Context, private val api: RestApi = RestApi()) {
             firebasePhotos.updatePhotoScaleCounter(marsPhoto).subscribe(Long::logD)
         }
     }
+
+    fun  updatePhotoSaveCounter(marsPhoto: MarsPhoto?) {
+        marsPhoto?.let {
+            firebasePhotos.updatePhotoSaveCounter(marsPhoto).subscribe(Long::logD)
+        }
+    }
+
+    fun  updatePhotoShareCounter(marsPhoto: MarsPhoto?) {
+        marsPhoto?.let {
+            firebasePhotos.updatePhotoShareCounter(marsPhoto).subscribe(Long::logD)
+        }
+    }
 }

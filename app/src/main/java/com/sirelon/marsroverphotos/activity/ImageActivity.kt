@@ -154,6 +154,10 @@ class ImageActivity : RxActivity() {
         val shareActionProvider = MenuItemCompat.getActionProvider(menu?.findItem(R.id.menu_item_share)) as ShareActionProvider
 
         shareActionProvider.setShareIntent(shareIntent)
+        shareActionProvider.setOnShareTargetSelectedListener { source, intent ->
+            dataManager.updatePhotoShareCounter(marsPhoto)
+            true
+        }
         return true
     }
 
@@ -198,6 +202,9 @@ class ImageActivity : RxActivity() {
                     sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse(it)))
                     it
                 }
+                // Update counter for save
+                .doOnNext { dataManager.updatePhotoSaveCounter(marsPhoto) }
+
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     imagePath ->
@@ -211,11 +218,10 @@ class ImageActivity : RxActivity() {
                     it.printStackTrace()
                     Toast.makeText(this, "Error occured ${it.message}", Toast.LENGTH_SHORT).show()
                 })
-
     }
 
     private fun showExplainDialog() {
-        val dialog = AlertDialog.Builder(this)
+        AlertDialog.Builder(this)
                 .setTitle("Alert")
                 .setMessage("Without this permission I cannot save this nice photo to your gallery. If you want to save image please give permission.")
                 .setPositiveButton("Ok") { p0, p1 -> saveImageToGallery() }
