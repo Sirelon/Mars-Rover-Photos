@@ -105,21 +105,6 @@ object firebasePhotos {
                 .flatMap { scaleRef.setValueObservable<Long>(it) }
     }
 
-    private fun DataSnapshot.toFirebasePhoto(): FirebasePhoto {
-        return this.getValue(FirebasePhoto::class.java)
-    }
-
-    private fun FirebasePhoto.toMarsPhoto() = MarsPhoto(
-            id,
-            sol,
-            name,
-            imageUrl,
-            earthDate,
-            RoverCamera.empty()
-    )
-
     private fun firebasePhotoRef(photo: MarsPhoto) = "${FirebaseConstants.PHOTOS_TABLE}/${photo.id}"
-
-    private fun MarsPhoto.toFireBase(): FirebasePhoto = FirebasePhoto(this)
 
 }

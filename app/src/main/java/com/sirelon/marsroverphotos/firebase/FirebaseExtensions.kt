@@ -4,6 +4,8 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
+import com.sirelon.marsroverphotos.models.MarsPhoto
+import com.sirelon.marsroverphotos.models.RoverCamera
 
 /**
  * Created on 13/04/2017 18:54.
@@ -55,3 +57,18 @@ inline fun DatabaseReference.singleEventFirebase(): io.reactivex.Observable<Data
 inline fun DatabaseReference.isExist(): io.reactivex.Observable<Boolean> {
     return singleEventFirebase().map { it.exists() }
 }
+
+fun DataSnapshot.toFirebasePhoto(): FirebasePhoto {
+    return this.getValue(FirebasePhoto::class.java)
+}
+
+fun FirebasePhoto.toMarsPhoto() = MarsPhoto(
+        id,
+        sol,
+        name,
+        imageUrl,
+        earthDate,
+        RoverCamera.empty()
+)
+
+fun MarsPhoto.toFireBase(): FirebasePhoto = FirebasePhoto(this)
