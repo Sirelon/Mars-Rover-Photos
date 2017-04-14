@@ -35,6 +35,8 @@ data class RoverCamera(
     companion object {
         @JvmField @Suppress("unused")
         val CREATOR = createParcel(::RoverCamera)
+
+        fun empty(): RoverCamera = RoverCamera(-1, -1, "Default", "Default")
     }
 
     protected constructor(parcel: Parcel) : this(

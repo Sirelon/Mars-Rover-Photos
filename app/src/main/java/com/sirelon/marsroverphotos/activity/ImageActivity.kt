@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.support.design.widget.Snackbar
 import android.support.v4.view.MenuItemCompat
+import android.support.v4.view.ViewPager
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.ShareActionProvider
 import android.view.Menu
@@ -17,12 +18,12 @@ import android.widget.Toast
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
 import com.sirelon.marsroverphotos.R
+import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.inflate
 import com.sirelon.marsroverphotos.extensions.showAppSettings
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.widget.ViewsPagerAdapter
 import com.squareup.picasso.Callback
-import com.squareup.picasso.Picasso
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -45,6 +46,8 @@ class ImageActivity : RxActivity() {
     }
 
     private lateinit var marsPhoto: MarsPhoto
+
+    private var scaleWasSet = false
 
     private val shareIntent by lazy {
         val shareIntent: Intent = Intent(Intent.ACTION_SEND)
@@ -87,11 +90,26 @@ class ImageActivity : RxActivity() {
                     .toList()
                     .subscribe(
                             {
-                                imagePager.adapter = ViewsPagerAdapter(this, it)
+                                val pagerAdapter = ViewsPagerAdapter(this, it)
+                                imagePager.adapter = pagerAdapter
+                                pagerAdapter.scaleCallback = {
+                                    if (!scaleWasSet)
+                                        dataManager.updatePhotoScaleCounter(marsPhoto)
+
+                                    scaleWasSet = true
+                                }
                                 it?.let {
                                     val index = it.indexOf(marsPhoto)
                                     imagePager.currentItem = index
                                 }
+                                imagePager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
+                                    override fun onPageSelected(position: Int) {
+                                        // Set the marsPhoto as current
+                                        marsPhoto = it[position]
+                                        scaleWasSet = false
+                                        dataManager.updatePhotoSeenCounter(marsPhoto)
+                                    }
+                                })
                             },
                             {
                                 it.printStackTrace()
@@ -112,7 +130,9 @@ class ImageActivity : RxActivity() {
 
         val photoViewAttacher = PhotoViewAttacher(imageRoot.fullscreenImage)
 
-        Picasso.with(this).load(marsPhoto.imageUrl).tag(marsPhoto.id).into(imageRoot.fullscreenImage, object : Callback {
+        RoverApplication.APP.picasso().load(marsPhoto.imageUrl).tag(marsPhoto.id).into(imageRoot
+                .fullscreenImage, object :
+                Callback {
             override fun onSuccess() {
                 imageRoot.fullscreenImageProgress.visibility = View.GONE
                 photoViewAttacher.update()
@@ -132,6 +152,10 @@ class ImageActivity : RxActivity() {
         val shareActionProvider = MenuItemCompat.getActionProvider(menu?.findItem(R.id.menu_item_share)) as ShareActionProvider
 
         shareActionProvider.setShareIntent(shareIntent)
+        shareActionProvider.setOnShareTargetSelectedListener { source, intent ->
+            dataManager.updatePhotoShareCounter(marsPhoto)
+            true
+        }
         return true
     }
 
@@ -148,14 +172,14 @@ class ImageActivity : RxActivity() {
 
     private fun saveImageToGallery() {
 
-        RxPermissions.getInstance(this)
+        RxPermissions(this)
                 // Request permission for saving file.
                 .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 // filter not granted permission
                 .filter {
-//                  If permission not granted and shouldShowRequestPermissionRationale = show explain dialog. else show snackbar with gotosettings
+                    //                  If permission not granted and shouldShowRequestPermissionRationale = show explain dialog. else show snackbar with gotosettings
                     if (!it) {
                         if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) showExplainDialog()
                         else {
@@ -168,7 +192,7 @@ class ImageActivity : RxActivity() {
                 }
                 // Get Bitmap on background
                 .observeOn(Schedulers.io())
-                .map { Picasso.with(this).load(marsPhoto.imageUrl).get() }
+                .map { RoverApplication.APP.picasso().load(marsPhoto.imageUrl).get() }
                 // Save bitmap to gallery
                 .map { MediaStore.Images.Media.insertImage(contentResolver, it, "mars_photo_${marsPhoto.id}", "Photo saved from $appUrl") }
                 // Send broadcast for updating gallery
@@ -176,6 +200,9 @@ class ImageActivity : RxActivity() {
                     sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse(it)))
                     it
                 }
+                // Update counter for save
+                .doOnNext { dataManager.updatePhotoSaveCounter(marsPhoto) }
+
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     imagePath ->
@@ -189,11 +216,10 @@ class ImageActivity : RxActivity() {
                     it.printStackTrace()
                     Toast.makeText(this, "Error occured ${it.message}", Toast.LENGTH_SHORT).show()
                 })
-
     }
 
     private fun showExplainDialog() {
-        val dialog = AlertDialog.Builder(this)
+        AlertDialog.Builder(this)
                 .setTitle("Alert")
                 .setMessage("Without this permission I cannot save this nice photo to your gallery. If you want to save image please give permission.")
                 .setPositiveButton("Ok") { p0, p1 -> saveImageToGallery() }

@@ -11,10 +11,15 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.provider.Settings
 import android.text.TextUtils
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import com.sirelon.marsroverphotos.R
 import com.squareup.picasso.Picasso
 import java.util.*
@@ -63,3 +68,11 @@ inline fun <reified T : Parcelable> createParcel(
             override fun createFromParcel(source: Parcel): T? = createFromParcel(source)
             override fun newArray(size: Int): Array<out T?> = arrayOfNulls(size)
         }
+
+fun Any?.logD(){
+    Log.d("Sirelon", this?.toString() ?: "NULL")
+}
+
+fun Throwable.logE() {
+    Log.e("Sirelon", this.message, this)
+}

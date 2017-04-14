@@ -1,11 +1,11 @@
 package com.sirelon.marsroverphotos
 
 import android.content.Context
-import android.util.Log
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.network.RestApi
+import com.sirelon.marsroverphotos.firebase.firebasePhotos
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 
@@ -24,7 +24,6 @@ class DataManager(val context: Context, private val api: RestApi = RestApi()) {
         val mainObservable = Observable.fromCallable {
             val callResponse = api.getRoversPhotos(queryRequest)
             val response = callResponse.execute()
-            Log.e("Sirelon", "loadMarsPhotos RESPONSE " + response)
             if (response.isSuccessful)
                 response.body().photos
             else throw RuntimeException(response.errorBody().string())
@@ -73,5 +72,29 @@ class DataManager(val context: Context, private val api: RestApi = RestApi()) {
 
     val roverRepo by lazy {
         RoversRepository(context)
+    }
+
+    fun updatePhotoSeenCounter(marsPhoto: MarsPhoto?) {
+        marsPhoto?.let {
+            firebasePhotos.updatePhotoSeenCounter(marsPhoto).onErrorReturn { 0 }.subscribe()
+        }
+    }
+
+    fun updatePhotoScaleCounter(marsPhoto: MarsPhoto?) {
+        marsPhoto?.let {
+            firebasePhotos.updatePhotoScaleCounter(marsPhoto).onErrorReturn { 0 }.subscribe()
+        }
+    }
+
+    fun  updatePhotoSaveCounter(marsPhoto: MarsPhoto?) {
+        marsPhoto?.let {
+            firebasePhotos.updatePhotoSaveCounter(marsPhoto).onErrorReturn { 0 }.subscribe()
+        }
+    }
+
+    fun  updatePhotoShareCounter(marsPhoto: MarsPhoto?) {
+        marsPhoto?.let {
+            firebasePhotos.updatePhotoShareCounter(marsPhoto).onErrorReturn { 0 }.subscribe()
+        }
     }
 }
