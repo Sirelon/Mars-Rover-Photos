@@ -6,11 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
-import com.jakewharton.picasso.OkHttp3Downloader
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.inflate
-import com.sirelon.marsroverphotos.extensions.logE
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
