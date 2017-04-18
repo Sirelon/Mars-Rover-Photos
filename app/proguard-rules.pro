@@ -37,6 +37,7 @@
 # platform version. We know about them, and they are safe.
 -dontnote android.support.**
 -dontwarn android.support.**
+-dontobfuscate
 
 -optimizations !code/allocation/variable
 
