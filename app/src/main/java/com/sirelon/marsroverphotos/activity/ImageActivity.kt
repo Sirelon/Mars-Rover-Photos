@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
 import android.support.v4.view.MenuItemCompat
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AlertDialog
@@ -155,7 +154,7 @@ class ImageActivity : RxActivity() {
 
         shareActionProvider?.setShareIntent(shareIntent)
         shareActionProvider?.setOnShareTargetSelectedListener { source, intent ->
-            dataManager.updatePhotoShareCounter(marsPhoto)
+            dataManager.updatePhotoShareCounter(marsPhoto, intent.`package`)
             true
         }
         return true
