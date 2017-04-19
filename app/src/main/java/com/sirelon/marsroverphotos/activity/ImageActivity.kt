@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.support.design.widget.Snackbar
+import android.support.v4.app.ActivityCompat
 import android.support.v4.view.MenuItemCompat
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AlertDialog
@@ -153,7 +154,7 @@ class ImageActivity : RxActivity() {
 
         shareActionProvider?.setShareIntent(shareIntent)
         shareActionProvider?.setOnShareTargetSelectedListener { source, intent ->
-            dataManager.updatePhotoShareCounter(marsPhoto)
+            dataManager.updatePhotoShareCounter(marsPhoto, intent.`package`)
             true
         }
         return true
@@ -179,9 +180,9 @@ class ImageActivity : RxActivity() {
                 .observeOn(AndroidSchedulers.mainThread())
                 // filter not granted permission
                 .filter {
-                    //                  If permission not granted and shouldShowRequestPermissionRationale = show explain dialog. else show snackbar with gotosettings
+                    //  If permission not granted and shouldShowRequestPermissionRationale = show explain dialog. else show snackbar with gotosettings
                     if (!it) {
-                        if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) showExplainDialog()
+                        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) showExplainDialog()
                         else {
                             Snackbar.make(fullscreenImageRoot, "Without this permission I cannot save this nice photo to your gallery. If you want to save image please give permission in settings", Snackbar.LENGTH_LONG)
                                     .setAction("Go to Settings", { showAppSettings() })
