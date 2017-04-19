@@ -149,10 +149,10 @@ class ImageActivity : RxActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_image, menu)
-        val shareActionProvider = MenuItemCompat.getActionProvider(menu?.findItem(R.id.menu_item_share)) as ShareActionProvider
+        val shareActionProvider = MenuItemCompat.getActionProvider(menu?.findItem(R.id.menu_item_share)) as ShareActionProvider?
 
-        shareActionProvider.setShareIntent(shareIntent)
-        shareActionProvider.setOnShareTargetSelectedListener { source, intent ->
+        shareActionProvider?.setShareIntent(shareIntent)
+        shareActionProvider?.setOnShareTargetSelectedListener { source, intent ->
             dataManager.updatePhotoShareCounter(marsPhoto)
             true
         }
