@@ -30,7 +30,7 @@ android {
         applicationId "com.sirelon.marsroverphotos"
         minSdkVersion 14
         targetSdkVersion 25
-        versionCode 9
+        versionCode 10
         versionName "1.2.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         signingConfig signingConfigs.release
@@ -53,6 +53,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
 
 
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
