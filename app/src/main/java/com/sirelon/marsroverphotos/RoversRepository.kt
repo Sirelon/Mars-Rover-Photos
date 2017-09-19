@@ -78,7 +78,7 @@ class RoversRepository(context: Context) {
         Rover(
                 7,
                 "Spirit",
-                "http://www.exploratorium.edu/mars/images/rover1_br.jpg",
+                resourcePrefix + R.drawable.img_spirit,
                 "2004-01-04",
                 "2003-06-10",
                 "complete",
