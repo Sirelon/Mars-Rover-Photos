@@ -44,11 +44,13 @@ class RoversRepository(context: Context) {
     fun getAllRovers(): MutableList<Rover> =
             mutableListOf(getRover("curiosity"), getRover("opportunity"), getRover("spirit"))
 
+    private val resourcePrefix = "android.resource://com.sirelon.marsroverphotos/"
+
     val curiosity by lazy {
         Rover(
                 5,
                 "Curiosity",
-                "android.resource://com.sirelon.marsroverphotos/" + R.drawable.img_curiosity,
+                resourcePrefix + R.drawable.img_curiosity,
                 "2012-08-06",
                 "2011-11-26",
                 "active",
@@ -62,7 +64,7 @@ class RoversRepository(context: Context) {
         Rover(
                 6,
                 "Opportunity",
-                "http://www.spaceflightinsider.com/wp-content/uploads/2015/01/Mars-Exploration-Rover-Spirit-Opportunity-surface-of-Red-Planet-NASA-image-posted-on-SpaceFlight-Insider-647x518.jpg",
+                resourcePrefix + R.drawable.img_opportunity,
                 "2004-01-25",
                 "2003-07-07",
                 "active",
