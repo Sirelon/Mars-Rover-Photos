@@ -16,7 +16,7 @@ class RoversRepository(context: Context) {
     val gson: Gson = GsonBuilder().create()
 
     fun saveRover(rover: Rover) {
-        pref.edit().putString(rover.name.toLowerCase(), gson.toJson(rover)).apply();
+        pref.edit().putString(rover.name.toLowerCase(), gson.toJson(rover)).apply()
     }
 
     fun getRover(roverName: String): Rover {
@@ -49,8 +49,8 @@ class RoversRepository(context: Context) {
                 "2011-11-26",
                 "active",
                 1505,
-                "2016-10-30",
-                285665
+                "2017-09-18",
+                320999
         )
     }
 
@@ -63,8 +63,8 @@ class RoversRepository(context: Context) {
                 "2003-07-07",
                 "active",
                 4535,
-                "2016-10-27",
-                184544
+                "2017-02-22",
+                187093
         )
     }
 

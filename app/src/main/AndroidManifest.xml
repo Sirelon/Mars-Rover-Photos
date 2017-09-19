@@ -42,6 +42,7 @@
             android:name=".activity.PhotosActivity"
             android:parentActivityName=".activity.RoversActivity"
             android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode="singleTop"
             tools:ignore="UnusedAttribute">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

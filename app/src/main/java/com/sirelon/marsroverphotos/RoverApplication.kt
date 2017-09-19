@@ -36,7 +36,11 @@ class RoverApplication : Application() {
         DataManager(this, AnswersTracker())
     }
 
-    private fun picasso(): Picasso = Picasso.Builder(this).listener { picasso, uri, exception ->
-         exception?.logE()
-     }.downloader(OkHttp3Downloader(this)).loggingEnabled(BuildConfig.DEBUG).build()
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+    }
+
+    private fun picasso(): Picasso = Picasso.Builder(this).listener { _, _, exception ->
+        exception?.logE()
+    }.downloader(OkHttp3Downloader(this)).loggingEnabled(BuildConfig.DEBUG).build()
 }

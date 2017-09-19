@@ -63,11 +63,13 @@ class DataManager(val context: Context, private val tracker: ITracker, private v
                                             totalPhotos = roverResponse.totalPhotos
                                             status = roverResponse.status
                                         }
+
+                                        roverRepo.saveRover(newRover)
                                     }
 
                                     newRover
                                 } else
-                                    null
+                                    it
                             }
                                     .onErrorReturnItem(it)
                                     .subscribeOn(Schedulers.newThread())

@@ -78,11 +78,11 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
 
         if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_QUERY_REQUEST)) {
             // Activity after savedInstance
-            rover = savedInstanceState.getParcelable<Rover>(EXTRA_ROVER)
-            queryRequest = savedInstanceState.getParcelable<PhotosQueryRequest>(EXTRA_QUERY_REQUEST)
+            rover = savedInstanceState.getParcelable(EXTRA_ROVER)
+            queryRequest = savedInstanceState.getParcelable(EXTRA_QUERY_REQUEST)
         } else {
             // New Activity
-            rover = intent.getParcelableExtra<Rover>(EXTRA_ROVER)
+            rover = intent.getParcelableExtra(EXTRA_ROVER)
 
             queryRequest = randomPhotosQueryRequest()
         }
@@ -131,6 +131,13 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
             loadCacheOrRequest()
         else
             loadFreshData()
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        rover = intent.getParcelableExtra(EXTRA_ROVER)
+
+        queryRequest = randomPhotosQueryRequest()
     }
 
     private fun randomPhotosQueryRequest() = PhotosQueryRequest(rover.name, 1.random(rover.maxSol.toInt()).toLong(), null)
