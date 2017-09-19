@@ -129,6 +129,9 @@
 }
 
 -dontwarn okio.**
+-dontwarn javax.annotation.Nullable
+-dontwarn javax.annotation.ParametersAreNonnullByDefault
+
 -dontwarn com.sirelon.marsroverphotos.adapter.**
 
 -keep interface cuk.co.senab..** { *; }
