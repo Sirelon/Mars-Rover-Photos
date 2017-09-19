@@ -88,6 +88,6 @@ open class RxActivity : AppCompatActivity() {
     }
 
     private val contentView by lazy {
-        this.findViewById(android.R.id.content) as ViewGroup
+        findViewById<ViewGroup>(android.R.id.content)
     }
 }

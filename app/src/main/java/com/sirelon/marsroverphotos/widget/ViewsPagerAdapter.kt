@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
+import com.github.chrisbanes.photoview.PhotoViewAttacher
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.inflate
@@ -13,7 +14,6 @@ import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.view_image.view.*
-import uk.co.senab.photoview.PhotoViewAttacher
 
 /**
  * @author romanishin
@@ -41,7 +41,7 @@ class ViewsPagerAdapter(context: Context, val data: List<MarsPhoto>?) : PagerAda
     private fun showImage(imageView: ImageView, fullscreenImageProgress: View, position: Int) {
         val photoViewAttacher = PhotoViewAttacher(imageView)
 
-        photoViewAttacher.setOnScaleChangeListener { scaleFactor, focusX, focusY ->
+        photoViewAttacher.setOnScaleChangeListener { _, _, _ ->
             scaleCallback?.invoke()
         }
 

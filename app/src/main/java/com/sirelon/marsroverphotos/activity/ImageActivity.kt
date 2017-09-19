@@ -16,6 +16,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import com.github.chrisbanes.photoview.PhotoViewAttacher
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
 import com.sirelon.marsroverphotos.R
@@ -31,7 +32,7 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_about_app.*
 import kotlinx.android.synthetic.main.activity_image.*
 import kotlinx.android.synthetic.main.view_image.view.*
-import uk.co.senab.photoview.PhotoViewAttacher
+
 
 class ImageActivity : RxActivity() {
 

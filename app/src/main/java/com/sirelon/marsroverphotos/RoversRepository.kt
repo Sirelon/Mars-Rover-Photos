@@ -38,7 +38,7 @@ class RoversRepository(context: Context) {
             }
 
         } else
-            return moshiAdapter.fromJson(roverJson)
+            return moshiAdapter.fromJson(roverJson)!!
     }
 
     fun getAllRovers(): MutableList<Rover> =

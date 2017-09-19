@@ -59,7 +59,7 @@ inline fun DatabaseReference.isExist(): io.reactivex.Observable<Boolean> {
 }
 
 fun DataSnapshot.toFirebasePhoto(): FirebasePhoto {
-    return this.getValue(FirebasePhoto::class.java)
+    return this.getValue(FirebasePhoto::class.java)!!
 }
 
 fun FirebasePhoto.toMarsPhoto() = MarsPhoto(

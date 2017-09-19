@@ -9,7 +9,6 @@ import android.support.v7.widget.StaggeredGridLayoutManager
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -72,7 +71,6 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        Log.d(TAG, "Asdasd")
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -347,7 +345,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                 override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 }
 
-                override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                override fun onTextChanged(text: CharSequence, p1: Int, p2: Int, p3: Int) {
                     it.onNext(text)
                 }
             })

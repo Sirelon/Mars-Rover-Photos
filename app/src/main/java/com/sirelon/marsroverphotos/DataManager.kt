@@ -26,8 +26,8 @@ class DataManager(val context: Context, private val tracker: ITracker, private v
             val callResponse = api.getRoversPhotos(queryRequest)
             val response = callResponse.execute()
             if (response.isSuccessful)
-                response.body().photos
-            else throw RuntimeException(response.errorBody().string())
+                response.body()?.photos
+            else throw RuntimeException(response.errorBody()?.string())
         }
 
         lastPhotosRequest = mainObservable.cache()
@@ -50,15 +50,18 @@ class DataManager(val context: Context, private val tracker: ITracker, private v
                                 val callResponse = api.getRoverInfo(it.name)
                                 val response = callResponse.execute()
                                 if (response.isSuccessful) {
-                                    val roverResponse = response.body().roverInfo
+                                    val roverResponse = response.body()?.roverInfo
                                     val newRover = it.copy()
 
-                                    newRover.landingDate = roverResponse.landingDate
-                                    newRover.launchDate = roverResponse.launchDate
-                                    newRover.maxDate = roverResponse.maxDate
-                                    newRover.maxSol = roverResponse.maxSol
-                                    newRover.totalPhotos = roverResponse.totalPhotos
-                                    newRover.status = roverResponse.status
+                                    roverResponse?.apply {
+                                        landingDate = roverResponse.landingDate
+                                        launchDate = roverResponse.launchDate
+                                        maxDate = roverResponse.maxDate
+                                        maxSol = roverResponse.maxSol
+                                        totalPhotos = roverResponse.totalPhotos
+                                        status = roverResponse.status
+                                    }
+
                                     newRover
                                 } else
                                     null

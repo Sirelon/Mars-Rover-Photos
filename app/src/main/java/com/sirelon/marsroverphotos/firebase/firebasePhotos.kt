@@ -1,9 +1,7 @@
 package com.sirelon.marsroverphotos.firebase
 
-import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.sirelon.marsroverphotos.models.MarsPhoto
-import com.sirelon.marsroverphotos.models.RoverCamera
 import io.reactivex.Observable
 
 /**
@@ -76,8 +74,8 @@ object firebasePhotos {
         val saveRef = FirebaseDatabase.getInstance().getReference(firebasePhotoRef(photo) + "/" +
                 FirebaseConstants.PHOTOS_SHARE)
         return saveRef.singleEventFirebase()
-                .map { it.getValue(Long::class.java) + 1 }
-                .flatMap { saveRef.setValueObservable<Long>(it) }
+                .map { it.getValue(Long::class.java)!! + 1 }
+                .flatMap { saveRef.setValueObservable(it) }
     }
 
 
@@ -85,24 +83,24 @@ object firebasePhotos {
         val saveRef = FirebaseDatabase.getInstance().getReference(firebasePhotoRef(photo) + "/" +
                 FirebaseConstants.PHOTOS_SAVE)
         return saveRef.singleEventFirebase()
-                .map { it.getValue(Long::class.java) + 1 }
-                .flatMap { saveRef.setValueObservable<Long>(it) }
+                .map { it.getValue(Long::class.java)!! + 1 }
+                .flatMap { saveRef.setValueObservable(it) }
     }
 
     private fun incrementSeenCount(photo: MarsPhoto): Observable<Long> {
         val seenRef = FirebaseDatabase.getInstance().getReference(firebasePhotoRef(photo) + "/" +
                 FirebaseConstants.PHOTOS_SEEN)
         return seenRef.singleEventFirebase()
-                .map { it.getValue(Long::class.java) + 1 }
-                .flatMap { seenRef.setValueObservable<Long>(it) }
+                .map { it.getValue(Long::class.java)!! + 1 }
+                .flatMap { seenRef.setValueObservable(it) }
     }
 
     private fun incrementScaleCount(photo: MarsPhoto): Observable<Long> {
         val scaleRef = FirebaseDatabase.getInstance().getReference(firebasePhotoRef(photo) + "/" +
                 FirebaseConstants.PHOTOS_SCALE)
         return scaleRef.singleEventFirebase()
-                .map { it.getValue(Long::class.java) + 1 }
-                .flatMap { scaleRef.setValueObservable<Long>(it) }
+                .map { it.getValue(Long::class.java)!! + 1 }
+                .flatMap { scaleRef.setValueObservable(it) }
     }
 
     private fun firebasePhotoRef(photo: MarsPhoto) = "${FirebaseConstants.PHOTOS_TABLE}/${photo.id}"
