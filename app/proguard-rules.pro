@@ -131,14 +131,11 @@
 -dontwarn okio.**
 -dontwarn com.sirelon.marsroverphotos.adapter.**
 
-# Moshi
--keep class com.squareup.moshi.** { *; }
--keep interface com.squareup.moshi.** { *; }
--dontwarn com.squareup.moshi.**
--keepclassmembers class ** {
-    @com.squareup.moshi.FromJson *;
-    @com.squareup.moshi.ToJson *;
-}
-
 -keep interface cuk.co.senab..** { *; }
 -dontwarn com.squareup.okhttp.**
+
+# Prevent proguard from stripping interface information from TypeAdapterFactory,
+# JsonSerializer, JsonDeserializer instances (so they can be used in @JsonAdapter)
+-keep class * implements com.google.gson.TypeAdapterFactory
+-keep class * implements com.google.gson.JsonSerializer
+-keep class * implements com.google.gson.JsonDeserializer

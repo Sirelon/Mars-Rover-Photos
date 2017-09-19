@@ -1,11 +1,13 @@
 package com.sirelon.marsroverphotos.network
 
+import android.support.annotation.Keep
 import com.google.gson.annotations.SerializedName
 
 /**
  * @author romanishin
  * @since 01.11.16 on 11:25
  */
+@Keep
 data class RoverResponse(
         @SerializedName(value = "photo_manifest")
         var roverInfo: RoverInfo

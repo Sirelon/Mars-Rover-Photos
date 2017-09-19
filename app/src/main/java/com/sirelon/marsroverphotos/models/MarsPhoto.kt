@@ -2,6 +2,7 @@ package com.sirelon.marsroverphotos.models
 
 import android.os.Parcel
 import android.os.Parcelable
+import android.support.annotation.Keep
 import com.google.gson.annotations.SerializedName
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
 import com.sirelon.marsroverphotos.extensions.createParcel
@@ -10,7 +11,7 @@ import com.sirelon.marsroverphotos.extensions.createParcel
  * @author romanishin
  * @since 31.10.16 on 11:19
  */
-
+@Keep
 data class MarsPhoto(
         @SerializedName(value = "id")
         val id: Long,

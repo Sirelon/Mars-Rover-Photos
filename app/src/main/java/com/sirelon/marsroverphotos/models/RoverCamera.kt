@@ -2,6 +2,7 @@ package com.sirelon.marsroverphotos.models
 
 import android.os.Parcel
 import android.os.Parcelable
+import android.support.annotation.Keep
 import com.google.gson.annotations.SerializedName
 import com.sirelon.marsroverphotos.extensions.createParcel
 
@@ -9,6 +10,7 @@ import com.sirelon.marsroverphotos.extensions.createParcel
  * @author romanishin
  * @since 03.11.16 on 17:01
  */
+@Keep
 data class RoverCamera(
         @SerializedName(value = "id")
         val id: Int,
