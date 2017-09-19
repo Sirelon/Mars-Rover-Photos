@@ -9,6 +9,7 @@ import android.support.v7.widget.StaggeredGridLayoutManager
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -36,7 +37,7 @@ import java.util.*
 class PhotosActivity : RxActivity(), OnModelChooseListener {
 
     companion object {
-        val EXTRA_ROVER = ".extraRover"
+        const val EXTRA_ROVER = ".extraRover"
         val EXTRA_QUERY_REQUEST = ".extraQueryRequest"
 
         fun createIntent(context: Context, rover: Rover): Intent {
@@ -71,6 +72,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        Log.d(TAG, "Asdasd")
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
