@@ -1,34 +1,34 @@
 package com.sirelon.marsroverphotos.network
 
-import com.squareup.moshi.Json
+import com.google.gson.annotations.SerializedName
 
 /**
  * @author romanishin
  * @since 01.11.16 on 11:25
  */
 data class RoverResponse(
-        @Json(name = "photo_manifest")
+        @SerializedName(value = "photo_manifest")
         var roverInfo: RoverInfo
 )
 
 data class RoverInfo(
-        @Json(name = "name")
+        @SerializedName(value = "name")
         var name: String,
 
-        @Json(name = "landing_date")
+        @SerializedName(value = "landing_date")
         var landingDate: String,
 
-        @Json(name = "launch_date")
+        @SerializedName(value = "launch_date")
         var launchDate: String,
 
-        @Json(name = "status")
+        @SerializedName(value = "status")
         var status: String,
 
-        @Json(name = "max_sol")
+        @SerializedName(value = "max_sol")
         var maxSol: Long,
 
-        @Json(name = "max_date")
+        @SerializedName(value = "max_date")
         var maxDate: String,
 
-        @Json(name = "total_photos")
+        @SerializedName(value = "total_photos")
         var totalPhotos: Int)

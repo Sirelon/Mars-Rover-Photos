@@ -2,24 +2,24 @@ package com.sirelon.marsroverphotos.models
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.google.gson.annotations.SerializedName
 import com.sirelon.marsroverphotos.extensions.createParcel
-import com.squareup.moshi.Json
 
 /**
  * @author romanishin
  * @since 03.11.16 on 17:01
  */
 data class RoverCamera(
-        @Json(name = "id")
+        @SerializedName(value = "id")
         val id: Int,
 
-        @Json(name = "rover_id")
+        @SerializedName(value = "rover_id")
         val roverId: Long,
 
-        @Json(name = "name")
+        @SerializedName(value = "name")
         val name: String,
 
-        @Json(name = "full_name")
+        @SerializedName(value = "full_name")
         val fullName: String
 ) : Parcelable {
 

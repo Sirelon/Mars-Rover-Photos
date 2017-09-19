@@ -1,6 +1,7 @@
 package com.sirelon.marsroverphotos
 
 import android.content.Context
+import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.firebase.firebasePhotos
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.models.PhotosQueryRequest
@@ -50,17 +51,19 @@ class DataManager(val context: Context, private val tracker: ITracker, private v
                                 val callResponse = api.getRoverInfo(it.name)
                                 val response = callResponse.execute()
                                 if (response.isSuccessful) {
-                                    val roverResponse = response.body()?.roverInfo
+//                                    response.body()?.string().logD()
+                                    response.body()?.logD()
+//                                    val roverResponse = response.body()?.roverInfo
                                     val newRover = it.copy()
 
-                                    roverResponse?.apply {
-                                        landingDate = roverResponse.landingDate
-                                        launchDate = roverResponse.launchDate
-                                        maxDate = roverResponse.maxDate
-                                        maxSol = roverResponse.maxSol
-                                        totalPhotos = roverResponse.totalPhotos
-                                        status = roverResponse.status
-                                    }
+//                                    roverResponse?.apply {
+//                                        landingDate = roverResponse.landingDate
+//                                        launchDate = roverResponse.launchDate
+//                                        maxDate = roverResponse.maxDate
+//                                        maxSol = roverResponse.maxSol
+//                                        totalPhotos = roverResponse.totalPhotos
+//                                        status = roverResponse.status
+//                                    }
 
                                     newRover
                                 } else

@@ -2,9 +2,9 @@ package com.sirelon.marsroverphotos
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.sirelon.marsroverphotos.models.Rover
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.Moshi
 
 /**
  * @author romanishin
@@ -12,17 +12,11 @@ import com.squareup.moshi.Moshi
  */
 class RoversRepository(context: Context) {
 
-    val pref: SharedPreferences
-    val moshiAdapter: JsonAdapter<Rover>
-
-    init {
-        pref = context.getSharedPreferences("MARS_ROVERS_PHOTOS_PREFS", Context.MODE_PRIVATE)
-        val moshi = Moshi.Builder().build()
-        moshiAdapter = moshi.adapter(Rover::class.java)
-    }
+    val pref: SharedPreferences = context.getSharedPreferences("MARS_ROVERS_PHOTOS_PREFS", Context.MODE_PRIVATE)
+    val gson: Gson = GsonBuilder().create()
 
     fun saveRover(rover: Rover) {
-        pref.edit().putString(rover.name.toLowerCase(), moshiAdapter.toJson(rover)).apply();
+        pref.edit().putString(rover.name.toLowerCase(), gson.toJson(rover)).apply();
     }
 
     fun getRover(roverName: String): Rover {
@@ -38,7 +32,7 @@ class RoversRepository(context: Context) {
             }
 
         } else
-            return moshiAdapter.fromJson(roverJson)!!
+            return gson.fromJson(roverJson, Rover::class.java)!!
     }
 
     fun getAllRovers(): MutableList<Rover> =
