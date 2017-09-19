@@ -29,13 +29,14 @@ class RoverApplication : Application() {
         Fabric.with(fabric)
 
         FirebaseDatabase.getInstance().setLogLevel(if (BuildConfig.DEBUG) Logger.Level.DEBUG else Logger.Level.NONE)
+        Picasso.setSingletonInstance(picasso())
     }
 
     val dataManger by lazy {
         DataManager(this, AnswersTracker())
     }
 
-    fun picasso(): Picasso = Picasso.Builder(this).listener { picasso, uri, exception ->
+    private fun picasso(): Picasso = Picasso.Builder(this).listener { picasso, uri, exception ->
          exception?.logE()
-     }.downloader(OkHttp3Downloader(this)).build()
+     }.downloader(OkHttp3Downloader(this)).loggingEnabled(BuildConfig.DEBUG).build()
 }

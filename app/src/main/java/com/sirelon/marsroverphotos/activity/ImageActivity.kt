@@ -20,12 +20,12 @@ import com.github.chrisbanes.photoview.PhotoViewAttacher
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
 import com.sirelon.marsroverphotos.R
-import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.inflate
 import com.sirelon.marsroverphotos.extensions.showAppSettings
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.widget.ViewsPagerAdapter
 import com.squareup.picasso.Callback
+import com.squareup.picasso.Picasso
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -92,7 +92,7 @@ class ImageActivity : RxActivity() {
                     .toList()
                     .subscribe(
                             {
-                                val pagerAdapter = ViewsPagerAdapter(this, it)
+                                val pagerAdapter = ViewsPagerAdapter(it)
                                 imagePager.adapter = pagerAdapter
                                 pagerAdapter.scaleCallback = {
                                     if (!scaleWasSet)
@@ -132,7 +132,7 @@ class ImageActivity : RxActivity() {
 
         val photoViewAttacher = PhotoViewAttacher(imageRoot.fullscreenImage)
 
-        RoverApplication.APP.picasso().load(marsPhoto.imageUrl).tag(marsPhoto.id).into(imageRoot
+        Picasso.with(this).load(marsPhoto.imageUrl).tag(marsPhoto.id).into(imageRoot
                 .fullscreenImage, object :
                 Callback {
             override fun onSuccess() {
@@ -194,7 +194,7 @@ class ImageActivity : RxActivity() {
                 }
                 // Get Bitmap on background
                 .observeOn(Schedulers.io())
-                .map { RoverApplication.APP.picasso().load(marsPhoto.imageUrl).get() }
+                .map { Picasso.with(this).load(marsPhoto.imageUrl).get() }
                 // Save bitmap to gallery
                 .map { MediaStore.Images.Media.insertImage(contentResolver, it, "mars_photo_${marsPhoto.id}", "Photo saved from $appUrl") }
                 // Send broadcast for updating gallery

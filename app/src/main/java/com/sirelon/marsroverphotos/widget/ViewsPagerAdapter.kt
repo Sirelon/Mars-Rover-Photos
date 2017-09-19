@@ -1,6 +1,5 @@
 package com.sirelon.marsroverphotos.widget
 
-import android.content.Context
 import android.support.v4.view.PagerAdapter
 import android.view.View
 import android.view.ViewGroup
@@ -8,7 +7,6 @@ import android.widget.ImageView
 import android.widget.Toast
 import com.github.chrisbanes.photoview.PhotoViewAttacher
 import com.sirelon.marsroverphotos.R
-import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.inflate
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.squareup.picasso.Callback
@@ -19,15 +17,9 @@ import kotlinx.android.synthetic.main.view_image.view.*
  * @author romanishin
  * @since 16.11.16 on 18:11
  */
-class ViewsPagerAdapter(context: Context, val data: List<MarsPhoto>?) : PagerAdapter() {
-
-    val picasso: Picasso
+class ViewsPagerAdapter(val data: List<MarsPhoto>?) : PagerAdapter() {
 
     var scaleCallback : (() -> Unit)? = null
-
-    init {
-        picasso = RoverApplication.APP.picasso()
-    }
 
     override fun instantiateItem(container: ViewGroup?, position: Int): Any {
         container!!
@@ -47,7 +39,7 @@ class ViewsPagerAdapter(context: Context, val data: List<MarsPhoto>?) : PagerAda
 
         val marsPhoto = data?.get(position) ?: return
 
-        picasso.load(marsPhoto.imageUrl).tag(marsPhoto.id).into(imageView, object : Callback {
+        Picasso.with(imageView.context).load(marsPhoto.imageUrl).tag(marsPhoto.id).into(imageView, object : Callback {
             override fun onSuccess() {
                 fullscreenImageProgress.visibility = View.GONE
                 photoViewAttacher.update()
@@ -64,8 +56,10 @@ class ViewsPagerAdapter(context: Context, val data: List<MarsPhoto>?) : PagerAda
     }
 
     override fun destroyItem(container: ViewGroup?, position: Int, viewRoot: Any?) {
-        container?.removeView(viewRoot as View)
-        picasso.cancelTag(data?.get(position)?.id)
+        container?.let {
+            container.removeView(viewRoot as View)
+            Picasso.with(container.context).cancelTag(data?.get(position)?.id)
+        }
     }
 
     override fun isViewFromObject(view: View?, `object`: Any?): Boolean {
