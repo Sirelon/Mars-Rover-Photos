@@ -66,7 +66,7 @@ dependencies {
 
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     testImplementation 'org.jetbrains.kotlin:kotlin-test-junit:1.0.6'
-    testImplementation "com.nhaarman:mockito-kotlin:1.1.0"
+    testImplementation "com.nhaarman:mockito-kotlin:1.5.0"
     testImplementation 'org.amshove.kluent:kluent:1.29'
 
 
