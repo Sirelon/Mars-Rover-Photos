@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
+import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.StaggeredGridLayoutManager
 import android.text.Editable
 import android.text.TextUtils
@@ -115,6 +116,23 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
             layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
 
             this.adapter = adapter
+
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    if (dy > 0 || dy < 0 && actionRandom.isShown) {
+                        actionRandom.hide()
+                    }
+                }
+
+                override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        actionRandom.show()
+                    }
+
+                    super.onScrollStateChanged(recyclerView, newState)
+                }
+            })
         }
 
         actionRandom.setOnClickListener {
@@ -323,8 +341,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         val dialog = AlertDialog.Builder(this)
                 .setView(dialogView)
                 .setNegativeButton("Cancel", null)
-                .setPositiveButton("Ok", {
-                    dialogInterface, i ->
+                .setPositiveButton("Ok", { dialogInterface, i ->
                     val sol = dialogView.solInput.text.toString().toLong()
                     updateDateEearthChoose(dateUtil.dateFromSol(sol))
                     loadDataBySol(sol)
