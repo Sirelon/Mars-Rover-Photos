@@ -1,6 +1,9 @@
 package com.sirelon.marsroverphotos.network
 
+import android.content.Context
+import com.readystatesoftware.chuck.ChuckInterceptor
 import com.sirelon.marsroverphotos.models.PhotosQueryRequest
+import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -10,11 +13,16 @@ import retrofit2.converter.moshi.MoshiConverterFactory
  * @since 31.10.16 on 15:28
  */
 
-class RestApi {
+class RestApi(context: Context) {
     private val nasaApi: NasaApi
 
     init {
+        val okkClient = OkHttpClient.Builder()
+                .addInterceptor(ChuckInterceptor(context))
+                .build()
+
         val retrofit = Retrofit.Builder()
+                .client(okkClient)
                 .baseUrl("https://api.nasa.gov")
                 .addConverterFactory(MoshiConverterFactory.create())
                 .build()

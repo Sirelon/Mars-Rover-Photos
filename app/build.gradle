@@ -102,6 +102,9 @@ dependencies {
     implementation "com.google.firebase:firebase-ads:$fireBaseVer"
     implementation "com.google.firebase:firebase-crash:$fireBaseVer"
     implementation "com.google.firebase:firebase-database:$fireBaseVer"
+
+    debugImplementation 'com.readystatesoftware.chuck:library:1.1.0'
+    releaseImplementation 'com.readystatesoftware.chuck:library-no-op:1.1.0'
 }
 apply plugin: 'com.google.gms.google-services'
 

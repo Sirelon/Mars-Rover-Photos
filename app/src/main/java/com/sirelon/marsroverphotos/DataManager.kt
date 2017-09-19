@@ -14,7 +14,7 @@ import io.reactivex.schedulers.Schedulers
  * @author romanishin
  * @since 31.10.16 on 12:43
  */
-class DataManager(val context: Context, private val tracker: ITracker, private val api: RestApi = RestApi()) {
+class DataManager(val context: Context, private val tracker: ITracker, private val api: RestApi = RestApi(context)) {
 
     /**
      * This var if you want to reuse the mainObservable without making new request on server
