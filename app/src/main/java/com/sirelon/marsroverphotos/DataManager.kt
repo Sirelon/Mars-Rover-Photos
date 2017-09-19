@@ -1,7 +1,6 @@
 package com.sirelon.marsroverphotos
 
 import android.content.Context
-import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.firebase.firebasePhotos
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.models.PhotosQueryRequest
@@ -51,19 +50,20 @@ class DataManager(val context: Context, private val tracker: ITracker, private v
                                 val callResponse = api.getRoverInfo(it.name)
                                 val response = callResponse.execute()
                                 if (response.isSuccessful) {
-//                                    response.body()?.string().logD()
-                                    response.body()?.logD()
-//                                    val roverResponse = response.body()?.roverInfo
                                     val newRover = it.copy()
 
-//                                    roverResponse?.apply {
-//                                        landingDate = roverResponse.landingDate
-//                                        launchDate = roverResponse.launchDate
-//                                        maxDate = roverResponse.maxDate
-//                                        maxSol = roverResponse.maxSol
-//                                        totalPhotos = roverResponse.totalPhotos
-//                                        status = roverResponse.status
-//                                    }
+                                    val roverResponse = response.body()?.roverInfo
+
+                                    if (roverResponse != null) {
+                                        newRover.apply {
+                                            landingDate = roverResponse.landingDate
+                                            launchDate = roverResponse.launchDate
+                                            maxDate = roverResponse.maxDate
+                                            maxSol = roverResponse.maxSol
+                                            totalPhotos = roverResponse.totalPhotos
+                                            status = roverResponse.status
+                                        }
+                                    }
 
                                     newRover
                                 } else
@@ -95,14 +95,14 @@ class DataManager(val context: Context, private val tracker: ITracker, private v
         }
     }
 
-    fun  updatePhotoSaveCounter(marsPhoto: MarsPhoto?) {
+    fun updatePhotoSaveCounter(marsPhoto: MarsPhoto?) {
         marsPhoto?.let {
             firebasePhotos.updatePhotoSaveCounter(marsPhoto).onErrorReturn { 0 }.subscribe()
             tracker.trackSave(marsPhoto)
         }
     }
 
-    fun  updatePhotoShareCounter(marsPhoto: MarsPhoto?, packageName: String) {
+    fun updatePhotoShareCounter(marsPhoto: MarsPhoto?, packageName: String) {
         marsPhoto?.let {
             firebasePhotos.updatePhotoShareCounter(marsPhoto).onErrorReturn { 0 }.subscribe()
             tracker.trackShare(marsPhoto, packageName)

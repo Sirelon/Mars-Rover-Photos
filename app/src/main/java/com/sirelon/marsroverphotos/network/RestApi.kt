@@ -4,7 +4,6 @@ import android.content.Context
 import com.readystatesoftware.chuck.ChuckInterceptor
 import com.sirelon.marsroverphotos.models.PhotosQueryRequest
 import okhttp3.OkHttpClient
-import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -39,9 +38,5 @@ class RestApi(context: Context) {
 
     fun getRoverInfo(roverName: String): Call<RoverResponse>{
         return nasaApi.getRoverInfo(roverName)
-    }
-
-    fun getRoverInfoPlain(roverName: String): Call<ResponseBody>{
-        return nasaApi.getRoverInfoPlain(roverName)
     }
 }
