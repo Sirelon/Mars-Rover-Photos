@@ -55,7 +55,6 @@ class RoversActivity : RxActivity(), OnModelChooseListener {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnError(errorConsumer { loadData(adapter) })
-                        .filter { it != null }
                         .subscribe({ adapter.addOrReplace(it) }, Throwable::printStackTrace)
 
         subscriptions.add(subscription)

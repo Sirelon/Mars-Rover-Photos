@@ -16,10 +16,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ValueEventListener
+import com.sirelon.marsroverphotos.BuildConfig
 import com.sirelon.marsroverphotos.R
 import com.squareup.picasso.Picasso
 import java.util.*
@@ -36,8 +33,8 @@ infix fun ImageView.loadImage(imageUrl: String?) {
     if (TextUtils.isEmpty(imageUrl))
         this.setImageResource(R.drawable.img_placeholder)
     else {
-//        Picasso.with(context).setIndicatorsEnabled(true)
-        Picasso.with(context).load(imageUrl).placeholder(R.drawable.img_placeholder).into(this)
+        Picasso.with(context).setIndicatorsEnabled(BuildConfig.DEBUG)
+        Picasso.with(context).load(imageUrl).resize(200, 200).placeholder(R.drawable.img_placeholder).into(this)
     }
 }
 

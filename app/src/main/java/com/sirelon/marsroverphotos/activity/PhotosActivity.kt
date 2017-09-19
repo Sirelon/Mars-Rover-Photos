@@ -176,8 +176,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnError { (photosList.adapter as ViewTypeAdapter).stopLoading() }
                 .doOnError(errorConsumer({ loadFreshData() }))
-                .filter { it != null }
-                .map { addAdToData(it!!) }
+                .map { addAdToData(it) }
     }
 
     private fun addAdToData(dataList: MutableList<out ViewType>): MutableList<out ViewType> {

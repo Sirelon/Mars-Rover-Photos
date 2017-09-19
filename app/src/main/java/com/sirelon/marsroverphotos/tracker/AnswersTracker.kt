@@ -23,7 +23,7 @@ class AnswersTracker : ITracker {
     override fun trackSeen(photo: MarsPhoto) {
         Answers.getInstance().logContentView(ContentViewEvent()
                 .putContentId(photo.id.toString())
-                .putContentName(photo.name)
+                .putContentName(photo.name ?: "Null")
                 .putContentType(TYPE_MARS_PHOTO)
                 .putCustomAttribute(ATTR_MARS_PHOTO_URL, photo.imageUrl))
     }
@@ -31,7 +31,7 @@ class AnswersTracker : ITracker {
     override fun trackScale(photo: MarsPhoto) {
         Answers.getInstance().logCustom(CustomEvent(EVENT_MARS_PHOTO_SCALE)
                 .putCustomAttribute(ATTR_MARS_PHOTO_ID, photo.id)
-                .putCustomAttribute(ATTR_MARS_PHOTO_NAME, photo.name)
+                .putCustomAttribute(ATTR_MARS_PHOTO_NAME, photo.name ?: "Null")
                 .putCustomAttribute(ATTR_MARS_PHOTO_URL, photo.imageUrl))
     }
 
@@ -39,7 +39,7 @@ class AnswersTracker : ITracker {
         Answers.getInstance().logShare(ShareEvent()
                 .putMethod(packageName)
                 .putContentId(photo.id.toString())
-                .putContentName(photo.name)
+                .putContentName(photo.name ?: "Null")
                 .putContentType(TYPE_MARS_PHOTO)
                 .putCustomAttribute(ATTR_MARS_PHOTO_URL, photo.imageUrl))
     }
@@ -47,7 +47,7 @@ class AnswersTracker : ITracker {
     override fun trackSave(photo: MarsPhoto) {
         Answers.getInstance().logCustom(CustomEvent(EVENT_MARS_PHOTO_SAVE)
                 .putCustomAttribute(ATTR_MARS_PHOTO_ID, photo.id)
-                .putCustomAttribute(ATTR_MARS_PHOTO_NAME, photo.name)
+                .putCustomAttribute(ATTR_MARS_PHOTO_NAME, photo.name ?: "Null")
                 .putCustomAttribute(ATTR_MARS_PHOTO_URL, photo.imageUrl))
     }
 }
