@@ -1,1 +1,1 @@
-[{"outputType":{"type":"APK"},"apkInfo":{"type":"MAIN","splits":[],"versionCode":10},"outputFile":{"path":"/Users/Sirelon/Documents/Projects/Other/Mars-Rover-Photos/app/release/app-release.apk"},"properties":{"packageId":"com.sirelon.marsroverphotos","split":""}}]
+[{"outputType":{"type":"APK"},"apkInfo":{"type":"MAIN","splits":[],"versionCode":11},"path":"app-release.apk","properties":{"packageId":"com.sirelon.marsroverphotos","split":"","minSdkVersion":"14"}}]

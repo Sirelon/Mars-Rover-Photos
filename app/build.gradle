@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'io.fabric'
+apply plugin: 'com.google.firebase.firebase-perf'
 
 // Create a variable called keystorePropertiesFile, and initialize it to your
 // keystore.properties file, in the rootProject folder.
@@ -30,7 +31,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 26
         versionCode 11
-        versionName "1.3.0"
+        versionName "1.2.4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         signingConfig signingConfigs.release
         vectorDrawables.useSupportLibrary = true
@@ -105,6 +106,7 @@ dependencies {
     implementation "com.google.firebase:firebase-ads:$fireBaseVer"
     implementation "com.google.firebase:firebase-crash:$fireBaseVer"
     implementation "com.google.firebase:firebase-database:$fireBaseVer"
+    implementation "com.google.firebase:firebase-perf:$fireBaseVer"
 
     debugImplementation 'com.readystatesoftware.chuck:library:1.1.0'
     releaseImplementation 'com.readystatesoftware.chuck:library-no-op:1.1.0'
