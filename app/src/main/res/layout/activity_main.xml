@@ -59,7 +59,6 @@
         android:layout_margin="16dp"
         app:layout_anchor="@id/photos_list"
         app:layout_anchorGravity="bottom|end"
-        app:layout_behavior="com.sirelon.marsroverphotos.widget.ScrollAwareFABBehavior"
         app:srcCompat="@drawable/ic_autorenew" />
 
 </android.support.design.widget.CoordinatorLayout>
