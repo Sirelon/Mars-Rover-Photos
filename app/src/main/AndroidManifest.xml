@@ -52,6 +52,7 @@
             android:name=".activity.ImageActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_image"
+            android:launchMode="singleTop"
             android:parentActivityName=".activity.PhotosActivity"
             android:theme="@style/FullscreenTheme"
             tools:ignore="UnusedAttribute">
