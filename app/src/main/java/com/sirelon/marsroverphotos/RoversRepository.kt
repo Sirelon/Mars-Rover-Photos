@@ -48,7 +48,7 @@ class RoversRepository(context: Context) {
         Rover(
                 5,
                 "Curiosity",
-                "http://estaticos.muyinteresante.es/uploads/images/article/55365b6b34099b0279c8fa99/marte-curiosity.jpg",
+                "android.resource://com.sirelon.marsroverphotos/" + R.drawable.img_curiosity,
                 "2012-08-06",
                 "2011-11-26",
                 "active",

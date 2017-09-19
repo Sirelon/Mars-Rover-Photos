@@ -74,7 +74,7 @@ class DataManager(val context: Context, private val tracker: ITracker, private v
 
     private fun localRovers(): List<Rover> = roverRepo.getAllRovers()
 
-    val roverRepo by lazy {
+    private val roverRepo by lazy {
         RoversRepository(context)
     }
 
