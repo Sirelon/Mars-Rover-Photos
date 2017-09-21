@@ -1,4 +1,4 @@
-package com.sirelon.marsroverphotos.adapter.diffutils
+package com.sirelon.marsroverphotos.feature.rovers
 
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.ViewType

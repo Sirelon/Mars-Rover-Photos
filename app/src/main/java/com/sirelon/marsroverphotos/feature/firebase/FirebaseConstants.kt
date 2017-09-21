@@ -1,4 +1,4 @@
-package com.sirelon.marsroverphotos.firebase
+package com.sirelon.marsroverphotos.feature.firebase
 
 /**
  * Created on 12/04/2017 18:05.

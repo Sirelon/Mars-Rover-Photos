@@ -95,7 +95,7 @@
 -keep class com.crashlytics.android.**
 -keepattributes SourceFile, LineNumberTable, *Annotation*
 
--keepclassmembers class com.sirelon.marsroverphotos.firebase.FirebasePhoto { *; }
+-keepclassmembers class com.sirelon.marsroverphotos.feature.firebase.FirebasePhoto { *; }
 -keepclassmembers class com.sirelon.marsroverphotos.models.** { *; }
 
 # RxJava

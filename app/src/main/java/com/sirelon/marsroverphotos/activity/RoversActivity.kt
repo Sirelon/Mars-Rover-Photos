@@ -6,7 +6,7 @@ import android.support.v7.widget.LinearLayoutManager
 import com.sirelon.marsroverphotos.NoConnectionError
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
-import com.sirelon.marsroverphotos.adapter.RoversDelegateAdapter
+import com.sirelon.marsroverphotos.feature.rovers.RoversDelegateAdapter
 import com.sirelon.marsroverphotos.adapter.ViewTypeAdapter
 import com.sirelon.marsroverphotos.extensions.isConnected
 import com.sirelon.marsroverphotos.models.OnModelChooseListener

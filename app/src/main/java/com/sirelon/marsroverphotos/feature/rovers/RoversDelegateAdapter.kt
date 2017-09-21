@@ -1,11 +1,11 @@
-package com.sirelon.marsroverphotos.adapter
+package com.sirelon.marsroverphotos.feature.rovers
 
 import android.graphics.Color
 import android.graphics.Typeface
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import com.sirelon.marsroverphotos.R
-import com.sirelon.marsroverphotos.adapter.diffutils.RoverDiff
+import com.sirelon.marsroverphotos.adapter.ViewTypeDelegateAdapter
 import com.sirelon.marsroverphotos.extensions.inflate
 import com.sirelon.marsroverphotos.extensions.loadImage
 import com.sirelon.marsroverphotos.extensions.spannable

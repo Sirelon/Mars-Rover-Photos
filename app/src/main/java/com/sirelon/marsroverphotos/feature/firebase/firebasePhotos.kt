@@ -1,4 +1,4 @@
-package com.sirelon.marsroverphotos.firebase
+package com.sirelon.marsroverphotos.feature.firebase
 
 import com.google.firebase.database.FirebaseDatabase
 import com.sirelon.marsroverphotos.models.MarsPhoto

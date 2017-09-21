@@ -5,7 +5,7 @@ import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import com.sirelon.marsroverphotos.adapter.diffutils.ViewTypeDiffCallack
-import com.sirelon.marsroverphotos.adapter.diffutils.getChangePayload
+import com.sirelon.marsroverphotos.feature.rovers.getChangePayload
 import com.sirelon.marsroverphotos.adapter.headers.HeaderViewType
 import com.sirelon.marsroverphotos.models.ViewType
 import java.util.*
