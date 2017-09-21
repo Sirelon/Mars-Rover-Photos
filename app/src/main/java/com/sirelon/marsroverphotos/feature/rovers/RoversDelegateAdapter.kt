@@ -22,7 +22,7 @@ class RoversDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDeleg
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType, payloads: MutableList<Any>?) {
         (holder as RoverViewHolder).bind(item as Rover, payloads)
-        (holder as RoverViewHolder).itemView.setOnClickListener { callback.onModelChoose(item) }
+        holder.itemView.setOnClickListener { callback.onModelChoose(item) }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder = RoverViewHolder(parent)
