@@ -16,7 +16,7 @@ keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "26.0.1"
+    buildToolsVersion '26.0.2'
     signingConfigs {
         release {
             keyAlias keystoreProperties['keyAlias']
@@ -50,6 +50,10 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
         test.java.srcDirs += 'src/test/kotlin'
         androidTest.java.srcDirs += 'src/androidTest/kotlin'
+    }
+
+    packagingOptions {
+        exclude 'META-INF/app_debug.kotlin_module'
     }
 }
 
@@ -101,7 +105,7 @@ dependencies {
         transitive = true;
     }
 
-    def fireBaseVer = "11.4.0"
+    def fireBaseVer = "11.6.0"
     implementation "com.google.firebase:firebase-core:$fireBaseVer"
     implementation "com.google.firebase:firebase-ads:$fireBaseVer"
     implementation "com.google.firebase:firebase-crash:$fireBaseVer"
