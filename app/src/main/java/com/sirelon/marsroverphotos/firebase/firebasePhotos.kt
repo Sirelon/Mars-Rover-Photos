@@ -1,6 +1,7 @@
 package com.sirelon.marsroverphotos.firebase
 
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
+import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import io.reactivex.Observable
 

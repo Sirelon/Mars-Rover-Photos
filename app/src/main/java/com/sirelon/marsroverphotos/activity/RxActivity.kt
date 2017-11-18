@@ -11,6 +11,8 @@ import com.sirelon.marsroverphotos.NoConnectionError
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.isConnected
+import com.sirelon.marsroverphotos.firebase.firebasePhotos
+import com.sirelon.marsroverphotos.firebase.proideTestFirebase
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Consumer
 import kotlinx.android.synthetic.main.activity_main.*
