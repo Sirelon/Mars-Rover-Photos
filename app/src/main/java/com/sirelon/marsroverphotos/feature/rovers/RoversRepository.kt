@@ -1,9 +1,10 @@
-package com.sirelon.marsroverphotos
+package com.sirelon.marsroverphotos.feature.rovers
 
 import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.models.Rover
 
 /**

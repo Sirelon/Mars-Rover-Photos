@@ -19,7 +19,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".activity.RoversActivity"
+            android:name=".feature.rovers.RoversActivity"
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name">
             <intent-filter>
@@ -40,13 +40,13 @@
         </activity>
         <activity
             android:name=".activity.PhotosActivity"
-            android:parentActivityName=".activity.RoversActivity"
+            android:parentActivityName=".feature.rovers.RoversActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:launchMode="singleTop"
             tools:ignore="UnusedAttribute">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.RoversActivity" />
+                android:value=".feature.rovers.RoversActivity" />
         </activity>
         <activity
             android:name=".activity.ImageActivity"

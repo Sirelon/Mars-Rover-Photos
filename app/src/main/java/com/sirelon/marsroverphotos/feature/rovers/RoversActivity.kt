@@ -1,14 +1,17 @@
-package com.sirelon.marsroverphotos.activity
+package com.sirelon.marsroverphotos.feature.rovers
 
 import android.os.Bundle
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import com.sirelon.marsroverphotos.NoConnectionError
 import com.sirelon.marsroverphotos.R
+import com.sirelon.marsroverphotos.activity.PhotosActivity
+import com.sirelon.marsroverphotos.activity.RxActivity
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
-import com.sirelon.marsroverphotos.adapter.RoversDelegateAdapter
 import com.sirelon.marsroverphotos.adapter.ViewTypeAdapter
 import com.sirelon.marsroverphotos.extensions.isConnected
+import com.sirelon.marsroverphotos.feature.popular.PopularDelegateAdapter
+import com.sirelon.marsroverphotos.feature.popular.PopularItem
 import com.sirelon.marsroverphotos.models.OnModelChooseListener
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.ViewType
@@ -20,7 +23,10 @@ import kotlinx.android.synthetic.main.activity_rovers.*
 class RoversActivity : RxActivity(), OnModelChooseListener {
 
     override fun onModelChoose(model: ViewType) {
-        startActivity(PhotosActivity.createIntent(this, model as Rover))
+        when (model) {
+            is Rover -> startActivity(PhotosActivity.createIntent(this, model))
+            is PopularItem -> toast("Show Popular")
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,6 +35,7 @@ class RoversActivity : RxActivity(), OnModelChooseListener {
 
         val adapter = ViewTypeAdapter(false)
         adapter.addDelegateAdapter(AdapterConstants.ROVER, RoversDelegateAdapter(this@RoversActivity))
+        adapter.addDelegateAdapter(AdapterConstants.POPULAR_ITEM, PopularDelegateAdapter(this@RoversActivity))
 
         roversList.apply {
             setHasFixedSize(true)
@@ -39,6 +46,8 @@ class RoversActivity : RxActivity(), OnModelChooseListener {
             addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
         }
 
+        adapter.addOrReplace(PopularItem())
+
         loadData(adapter)
     }
 
@@ -47,10 +56,8 @@ class RoversActivity : RxActivity(), OnModelChooseListener {
                 Observable
                         .just(isConnected())
                         .switchMap {
-                            if (it)
-                                dataManager.getRovers()
-                            else
-                                Observable.error { NoConnectionError() }
+                            if (it) dataManager.getRovers()
+                            else Observable.error(NoConnectionError())
                         }
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
