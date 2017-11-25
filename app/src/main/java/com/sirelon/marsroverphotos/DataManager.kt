@@ -1,8 +1,8 @@
 package com.sirelon.marsroverphotos
 
 import android.content.Context
-import com.sirelon.marsroverphotos.feature.firebase.photos.FirebaseProvider.firebasePhotos
 import com.sirelon.marsroverphotos.feature.rovers.RoversRepository
+import com.sirelon.marsroverphotos.firebase.photos.FirebaseProvider.firebasePhotos
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.models.Rover
