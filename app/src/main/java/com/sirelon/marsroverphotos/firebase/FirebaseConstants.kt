@@ -15,5 +15,4 @@ object FirebaseConstants {
     const val PHOTOS_SCALE = "scaleCounter"
     const val PHOTOS_SAVE = "saveCounter"
     const val PHOTOS_SHARE = "shareCounter"
-
 }

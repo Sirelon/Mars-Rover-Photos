@@ -1,21 +1,24 @@
-package com.sirelon.marsroverphotos.firebase
+package com.sirelon.marsroverphotos.firebase.photos
 
 import com.google.firebase.database.*
-import com.sirelon.marsroverphotos.extensions.logD
+import com.sirelon.marsroverphotos.firebase.FirebaseConstants
+import com.sirelon.marsroverphotos.firebase.setValueObservable
+import com.sirelon.marsroverphotos.firebase.singleEventFirebase
+import com.sirelon.marsroverphotos.firebase.toFireBase
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import io.reactivex.Observable
 
 /**
  * Created on 12/04/2017 17:55.
  */
-object firebasePhotos {
+internal class FirebasePhotos : IFirebasePhotos {
 
-    fun addMarsPhoto(photo: MarsPhoto): Observable<MarsPhoto> {
+    override fun addMarsPhoto(photo: MarsPhoto): Observable<MarsPhoto> {
         val ref = FirebaseDatabase.getInstance().getReference(firebasePhotoRef(photo))
         return ref.setValueObservable(photo.toFireBase()).map { photo }
     }
 
-    fun updatePhotoShareCounter(photo: MarsPhoto): Observable<Long> {
+    override fun updatePhotoShareCounter(photo: MarsPhoto): Observable<Long> {
         val photoRef = FirebaseDatabase.getInstance().getReference(firebasePhotoRef(photo))
 
         return Observable.just(photoRef)
@@ -29,7 +32,7 @@ object firebasePhotos {
                 }
     }
 
-    fun updatePhotoSaveCounter(photo: MarsPhoto): Observable<Long> {
+    override fun updatePhotoSaveCounter(photo: MarsPhoto): Observable<Long> {
         val photoRef = FirebaseDatabase.getInstance().getReference(firebasePhotoRef(photo))
 
         return Observable.just(photoRef)
@@ -43,7 +46,7 @@ object firebasePhotos {
                 }
     }
 
-    fun updatePhotoScaleCounter(photo: MarsPhoto): Observable<Long> {
+    override fun updatePhotoScaleCounter(photo: MarsPhoto): Observable<Long> {
         val photoRef = FirebaseDatabase.getInstance().getReference(firebasePhotoRef(photo))
 
         return Observable.just(photoRef)
@@ -57,7 +60,7 @@ object firebasePhotos {
                 }
     }
 
-    fun updatePhotoSeenCounter(photo: MarsPhoto): Observable<Long> {
+    override fun updatePhotoSeenCounter(photo: MarsPhoto): Observable<Long> {
         val photoRef = FirebaseDatabase.getInstance().getReference(firebasePhotoRef(photo))
 
         return Observable.just(photoRef)

@@ -11,8 +11,8 @@ import com.sirelon.marsroverphotos.NoConnectionError
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.isConnected
-import com.sirelon.marsroverphotos.firebase.firebasePhotos
-import com.sirelon.marsroverphotos.firebase.proideTestFirebase
+import com.sirelon.marsroverphotos.firebase.photos.FirebaseProvider
+
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Consumer
 import kotlinx.android.synthetic.main.activity_main.*
@@ -45,7 +45,8 @@ open class RxActivity : AppCompatActivity() {
             finish()
             return true
         } else if (item?.itemId == R.id.menu_item_about) {
-            startActivity(Intent(this, AboutAppActivity::class.java))
+            FirebaseProvider.proideTestFirebase.migrateToFirestore()
+//            startActivity(Intent(this, AboutAppActivity::class.java))
             return true
         } else
             return super.onOptionsItemSelected(item)
