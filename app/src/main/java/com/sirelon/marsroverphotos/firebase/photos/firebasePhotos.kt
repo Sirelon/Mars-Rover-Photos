@@ -1,21 +1,21 @@
 package com.sirelon.marsroverphotos.firebase.photos
 
 import com.google.firebase.database.*
-import com.sirelon.marsroverphotos.firebase.FirebaseConstants
-import com.sirelon.marsroverphotos.firebase.setValueObservable
-import com.sirelon.marsroverphotos.firebase.singleEventFirebase
-import com.sirelon.marsroverphotos.firebase.toFireBase
+import com.sirelon.marsroverphotos.feature.firebase.FirebaseConstants
+import com.sirelon.marsroverphotos.feature.firebase.setValueObservable
+import com.sirelon.marsroverphotos.feature.firebase.singleEventFirebase
+import com.sirelon.marsroverphotos.feature.firebase.toFireBase
+
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import io.reactivex.Observable
+import io.reactivex.Single
 
 /**
  * Created on 12/04/2017 17:55.
  */
 internal class FirebasePhotos : IFirebasePhotos {
-
-    override fun addMarsPhoto(photo: MarsPhoto): Observable<MarsPhoto> {
-        val ref = FirebaseDatabase.getInstance().getReference(firebasePhotoRef(photo))
-        return ref.setValueObservable(photo.toFireBase()).map { photo }
+    override fun countOfAllPhotos(): Single<Int> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun updatePhotoShareCounter(photo: MarsPhoto): Observable<Long> {
@@ -109,4 +109,8 @@ internal class FirebasePhotos : IFirebasePhotos {
 
     private fun firebasePhotoRef(photo: MarsPhoto) = "${FirebaseConstants.PHOTOS_TABLE}/${photo.id}"
 
+    private fun addMarsPhoto(photo: MarsPhoto): Observable<MarsPhoto> {
+        val ref = FirebaseDatabase.getInstance().getReference(firebasePhotoRef(photo))
+        return ref.setValueObservable(photo.toFireBase()).map { photo }
+    }
 }

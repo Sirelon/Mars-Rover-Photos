@@ -7,6 +7,8 @@ object FirebaseConstants {
 
     const val PHOTOS_TABLE = "MarsPhotos"
 
+    const val COLECTION_PHOTOS = "mars-rover-photos"
+
     const val PHOTO_ID = "id"
     const val PHOTO_SOL = "sol"
     const val PHOTOS_IMAGE = "img_src"

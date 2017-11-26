@@ -11,10 +11,10 @@ class FirebasePhoto(
         val name: String?,
         val imageUrl: String,
         val earthDate: String,
-        val seeCounter: Long,
-        val scaleCounter: Long,
-        val saveCounter: Long,
-        val shareCounter: Long
+        var seeCounter: Long,
+        var scaleCounter: Long,
+        var saveCounter: Long,
+        var shareCounter: Long
 ) {
 
     constructor(photo: MarsPhoto) : this(

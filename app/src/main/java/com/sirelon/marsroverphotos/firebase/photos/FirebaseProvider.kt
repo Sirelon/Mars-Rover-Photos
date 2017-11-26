@@ -6,7 +6,10 @@ package com.sirelon.marsroverphotos.firebase.photos
 object FirebaseProvider {
 
     val firebasePhotos: IFirebasePhotos by lazy {
-        FirebasePhotos()
+        // Deprecated DB
+//        FirebasePhotos()
+        // Newly db
+        FirestorePhotos()
     }
 
     val proideTestFirebase: FirebaseTestPhotos by lazy {

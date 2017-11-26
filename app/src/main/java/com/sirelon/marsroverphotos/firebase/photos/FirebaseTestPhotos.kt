@@ -3,7 +3,8 @@ package com.sirelon.marsroverphotos.firebase.photos
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.sirelon.marsroverphotos.extensions.logD
-import com.sirelon.marsroverphotos.firebase.singleEventFirebase
+import com.sirelon.marsroverphotos.feature.firebase.FirebaseConstants
+import com.sirelon.marsroverphotos.feature.firebase.singleEventFirebase
 import io.reactivex.Observable
 
 /**
@@ -52,7 +53,7 @@ class FirebaseTestPhotos {
                 .map { it.value }
                 .doOnNext {
 
-                    firestore.collection("mars-rover-photos")
+                    firestore.collection(FirebaseConstants.COLECTION_PHOTOS)
                             .document(it["id"].toString())
                             .set(it)
                             .addOnSuccessListener {
