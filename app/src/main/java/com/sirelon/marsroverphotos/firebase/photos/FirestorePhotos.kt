@@ -19,7 +19,14 @@ internal class FirestorePhotos : IFirebasePhotos {
 
     override fun countOfAllPhotos(): Single<Int> {
         val camera = RoverCamera.empty()
-        val marsPhoto = MarsPhoto(1003, 614, null, "https://mars.jpl.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/00614/opgs/edr/rcam/RRB_451998405EDR_F0311330RHAZ00337M_.JPG", "2014-04-28", camera)
+        val marsPhoto = MarsPhoto(
+            1003,
+            614,
+            null,
+            "https://mars.jpl.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/00614/opgs/edr/rcam/RRB_451998405EDR_F0311330RHAZ00337M_.JPG",
+            "2014-04-28",
+            camera
+        )
 
 //        Observable.zip(
 //                updatePhotoSaveCounter(marsPhoto),
@@ -35,38 +42,39 @@ internal class FirestorePhotos : IFirebasePhotos {
         return Single.just(1)
     }
 
-    private fun photosCollection() = FirebaseFirestore.getInstance().collection(FirebaseConstants.COLECTION_PHOTOS)
+    private fun photosCollection() =
+        FirebaseFirestore.getInstance().collection(FirebaseConstants.COLECTION_PHOTOS)
 
     override fun updatePhotoShareCounter(photo: MarsPhoto): Observable<Long> {
         return getOrCreate(photo)
-                .flatMapObservable {
-                    updatePhoto(it.apply { it.shareCounter++ })
-                }
-                .map { it.shareCounter }
+            .flatMapObservable {
+                updatePhoto(it.apply { it.shareCounter++ })
+            }
+            .map { it.shareCounter }
     }
 
     override fun updatePhotoSaveCounter(photo: MarsPhoto): Observable<Long> {
         return getOrCreate(photo)
-                .flatMapObservable {
-                    updatePhoto(it.apply { it.saveCounter++ })
-                }
-                .map { it.saveCounter }
+            .flatMapObservable {
+                updatePhoto(it.apply { it.saveCounter++ })
+            }
+            .map { it.saveCounter }
     }
 
     override fun updatePhotoScaleCounter(photo: MarsPhoto): Observable<Long> {
         return getOrCreate(photo)
-                .flatMapObservable {
-                    updatePhoto(it.apply { it.scaleCounter++ })
-                }
-                .map { it.scaleCounter }
+            .flatMapObservable {
+                updatePhoto(it.apply { it.scaleCounter++ })
+            }
+            .map { it.scaleCounter }
     }
 
     override fun updatePhotoSeenCounter(photo: MarsPhoto): Observable<Long> {
         return getOrCreate(photo)
-                .flatMapObservable {
-                    updatePhoto(it.apply { it.seeCounter++ })
-                }
-                .map { it.seeCounter }
+            .flatMapObservable {
+                updatePhoto(it.apply { it.seeCounter++ })
+            }
+            .map { it.seeCounter }
     }
 
     private fun updatePhoto(photo: FirebasePhoto): Observable<FirebasePhoto> {
@@ -74,40 +82,40 @@ internal class FirestorePhotos : IFirebasePhotos {
     }
 
     private fun getOrCreate(photo: MarsPhoto) =
-            getDataSnapshot(photo)
-                    .flatMap {
-                        if (it.exists())
-                            Single.just(it.toObject(FirebasePhoto::class.java))
-                        else
-                            createPhoto(photo)
-                    }
+        getDataSnapshot(photo)
+            .flatMap {
+                if (it.exists())
+                    Single.just(it.toObject(FirebasePhoto::class.java))
+                else
+                    createPhoto(photo)
+            }
 
     /**
      * If the document does not exist, it will be created.
      * If the document does exist, the data should be merged into the existing document
      */
     private fun DocumentReference.setPhoto(photo: FirebasePhoto): Observable<FirebasePhoto> =
-            Observable.create { emitter ->
-                this.set(photo, SetOptions.merge())
-                        .addOnSuccessListener {
-                            emitter.onNext(photo)
-                            emitter.onComplete()
-                        }
-                        .addOnFailureListener { emitter.onError(it) }
-            }
+        Observable.create { emitter ->
+            this.set(photo, SetOptions.merge())
+                .addOnSuccessListener {
+                    emitter.onNext(photo)
+                    emitter.onComplete()
+                }
+                .addOnFailureListener { emitter.onError(it) }
+        }
 
     private fun createPhoto(photo: MarsPhoto): Single<FirebasePhoto> {
         val fireBasePhoto = photo.toFireBase()
         return photosCollection().document(photo.id.toString())
-                .setPhoto(fireBasePhoto)
-                .first(fireBasePhoto)
+            .setPhoto(fireBasePhoto)
+            .first(fireBasePhoto)
     }
 
     private fun getDataSnapshot(photo: MarsPhoto): Single<DocumentSnapshot> =
-            Single.create { emitter ->
-                photosCollection().document(photo.id.toString())
-                        .get()
-                        .addOnSuccessListener { emitter.onSuccess(it) }
-                        .addOnFailureListener { emitter.onError(it) }
-            }
+        Single.create { emitter ->
+            photosCollection().document(photo.id.toString())
+                .get()
+                .addOnSuccessListener { emitter.onSuccess(it) }
+                .addOnFailureListener { emitter.onError(it) }
+        }
 }

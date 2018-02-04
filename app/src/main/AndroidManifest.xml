@@ -3,13 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.sirelon.marsroverphotos">
 
+    <uses-sdk tools:overrideLibrary="com.readystatesoftware.chuck" />
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
     <uses-permission android:name="com.samsung.android.providers.context.permission.WRITE_USE_APP_FEATURE_SURVEY" />
-    <uses-sdk tools:overrideLibrary="com.readystatesoftware.chuck"/>
 
     <application
         android:name=".RoverApplication"
@@ -27,22 +27,23 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
 
-                <!--<action android:name="android.intent.action.VIEW" />-->
-                <!--<category android:name="android.intent.category.BROWSABLE" />-->
+                <!-- <action android:name="android.intent.action.VIEW" /> -->
+                <!-- <category android:name="android.intent.category.BROWSABLE" /> -->
 
-                <!--<data-->
-                <!--android:host="marsrovers.com"-->
-                <!--android:scheme="http" />-->
-                <!--<data-->
-                <!--android:host="marsrovers"-->
-                <!--android:scheme="sirelon" />-->
+
+                <!-- <data -->
+                <!-- android:host="marsrovers.com" -->
+                <!-- android:scheme="http" /> -->
+                <!-- <data -->
+                <!-- android:host="marsrovers" -->
+                <!-- android:scheme="sirelon" /> -->
             </intent-filter>
         </activity>
         <activity
             android:name=".activity.PhotosActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".feature.rovers.RoversActivity"
             android:theme="@style/AppTheme.NoActionBar"
-            android:launchMode="singleTop"
             tools:ignore="UnusedAttribute">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -66,6 +67,7 @@
             android:name="io.fabric.ApiKey"
             android:value="a122b41ef36cbca5a4460276e8696075bbbdae18" />
 
+        <activity android:name=".feature.popular.PopularPhotosActivity"></activity>
     </application>
 
 </manifest>
