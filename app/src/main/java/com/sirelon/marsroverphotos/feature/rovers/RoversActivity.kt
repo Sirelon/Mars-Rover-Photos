@@ -14,6 +14,7 @@ import com.sirelon.marsroverphotos.extensions.isConnected
 import com.sirelon.marsroverphotos.feature.popular.PopularDelegateAdapter
 import com.sirelon.marsroverphotos.feature.popular.PopularItem
 import com.sirelon.marsroverphotos.feature.popular.PopularPhotosActivity
+import com.sirelon.marsroverphotos.firebase.photos.FirebaseProvider
 import com.sirelon.marsroverphotos.models.OnModelChooseListener
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.ViewType
@@ -28,6 +29,7 @@ class RoversActivity : RxActivity(), OnModelChooseListener {
         when (model) {
             is Rover -> startActivity(PhotosActivity.createIntent(this, model))
             is PopularItem -> startActivity(Intent(this, PopularPhotosActivity::class.java))
+//            is PopularItem -> FirebaseProvider.proideTestFirebase.deleteUnusedItems()
         }
     }
 

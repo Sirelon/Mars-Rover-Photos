@@ -81,11 +81,12 @@ internal class FirestorePhotos : IFirebasePhotos {
 
     override fun loadPopularPhotos(count: Int, lastPhoto: FirebasePhoto?): Observable<List<FirebasePhoto>> {
         return Observable.create<List<FirebasePhoto>> { emitter: ObservableEmitter<List<FirebasePhoto>> ->
+            val queryDirection = Query.Direction.DESCENDING
             var first = photosCollection()
-                .orderBy("shareCounter")
-                .orderBy("saveCounter")
-                .orderBy("scaleCounter")
-                .orderBy("seeCounter")
+                .orderBy("shareCounter", queryDirection)
+                .orderBy("saveCounter", queryDirection)
+                .orderBy("scaleCounter", queryDirection)
+                .orderBy("seeCounter", queryDirection)
                 .limit(count.toLong())
 
             if (lastPhoto != null){
@@ -95,7 +96,10 @@ internal class FirestorePhotos : IFirebasePhotos {
             first.get().addOnCompleteListener(OnCompleteListener {
                 if (it.isSuccessful) {
                     val documentSnapshots = it.result
-                    emitter.onNext(it.result.toObjects(FirebasePhoto::class.java))
+                    val toObject =
+                        documentSnapshots.documents.get(0).toObject(FirebasePhoto::class.java)
+                    val objects = documentSnapshots.toObjects(FirebasePhoto::class.java)
+                    emitter.onNext(objects)
                     emitter.onComplete()
                 } else {
                     emitter.onError(it.exception!!)

@@ -20,7 +20,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
+            android:background="?android:attr/colorPrimary"
             android:elevation="0dp"
             android:minHeight="?android:attr/actionBarSize"
             android:stateListAnimator="@null"
@@ -32,6 +32,10 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/popularPhotosList"
         android:layout_width="match_parent"
+        tools:listitem="@layout/item_popular_photo"
+        app:layoutManager="android.support.v7.widget.StaggeredGridLayoutManager"
+        app:spanCount="2"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_height="wrap_content" />
 
 </android.support.design.widget.CoordinatorLayout>

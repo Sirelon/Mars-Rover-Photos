@@ -115,6 +115,8 @@ dependencies {
     implementation "com.google.firebase:firebase-firestore:$fireBaseVer"
     implementation "com.google.firebase:firebase-perf:$fireBaseVer"
 
+    implementation "android.arch.paging:runtime:1.0.0-alpha5"
+
     debugImplementation 'com.readystatesoftware.chuck:library:1.1.0'
     releaseImplementation 'com.readystatesoftware.chuck:library-no-op:1.1.0'
 }
