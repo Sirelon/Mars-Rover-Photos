@@ -1,16 +1,17 @@
 package com.sirelon.marsroverphotos.firebase.photos
 
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.OnSuccessListener
+import com.google.firebase.firestore.*
 import com.sirelon.marsroverphotos.feature.firebase.FirebaseConstants
 import com.sirelon.marsroverphotos.feature.firebase.FirebasePhoto
 import com.sirelon.marsroverphotos.feature.firebase.toFireBase
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.models.RoverCamera
 import io.reactivex.Observable
+import io.reactivex.ObservableEmitter
 import io.reactivex.Single
+import java.time.ZoneOffset
 
 /**
  * Created on 11/25/17 17:56 for Mars-Rover-Photos.
@@ -75,6 +76,35 @@ internal class FirestorePhotos : IFirebasePhotos {
                 updatePhoto(it.apply { it.seeCounter++ })
             }
             .map { it.seeCounter }
+    }
+
+
+    override fun loadPopularPhotos(count: Int, offset: Int): Observable<List<FirebasePhoto>> {
+        return Observable.create<List<FirebasePhoto>> { emitter: ObservableEmitter<List<FirebasePhoto>> ->
+            val first = photosCollection().orderBy("seeCounter").limit(count.toLong())
+
+            first.get().addOnCompleteListener(OnCompleteListener {
+                if (it.isSuccessful) {
+
+                    val documentSnapshots = it.result
+                    // Get the last visible document
+                    val lastVisible =
+                        documentSnapshots.getDocuments().get(documentSnapshots.size() - 1);
+
+//                    // Construct a new query starting at this document,
+//                    // get the next 25 cities.
+//                    Query next = db.collection("cities")
+//                        .orderBy("population")
+//                        .startAfter(lastVisible)
+//                        .limit(25);
+
+                    emitter.onNext(it.result.toObjects(FirebasePhoto::class.java))
+                    emitter.onComplete()
+                } else {
+                    emitter.onError(it.exception!!)
+                }
+            })
+        }
     }
 
     private fun updatePhoto(photo: FirebasePhoto): Observable<FirebasePhoto> {

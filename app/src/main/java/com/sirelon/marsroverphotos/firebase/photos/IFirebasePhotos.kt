@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos.firebase.photos
 
+import com.sirelon.marsroverphotos.feature.firebase.FirebasePhoto
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -14,4 +15,5 @@ interface IFirebasePhotos {
     fun updatePhotoSaveCounter(photo: MarsPhoto): Observable<Long>
     fun updatePhotoScaleCounter(photo: MarsPhoto): Observable<Long>
     fun updatePhotoSeenCounter(photo: MarsPhoto): Observable<Long>
+    fun loadPopularPhotos(count: Int = 20, offset: Int = 0): Observable<List<FirebasePhoto>>
 }
