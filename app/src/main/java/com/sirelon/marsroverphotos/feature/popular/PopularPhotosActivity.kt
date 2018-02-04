@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos.feature.popular
 
+import android.arch.paging.PagedListAdapterHelper
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.annotation.GuardedBy
