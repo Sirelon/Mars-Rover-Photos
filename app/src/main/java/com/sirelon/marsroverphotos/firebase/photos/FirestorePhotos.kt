@@ -79,25 +79,22 @@ internal class FirestorePhotos : IFirebasePhotos {
     }
 
 
-    override fun loadPopularPhotos(count: Int, offset: Int): Observable<List<FirebasePhoto>> {
+    override fun loadPopularPhotos(count: Int, lastPhoto: FirebasePhoto?): Observable<List<FirebasePhoto>> {
         return Observable.create<List<FirebasePhoto>> { emitter: ObservableEmitter<List<FirebasePhoto>> ->
-            val first = photosCollection().orderBy("seeCounter").limit(count.toLong())
+            var first = photosCollection()
+                .orderBy("shareCounter")
+                .orderBy("saveCounter")
+                .orderBy("scaleCounter")
+                .orderBy("seeCounter")
+                .limit(count.toLong())
+
+            if (lastPhoto != null){
+                first = first.startAfter(lastPhoto)
+            }
 
             first.get().addOnCompleteListener(OnCompleteListener {
                 if (it.isSuccessful) {
-
                     val documentSnapshots = it.result
-                    // Get the last visible document
-                    val lastVisible =
-                        documentSnapshots.getDocuments().get(documentSnapshots.size() - 1);
-
-//                    // Construct a new query starting at this document,
-//                    // get the next 25 cities.
-//                    Query next = db.collection("cities")
-//                        .orderBy("population")
-//                        .startAfter(lastVisible)
-//                        .limit(25);
-
                     emitter.onNext(it.result.toObjects(FirebasePhoto::class.java))
                     emitter.onComplete()
                 } else {

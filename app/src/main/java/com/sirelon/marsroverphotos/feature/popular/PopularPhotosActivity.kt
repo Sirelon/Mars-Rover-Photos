@@ -29,7 +29,7 @@ class PopularPhotosActivity : RxActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
 
-        val adapter = ViewTypeAdapter(false)
+        val adapter = ViewTypeAdapter(true)
 
         adapter.addDelegateAdapter(
             AdapterConstants.MARS_PHOTO,

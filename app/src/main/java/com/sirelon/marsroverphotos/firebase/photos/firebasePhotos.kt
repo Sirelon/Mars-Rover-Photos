@@ -11,7 +11,10 @@ import io.reactivex.Single
  * Created on 12/04/2017 17:55.
  */
 internal class FirebasePhotos : IFirebasePhotos {
-    override fun loadPopularPhotos(count: Int, offset: Int): Observable<List<FirebasePhoto>> {
+    override fun loadPopularPhotos(
+        count: Int,
+        lastPhoto: FirebasePhoto?
+    ): Observable<List<FirebasePhoto>> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -23,89 +26,97 @@ internal class FirebasePhotos : IFirebasePhotos {
         val photoRef = FirebaseDatabase.getInstance().getReference(firebasePhotoRef(photo))
 
         return Observable.just(photoRef)
-                .flatMap { photoRef.singleEventFirebase() }
-                .flatMap {
-                    if (!it.exists()) {
-                        addMarsPhoto(photo).map { 1L }
-                    } else {
-                        incrementShareCount(photo)
-                    }
+            .flatMap { photoRef.singleEventFirebase() }
+            .flatMap {
+                if (!it.exists()) {
+                    addMarsPhoto(photo).map { 1L }
+                } else {
+                    incrementShareCount(photo)
                 }
+            }
     }
 
     override fun updatePhotoSaveCounter(photo: MarsPhoto): Observable<Long> {
         val photoRef = FirebaseDatabase.getInstance().getReference(firebasePhotoRef(photo))
 
         return Observable.just(photoRef)
-                .flatMap { photoRef.singleEventFirebase() }
-                .flatMap {
-                    if (!it.exists()) {
-                        addMarsPhoto(photo).map { 1L }
-                    } else {
-                        incrementSaveCount(photo)
-                    }
+            .flatMap { photoRef.singleEventFirebase() }
+            .flatMap {
+                if (!it.exists()) {
+                    addMarsPhoto(photo).map { 1L }
+                } else {
+                    incrementSaveCount(photo)
                 }
+            }
     }
 
     override fun updatePhotoScaleCounter(photo: MarsPhoto): Observable<Long> {
         val photoRef = FirebaseDatabase.getInstance().getReference(firebasePhotoRef(photo))
 
         return Observable.just(photoRef)
-                .flatMap { photoRef.singleEventFirebase() }
-                .flatMap {
-                    if (!it.exists()) {
-                        addMarsPhoto(photo).map { 1L }
-                    } else {
-                        incrementScaleCount(photo)
-                    }
+            .flatMap { photoRef.singleEventFirebase() }
+            .flatMap {
+                if (!it.exists()) {
+                    addMarsPhoto(photo).map { 1L }
+                } else {
+                    incrementScaleCount(photo)
                 }
+            }
     }
 
     override fun updatePhotoSeenCounter(photo: MarsPhoto): Observable<Long> {
         val photoRef = FirebaseDatabase.getInstance().getReference(firebasePhotoRef(photo))
 
         return Observable.just(photoRef)
-                .flatMap { photoRef.singleEventFirebase() }
-                .flatMap {
-                    if (!it.exists()) {
-                        addMarsPhoto(photo).map { 1L }
-                    } else {
-                        incrementSeenCount(photo)
-                    }
+            .flatMap { photoRef.singleEventFirebase() }
+            .flatMap {
+                if (!it.exists()) {
+                    addMarsPhoto(photo).map { 1L }
+                } else {
+                    incrementSeenCount(photo)
                 }
+            }
     }
 
     private fun incrementShareCount(photo: MarsPhoto): Observable<Long> {
-        val saveRef = FirebaseDatabase.getInstance().getReference(firebasePhotoRef(photo) + "/" +
-                FirebaseConstants.PHOTOS_SHARE)
+        val saveRef = FirebaseDatabase.getInstance().getReference(
+            firebasePhotoRef(photo) + "/" +
+                    FirebaseConstants.PHOTOS_SHARE
+        )
         return saveRef.singleEventFirebase()
-                .map { it.getValue(Long::class.java)!! + 1 }
-                .flatMap { saveRef.setValueObservable(it) }
+            .map { it.getValue(Long::class.java)!! + 1 }
+            .flatMap { saveRef.setValueObservable(it) }
     }
 
 
     private fun incrementSaveCount(photo: MarsPhoto): Observable<Long> {
-        val saveRef = FirebaseDatabase.getInstance().getReference(firebasePhotoRef(photo) + "/" +
-                FirebaseConstants.PHOTOS_SAVE)
+        val saveRef = FirebaseDatabase.getInstance().getReference(
+            firebasePhotoRef(photo) + "/" +
+                    FirebaseConstants.PHOTOS_SAVE
+        )
         return saveRef.singleEventFirebase()
-                .map { it.getValue(Long::class.java)!! + 1 }
-                .flatMap { saveRef.setValueObservable(it) }
+            .map { it.getValue(Long::class.java)!! + 1 }
+            .flatMap { saveRef.setValueObservable(it) }
     }
 
     private fun incrementSeenCount(photo: MarsPhoto): Observable<Long> {
-        val seenRef = FirebaseDatabase.getInstance().getReference(firebasePhotoRef(photo) + "/" +
-                FirebaseConstants.PHOTOS_SEEN)
+        val seenRef = FirebaseDatabase.getInstance().getReference(
+            firebasePhotoRef(photo) + "/" +
+                    FirebaseConstants.PHOTOS_SEEN
+        )
         return seenRef.singleEventFirebase()
-                .map { it.getValue(Long::class.java)!! + 1 }
-                .flatMap { seenRef.setValueObservable(it) }
+            .map { it.getValue(Long::class.java)!! + 1 }
+            .flatMap { seenRef.setValueObservable(it) }
     }
 
     private fun incrementScaleCount(photo: MarsPhoto): Observable<Long> {
-        val scaleRef = FirebaseDatabase.getInstance().getReference(firebasePhotoRef(photo) + "/" +
-                FirebaseConstants.PHOTOS_SCALE)
+        val scaleRef = FirebaseDatabase.getInstance().getReference(
+            firebasePhotoRef(photo) + "/" +
+                    FirebaseConstants.PHOTOS_SCALE
+        )
         return scaleRef.singleEventFirebase()
-                .map { it.getValue(Long::class.java)!! + 1 }
-                .flatMap { scaleRef.setValueObservable(it) }
+            .map { it.getValue(Long::class.java)!! + 1 }
+            .flatMap { scaleRef.setValueObservable(it) }
     }
 
     private fun firebasePhotoRef(photo: MarsPhoto) = "${FirebaseConstants.PHOTOS_TABLE}/${photo.id}"
