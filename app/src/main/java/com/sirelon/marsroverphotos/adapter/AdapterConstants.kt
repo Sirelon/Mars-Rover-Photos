@@ -12,4 +12,5 @@ object AdapterConstants {
     val HEADER = 4
     val ADVERTIZING = 5
     val POPULAR_ITEM = 6
+    val POPULAR_PHOTO = 7
 }

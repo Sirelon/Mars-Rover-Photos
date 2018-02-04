@@ -1,6 +1,9 @@
 package com.sirelon.marsroverphotos.feature.firebase
 
+import com.sirelon.marsroverphotos.R.id.photo
+import com.sirelon.marsroverphotos.adapter.AdapterConstants
 import com.sirelon.marsroverphotos.models.MarsPhoto
+import com.sirelon.marsroverphotos.models.ViewType
 
 /**
  * Created on 12/04/2017 19:05.
@@ -15,9 +18,9 @@ class FirebasePhoto(
         var scaleCounter: Long,
         var saveCounter: Long,
         var shareCounter: Long
-) {
+) : ViewType{
 
-    constructor(photo: MarsPhoto) : this(
+        constructor(photo: MarsPhoto) : this(
             id = photo.id,
             sol = photo.sol,
             name = photo.name,
@@ -40,5 +43,5 @@ class FirebasePhoto(
             saveCounter = 0,
             shareCounter = 0
     )
-
+        override fun getViewType() = AdapterConstants.POPULAR_PHOTO
 }

@@ -32,9 +32,9 @@ class PopularPhotosActivity : RxActivity() {
         val adapter = ViewTypeAdapter(true)
 
         adapter.addDelegateAdapter(
-            AdapterConstants.MARS_PHOTO,
+            AdapterConstants.POPULAR_PHOTO,
 
-            MarsPhotosDelegateAdapter(callback = object :
+            PopularPhotosDelegateAdapter(callback = object :
                 OnModelChooseListener {
                 override fun onModelChoose(model: ViewType) {
 
@@ -54,9 +54,6 @@ class PopularPhotosActivity : RxActivity() {
         val subscribe = firebasePhotos.loadPopularPhotos()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .flatMap { Observable.fromIterable(it) }
-            .map { it.toMarsPhoto() }
-            .toList()
             .subscribe({
                 adapter.addData(it)
             }, Throwable::printStackTrace)

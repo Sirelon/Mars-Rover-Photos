@@ -1,15 +1,17 @@
 package com.sirelon.marsroverphotos.feature.popular
 
+import android.annotation.SuppressLint
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.adapter.ViewTypeDelegateAdapter
 import com.sirelon.marsroverphotos.extensions.inflate
 import com.sirelon.marsroverphotos.extensions.loadImage
+import com.sirelon.marsroverphotos.feature.firebase.FirebasePhoto
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.models.OnModelChooseListener
 import com.sirelon.marsroverphotos.models.ViewType
-import kotlinx.android.synthetic.main.item_mars_photo.view.*
+import kotlinx.android.synthetic.main.item_popular_photo.view.*
 
 /**
  * @author romanishin
@@ -21,7 +23,7 @@ class PopularPhotosDelegateAdapter(val callback: OnModelChooseListener) : ViewTy
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType, payloads: MutableList<Any>?) {
         val marsPhotoViewHolder = holder as PopularPhotoViewHolder
-        marsPhotoViewHolder.bind(item as MarsPhoto)
+        marsPhotoViewHolder.bind(item as FirebasePhoto)
         marsPhotoViewHolder.itemView.photo.setOnClickListener {
             callback.onModelChoose(item)
         }
@@ -29,9 +31,13 @@ class PopularPhotosDelegateAdapter(val callback: OnModelChooseListener) : ViewTy
 
     class PopularPhotoViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate(R.layout.item_popular_photo)) {
 
-        fun bind(item: MarsPhoto) = with(itemView) {
+        @SuppressLint("SetTextI18n")
+        fun bind(item: FirebasePhoto) = with(itemView) {
             photo.loadImage(item.imageUrl)
-            cameraName.text = item.camera.fullName
+            txtSaveCounter.text = "${item.saveCounter}"
+            txtScaleCounter.text = "${item.scaleCounter}"
+            txtSeeCounter.text = "${item.seeCounter}"
+            txtShareCounter.text = "${item.shareCounter}"
         }
     }
 
