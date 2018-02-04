@@ -33,7 +33,7 @@ fun ViewGroup.inflate(layoutId: Int, attachToRoot: Boolean = false): View {
 
 object placeholder {
     val drawable: Drawable by lazy {
-        ContextCompat.getDrawable(RoverApplication.APP, R.drawable.img_placeholder)
+        ContextCompat.getDrawable(RoverApplication.APP, R.drawable.img_placeholder)!!
     }
 }
 

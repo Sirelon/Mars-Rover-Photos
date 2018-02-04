@@ -19,15 +19,19 @@ import kotlinx.android.synthetic.main.view_image.view.*
  */
 class ViewsPagerAdapter(val data: List<MarsPhoto>?) : PagerAdapter() {
 
-    var scaleCallback : (() -> Unit)? = null
+    var scaleCallback: (() -> Unit)? = null
 
-    override fun instantiateItem(container: ViewGroup?, position: Int): Any {
-        container!!
+    override fun instantiateItem(container: ViewGroup, position: Int): Any {
         val imageRoot = container.inflate(R.layout.view_image, false)
         container.addView(imageRoot)
         showImage(imageRoot.fullscreenImage, imageRoot.fullscreenImageProgress, position)
 
         return imageRoot
+    }
+
+    override fun destroyItem(container: ViewGroup, position: Int, viewRoot: Any) {
+        container.removeView(viewRoot as View)
+        Picasso.with(container.context).cancelTag(data?.get(position)?.id)
     }
 
     private fun showImage(imageView: ImageView, fullscreenImageProgress: View, position: Int) {
@@ -39,32 +43,25 @@ class ViewsPagerAdapter(val data: List<MarsPhoto>?) : PagerAdapter() {
 
         val marsPhoto = data?.get(position) ?: return
 
-        Picasso.with(imageView.context).load(marsPhoto.imageUrl).tag(marsPhoto.id).into(imageView, object : Callback {
-            override fun onSuccess() {
-                fullscreenImageProgress.visibility = View.GONE
-                photoViewAttacher.update()
-            }
+        Picasso.with(imageView.context).load(marsPhoto.imageUrl).tag(marsPhoto.id)
+            .into(imageView, object : Callback {
+                override fun onSuccess() {
+                    fullscreenImageProgress.visibility = View.GONE
+                    photoViewAttacher.update()
+                }
 
-            override fun onError() {
-                fullscreenImageProgress.visibility = View.GONE
-                Toast.makeText(imageView.context, "Cannot show this image", Toast.LENGTH_SHORT).show()
+                override fun onError() {
+                    fullscreenImageProgress.visibility = View.GONE
+                    Toast.makeText(imageView.context, "Cannot show this image", Toast.LENGTH_SHORT)
+                        .show()
 //                Snackbar.make(imageView.rootView, "Cannot show this image", Snackbar.LENGTH_INDEFINITE)
 //                        .setAction("Close", { finish() })
 //                        .show()
-            }
-        })
+                }
+            })
     }
 
-    override fun destroyItem(container: ViewGroup?, position: Int, viewRoot: Any?) {
-        container?.let {
-            container.removeView(viewRoot as View)
-            Picasso.with(container.context).cancelTag(data?.get(position)?.id)
-        }
-    }
-
-    override fun isViewFromObject(view: View?, `object`: Any?): Boolean {
-        return `object` == view
-    }
+    override fun isViewFromObject(view: View, `object`: Any) = `object` == view
 
     override fun getCount(): Int = data?.size ?: 0
 }

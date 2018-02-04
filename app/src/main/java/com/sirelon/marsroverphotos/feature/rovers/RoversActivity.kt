@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos.feature.rovers
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
@@ -12,6 +13,7 @@ import com.sirelon.marsroverphotos.adapter.ViewTypeAdapter
 import com.sirelon.marsroverphotos.extensions.isConnected
 import com.sirelon.marsroverphotos.feature.popular.PopularDelegateAdapter
 import com.sirelon.marsroverphotos.feature.popular.PopularItem
+import com.sirelon.marsroverphotos.feature.popular.PopularPhotosActivity
 import com.sirelon.marsroverphotos.models.OnModelChooseListener
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.ViewType
@@ -25,7 +27,7 @@ class RoversActivity : RxActivity(), OnModelChooseListener {
     override fun onModelChoose(model: ViewType) {
         when (model) {
             is Rover -> startActivity(PhotosActivity.createIntent(this, model))
-            is PopularItem -> toast("Show Popular")
+            is PopularItem -> startActivity(Intent(this, PopularPhotosActivity::class.java))
         }
     }
 

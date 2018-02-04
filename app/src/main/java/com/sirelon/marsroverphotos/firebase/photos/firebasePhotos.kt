@@ -1,10 +1,7 @@
 package com.sirelon.marsroverphotos.firebase.photos
 
 import com.google.firebase.database.*
-import com.sirelon.marsroverphotos.feature.firebase.FirebaseConstants
-import com.sirelon.marsroverphotos.feature.firebase.setValueObservable
-import com.sirelon.marsroverphotos.feature.firebase.singleEventFirebase
-import com.sirelon.marsroverphotos.feature.firebase.toFireBase
+import com.sirelon.marsroverphotos.feature.firebase.*
 
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import io.reactivex.Observable
@@ -14,6 +11,10 @@ import io.reactivex.Single
  * Created on 12/04/2017 17:55.
  */
 internal class FirebasePhotos : IFirebasePhotos {
+    override fun loadPopularPhotos(count: Int, offset: Int): Observable<List<FirebasePhoto>> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     override fun countOfAllPhotos(): Single<Int> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
