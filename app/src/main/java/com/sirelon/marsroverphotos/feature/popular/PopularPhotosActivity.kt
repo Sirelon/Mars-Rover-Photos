@@ -1,5 +1,7 @@
 package com.sirelon.marsroverphotos.feature.popular
 
+import android.arch.lifecycle.Observer
+import android.arch.paging.DataSource
 import android.arch.paging.PagedListAdapterHelper
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -20,6 +22,14 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_popular_photos.*
+import android.arch.paging.PagedList
+import android.arch.paging.LivePagedListBuilder
+import android.support.v4.view.PagerAdapter
+import android.support.v7.recyclerview.extensions.DiffCallback
+import com.sirelon.marsroverphotos.adapter.PagedViewTypeAdapter
+import com.sirelon.marsroverphotos.adapter.diffutils.ViewTypeDiffCallack
+import com.sirelon.marsroverphotos.adapter.diffutils.ViewTypeDiffResolver
+
 
 class PopularPhotosActivity : RxActivity() {
 
@@ -33,12 +43,28 @@ class PopularPhotosActivity : RxActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
 
-        val adapter = ViewTypeAdapter(true)
+        val diffCallback = ViewTypeDiffResolver<FirebasePhoto>()
+
+        val adapter = PagedViewTypeAdapter(diffCallback)
+
+        val pagedListConfig = PagedList.Config.Builder().setEnablePlaceholders(true)
+            .setPrefetchDistance(10).setPageSize(20).build()
+
+        val dataSourceFactory = PopularDataSourceFactory()
+
+        val userList = LivePagedListBuilder(dataSourceFactory, pagedListConfig).build()
+
+        userList.observe(this, Observer {
+            it ?: return@Observer
+            adapter.setPagedList(it)
+        })
+        // For test
+//        val pagedList = PagedList.Builder(dataSourceFactory.create(), pagedListConfig).build()
+//        adapter.setPagedList(pagedList);
 
         adapter.addDelegateAdapter(
             AdapterConstants.POPULAR_PHOTO,
-            PopularPhotosDelegateAdapter(callback = object :
-                OnModelChooseListener {
+            PopularPhotosDelegateAdapter(callback = object : OnModelChooseListener {
                 override fun onModelChoose(model: ViewType) {
                     model as FirebasePhoto
                     model.logD()
@@ -55,12 +81,10 @@ class PopularPhotosActivity : RxActivity() {
 
         val firebasePhotos = FirebaseProvider.firebasePhotos
 
-        val subscribe = firebasePhotos.loadPopularPhotos()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                adapter.addData(it)
-            }, Throwable::printStackTrace)
+        val subscribe = firebasePhotos.loadPopularPhotos().subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread()).subscribe({
+            adapter.addData(it)
+        }, Throwable::printStackTrace)
 
         subscriptions.add(subscribe)
     }
