@@ -39,11 +39,15 @@ android {
     buildTypes {
         release {
 
+            multiDexEnabled false
             minifyEnabled true
             shrinkResources true
 
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules.pro'
+        } 
+        debug {
+            multiDexEnabled true
         }
     }
     sourceSets {

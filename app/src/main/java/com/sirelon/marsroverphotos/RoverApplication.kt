@@ -5,11 +5,15 @@ import com.crashlytics.android.Crashlytics
 import com.crashlytics.android.answers.Answers
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.Logger
+import com.google.firebase.firestore.FirebaseFirestore
 import com.jakewharton.picasso.OkHttp3Downloader
 import com.sirelon.marsroverphotos.extensions.logE
 import com.sirelon.marsroverphotos.tracker.AnswersTracker
 import com.squareup.picasso.Picasso
 import io.fabric.sdk.android.Fabric
+import com.google.firebase.firestore.FirebaseFirestoreSettings
+
+
 
 /**
  * @author romanishin
@@ -29,6 +33,11 @@ class RoverApplication : Application() {
         Fabric.with(fabric)
 
         FirebaseDatabase.getInstance().setLogLevel(if (BuildConfig.DEBUG) Logger.Level.DEBUG else Logger.Level.NONE)
+        val settings = FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build()
+        FirebaseFirestore.getInstance().firestoreSettings = settings
+
         Picasso.setSingletonInstance(picasso())
     }
 
