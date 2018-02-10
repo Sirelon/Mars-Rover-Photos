@@ -47,11 +47,11 @@ class PopularPhotosActivity : RxActivity() {
 
         val adapter = PagedViewTypeAdapter(diffCallback)
 
+
         val pagedListConfig = PagedList.Config.Builder().setEnablePlaceholders(true)
             .setPrefetchDistance(10).setPageSize(20).build()
 
-        val dataSourceFactory = PopularDataSourceFactory(FirebaseProvider.firebasePhotos
-        )
+        val dataSourceFactory = PopularDataSourceFactory(FirebaseProvider.firebasePhotos)
 
         val userList = LivePagedListBuilder(dataSourceFactory, pagedListConfig).build()
 
