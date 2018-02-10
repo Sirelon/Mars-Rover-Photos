@@ -2,6 +2,7 @@ package com.sirelon.marsroverphotos.feature.popular
 
 import android.graphics.Typeface
 import android.support.v7.widget.RecyclerView
+import android.view.View
 import android.view.ViewGroup
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.adapter.ViewTypeDelegateAdapter
@@ -27,6 +28,8 @@ class PopularDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDele
     class PopularViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate(R.layout.item_popular)) {
 
         fun bind(item: PopularItem, payloads: MutableList<Any>?) = with(itemView) {
+            // for now it it invisible
+            itemView.totalPhotos.visibility = View.GONE
             itemView.totalPhotos.text =
                     spannable {
                         typeface(Typeface.BOLD) {

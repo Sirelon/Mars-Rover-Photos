@@ -1,8 +1,11 @@
 package com.sirelon.marsroverphotos.firebase.photos
 
 import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.OnSuccessListener
-import com.google.firebase.firestore.*
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.SetOptions
 import com.sirelon.marsroverphotos.feature.firebase.FirebaseConstants
 import com.sirelon.marsroverphotos.feature.firebase.FirebasePhoto
 import com.sirelon.marsroverphotos.feature.firebase.toFireBase
@@ -11,7 +14,6 @@ import com.sirelon.marsroverphotos.models.RoverCamera
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.Single
-import java.time.ZoneOffset
 
 /**
  * Created on 11/25/17 17:56 for Mars-Rover-Photos.
@@ -90,7 +92,10 @@ internal class FirestorePhotos : IFirebasePhotos {
                 .limit(count.toLong())
 
             if (lastPhoto != null){
-                first = first.startAfter(lastPhoto)
+                first = first.startAfter(lastPhoto.shareCounter)
+                        .startAfter(lastPhoto.saveCounter)
+                        .startAfter(lastPhoto.scaleCounter)
+                        .startAfter(lastPhoto.seeCounter)
             }
 
             first.get().addOnCompleteListener(OnCompleteListener {
