@@ -36,8 +36,8 @@ import kotlinx.android.synthetic.main.view_image.view.*
 class ImageActivity : RxActivity() {
 
     companion object {
-        val EXTRA_PHOTO = ".extraPhoto"
-        val EXTRA_FILTER_BY_CAMERA = ".extraCameraFilterEnable"
+        const val EXTRA_PHOTO = ".extraPhoto"
+        const val EXTRA_FILTER_BY_CAMERA = ".extraCameraFilterEnable"
         fun createIntent(context: Context, photo: MarsPhoto, cameraFilterEnable: Boolean): Intent {
             val intent = Intent(context, ImageActivity::class.java)
             intent.putExtra(EXTRA_PHOTO, photo)
@@ -51,7 +51,7 @@ class ImageActivity : RxActivity() {
     private var scaleWasSet = false
 
     private val shareIntent by lazy {
-        val shareIntent: Intent = Intent(Intent.ACTION_SEND)
+        val shareIntent = Intent(Intent.ACTION_SEND)
         val shareText =
             "Take a look what I found on Mars ${marsPhoto.imageUrl} with this app \n\n$appUrl"
         shareIntent.type = "text/plain"
@@ -67,7 +67,7 @@ class ImageActivity : RxActivity() {
 
         setContentView(R.layout.activity_image)
 
-        marsPhoto = intent.getParcelableExtra<MarsPhoto>(EXTRA_PHOTO)
+        marsPhoto = intent.getParcelableExtra(EXTRA_PHOTO)
 
         // Configure Ad
         AdvertisingObjectFactory.getAdvertisingDelegate()
@@ -86,36 +86,56 @@ class ImageActivity : RxActivity() {
                         else it
                     }
                     .toList()
-                    .subscribe({
-                                   val pagerAdapter = ViewsPagerAdapter(it)
-                                   imagePager.adapter = pagerAdapter
-                                   pagerAdapter.scaleCallback = {
-                                       if (!scaleWasSet) dataManager.updatePhotoScaleCounter(
-                                               marsPhoto)
-
-                                       scaleWasSet = true
-                                   }
-                                   it?.let {
-                                       val index = it.indexOf(marsPhoto)
-                                       imagePager.currentItem = index
-                                   }
-                                   imagePager.addOnPageChangeListener(object :
-                                                                          ViewPager.SimpleOnPageChangeListener() {
-                                       override fun onPageSelected(position: Int) {
-                                           // Set the marsPhoto as current
-                                           marsPhoto = it[position]
-                                           scaleWasSet = false
-                                           dataManager.updatePhotoSeenCounter(marsPhoto)
-                                       }
-                                   })
-                               }, {
-                                   it.printStackTrace()
-                                   // Show Standalone Image
-                                   showStandaloneImage()
-                               })
+                    .subscribe(::onCachePhotosAvailable, {
+                        it.printStackTrace()
+                        // Show Standalone Image
+                        showStandaloneImage()
+                    })
 
             subscriptions.add(subscribe)
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_image, menu)
+        val menuItemShare = menu?.findItem(R.id.menu_item_share)
+        val shareActionProvider = MenuItemCompat.getActionProvider(menuItemShare)
+        if (shareActionProvider is ShareActionProvider) {
+            shareActionProvider.setShareIntent(shareIntent)
+            shareActionProvider.setOnShareTargetSelectedListener { _, intent ->
+                dataManager.updatePhotoShareCounter(marsPhoto, intent.`package`)
+                false
+            }
+        }
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?) = when {
+        item?.itemId == android.R.id.home   -> true.apply { finish() }
+        item?.itemId == R.id.menu_item_save -> true.apply { saveImageToGallery() }
+        else                                -> super.onOptionsItemSelected(item)
+    }
+
+    private fun onCachePhotosAvailable(it: List<MarsPhoto>) {
+        val pagerAdapter = ViewsPagerAdapter(it)
+        imagePager.adapter = pagerAdapter
+        pagerAdapter.scaleCallback = {
+            if (!scaleWasSet) dataManager.updatePhotoScaleCounter(marsPhoto)
+
+            scaleWasSet = true
+        }
+
+        val index = it.indexOf(marsPhoto)
+        imagePager.currentItem = index
+
+        imagePager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
+            override fun onPageSelected(position: Int) {
+                // Set the marsPhoto as current
+                marsPhoto = it[position]
+                scaleWasSet = false
+                dataManager.updatePhotoSeenCounter(marsPhoto)
+            }
+        })
     }
 
     private fun showStandaloneImage() {
@@ -143,30 +163,6 @@ class ImageActivity : RxActivity() {
                 })
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_image, menu)
-        val menuItemShare = menu?.findItem(R.id.menu_item_share)
-        val shareActionProvider = MenuItemCompat.getActionProvider(menuItemShare)
-        if (shareActionProvider is ShareActionProvider) {
-            shareActionProvider.setShareIntent(shareIntent)
-            shareActionProvider.setOnShareTargetSelectedListener { _, intent ->
-                dataManager.updatePhotoShareCounter(marsPhoto, intent.`package`)
-                false
-            }
-        }
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        if (item?.itemId == android.R.id.home) {
-            finish()
-            return true
-        } else if (item?.itemId == R.id.menu_item_save) {
-            saveImageToGallery()
-            return true
-        } else return super.onOptionsItemSelected(item)
-    }
-
     private fun saveImageToGallery() {
 
         val subscribe = RxPermissions(this)
@@ -176,12 +172,7 @@ class ImageActivity : RxActivity() {
                 .filter {
                     //  If permission not granted and shouldShowRequestPermissionRationale = show explain dialog. else show snackbar with gotosettings
                     if (!it) {
-                        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                                                                                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        ) showExplainDialog()
-                        else {
-                            showSnackBarOnSettings()
-                        }
+                        permissionNotGrant()
                     }
                     it
                 }
@@ -208,6 +199,16 @@ class ImageActivity : RxActivity() {
                 .subscribe(::showSnackBarOnSaved, ::onErrorOccurred)
 
         subscriptions.add(subscribe)
+    }
+
+    private fun permissionNotGrant() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                                                                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        ) {
+            showExplainDialog()
+        } else {
+            showSnackBarOnSettings()
+        }
     }
 
     private fun ImageActivity.showSnackBarError() {
@@ -241,7 +242,7 @@ class ImageActivity : RxActivity() {
                 .setTitle("Alert")
                 .setMessage(
                         "Without this permission I cannot save this nice photo to your gallery. If you want to save image please give permission.")
-                .setPositiveButton("Ok") { p0, p1 -> saveImageToGallery() }
+                .setPositiveButton("Ok") { _, _ -> saveImageToGallery() }
                 .setNegativeButton("No", null)
                 .show()
 
