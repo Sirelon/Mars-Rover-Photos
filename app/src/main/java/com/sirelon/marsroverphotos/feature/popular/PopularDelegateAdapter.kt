@@ -21,8 +21,8 @@ import kotlinx.android.synthetic.main.item_popular.view.*
 class PopularDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDelegateAdapter {
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType, payloads: MutableList<Any>?) {
-        (holder as PopularViewHolder).bind(item as PopularItem, payloads)
-        (holder as PopularViewHolder).itemView.setOnClickListener { callback.onModelChoose(item) }
+        (holder as PopularViewHolder).bind(item as PopularItem)
+        holder.itemView.setOnClickListener { callback.onModelChoose(item) }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder = PopularViewHolder(parent)
@@ -30,7 +30,7 @@ class PopularDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDele
     @Keep
     class PopularViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate(R.layout.item_popular)) {
 
-        fun bind(item: PopularItem, payloads: MutableList<Any>?) = with(itemView) {
+        fun bind(item: PopularItem) = with(itemView) {
             // for now it it invisible
             itemView.totalPhotos.visibility = View.GONE
             itemView.totalPhotos.text =

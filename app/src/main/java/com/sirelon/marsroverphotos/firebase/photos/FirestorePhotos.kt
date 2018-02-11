@@ -10,7 +10,6 @@ import com.sirelon.marsroverphotos.feature.firebase.FirebaseConstants
 import com.sirelon.marsroverphotos.feature.firebase.FirebasePhoto
 import com.sirelon.marsroverphotos.feature.firebase.toFireBase
 import com.sirelon.marsroverphotos.models.MarsPhoto
-import com.sirelon.marsroverphotos.models.RoverCamera
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.Single
@@ -21,28 +20,6 @@ import io.reactivex.Single
 internal class FirestorePhotos : IFirebasePhotos {
 
     override fun countOfAllPhotos(): Single<Int> {
-        val camera = RoverCamera.empty()
-        val marsPhoto = MarsPhoto(
-            1003,
-            614,
-            null,
-            "https://mars.jpl.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/00614/opgs/edr/rcam/RRB_451998405EDR_F0311330RHAZ00337M_.JPG",
-            "2014-04-28",
-            camera
-        )
-
-//        Observable.zip(
-//                updatePhotoSaveCounter(marsPhoto),
-//                updatePhotoScaleCounter(marsPhoto),
-//                updatePhotoSeenCounter(marsPhoto),
-//                updatePhotoShareCounter(marsPhoto),
-//                Function4<Long, Long, Long, Long, Long>
-//                { i1: Long, i2: Long, i3: Long, i4: Long -> i1 + i2 + i3 + i4 }
-//        )
-//                .subscribe({
-//                    it.logD()
-//                }, Throwable::printStackTrace)
-
         return Single.just(1)
     }
 

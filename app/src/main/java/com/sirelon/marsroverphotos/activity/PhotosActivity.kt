@@ -171,14 +171,14 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
 
     private fun loadCacheOrRequest() {
         // If we already have lastPhotosRequest - just use it, its returned to us cached results
-        val observable: Observable<List<out ViewType>?> = if (dataManager.lastPhotosRequest != null) dataManager.lastPhotosRequest!! as Observable<List<out ViewType>?>
+        val observable: Observable<List<ViewType>?> = if (dataManager.lastPhotosRequest != null) dataManager.lastPhotosRequest!! as Observable<List<ViewType>?>
         else photosObservable
 
         loadDataWithObservable(observable)
     }
 
     // Load data from given observable
-    private fun loadDataWithObservable(observable: Observable<List<out ViewType>?>) {
+    private fun loadDataWithObservable(observable: Observable<List<ViewType>?>) {
         subscriptions.clear()
         val subscription = observable.subscribe({
             it!!
@@ -194,7 +194,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         loadDataWithObservable(photosObservable)
     }
 
-    val photosObservable: Observable<List<out ViewType>?> by lazy {
+    val photosObservable: Observable<List<ViewType>?> by lazy {
         Observable
                 .just(isConnected())
                 .switchMap {
@@ -282,7 +282,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         val datePicker = DatePickerDialog(
                 this,
                 DatePickerDialog.OnDateSetListener
-                { datePicker, year, monthOfYear, dayOfMonth ->
+                { _, year, monthOfYear, dayOfMonth ->
                     calender.clear()
                     calender.set(year, monthOfYear, dayOfMonth)
                     val chooseDateMil = calender.timeInMillis
@@ -319,7 +319,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         val dialog = AlertDialog.Builder(this)
                 .setView(dialogView)
                 .setNegativeButton("Cancel", null)
-                .setPositiveButton("Ok", { dialogInterface, i ->
+                .setPositiveButton("Ok", { _, _ ->
                     val sol = dialogView.solInput.text.toString().toLong()
                     updateDateEearthChoose(dateUtil.dateFromSol(sol))
                     loadDataBySol(sol)

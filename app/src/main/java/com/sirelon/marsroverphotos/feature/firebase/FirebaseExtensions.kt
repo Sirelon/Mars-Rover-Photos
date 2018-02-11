@@ -4,13 +4,8 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.models.RoverCamera
-import io.reactivex.Completable
-import io.reactivex.Observable
 
 /**
  * Created on 13/04/2017 18:54.
@@ -31,7 +26,7 @@ inline fun <reified T : Any> DatabaseReference.setValueObservable(arg: T): io.re
     }
 }
 
-inline fun DatabaseReference.clearValueObservable(): io.reactivex.Observable<Boolean> {
+fun DatabaseReference.clearValueObservable(): io.reactivex.Observable<Boolean> {
     return io.reactivex.Observable.create<Boolean> { emitter ->
         this.setValue(null)
                 .addOnSuccessListener {
@@ -44,7 +39,7 @@ inline fun DatabaseReference.clearValueObservable(): io.reactivex.Observable<Boo
     }
 }
 
-inline fun DatabaseReference.singleEventFirebase(): io.reactivex.Observable<DataSnapshot> {
+fun DatabaseReference.singleEventFirebase(): io.reactivex.Observable<DataSnapshot> {
     return io.reactivex.Observable.create<DataSnapshot> { emitter ->
         this.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
@@ -59,7 +54,7 @@ inline fun DatabaseReference.singleEventFirebase(): io.reactivex.Observable<Data
     }
 }
 
-inline fun DatabaseReference.isExist(): io.reactivex.Observable<Boolean> {
+fun DatabaseReference.isExist(): io.reactivex.Observable<Boolean> {
     return singleEventFirebase().map { it.exists() }
 }
 

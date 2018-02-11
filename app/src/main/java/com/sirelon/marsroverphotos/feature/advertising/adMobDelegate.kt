@@ -19,7 +19,7 @@ internal object adMobDelegate : AdvertisingDelegate {
     }
 
     override fun integregrateAdToList(
-            dataList: List<out ViewType>): MutableList<out ViewType> {
+            dataList: List<ViewType>): MutableList<ViewType> {
 
         var step = 30
 

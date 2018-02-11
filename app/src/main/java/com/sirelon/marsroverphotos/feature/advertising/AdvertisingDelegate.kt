@@ -8,6 +8,6 @@ import com.sirelon.marsroverphotos.models.ViewType
  */
 interface AdvertisingDelegate {
 
-    fun integregrateAdToList(dataList: List<out ViewType>): List<out ViewType>
+    fun integregrateAdToList(dataList: List<ViewType>): List<ViewType>
     fun loadAd(adView: NativeExpressAdView)
 }

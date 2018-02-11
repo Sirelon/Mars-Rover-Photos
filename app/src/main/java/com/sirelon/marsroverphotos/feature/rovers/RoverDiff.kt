@@ -2,7 +2,7 @@ package com.sirelon.marsroverphotos.feature.rovers
 
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.ViewType
-import java.util.*
+import java.util.ArrayList
 
 /**
  * @author romanishin
@@ -10,7 +10,7 @@ import java.util.*
  */
 fun getChangePayload(oldModel: ViewType, newModel: ViewType): ArrayList<Int>? {
     if (oldModel is Rover && newModel is Rover)
-        return getChangePayload(oldModel as Rover, newModel as Rover)
+        return getChangePayload(oldModel, newModel)
     return null
 }
 
