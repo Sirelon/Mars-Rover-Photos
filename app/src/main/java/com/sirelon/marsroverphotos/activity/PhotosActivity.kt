@@ -24,14 +24,21 @@ import com.sirelon.marsroverphotos.adapter.MarsPhotosDelegateAdapter
 import com.sirelon.marsroverphotos.adapter.ViewTypeAdapter
 import com.sirelon.marsroverphotos.extensions.isConnected
 import com.sirelon.marsroverphotos.extensions.random
-import com.sirelon.marsroverphotos.models.*
+import com.sirelon.marsroverphotos.feature.advertising.AdvertisingObjectFactory
+import com.sirelon.marsroverphotos.models.MarsPhoto
+import com.sirelon.marsroverphotos.models.OnModelChooseListener
+import com.sirelon.marsroverphotos.models.PhotosQueryRequest
+import com.sirelon.marsroverphotos.models.Rover
+import com.sirelon.marsroverphotos.models.RoverDateUtil
+import com.sirelon.marsroverphotos.models.ViewType
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_photo_header.*
 import kotlinx.android.synthetic.main.view_choose_sol.view.*
-import java.util.*
+import java.util.Calendar
+import java.util.TimeZone
 
 
 class PhotosActivity : RxActivity(), OnModelChooseListener {
@@ -46,6 +53,8 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
             return intent
         }
     }
+
+    private val advertisingDelegate = AdvertisingObjectFactory.getAdvertisingDelegate()
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
@@ -162,21 +171,18 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
 
     private fun loadCacheOrRequest() {
         // If we already have lastPhotosRequest - just use it, its returned to us cached results
-        val observable: Observable<MutableList<out ViewType>?>
-        if (dataManager.lastPhotosRequest != null)
-            observable = dataManager.lastPhotosRequest!! as Observable<MutableList<out ViewType>?>
-        else
-            observable = photosObservable
+        val observable: Observable<List<out ViewType>?> = if (dataManager.lastPhotosRequest != null) dataManager.lastPhotosRequest!! as Observable<List<out ViewType>?>
+        else photosObservable
 
         loadDataWithObservable(observable)
     }
 
     // Load data from given observable
-    private fun loadDataWithObservable(observable: Observable<MutableList<out ViewType>?>) {
+    private fun loadDataWithObservable(observable: Observable<List<out ViewType>?>) {
         subscriptions.clear()
         val subscription = observable.subscribe({
             it!!
-            addAdToData(it as MutableList<ViewType>)
+            advertisingDelegate.integregrateAdToList(it)
             (photosList.adapter as ViewTypeAdapter).addData(it)
             updateCameraFilter(it)
         }, Throwable::printStackTrace)
@@ -188,7 +194,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         loadDataWithObservable(photosObservable)
     }
 
-    val photosObservable: Observable<MutableList<out ViewType>?> by lazy {
+    val photosObservable: Observable<List<out ViewType>?> by lazy {
         Observable
                 .just(isConnected())
                 .switchMap {
@@ -201,35 +207,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnError { (photosList.adapter as ViewTypeAdapter).stopLoading() }
                 .doOnError(errorConsumer({ loadFreshData() }))
-                .map { addAdToData(it) }
-    }
-
-    private fun addAdToData(dataList: MutableList<out ViewType>): MutableList<out ViewType> {
-//        data as MutableList<ViewType>
-
-        var step = 30
-
-        val data: MutableList<ViewType> = dataList.toMutableList()
-
-        if (step >= data.size / 2) {
-            val advertizingItem = object : ViewType {
-                override fun getViewType(): Int = AdapterConstants.ADVERTIZING
-            }
-            data.add(data.size, advertizingItem)
-            return data
-        }
-
-        if (step >= data.size) {
-            step = data.size / 2 + 1
-        }
-
-        IntProgression.fromClosedRange(step, data.size, step).map {
-            val advertizingItem = object : ViewType {
-                override fun getViewType(): Int = AdapterConstants.ADVERTIZING
-            }
-            data.add(it, advertizingItem)
-        }
-        return data
+                .map { advertisingDelegate.integregrateAdToList(it) }
     }
 
     private fun updateCameraFilter(photos: List<ViewType>) {
@@ -280,7 +258,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         }
 
         // Add ad data to list
-        val dataList1 = addAdToData(filteredData.toMutableList())
+        val dataList1 = advertisingDelegate.integregrateAdToList(filteredData)
 
         (photosList.adapter as ViewTypeAdapter).applyFilteredData(dataList1)
 

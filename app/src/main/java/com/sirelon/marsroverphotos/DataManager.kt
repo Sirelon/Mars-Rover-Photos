@@ -15,19 +15,19 @@ import io.reactivex.schedulers.Schedulers
  * @author romanishin
  * @since 31.10.16 on 12:43
  */
-class DataManager(val context: Context, private val tracker: ITracker, private val api: RestApi = RestApi(context)) {
+class DataManager(val context: Context, private val tracker: ITracker,
+                  private val api: RestApi = RestApi(context)) {
 
     /**
      * This var if you want to reuse the mainObservable without making new request on server
      */
-    var lastPhotosRequest: Observable<MutableList<MarsPhoto>?>? = null
+    var lastPhotosRequest: Observable<List<MarsPhoto>?>? = null
 
-    fun loadMarsPhotos(queryRequest: PhotosQueryRequest): Observable<MutableList<MarsPhoto>?> {
+    fun loadMarsPhotos(queryRequest: PhotosQueryRequest): Observable<List<MarsPhoto>?> {
         val mainObservable = Observable.fromCallable {
             val callResponse = api.getRoversPhotos(queryRequest)
             val response = callResponse.execute()
-            if (response.isSuccessful)
-                response.body()?.photos
+            if (response.isSuccessful) response.body()?.photos
             else throw RuntimeException(response.errorBody()?.string())
         }
 
@@ -38,8 +38,7 @@ class DataManager(val context: Context, private val tracker: ITracker, private v
 
 
     fun getRovers(): Observable<Rover> {
-        return Observable
-                .fromIterable(localRovers())
+        return Observable.fromIterable(localRovers())
                 .flatMap {
                     // Merge for local and for inet rovers.
                     Observable.mergeDelayError(
@@ -53,7 +52,8 @@ class DataManager(val context: Context, private val tracker: ITracker, private v
                                 if (response.isSuccessful) {
                                     val newRover = it.copy()
 
-                                    val roverResponse = response.body()?.roverInfo
+                                    val roverResponse = response.body()
+                                            ?.roverInfo
 
                                     if (roverResponse != null) {
                                         newRover.apply {
@@ -69,12 +69,8 @@ class DataManager(val context: Context, private val tracker: ITracker, private v
                                     }
 
                                     newRover
-                                } else
-                                    it
-                            }
-                                    .onErrorReturnItem(it)
-                                    .subscribeOn(Schedulers.newThread())
-                    )
+                                } else it
+                            }.onErrorReturnItem(it).subscribeOn(Schedulers.newThread()))
                 }
     }
 
@@ -86,28 +82,36 @@ class DataManager(val context: Context, private val tracker: ITracker, private v
 
     fun updatePhotoSeenCounter(marsPhoto: MarsPhoto?) {
         marsPhoto?.let {
-            firebasePhotos.updatePhotoSeenCounter(marsPhoto).onErrorReturn { 0 }.subscribe()
+            firebasePhotos.updatePhotoSeenCounter(marsPhoto)
+                    .onErrorReturn { 0 }
+                    .subscribe()
             tracker.trackSeen(marsPhoto)
         }
     }
 
     fun updatePhotoScaleCounter(marsPhoto: MarsPhoto?) {
         marsPhoto?.let {
-            firebasePhotos.updatePhotoScaleCounter(marsPhoto).onErrorReturn { 0 }.subscribe()
+            firebasePhotos.updatePhotoScaleCounter(marsPhoto)
+                    .onErrorReturn { 0 }
+                    .subscribe()
             tracker.trackScale(marsPhoto)
         }
     }
 
     fun updatePhotoSaveCounter(marsPhoto: MarsPhoto?) {
         marsPhoto?.let {
-            firebasePhotos.updatePhotoSaveCounter(marsPhoto).onErrorReturn { 0 }.subscribe()
+            firebasePhotos.updatePhotoSaveCounter(marsPhoto)
+                    .onErrorReturn { 0 }
+                    .subscribe()
             tracker.trackSave(marsPhoto)
         }
     }
 
     fun updatePhotoShareCounter(marsPhoto: MarsPhoto?, packageName: String) {
         marsPhoto?.let {
-            firebasePhotos.updatePhotoShareCounter(marsPhoto).onErrorReturn { 0 }.subscribe()
+            firebasePhotos.updatePhotoShareCounter(marsPhoto)
+                    .onErrorReturn { 0 }
+                    .subscribe()
             tracker.trackShare(marsPhoto, packageName)
         }
     }

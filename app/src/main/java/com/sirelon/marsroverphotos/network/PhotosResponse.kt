@@ -8,5 +8,4 @@ import com.sirelon.marsroverphotos.models.MarsPhoto
  * @since 31.10.16 on 15:49
  */
 @Keep
-data class PhotosResponse ( val photos: MutableList<MarsPhoto>) {
-}
+data class PhotosResponse ( val photos: List<MarsPhoto>)
