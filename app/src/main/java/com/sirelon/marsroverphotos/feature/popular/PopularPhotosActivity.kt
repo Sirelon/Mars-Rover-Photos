@@ -5,6 +5,7 @@ import android.arch.paging.LivePagedListBuilder
 import android.arch.paging.PagedList
 import android.os.Bundle
 import android.support.v7.widget.StaggeredGridLayoutManager
+import android.view.View
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.activity.ImageActivity
 import com.sirelon.marsroverphotos.activity.RxActivity
@@ -32,7 +33,8 @@ class PopularPhotosActivity : RxActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
 
-        AdvertisingObjectFactory.getAdvertisingDelegate().loadAd(adViewBanner)
+        AdvertisingObjectFactory.getAdvertisingDelegate()
+                .loadAd(adViewBanner)
 
         val diffCallback = ViewTypeDiffResolver<FirebasePhoto>()
 
@@ -40,7 +42,7 @@ class PopularPhotosActivity : RxActivity() {
 
         val pagedListConfig = PagedList.Config.Builder()
                 .setEnablePlaceholders(false)
-                .setPrefetchDistance(1)
+                .setPrefetchDistance(2)
                 .setPageSize(5)
                 .build()
 
@@ -48,7 +50,25 @@ class PopularPhotosActivity : RxActivity() {
 
         val userList = LivePagedListBuilder(dataSourceFactory, pagedListConfig).build()
 
-        userList.observe(this, Observer { adapter.setPagedList(it) })
+
+        userList.observe(this, Observer {
+
+            it?.addWeakCallback(null, object : PagedList.Callback() {
+                override fun onChanged(position: Int, count: Int) {
+
+                }
+
+                override fun onInserted(position: Int, count: Int) {
+                    popularProgressBar.visibility = View.GONE
+                    it?.removeWeakCallback(this)
+                }
+
+                override fun onRemoved(position: Int, count: Int) {
+
+                }
+            })
+            adapter.setPagedList(it)
+        })
 
         adapter.addDelegateAdapter(AdapterConstants.POPULAR_PHOTO,
                                    PopularPhotosDelegateAdapter(::openPhoto))

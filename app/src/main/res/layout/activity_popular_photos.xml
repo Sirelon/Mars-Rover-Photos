@@ -42,6 +42,13 @@
             app:spanCount="2"
             tools:listitem="@layout/item_popular_photo" />
 
+        <ProgressBar
+            android:id="@+id/popularProgressBar"
+            android:layout_centerInParent="true"
+            style="@style/Base.Widget.AppCompat.ProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
         <include layout="@layout/view_native_adview" />
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

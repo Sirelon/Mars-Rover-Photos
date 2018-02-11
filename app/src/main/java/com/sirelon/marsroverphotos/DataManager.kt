@@ -107,12 +107,12 @@ class DataManager(val context: Context, private val tracker: ITracker,
         }
     }
 
-    fun updatePhotoShareCounter(marsPhoto: MarsPhoto?, packageName: String) {
+    fun updatePhotoShareCounter(marsPhoto: MarsPhoto?, packageName: String?) {
         marsPhoto?.let {
             firebasePhotos.updatePhotoShareCounter(marsPhoto)
                     .onErrorReturn { 0 }
                     .subscribe()
-            tracker.trackShare(marsPhoto, packageName)
+            tracker.trackShare(marsPhoto, packageName?: "Not Specified")
         }
     }
 }
