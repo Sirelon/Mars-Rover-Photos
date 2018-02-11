@@ -22,32 +22,31 @@ class PopularPhotoDataSource(private val firebasePhotos: IFirebasePhotos) :
         }
     }
 
-    override fun loadBefore(
-        params: LoadParams<FirebasePhoto>, callback: LoadCallback<FirebasePhoto>
-    ) {
+    override fun loadBefore(params: LoadParams<FirebasePhoto>,
+                            callback: LoadCallback<FirebasePhoto>) {
         "LoadBefore".logD()
     }
 
-    override fun loadInitial(
-        params: LoadInitialParams<FirebasePhoto>, callback: LoadInitialCallback<FirebasePhoto>
-    ) {
+    override fun loadInitial(params: LoadInitialParams<FirebasePhoto>,
+                             callback: LoadInitialCallback<FirebasePhoto>) {
         "loadInitial".logD()
-        firebasePhotos.loadPopularPhotos(
-            count = params.requestedLoadSize, lastPhoto = params.requestedInitialKey
-        ).subscribeOn(Schedulers.io()).subscribe {
-            callback.onResult(it, 0, params.requestedLoadSize)
-        }.apply { disposables.add(this) }
+        firebasePhotos.loadPopularPhotos(count = params.requestedLoadSize,
+                                         lastPhoto = params.requestedInitialKey)
+                .subscribeOn(Schedulers.io())
+                .subscribe {
+                    callback.onResult(it, 0, params.requestedLoadSize)
+                }
+                .apply { disposables.add(this) }
     }
 
-    override fun loadAfter(
-        params: LoadParams<FirebasePhoto>, callback: LoadCallback<FirebasePhoto>
-    ) {
+    override fun loadAfter(params: LoadParams<FirebasePhoto>,
+                           callback: LoadCallback<FirebasePhoto>) {
         "LoadAfter".logD()
 
         firebasePhotos.loadPopularPhotos(count = params.requestedLoadSize, lastPhoto = params.key)
-                .subscribeOn(Schedulers.io()).subscribe { callback.onResult(it) }
+                .subscribeOn(Schedulers.io())
+                .subscribe { callback.onResult(it) }
                 .apply { disposables.add(this) }
-
     }
 
     override fun getKey(item: FirebasePhoto) = item

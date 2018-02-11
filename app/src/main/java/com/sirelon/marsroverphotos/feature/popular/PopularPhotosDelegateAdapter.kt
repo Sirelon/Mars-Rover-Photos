@@ -8,8 +8,6 @@ import com.sirelon.marsroverphotos.adapter.ViewTypeDelegateAdapter
 import com.sirelon.marsroverphotos.extensions.inflate
 import com.sirelon.marsroverphotos.extensions.loadImage
 import com.sirelon.marsroverphotos.feature.firebase.FirebasePhoto
-import com.sirelon.marsroverphotos.models.MarsPhoto
-import com.sirelon.marsroverphotos.models.OnModelChooseListener
 import com.sirelon.marsroverphotos.models.ViewType
 import kotlinx.android.synthetic.main.item_popular_photo.view.*
 
@@ -17,19 +15,23 @@ import kotlinx.android.synthetic.main.item_popular_photo.view.*
  * @author romanishin
  * @since 31.10.16 on 11:41
  */
-class PopularPhotosDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDelegateAdapter {
+class PopularPhotosDelegateAdapter(val callback: (item: FirebasePhoto) -> Unit) :
+    ViewTypeDelegateAdapter {
 
-    override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder = PopularPhotoViewHolder(parent)
+    override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
+        PopularPhotoViewHolder(parent)
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType, payloads: MutableList<Any>?) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType,
+                                  payloads: MutableList<Any>?) {
         val marsPhotoViewHolder = holder as PopularPhotoViewHolder
         marsPhotoViewHolder.bind(item as FirebasePhoto)
         marsPhotoViewHolder.itemView.photo.setOnClickListener {
-            callback.onModelChoose(item)
+            callback(item)
         }
     }
 
-    class PopularPhotoViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate(R.layout.item_popular_photo)) {
+    class PopularPhotoViewHolder(parent: ViewGroup) :
+        RecyclerView.ViewHolder(parent.inflate(R.layout.item_popular_photo)) {
 
         @SuppressLint("SetTextI18n")
         fun bind(item: FirebasePhoto) = with(itemView) {

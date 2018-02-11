@@ -6,19 +6,17 @@ import android.arch.paging.PagedList
 import android.os.Bundle
 import android.support.v7.widget.StaggeredGridLayoutManager
 import com.sirelon.marsroverphotos.R
+import com.sirelon.marsroverphotos.activity.ImageActivity
 import com.sirelon.marsroverphotos.activity.RxActivity
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
 import com.sirelon.marsroverphotos.adapter.PagedViewTypeAdapter
 import com.sirelon.marsroverphotos.adapter.diffutils.ViewTypeDiffResolver
-import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.feature.firebase.FirebasePhoto
+import com.sirelon.marsroverphotos.feature.firebase.toMarsPhoto
 import com.sirelon.marsroverphotos.firebase.photos.FirebaseProvider
-import com.sirelon.marsroverphotos.models.OnModelChooseListener
-import com.sirelon.marsroverphotos.models.ViewType
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_popular_photos.*
-
 
 class PopularPhotosActivity : RxActivity() {
 
@@ -36,32 +34,20 @@ class PopularPhotosActivity : RxActivity() {
 
         val adapter = PagedViewTypeAdapter(diffCallback)
 
-
-        val pagedListConfig =
-            PagedList.Config.Builder().setEnablePlaceholders(true).setPrefetchDistance(10)
-                    .setPageSize(20).build()
+        val pagedListConfig = PagedList.Config.Builder()
+                .setEnablePlaceholders(false)
+                .setPrefetchDistance(1)
+                .setPageSize(5)
+                .build()
 
         val dataSourceFactory = PopularDataSourceFactory(FirebaseProvider.firebasePhotos)
 
         val userList = LivePagedListBuilder(dataSourceFactory, pagedListConfig).build()
 
-        userList.observe(this, Observer {
-            it ?: return@Observer
-            adapter.setPagedList(it)
-        })
-        // For test
-//        val pagedList = PagedList.Builder(dataSourceFactory.create(), pagedListConfig).build()
-//        adapter.setPagedList(pagedList);
+        userList.observe(this, Observer { adapter.setPagedList(it) })
 
-        adapter.addDelegateAdapter(
-            AdapterConstants.POPULAR_PHOTO,
-            PopularPhotosDelegateAdapter(callback = object : OnModelChooseListener {
-                override fun onModelChoose(model: ViewType) {
-                    model as FirebasePhoto
-                    model.logD()
-                }
-            })
-        )
+        adapter.addDelegateAdapter(AdapterConstants.POPULAR_PHOTO,
+                                   PopularPhotosDelegateAdapter(::openPhoto))
         popularPhotosList.apply {
             setHasFixedSize(true)
 
@@ -72,11 +58,16 @@ class PopularPhotosActivity : RxActivity() {
 
         val firebasePhotos = FirebaseProvider.firebasePhotos
 
-        val subscribe = firebasePhotos.loadPopularPhotos().subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread()).subscribe({
-            adapter.addData(it)
-        }, Throwable::printStackTrace)
+        val subscribe = firebasePhotos.loadPopularPhotos()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ adapter.addData(it) }, Throwable::printStackTrace)
 
         subscriptions.add(subscribe)
+    }
+
+    private fun openPhoto(photo: FirebasePhoto) {
+        val marsPhoto = photo.toMarsPhoto()
+        startActivity(ImageActivity.createIntent(this, marsPhoto, false))
     }
 }

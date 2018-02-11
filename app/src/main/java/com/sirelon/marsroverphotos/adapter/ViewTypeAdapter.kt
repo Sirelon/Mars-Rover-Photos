@@ -1,15 +1,14 @@
 package com.sirelon.marsroverphotos.adapter
 
-import android.arch.paging.PagedListAdapter
 import android.support.v4.util.SparseArrayCompat
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import com.sirelon.marsroverphotos.adapter.diffutils.ViewTypeDiffCallack
-import com.sirelon.marsroverphotos.feature.rovers.getChangePayload
 import com.sirelon.marsroverphotos.adapter.headers.HeaderViewType
+import com.sirelon.marsroverphotos.feature.rovers.getChangePayload
 import com.sirelon.marsroverphotos.models.ViewType
-import java.util.*
+import java.util.ArrayList
 
 /**
  * @author romanishin
@@ -22,7 +21,7 @@ open class ViewTypeAdapter(var withLoadingView: Boolean = true) :
 
     private var items: ArrayList<ViewType>
     private var delegates = SparseArrayCompat<ViewTypeDelegateAdapter?>()
-    private val loadingItem = object : ViewType {
+    protected val loadingItem = object : ViewType {
         override fun getViewType(): Int = AdapterConstants.LOADING
     }
 
