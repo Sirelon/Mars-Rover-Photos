@@ -1,6 +1,7 @@
 package com.sirelon.marsroverphotos.feature.popular
 
 import android.graphics.Typeface
+import android.support.annotation.Keep
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +17,7 @@ import kotlinx.android.synthetic.main.item_popular.view.*
  * @author romanishin
  * @since 31.10.16 on 18:48
  */
+@Keep
 class PopularDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDelegateAdapter {
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType, payloads: MutableList<Any>?) {
@@ -25,6 +27,7 @@ class PopularDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDele
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder = PopularViewHolder(parent)
 
+    @Keep
     class PopularViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate(R.layout.item_popular)) {
 
         fun bind(item: PopularItem, payloads: MutableList<Any>?) = with(itemView) {

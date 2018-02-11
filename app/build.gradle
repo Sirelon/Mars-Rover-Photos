@@ -30,21 +30,22 @@ android {
         applicationId "com.sirelon.marsroverphotos"
         minSdkVersion 14
         targetSdkVersion 27
-        versionCode 12
-        versionName "1.2.4"
+        versionCode 13
+        versionName "1.3.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         signingConfig signingConfigs.release
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
-
             multiDexEnabled false
-            minifyEnabled true
-            shrinkResources true
-
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
-                    'proguard-rules.pro'
+            postprocessing {
+                removeUnusedCode true
+                removeUnusedResources true
+                obfuscate true
+                optimizeCode true
+                proguardFile 'proguard-rules.pro'
+            }
         } 
         debug {
             multiDexEnabled true

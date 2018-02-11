@@ -13,6 +13,7 @@ data class RoverResponse(
         var roverInfo: RoverInfo
 )
 
+@Keep
 data class RoverInfo(
         @SerializedName(value = "name")
         var name: String,

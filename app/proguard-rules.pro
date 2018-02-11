@@ -37,7 +37,6 @@
 # platform version. We know about them, and they are safe.
 -dontnote android.support.**
 -dontwarn android.support.**
--dontobfuscate
 
 -optimizations !code/allocation/variable
 
@@ -119,8 +118,6 @@
 # Retrofit 2.X
 ## https://square.github.io/retrofit/ ##
 
--dontwarn retrofit2.**
--keep class retrofit2.** { *; }
 -keepattributes Signature
 -keepattributes Exceptions
 
@@ -143,3 +140,23 @@
 -keep class * implements com.google.gson.JsonSerializer
 -keep class * implements com.google.gson.JsonDeserializer
 -keep class android.support.v7.widget.ShareActionProvider { *; }
+
+# Platform calls Class.forName on types which do not exist on Android to determine platform.
+-dontnote retrofit2.Platform
+# Platform used when running on Java 8 VMs. Will not be used at runtime.
+-dontwarn retrofit2.Platform$Java8
+# Retain generic type information for use by reflection by converters and adapters.
+-keepattributes Signature
+# Retain declared checked exceptions for use by a Proxy instance.
+-keepattributes Exceptions
+
+-keepattributes *Annotation*
+-keepattributes SourceFile,LineNumberTable
+#-keepresourcexmlelements manifest/application/meta-data@name=io.fabric.ApiKey
+-printmapping mapping.txt
+-keep class com.crashlytics.** { *; }
+-keep class io.fabric.sdk.android.Kit.** { *; }
+-dontwarn com.crashlytics.**
+-dontwarn javax.annotation.**
+-dontwarn com.sirelon.marsroverphotos.feature.rovers.**
+-dontwarn com.sirelon.marsroverphotos.feature.popular.**

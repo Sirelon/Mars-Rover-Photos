@@ -1,6 +1,5 @@
 package com.sirelon.marsroverphotos.firebase.photos
 
-import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
@@ -80,7 +79,6 @@ internal class FirestorePhotos : IFirebasePhotos {
             .map { it.seeCounter }
     }
 
-
     override fun loadPopularPhotos(count: Int, lastPhoto: FirebasePhoto?): Observable<List<FirebasePhoto>> {
         return Observable.create<List<FirebasePhoto>> { emitter: ObservableEmitter<List<FirebasePhoto>> ->
             val queryDirection = Query.Direction.DESCENDING
@@ -98,11 +96,9 @@ internal class FirestorePhotos : IFirebasePhotos {
                         .startAfter(lastPhoto.seeCounter)
             }
 
-            first.get().addOnCompleteListener(OnCompleteListener {
+            first.get().addOnCompleteListener({
                 if (it.isSuccessful) {
                     val documentSnapshots = it.result
-                    val toObject =
-                        documentSnapshots.documents.get(0).toObject(FirebasePhoto::class.java)
                     val objects = documentSnapshots.toObjects(FirebasePhoto::class.java)
                     emitter.onNext(objects)
                     emitter.onComplete()
