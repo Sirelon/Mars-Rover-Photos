@@ -1,4 +1,4 @@
-package com.sirelon.marsroverphotos.firebase
+package com.sirelon.marsroverphotos.feature.firebase
 
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -26,7 +26,7 @@ inline fun <reified T : Any> DatabaseReference.setValueObservable(arg: T): io.re
     }
 }
 
-inline fun DatabaseReference.clearValueObservable(): io.reactivex.Observable<Boolean> {
+fun DatabaseReference.clearValueObservable(): io.reactivex.Observable<Boolean> {
     return io.reactivex.Observable.create<Boolean> { emitter ->
         this.setValue(null)
                 .addOnSuccessListener {
@@ -39,7 +39,7 @@ inline fun DatabaseReference.clearValueObservable(): io.reactivex.Observable<Boo
     }
 }
 
-inline fun DatabaseReference.singleEventFirebase(): io.reactivex.Observable<DataSnapshot> {
+fun DatabaseReference.singleEventFirebase(): io.reactivex.Observable<DataSnapshot> {
     return io.reactivex.Observable.create<DataSnapshot> { emitter ->
         this.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
@@ -54,13 +54,14 @@ inline fun DatabaseReference.singleEventFirebase(): io.reactivex.Observable<Data
     }
 }
 
-inline fun DatabaseReference.isExist(): io.reactivex.Observable<Boolean> {
+fun DatabaseReference.isExist(): io.reactivex.Observable<Boolean> {
     return singleEventFirebase().map { it.exists() }
 }
 
 fun DataSnapshot.toFirebasePhoto(): FirebasePhoto {
     return this.getValue(FirebasePhoto::class.java)!!
 }
+
 
 fun FirebasePhoto.toMarsPhoto() = MarsPhoto(
         id,

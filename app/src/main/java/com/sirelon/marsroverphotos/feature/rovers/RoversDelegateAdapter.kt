@@ -1,11 +1,12 @@
-package com.sirelon.marsroverphotos.adapter
+package com.sirelon.marsroverphotos.feature.rovers
 
 import android.graphics.Color
 import android.graphics.Typeface
+import android.support.annotation.Keep
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import com.sirelon.marsroverphotos.R
-import com.sirelon.marsroverphotos.adapter.diffutils.RoverDiff
+import com.sirelon.marsroverphotos.adapter.ViewTypeDelegateAdapter
 import com.sirelon.marsroverphotos.extensions.inflate
 import com.sirelon.marsroverphotos.extensions.loadImage
 import com.sirelon.marsroverphotos.extensions.spannable
@@ -18,15 +19,17 @@ import kotlinx.android.synthetic.main.item_rover.view.*
  * @author romanishin
  * @since 31.10.16 on 18:48
  */
+@Keep
 class RoversDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDelegateAdapter {
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType, payloads: MutableList<Any>?) {
         (holder as RoverViewHolder).bind(item as Rover, payloads)
-        (holder as RoverViewHolder).itemView.setOnClickListener { callback.onModelChoose(item) }
+        holder.itemView.setOnClickListener { callback.onModelChoose(item) }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder = RoverViewHolder(parent)
 
+    @Keep
     class RoverViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate(R.layout.item_rover)) {
 
         fun bind(item: Rover, payloads: MutableList<Any>?) = with(itemView) {

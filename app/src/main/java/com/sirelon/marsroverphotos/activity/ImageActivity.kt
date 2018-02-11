@@ -17,11 +17,13 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import com.github.chrisbanes.photoview.PhotoViewAttacher
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.MobileAds
+import com.sirelon.marsroverphotos.BuildConfig
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.extensions.inflate
 import com.sirelon.marsroverphotos.extensions.showAppSettings
+import com.sirelon.marsroverphotos.extensions.showSnackBar
+import com.sirelon.marsroverphotos.feature.advertising.AdvertisingObjectFactory
+import com.sirelon.marsroverphotos.firebase.photos.FirebaseProvider
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.widget.ViewsPagerAdapter
 import com.squareup.picasso.Callback
@@ -29,16 +31,16 @@ import com.squareup.picasso.Picasso
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_about_app.*
 import kotlinx.android.synthetic.main.activity_image.*
 import kotlinx.android.synthetic.main.view_image.view.*
+import kotlinx.android.synthetic.main.view_native_adview.*
 
 
 class ImageActivity : RxActivity() {
 
     companion object {
-        val EXTRA_PHOTO = ".extraPhoto"
-        val EXTRA_FILTER_BY_CAMERA = ".extraCameraFilterEnable"
+        const val EXTRA_PHOTO = ".extraPhoto"
+        const val EXTRA_FILTER_BY_CAMERA = ".extraCameraFilterEnable"
         fun createIntent(context: Context, photo: MarsPhoto, cameraFilterEnable: Boolean): Intent {
             val intent = Intent(context, ImageActivity::class.java)
             intent.putExtra(EXTRA_PHOTO, photo)
@@ -52,8 +54,9 @@ class ImageActivity : RxActivity() {
     private var scaleWasSet = false
 
     private val shareIntent by lazy {
-        val shareIntent: Intent = Intent(Intent.ACTION_SEND)
-        val shareText = "Take a look what I found on Mars ${marsPhoto.imageUrl} with this app \n\n$appUrl"
+        val shareIntent = Intent(Intent.ACTION_SEND)
+        val shareText =
+            "Take a look what I found on Mars ${marsPhoto.imageUrl} with this app \n\n$appUrl"
         shareIntent.type = "text/plain"
         shareIntent.putExtra(Intent.EXTRA_TEXT, shareText)
     }
@@ -67,11 +70,11 @@ class ImageActivity : RxActivity() {
 
         setContentView(R.layout.activity_image)
 
-        marsPhoto = intent.getParcelableExtra<MarsPhoto>(EXTRA_PHOTO)
+        marsPhoto = intent.getParcelableExtra(EXTRA_PHOTO)
 
         // Configure Ad
-        MobileAds.initialize(this, getString(R.string.ad_application_id))
-        adViewBanner.loadAd(AdRequest.Builder().build())
+        AdvertisingObjectFactory.getAdvertisingDelegate()
+                .loadAd(adViewBanner)
 
         val cameraFilterEnable = intent.getBooleanExtra(EXTRA_FILTER_BY_CAMERA, false)
         title = "Mars photo"
@@ -79,74 +82,21 @@ class ImageActivity : RxActivity() {
         if (dataManager.lastPhotosRequest == null) {
             showStandaloneImage()
         } else {
-            val subscribe = dataManager.lastPhotosRequest!!
-                    .flatMapIterable { it }
-//                    .filter { it is MarsPhoto }
+            val subscribe = dataManager.lastPhotosRequest!!.flatMapIterable { it }
                     .compose {
                         // Filter by cameras
-                        if (cameraFilterEnable)
-                            it.filter { it.camera.id == marsPhoto.camera.id }
-                        else
-                            it
+                        if (cameraFilterEnable) it.filter { it.camera.id == marsPhoto.camera.id }
+                        else it
                     }
                     .toList()
-                    .subscribe(
-                            {
-                                val pagerAdapter = ViewsPagerAdapter(it)
-                                imagePager.adapter = pagerAdapter
-                                pagerAdapter.scaleCallback = {
-                                    if (!scaleWasSet)
-                                        dataManager.updatePhotoScaleCounter(marsPhoto)
-
-                                    scaleWasSet = true
-                                }
-                                it?.let {
-                                    val index = it.indexOf(marsPhoto)
-                                    imagePager.currentItem = index
-                                }
-                                imagePager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
-                                    override fun onPageSelected(position: Int) {
-                                        // Set the marsPhoto as current
-                                        marsPhoto = it[position]
-                                        scaleWasSet = false
-                                        dataManager.updatePhotoSeenCounter(marsPhoto)
-                                    }
-                                })
-                            },
-                            {
-                                it.printStackTrace()
-                                // Show Standalone Image
-                                showStandaloneImage()
-                            })
+                    .subscribe(::onCachePhotosAvailable, {
+                        it.printStackTrace()
+                        // Show Standalone Image
+                        showStandaloneImage()
+                    })
 
             subscriptions.add(subscribe)
         }
-    }
-
-    private fun showStandaloneImage() {
-        fullscreenImageRoot.removeView(imagePager)
-
-        val imageRoot = fullscreenImageRoot.inflate(R.layout.view_image, false)
-
-        fullscreenImageRoot.addView(imageRoot)
-
-        val photoViewAttacher = PhotoViewAttacher(imageRoot.fullscreenImage)
-
-        Picasso.with(this).load(marsPhoto.imageUrl).tag(marsPhoto.id).into(imageRoot
-                .fullscreenImage, object :
-                Callback {
-            override fun onSuccess() {
-                imageRoot.fullscreenImageProgress.visibility = View.GONE
-                photoViewAttacher.update()
-            }
-
-            override fun onError() {
-                imageRoot.fullscreenImageProgress.visibility = View.GONE
-                Snackbar.make(imageView.rootView, "Cannot show this image", Snackbar.LENGTH_INDEFINITE)
-                        .setAction("Close", { finish() })
-                        .show()
-            }
-        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -163,70 +113,144 @@ class ImageActivity : RxActivity() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        if (item?.itemId == android.R.id.home) {
-            finish()
-            return true
-        } else if (item?.itemId == R.id.menu_item_save) {
-            saveImageToGallery()
-            return true
-        } else
-            return super.onOptionsItemSelected(item)
+    override fun onOptionsItemSelected(item: MenuItem?) = when {
+        item?.itemId == android.R.id.home   -> true.apply { finish() }
+        item?.itemId == R.id.menu_item_save -> true.apply { saveImageToGallery() }
+        else                                -> super.onOptionsItemSelected(item)
+    }
+
+    private fun onCachePhotosAvailable(it: List<MarsPhoto>) {
+        val pagerAdapter = ViewsPagerAdapter(it)
+        imagePager.adapter = pagerAdapter
+        pagerAdapter.scaleCallback = {
+            if (!scaleWasSet) dataManager.updatePhotoScaleCounter(marsPhoto)
+
+            scaleWasSet = true
+        }
+
+        val index = it.indexOf(marsPhoto)
+        imagePager.currentItem = index
+
+        imagePager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
+            override fun onPageSelected(position: Int) {
+                // Set the marsPhoto as current
+                marsPhoto = it[position]
+                scaleWasSet = false
+                dataManager.updatePhotoSeenCounter(marsPhoto)
+            }
+        })
+    }
+
+    private fun showStandaloneImage() {
+        fullscreenImageRoot.removeView(imagePager)
+
+        val imageRoot = fullscreenImageRoot.inflate(R.layout.view_image, false)
+
+        fullscreenImageRoot.addView(imageRoot)
+
+        val photoViewAttacher = PhotoViewAttacher(imageRoot.fullscreenImage)
+
+        Picasso.with(this)
+                .load(marsPhoto.imageUrl)
+                .tag(marsPhoto.id)
+                .into(imageRoot.fullscreenImage, object : Callback {
+                    override fun onSuccess() {
+                        imageRoot.fullscreenImageProgress.visibility = View.GONE
+                        photoViewAttacher.update()
+                    }
+
+                    override fun onError() {
+                        imageRoot.fullscreenImageProgress.visibility = View.GONE
+                        showSnackBarError()
+                    }
+                })
     }
 
     private fun saveImageToGallery() {
 
-        RxPermissions(this)
+        if (BuildConfig.DEBUG){
+            FirebaseProvider.proideTestFirebase.deleteFirestoreItem(marsPhoto.id.toString())
+            return
+        }
+
+        val subscribe = RxPermissions(this)
                 // Request permission for saving file.
                 .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .observeOn(AndroidSchedulers.mainThread())
                 // filter not granted permission
                 .filter {
                     //  If permission not granted and shouldShowRequestPermissionRationale = show explain dialog. else show snackbar with gotosettings
                     if (!it) {
-                        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) showExplainDialog()
-                        else {
-                            Snackbar.make(fullscreenImageRoot, "Without this permission I cannot save this nice photo to your gallery. If you want to save image please give permission in settings", Snackbar.LENGTH_LONG)
-                                    .setAction("Go to Settings", { showAppSettings() })
-                                    .show()
-                        }
+                        permissionNotGrant()
                     }
                     it
                 }
                 // Get Bitmap on background
                 .observeOn(Schedulers.io())
-                .map { Picasso.with(this).load(marsPhoto.imageUrl).get() }
-                // Save bitmap to gallery
-                .map { MediaStore.Images.Media.insertImage(contentResolver, it, "mars_photo_${marsPhoto.id}", "Photo saved from $appUrl") }
-                // Send broadcast for updating gallery
                 .map {
+                    Picasso.with(this)
+                            .load(marsPhoto.imageUrl)
+                            .get()
+                }
+                // Save bitmap to gallery
+                .map {
+                    MediaStore.Images.Media.insertImage(contentResolver, it,
+                                                        "mars_photo_${marsPhoto.id}",
+                                                        "Photo saved from $appUrl")
+                }
+                // Send broadcast for updating gallery
+                .doOnNext {
                     sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse(it)))
-                    it
                 }
                 // Update counter for save
                 .doOnNext { dataManager.updatePhotoSaveCounter(marsPhoto) }
-
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    imagePath ->
-                    Snackbar.make(fullscreenImageRoot, "File was saved on path $imagePath", Snackbar.LENGTH_INDEFINITE)
-                            .setAction("View", {
-                                val openIntent = Intent(Intent.ACTION_VIEW, Uri.parse(imagePath))
-                                startActivity(openIntent)
-                            })
-                            .show()
-                }, {
-                    it.printStackTrace()
-                    Toast.makeText(this, "Error occured ${it.message}", Toast.LENGTH_SHORT).show()
-                })
+                .subscribe(::showSnackBarOnSaved, ::onErrorOccurred)
+
+        subscriptions.add(subscribe)
+    }
+
+    private fun permissionNotGrant() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                                                                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        ) {
+            showExplainDialog()
+        } else {
+            showSnackBarOnSettings()
+        }
+    }
+
+    private fun ImageActivity.showSnackBarError() {
+        fullscreenImageRoot.showSnackBar("Cannot show this image", "Close",
+                                         View.OnClickListener { finish() },
+                                         Snackbar.LENGTH_INDEFINITE)
+    }
+
+    private fun showSnackBarOnSettings() {
+        fullscreenImageRoot.showSnackBar(
+                "Without this permission I cannot save this nice photo to your gallery. If you want to save image please give permission in settings",
+                "Go to Settings", View.OnClickListener { showAppSettings() })
+    }
+
+    private fun showSnackBarOnSaved(imagePath: String?) {
+        fullscreenImageRoot.showSnackBar(msg = "File was saved on path $imagePath",
+                                         actionTxt = "View", actionCallback = View.OnClickListener {
+            val openIntent = Intent(Intent.ACTION_VIEW, Uri.parse(imagePath))
+            startActivity(openIntent)
+        }, duration = Snackbar.LENGTH_SHORT)
+    }
+
+    private fun onErrorOccurred(it: Throwable) {
+        it.printStackTrace()
+        Toast.makeText(this, "Error occured ${it.message}", Toast.LENGTH_SHORT)
+                .show()
     }
 
     private fun showExplainDialog() {
         AlertDialog.Builder(this)
                 .setTitle("Alert")
-                .setMessage("Without this permission I cannot save this nice photo to your gallery. If you want to save image please give permission.")
-                .setPositiveButton("Ok") { p0, p1 -> saveImageToGallery() }
+                .setMessage(
+                        "Without this permission I cannot save this nice photo to your gallery. If you want to save image please give permission.")
+                .setPositiveButton("Ok") { _, _ -> saveImageToGallery() }
                 .setNegativeButton("No", null)
                 .show()
 

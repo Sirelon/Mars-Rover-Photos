@@ -5,22 +5,23 @@ import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import com.sirelon.marsroverphotos.adapter.diffutils.ViewTypeDiffCallack
-import com.sirelon.marsroverphotos.adapter.diffutils.getChangePayload
 import com.sirelon.marsroverphotos.adapter.headers.HeaderViewType
+import com.sirelon.marsroverphotos.feature.rovers.getChangePayload
 import com.sirelon.marsroverphotos.models.ViewType
-import java.util.*
+import java.util.ArrayList
 
 /**
  * @author romanishin
  * @since 31.10.16 on 11:32
  */
-class ViewTypeAdapter(var withLoadingView: Boolean = true) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+open class ViewTypeAdapter(var withLoadingView: Boolean = true) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var savedItems: ArrayList<ViewType>? = null
 
     private var items: ArrayList<ViewType>
     private var delegates = SparseArrayCompat<ViewTypeDelegateAdapter?>()
-    private val loadingItem = object : ViewType {
+    protected val loadingItem = object : ViewType {
         override fun getViewType(): Int = AdapterConstants.LOADING
     }
 
@@ -40,8 +41,13 @@ class ViewTypeAdapter(var withLoadingView: Boolean = true) : RecyclerView.Adapte
         return delegates.get(viewType)?.onCreateViewHolder(parent)
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>?) {
-        delegates.get(getItemViewType(position))?.onBindViewHolder(holder, items[position], payloads)
+    override fun onBindViewHolder(
+        holder: RecyclerView.ViewHolder,
+        position: Int,
+        payloads: MutableList<Any>?
+    ) {
+        val item = getItemByPosition(position) ?: return
+        delegates.get(getItemViewType(position))?.onBindViewHolder(holder, item, payloads)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -49,12 +55,12 @@ class ViewTypeAdapter(var withLoadingView: Boolean = true) : RecyclerView.Adapte
     }
 
     override fun getItemViewType(position: Int): Int {
-        return this.items[position].getViewType()
+        return getItemByPosition(position)?.getViewType() ?: -1
     }
 
     override fun getItemCount(): Int = items.size
 
-    fun addData(data: List<ViewType>) {
+    open fun addData(data: List<ViewType>) {
 
         if (withLoadingView) {
 
@@ -72,10 +78,10 @@ class ViewTypeAdapter(var withLoadingView: Boolean = true) : RecyclerView.Adapte
         }
     }
 
-    fun addOrReplace(viewType: ViewType) {
+    open fun addOrReplace(viewType: ViewType) {
         if (items.contains(viewType)) {
             val position = items.indexOf(viewType)
-            val oldModel = items[position]
+            val oldModel = getItemByPosition(position) ?: return
             val changePayload = getChangePayload(oldModel, viewType)
             items[position] = viewType
             notifyItemChanged(position, changePayload)
@@ -85,8 +91,10 @@ class ViewTypeAdapter(var withLoadingView: Boolean = true) : RecyclerView.Adapte
         }
     }
 
-    fun stopLoading(){
-        if (withLoadingView){
+    open fun getItemByPosition(position: Int): ViewType? = items[position]
+
+    fun stopLoading() {
+        if (withLoadingView) {
             // first remove loading and notify
             val initPosition = items.size - 1
 
@@ -130,7 +138,7 @@ class ViewTypeAdapter(var withLoadingView: Boolean = true) : RecyclerView.Adapte
         replaceData(filteredData)
     }
 
-    fun replaceData(newData: List<ViewType>) {
+    open fun replaceData(newData: List<ViewType>) {
         DiffUtil.calculateDiff(ViewTypeDiffCallack(items, newData)).dispatchUpdatesTo(this)
 
         items.clear()

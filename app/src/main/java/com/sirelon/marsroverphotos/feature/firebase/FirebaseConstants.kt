@@ -1,4 +1,4 @@
-package com.sirelon.marsroverphotos.firebase
+package com.sirelon.marsroverphotos.feature.firebase
 
 /**
  * Created on 12/04/2017 18:05.
@@ -6,6 +6,8 @@ package com.sirelon.marsroverphotos.firebase
 object FirebaseConstants {
 
     const val PHOTOS_TABLE = "MarsPhotos"
+
+    const val COLECTION_PHOTOS = "mars-rover-photos"
 
     const val PHOTO_ID = "id"
     const val PHOTO_SOL = "sol"
@@ -15,5 +17,4 @@ object FirebaseConstants {
     const val PHOTOS_SCALE = "scaleCounter"
     const val PHOTOS_SAVE = "saveCounter"
     const val PHOTOS_SHARE = "shareCounter"
-
 }
