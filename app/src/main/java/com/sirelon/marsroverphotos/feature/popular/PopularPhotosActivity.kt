@@ -59,8 +59,8 @@ class PopularPhotosActivity : RxActivity() {
         val adapter = PagedViewTypeAdapter(diffCallback)
 
         val pagedListConfig = PagedList.Config.Builder()
-                .setEnablePlaceholders(true)
-                .setPrefetchDistance(10)
+                .setEnablePlaceholders(false)
+                .setPrefetchDistance(2)
                 .setPageSize(10)
                 .build()
 

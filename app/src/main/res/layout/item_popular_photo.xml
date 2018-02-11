@@ -14,10 +14,10 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:paddingBottom="4dp"
-        android:clipToPadding="false"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:clipToPadding="false"
+        android:orientation="vertical"
+        android:paddingBottom="4dp">
 
         <ImageView
             android:id="@+id/photo"
