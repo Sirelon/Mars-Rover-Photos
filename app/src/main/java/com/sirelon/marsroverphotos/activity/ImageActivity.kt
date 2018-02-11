@@ -17,11 +17,13 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import com.github.chrisbanes.photoview.PhotoViewAttacher
+import com.sirelon.marsroverphotos.BuildConfig
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.extensions.inflate
 import com.sirelon.marsroverphotos.extensions.showAppSettings
 import com.sirelon.marsroverphotos.extensions.showSnackBar
 import com.sirelon.marsroverphotos.feature.advertising.AdvertisingObjectFactory
+import com.sirelon.marsroverphotos.firebase.photos.FirebaseProvider
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.widget.ViewsPagerAdapter
 import com.squareup.picasso.Callback
@@ -165,6 +167,11 @@ class ImageActivity : RxActivity() {
     }
 
     private fun saveImageToGallery() {
+
+        if (BuildConfig.DEBUG){
+            FirebaseProvider.proideTestFirebase.deleteFirestoreItem(marsPhoto.id.toString())
+            return
+        }
 
         val subscribe = RxPermissions(this)
                 // Request permission for saving file.

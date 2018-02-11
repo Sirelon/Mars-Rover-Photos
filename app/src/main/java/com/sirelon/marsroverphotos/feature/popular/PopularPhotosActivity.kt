@@ -51,6 +51,7 @@ class PopularPhotosActivity : RxActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
 
+        supportActionBar?.title = getString(R.string.popular_title)
         AdvertisingObjectFactory.getAdvertisingDelegate()
                 .loadAd(adViewBanner)
 
