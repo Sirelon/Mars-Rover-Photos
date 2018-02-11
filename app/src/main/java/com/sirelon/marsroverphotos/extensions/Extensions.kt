@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
 import android.provider.Settings
+import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
 import android.text.TextUtils
 import android.util.Log
@@ -21,14 +22,27 @@ import android.widget.ImageView
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
 import com.squareup.picasso.Picasso
-import java.util.*
+import java.util.Random
 
 /**
  * @author romanishin
  * @since 31.10.16 on 11:26
  */
+fun View.showSnackBar(msg: String) {
+    Snackbar.make(this, msg, Snackbar.LENGTH_LONG)
+            .show()
+}
+
+fun View.showSnackBar(msg: String, actionTxt: String, actionCallback: View.OnClickListener,
+                      duration: Int = Snackbar.LENGTH_LONG) {
+    Snackbar.make(this, msg, duration)
+            .setAction(actionTxt, actionCallback)
+            .show()
+}
+
 fun ViewGroup.inflate(layoutId: Int, attachToRoot: Boolean = false): View {
-    return LayoutInflater.from(context).inflate(layoutId, this, attachToRoot)
+    return LayoutInflater.from(context)
+            .inflate(layoutId, this, attachToRoot)
 }
 
 object placeholder {
@@ -39,10 +53,12 @@ object placeholder {
 
 
 infix fun ImageView.loadImage(imageUrl: String?) {
-    if (TextUtils.isEmpty(imageUrl))
-        this.setImageDrawable(placeholder.drawable)
+    if (TextUtils.isEmpty(imageUrl)) this.setImageDrawable(placeholder.drawable)
     else {
-        Picasso.with(context).load(imageUrl).placeholder(placeholder.drawable).into(this)
+        Picasso.with(context)
+                .load(imageUrl)
+                .placeholder(placeholder.drawable)
+                .into(this)
     }
 }
 
@@ -69,10 +85,10 @@ fun Int.random(max: Int): Int {
 // Inline function to create Parcel Creator
 inline fun <reified T : Parcelable> createParcel(
         crossinline createFromParcel: (Parcel) -> T?): Parcelable.Creator<T> =
-        object : Parcelable.Creator<T> {
-            override fun createFromParcel(source: Parcel): T? = createFromParcel(source)
-            override fun newArray(size: Int): Array<out T?> = arrayOfNulls(size)
-        }
+    object : Parcelable.Creator<T> {
+        override fun createFromParcel(source: Parcel): T? = createFromParcel(source)
+        override fun newArray(size: Int): Array<out T?> = arrayOfNulls(size)
+    }
 
 fun Any?.logD() {
     Log.d("Sirelon", this?.toString() ?: "NULL")

@@ -20,6 +20,7 @@ import com.github.chrisbanes.photoview.PhotoViewAttacher
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.extensions.inflate
 import com.sirelon.marsroverphotos.extensions.showAppSettings
+import com.sirelon.marsroverphotos.extensions.showSnackBar
 import com.sirelon.marsroverphotos.feature.advertising.AdvertisingObjectFactory
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.widget.ViewsPagerAdapter
@@ -210,27 +211,23 @@ class ImageActivity : RxActivity() {
     }
 
     private fun ImageActivity.showSnackBarError() {
-        Snackbar.make(fullscreenImageRoot, "Cannot show this image", Snackbar.LENGTH_INDEFINITE)
-                .setAction("Close", { finish() })
-                .show()
+        fullscreenImageRoot.showSnackBar("Cannot show this image", "Close",
+                                         View.OnClickListener { finish() },
+                                         Snackbar.LENGTH_INDEFINITE)
     }
 
     private fun showSnackBarOnSettings() {
-        Snackbar.make(fullscreenImageRoot,
-                      "Without this permission I cannot save this nice photo to your gallery. If you want to save image please give permission in settings",
-                      Snackbar.LENGTH_LONG)
-                .setAction("Go to Settings", { showAppSettings() })
-                .show()
+        fullscreenImageRoot.showSnackBar(
+                "Without this permission I cannot save this nice photo to your gallery. If you want to save image please give permission in settings",
+                "Go to Settings", View.OnClickListener { showAppSettings() })
     }
 
     private fun showSnackBarOnSaved(imagePath: String?) {
-        Snackbar.make(fullscreenImageRoot, "File was saved on path $imagePath",
-                      Snackbar.LENGTH_INDEFINITE)
-                .setAction("View", {
-                    val openIntent = Intent(Intent.ACTION_VIEW, Uri.parse(imagePath))
-                    startActivity(openIntent)
-                })
-                .show()
+        fullscreenImageRoot.showSnackBar(msg = "File was saved on path $imagePath",
+                                         actionTxt = "View", actionCallback = View.OnClickListener {
+            val openIntent = Intent(Intent.ACTION_VIEW, Uri.parse(imagePath))
+            startActivity(openIntent)
+        }, duration = Snackbar.LENGTH_INDEFINITE)
     }
 
     private fun onErrorOccurred(it: Throwable) {
