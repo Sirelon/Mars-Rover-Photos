@@ -45,9 +45,14 @@ class AnswersTracker : ITracker {
     }
 
     override fun trackSave(photo: MarsPhoto) {
-        Answers.getInstance().logCustom(CustomEvent(EVENT_MARS_PHOTO_SAVE)
-                .putCustomAttribute(ATTR_MARS_PHOTO_ID, photo.id)
-                .putCustomAttribute(ATTR_MARS_PHOTO_NAME, photo.name ?: "Null")
-                .putCustomAttribute(ATTR_MARS_PHOTO_URL, photo.imageUrl))
+        try {
+            val customEvent =
+                CustomEvent(EVENT_MARS_PHOTO_SAVE).putCustomAttribute(ATTR_MARS_PHOTO_ID, photo.id)
+                        .putCustomAttribute(ATTR_MARS_PHOTO_NAME, photo.name ?: "Null")
+                        .putCustomAttribute(ATTR_MARS_PHOTO_URL, photo.imageUrl)
+            Answers.getInstance().logCustom(customEvent)
+        } catch (e : Exception){
+            e.printStackTrace()
+        }
     }
 }

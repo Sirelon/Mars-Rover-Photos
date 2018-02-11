@@ -229,7 +229,7 @@ class ImageActivity : RxActivity() {
                                          actionTxt = "View", actionCallback = View.OnClickListener {
             val openIntent = Intent(Intent.ACTION_VIEW, Uri.parse(imagePath))
             startActivity(openIntent)
-        }, duration = Snackbar.LENGTH_INDEFINITE)
+        }, duration = Snackbar.LENGTH_SHORT)
     }
 
     private fun onErrorOccurred(it: Throwable) {
