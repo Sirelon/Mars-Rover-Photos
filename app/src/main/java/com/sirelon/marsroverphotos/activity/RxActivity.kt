@@ -45,8 +45,8 @@ open class RxActivity : AppCompatActivity() {
             return true
         } else if (item?.itemId == R.id.menu_item_about) {
 //            FirebaseProvider.proideTestFirebase.deleteUnusedItems()
-            FirebaseProvider.proideTestFirebase.migrateToFirestore()
-//            startActivity(Intent(this, AboutAppActivity::class.java))
+//            FirebaseProvider.proideTestFirebase.migrateToFirestore()
+            startActivity(Intent(this, AboutAppActivity::class.java))
             return true
         } else
             return super.onOptionsItemSelected(item)

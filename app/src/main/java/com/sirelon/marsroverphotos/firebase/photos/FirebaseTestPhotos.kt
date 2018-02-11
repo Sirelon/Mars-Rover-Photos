@@ -97,7 +97,7 @@ class FirebaseTestPhotos {
                     .document(it["id"].toString())
                     .set(it)
                     .addOnSuccessListener {
-                        "Successed $it".logD()
+                        "Successed".logD()
                     }
                     .addOnFailureListener {
                         it.printStackTrace()
