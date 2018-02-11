@@ -31,6 +31,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_image.*
 import kotlinx.android.synthetic.main.view_image.view.*
+import kotlinx.android.synthetic.main.view_native_adview.*
 
 
 class ImageActivity : RxActivity() {

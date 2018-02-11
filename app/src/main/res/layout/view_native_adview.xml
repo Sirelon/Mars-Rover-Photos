@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.gms.ads.NativeExpressAdView xmlns:ads="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/adViewBanner"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    ads:adSize="FULL_WIDTHx80"
+    android:layout_gravity="bottom"
+    ads:adUnitId="@string/ad_image_activity"
+    ads:layout_constraintBottom_toBottomOf="parent"
+    ads:layout_constraintLeft_toLeftOf="parent"
+    ads:layout_constraintRight_toRightOf="parent"
+    tools:showIn="@layout/activity_image" />

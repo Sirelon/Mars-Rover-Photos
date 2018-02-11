@@ -11,12 +11,14 @@ import com.sirelon.marsroverphotos.activity.RxActivity
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
 import com.sirelon.marsroverphotos.adapter.PagedViewTypeAdapter
 import com.sirelon.marsroverphotos.adapter.diffutils.ViewTypeDiffResolver
+import com.sirelon.marsroverphotos.feature.advertising.AdvertisingObjectFactory
 import com.sirelon.marsroverphotos.feature.firebase.FirebasePhoto
 import com.sirelon.marsroverphotos.feature.firebase.toMarsPhoto
 import com.sirelon.marsroverphotos.firebase.photos.FirebaseProvider
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_popular_photos.*
+import kotlinx.android.synthetic.main.view_native_adview.*
 
 class PopularPhotosActivity : RxActivity() {
 
@@ -29,6 +31,8 @@ class PopularPhotosActivity : RxActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
+
+        AdvertisingObjectFactory.getAdvertisingDelegate().loadAd(adViewBanner)
 
         val diffCallback = ViewTypeDiffResolver<FirebasePhoto>()
 
