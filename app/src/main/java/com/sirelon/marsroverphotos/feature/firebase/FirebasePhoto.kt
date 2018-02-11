@@ -1,6 +1,5 @@
 package com.sirelon.marsroverphotos.feature.firebase
 
-import com.sirelon.marsroverphotos.R.id.photo
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.models.ViewType
@@ -8,7 +7,7 @@ import com.sirelon.marsroverphotos.models.ViewType
 /**
  * Created on 12/04/2017 19:05.
  */
-class FirebasePhoto(
+data class FirebasePhoto(
         val id: Long,
         val sol: Long,
         val name: String?,

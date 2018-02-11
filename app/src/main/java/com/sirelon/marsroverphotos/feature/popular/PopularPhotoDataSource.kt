@@ -45,6 +45,7 @@ class PopularPhotoDataSource(private val firebasePhotos: IFirebasePhotos) :
 
         firebasePhotos.loadPopularPhotos(count = params.requestedLoadSize, lastPhoto = params.key)
                 .subscribeOn(Schedulers.io())
+                .doOnNext { it.logD() }
                 .subscribe { callback.onResult(it) }
                 .apply { disposables.add(this) }
     }

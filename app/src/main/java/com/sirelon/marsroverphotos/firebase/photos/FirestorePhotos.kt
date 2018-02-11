@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos.firebase.photos
 
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
@@ -41,6 +42,7 @@ internal class FirestorePhotos : IFirebasePhotos {
 //                .subscribe({
 //                    it.logD()
 //                }, Throwable::printStackTrace)
+
         return Single.just(1)
     }
 
@@ -90,10 +92,8 @@ internal class FirestorePhotos : IFirebasePhotos {
                 .limit(count.toLong())
 
             if (lastPhoto != null){
-                first = first.startAfter(lastPhoto.shareCounter)
-                        .startAfter(lastPhoto.saveCounter)
-                        .startAfter(lastPhoto.scaleCounter)
-                        .startAfter(lastPhoto.seeCounter)
+                val documentSnapshot = Tasks.await(photosCollection().document(lastPhoto.id.toString()).get())
+                first = first.startAfter(documentSnapshot)
             }
 
             first.get().addOnCompleteListener({

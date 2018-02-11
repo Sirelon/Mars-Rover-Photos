@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos.feature.popular
 
+import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
 import android.arch.paging.LivePagedListBuilder
 import android.arch.paging.PagedList
@@ -23,6 +24,23 @@ import kotlinx.android.synthetic.main.view_native_adview.*
 
 class PopularPhotosActivity : RxActivity() {
 
+    private lateinit var userList: LiveData<PagedList<FirebasePhoto>>
+
+    private val pagedCallback: PagedList.Callback = object : PagedList.Callback() {
+        override fun onChanged(position: Int, count: Int) {
+
+        }
+
+        override fun onInserted(position: Int, count: Int) {
+            popularProgressBar.visibility = View.GONE
+            userList.value?.removeWeakCallback(this)
+        }
+
+        override fun onRemoved(position: Int, count: Int) {
+
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_popular_photos)
@@ -41,32 +59,17 @@ class PopularPhotosActivity : RxActivity() {
         val adapter = PagedViewTypeAdapter(diffCallback)
 
         val pagedListConfig = PagedList.Config.Builder()
-                .setEnablePlaceholders(false)
-                .setPrefetchDistance(2)
-                .setPageSize(5)
+                .setEnablePlaceholders(true)
+                .setPrefetchDistance(10)
+                .setPageSize(10)
                 .build()
 
         val dataSourceFactory = PopularDataSourceFactory(FirebaseProvider.firebasePhotos)
 
-        val userList = LivePagedListBuilder(dataSourceFactory, pagedListConfig).build()
-
+        userList = LivePagedListBuilder(dataSourceFactory, pagedListConfig).build()
 
         userList.observe(this, Observer {
-
-            it?.addWeakCallback(null, object : PagedList.Callback() {
-                override fun onChanged(position: Int, count: Int) {
-
-                }
-
-                override fun onInserted(position: Int, count: Int) {
-                    popularProgressBar.visibility = View.GONE
-                    it?.removeWeakCallback(this)
-                }
-
-                override fun onRemoved(position: Int, count: Int) {
-
-                }
-            })
+            it?.addWeakCallback(null, pagedCallback)
             adapter.setPagedList(it)
         })
 
