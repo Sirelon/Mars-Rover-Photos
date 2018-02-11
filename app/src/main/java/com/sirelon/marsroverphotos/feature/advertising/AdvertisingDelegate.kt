@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos.feature.advertising
 
+import com.google.android.gms.ads.NativeExpressAdView
 import com.sirelon.marsroverphotos.models.ViewType
 
 /**
@@ -8,4 +9,5 @@ import com.sirelon.marsroverphotos.models.ViewType
 interface AdvertisingDelegate {
 
     fun integregrateAdToList(dataList: List<out ViewType>): List<out ViewType>
+    fun loadAd(adView: NativeExpressAdView)
 }
