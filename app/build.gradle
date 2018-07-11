@@ -116,8 +116,9 @@ dependencies {
     def fireBaseVer = "11.8.0"
     implementation "com.google.firebase:firebase-core:16.0.1"
     implementation "com.google.firebase:firebase-ads:15.0.1"
+    implementation 'com.google.android.gms:play-services-ads:15.0.1'
     implementation "com.google.firebase:firebase-crash:16.0.1"
-    implementation "com.google.firebase:firebase-database:16.0.1"
+//    implementation "com.google.firebase:firebase-database:16.0.1"
     implementation "com.google.firebase:firebase-firestore:17.0.2"
     implementation "com.google.firebase:firebase-perf:16.0.0"
 

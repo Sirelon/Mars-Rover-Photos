@@ -11,8 +11,4 @@ object FirebaseProvider {
         // Newly db
         FirestorePhotos()
     }
-
-    val proideTestFirebase: FirebaseTestPhotos by lazy {
-        FirebaseTestPhotos()
-    }
 }

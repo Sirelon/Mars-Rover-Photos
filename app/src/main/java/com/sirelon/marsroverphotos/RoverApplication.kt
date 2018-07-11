@@ -3,8 +3,7 @@ package com.sirelon.marsroverphotos
 import android.app.Application
 import com.crashlytics.android.Crashlytics
 import com.crashlytics.android.answers.Answers
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.Logger
+import com.google.android.gms.ads.MobileAds
 import com.google.firebase.firestore.FirebaseFirestore
 import com.jakewharton.picasso.OkHttp3Downloader
 import com.sirelon.marsroverphotos.extensions.logE
@@ -29,10 +28,12 @@ class RoverApplication : Application() {
         super.onCreate()
         APP = this
 
+        // Configurate ads
+        MobileAds.initialize(this, getString(R.string.ad_application_id))
+
         val fabric = Fabric.Builder(this).kits(Crashlytics(), Answers()).debuggable(BuildConfig.DEBUG).build()
         Fabric.with(fabric)
 
-        FirebaseDatabase.getInstance().setLogLevel(if (BuildConfig.DEBUG) Logger.Level.DEBUG else Logger.Level.NONE)
         val settings = FirebaseFirestoreSettings.Builder()
                 .setPersistenceEnabled(true)
                 .build()

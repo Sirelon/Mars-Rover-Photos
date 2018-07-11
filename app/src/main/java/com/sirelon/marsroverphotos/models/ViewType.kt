@@ -1,6 +1,6 @@
 package com.sirelon.marsroverphotos.models
 
-import com.google.firebase.database.Exclude
+import com.google.firebase.firestore.Exclude
 
 /**
  * @author romanishin

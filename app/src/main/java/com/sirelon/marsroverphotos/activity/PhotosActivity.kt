@@ -115,8 +115,6 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         val adapter = ViewTypeAdapter()
         adapter.addDelegateAdapter(AdapterConstants.MARS_PHOTO, MarsPhotosDelegateAdapter(this))
 
-        // Configurate ads
-        MobileAds.initialize(this, getString(R.string.ad_application_id))
         adapter.addDelegateAdapter(AdapterConstants.ADVERTIZING, AdsDelegateAdapter())
 
         photosList.apply {

@@ -73,7 +73,7 @@ internal class FirestorePhotos : IFirebasePhotos {
                 first = first.startAfter(documentSnapshot)
             }
 
-            first.get().addOnCompleteListener({
+            first.get().addOnCompleteListener {
                 if (it.isSuccessful) {
                     val documentSnapshots = it.result
                     val objects = documentSnapshots.toObjects(FirebasePhoto::class.java)
@@ -82,7 +82,7 @@ internal class FirestorePhotos : IFirebasePhotos {
                 } else {
                     emitter.onError(it.exception!!)
                 }
-            })
+            }
         }
     }
 
