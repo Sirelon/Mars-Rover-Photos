@@ -1,13 +1,14 @@
 package com.sirelon.marsroverphotos.adapter.diffutils
 
-import android.support.v7.recyclerview.extensions.DiffCallback
-import com.sirelon.marsroverphotos.models.ViewType
+import android.support.v7.util.DiffUtil
 
 /**
  * Created on 2/6/18 22:41 for Mars-Rover-Photos.
  */
-class ViewTypeDiffResolver<T : ViewType> : DiffCallback<T>() {
-    override fun areItemsTheSame(oldItem: T, newItem: T) = newItem.hashCode() == oldItem.hashCode()
+open class ItemDiffCallback<T> : DiffUtil.ItemCallback<T>() {
+    override fun areItemsTheSame(oldItem: T, newItem: T) =
+        oldItem == newItem
 
-    override fun areContentsTheSame(oldItem: T, newItem: T) = newItem == oldItem
+    override fun areContentsTheSame(oldItem: T, newItem: T) =
+        oldItem?.hashCode() == newItem?.hashCode()
 }

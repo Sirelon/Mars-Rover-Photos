@@ -3,6 +3,8 @@ package com.sirelon.marsroverphotos.adapter
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import com.sirelon.marsroverphotos.R
+import com.sirelon.marsroverphotos.R.id.cameraName
+import com.sirelon.marsroverphotos.R.id.photo
 import com.sirelon.marsroverphotos.extensions.inflate
 import com.sirelon.marsroverphotos.extensions.loadImage
 import com.sirelon.marsroverphotos.models.MarsPhoto
@@ -18,7 +20,7 @@ class MarsPhotosDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeD
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder = MarsPhotoViewHolder(parent)
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType, payloads: MutableList<Any>?) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType, payloads: List<Any>?) {
         val marsPhotoViewHolder = holder as MarsPhotoViewHolder
         marsPhotoViewHolder.bind(item as MarsPhoto)
         marsPhotoViewHolder.itemView.photo.setOnClickListener {

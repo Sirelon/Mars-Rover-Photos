@@ -12,5 +12,5 @@ interface ViewTypeDelegateAdapter {
 
     fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder
 
-    fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType, payloads: MutableList<Any>? = null)
+    fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType, payloads: List<Any>? = null)
 }

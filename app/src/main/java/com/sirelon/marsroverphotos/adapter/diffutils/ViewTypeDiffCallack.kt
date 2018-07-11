@@ -10,7 +10,7 @@ import com.sirelon.marsroverphotos.models.ViewType
 class ViewTypeDiffCallack(
     private val oldData: List<ViewType>,
     private val newData: List<ViewType>,
-    private val viewTypeDiffResolver: ViewTypeDiffResolver<ViewType> = ViewTypeDiffResolver()
+    private val viewTypeDiffResolver: ItemDiffCallback<ViewType> = ItemDiffCallback()
 ) : DiffUtil.Callback() {
 
     override fun getOldListSize(): Int = oldData.size

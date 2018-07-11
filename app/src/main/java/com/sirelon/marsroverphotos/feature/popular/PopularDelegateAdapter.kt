@@ -20,7 +20,7 @@ import kotlinx.android.synthetic.main.item_popular.view.*
 @Keep
 class PopularDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDelegateAdapter {
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType, payloads: MutableList<Any>?) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType, payloads: List<Any>?) {
         (holder as PopularViewHolder).bind(item as PopularItem)
         holder.itemView.setOnClickListener { callback.onModelChoose(item) }
     }

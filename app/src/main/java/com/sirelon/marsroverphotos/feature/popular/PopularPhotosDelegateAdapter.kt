@@ -22,7 +22,7 @@ class PopularPhotosDelegateAdapter(val callback: (item: FirebasePhoto) -> Unit) 
         PopularPhotoViewHolder(parent)
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType,
-                                  payloads: MutableList<Any>?) {
+                                  payloads: List<Any>?) {
         val marsPhotoViewHolder = holder as PopularPhotoViewHolder
         marsPhotoViewHolder.bind(item as FirebasePhoto)
         marsPhotoViewHolder.itemView.photo.setOnClickListener {

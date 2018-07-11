@@ -37,21 +37,20 @@ open class ViewTypeAdapter(var withLoadingView: Boolean = true) :
         delegates.put(id, delegateAdapter)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder? {
-        return delegates.get(viewType)?.onCreateViewHolder(parent)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return delegates.get(viewType)!!.onCreateViewHolder(parent)
     }
 
     override fun onBindViewHolder(
-        holder: RecyclerView.ViewHolder,
-        position: Int,
-        payloads: MutableList<Any>?
+        holder: RecyclerView.ViewHolder, position: Int, payloadsArg: List<Any>
     ) {
         val item = getItemByPosition(position) ?: return
+        val payloads = if (payloadsArg.isEmpty()) null else payloadsArg
         delegates.get(getItemViewType(position))?.onBindViewHolder(holder, item, payloads)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        onBindViewHolder(holder, position, null)
+        onBindViewHolder(holder, position, listOf())
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -132,8 +131,7 @@ open class ViewTypeAdapter(var withLoadingView: Boolean = true) :
     fun getSavedData(): ArrayList<ViewType>? = savedItems
 
     fun applyFilteredData(filteredData: List<ViewType>) {
-        if (savedItems == null)
-            savedItems = ArrayList(items)
+        if (savedItems == null) savedItems = ArrayList(items)
 
         replaceData(filteredData)
     }

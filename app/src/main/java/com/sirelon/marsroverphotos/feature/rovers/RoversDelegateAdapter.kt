@@ -6,6 +6,7 @@ import android.support.annotation.Keep
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import com.sirelon.marsroverphotos.R
+import com.sirelon.marsroverphotos.R.id.*
 import com.sirelon.marsroverphotos.adapter.ViewTypeDelegateAdapter
 import com.sirelon.marsroverphotos.extensions.inflate
 import com.sirelon.marsroverphotos.extensions.loadImage
@@ -22,7 +23,7 @@ import kotlinx.android.synthetic.main.item_rover.view.*
 @Keep
 class RoversDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDelegateAdapter {
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType, payloads: MutableList<Any>?) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType, payloads: List<Any>?) {
         (holder as RoverViewHolder).bind(item as Rover, payloads)
         holder.itemView.setOnClickListener { callback.onModelChoose(item) }
     }
@@ -32,7 +33,7 @@ class RoversDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDeleg
     @Keep
     class RoverViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate(R.layout.item_rover)) {
 
-        fun bind(item: Rover, payloads: MutableList<Any>?) = with(itemView) {
+        fun bind(item: Rover, payloads: List<Any>?) = with(itemView) {
             if (payloads == null || payloads.isEmpty()) {
                 bindFullInfo(item)
             } else
