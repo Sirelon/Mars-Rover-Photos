@@ -16,7 +16,6 @@ keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
     compileSdkVersion 27
-    buildToolsVersion '27.0.3'
     signingConfigs {
         release {
             keyAlias keystoreProperties['keyAlias']
@@ -51,47 +50,57 @@ android {
             multiDexEnabled true
         }
     }
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-        test.java.srcDirs += 'src/test/kotlin'
-        androidTest.java.srcDirs += 'src/androidTest/kotlin'
-    }
-
-    packagingOptions {
-        exclude 'META-INF/app_debug.kotlin_module'
-    }
-
-    kapt { generateStubs = true }
+//    sourceSets {
+//        main.java.srcDirs += 'src/main/kotlin'
+//        test.java.srcDirs += 'src/test/kotlin'
+//        androidTest.java.srcDirs += 'src/androidTest/kotlin'
+//    }
+//
+//    packagingOptions {
+//        exclude 'META-INF/app_debug.kotlin_module'
+//    }
+//
+//    kapt { generateStubs = true }
 }
 
 //Ensure Kotlin will not be used in production code.
-afterEvaluate {
-    android.sourceSets.all { sourceSet ->
-        if (!sourceSet.name.startsWith('test') || !sourceSet.name.startsWith('androidTest')) {
-            sourceSet.kotlin.setSrcDirs([])
-        }
-    }
-}
+//afterEvaluate {
+//    android.sourceSets.all { sourceSet ->
+//        if (!sourceSet.name.startsWith('test') || !sourceSet.name.startsWith('androidTest')) {
+//            sourceSet.kotlin.setSrcDirs([])
+//        }
+//    }
+//}
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+    def supportLibrary = '27.1.1'
+
+//Support Libraries dependencies
+    def supportDependencies = [
+            design           : "com.android.support:design:${supportLibrary}",
+            recyclerView     : "com.android.support:recyclerview-v7:${supportLibrary}",
+            cardView         : "com.android.support:cardview-v7:${supportLibrary}",
+            appCompat        : "com.android.support:appcompat-v7:${supportLibrary}",
+            supportAnnotation: "com.android.support:support-annotations:${supportLibrary}",
+            customTabs       : "com.android.support:customtabs:${supportLibrary}",
+            // https://androidstudio.googleblog.com/
+            constraintLayout : "com.android.support.constraint:constraint-layout:1.1.2",
+    ]
+
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:multidex:1.0.3'
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     testImplementation 'org.jetbrains.kotlin:kotlin-test-junit:1.0.6'
     testImplementation "com.nhaarman:mockito-kotlin:1.5.0"
     testImplementation 'org.amshove.kluent:kluent:1.29'
 
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
     // Because RxAndroid releases are few and far between, it is recommended you also
 // explicitly depend on RxJava's latest version for bug fixes and new features.
-    def supportVer = "27.1.1"
-    implementation "com.android.support:appcompat-v7:$supportVer"
-    implementation "com.android.support:design:$supportVer"
-    implementation "com.android.support:cardview-v7:$supportVer"
-    implementation "com.android.support:recyclerview-v7:$supportVer"
-//    implementation "com.android.support:support-v4:$supportVer"
+    implementation supportDependencies.values()
 
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
 
@@ -113,12 +122,10 @@ dependencies {
         transitive = true;
     }
 
-    def fireBaseVer = "11.8.0"
     implementation "com.google.firebase:firebase-core:16.0.1"
     implementation "com.google.firebase:firebase-ads:15.0.1"
     implementation 'com.google.android.gms:play-services-ads:15.0.1'
     implementation "com.google.firebase:firebase-crash:16.0.1"
-//    implementation "com.google.firebase:firebase-database:16.0.1"
     implementation "com.google.firebase:firebase-firestore:17.0.2"
     implementation "com.google.firebase:firebase-perf:16.0.0"
 
