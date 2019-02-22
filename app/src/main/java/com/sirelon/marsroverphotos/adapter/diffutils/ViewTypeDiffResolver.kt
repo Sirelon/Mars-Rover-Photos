@@ -1,6 +1,6 @@
 package com.sirelon.marsroverphotos.adapter.diffutils
 
-import android.support.v7.util.DiffUtil
+import androidx.recyclerview.widget.DiffUtil
 
 /**
  * Created on 2/6/18 22:41 for Mars-Rover-Photos.

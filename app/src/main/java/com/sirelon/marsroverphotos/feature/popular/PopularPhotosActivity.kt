@@ -1,12 +1,12 @@
 package com.sirelon.marsroverphotos.feature.popular
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.Observer
-import android.arch.paging.LivePagedListBuilder
-import android.arch.paging.PagedList
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import androidx.paging.LivePagedListBuilder
+import androidx.paging.PagedList
 import android.os.Bundle
-import android.support.v7.recyclerview.extensions.AsyncDifferConfig
-import android.support.v7.widget.StaggeredGridLayoutManager
+import androidx.recyclerview.widget.AsyncDifferConfig
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import android.view.View
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.activity.ImageActivity
@@ -78,7 +78,10 @@ class PopularPhotosActivity : RxActivity() {
         popularPhotosList.apply {
             setHasFixedSize(true)
 
-            layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+            layoutManager = androidx.recyclerview.widget.StaggeredGridLayoutManager(
+                2,
+                androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
+            )
 
             this.adapter = adapter
         }

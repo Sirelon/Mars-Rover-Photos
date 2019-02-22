@@ -1,8 +1,8 @@
 package com.sirelon.marsroverphotos.adapter
 
-import android.support.v4.util.SparseArrayCompat
-import android.support.v7.util.DiffUtil
-import android.support.v7.widget.RecyclerView
+import androidx.collection.SparseArrayCompat
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
 import com.sirelon.marsroverphotos.adapter.diffutils.ViewTypeDiffCallack
 import com.sirelon.marsroverphotos.adapter.headers.HeaderViewType
@@ -15,12 +15,12 @@ import java.util.ArrayList
  * @since 31.10.16 on 11:32
  */
 open class ViewTypeAdapter(var withLoadingView: Boolean = true) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    androidx.recyclerview.widget.RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder>() {
 
     private var savedItems: ArrayList<ViewType>? = null
 
     private var items: ArrayList<ViewType>
-    private var delegates = SparseArrayCompat<ViewTypeDelegateAdapter?>()
+    private var delegates = androidx.collection.SparseArrayCompat<ViewTypeDelegateAdapter?>()
     protected val loadingItem = object : ViewType {
         override fun getViewType(): Int = AdapterConstants.LOADING
     }
@@ -37,19 +37,19 @@ open class ViewTypeAdapter(var withLoadingView: Boolean = true) :
         delegates.put(id, delegateAdapter)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): androidx.recyclerview.widget.RecyclerView.ViewHolder {
         return delegates.get(viewType)!!.onCreateViewHolder(parent)
     }
 
     override fun onBindViewHolder(
-        holder: RecyclerView.ViewHolder, position: Int, payloadsArg: List<Any>
+        holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int, payloadsArg: List<Any>
     ) {
         val item = getItemByPosition(position) ?: return
         val payloads = if (payloadsArg.isEmpty()) null else payloadsArg
         delegates.get(getItemViewType(position))?.onBindViewHolder(holder, item, payloads)
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
         onBindViewHolder(holder, position, listOf())
     }
 

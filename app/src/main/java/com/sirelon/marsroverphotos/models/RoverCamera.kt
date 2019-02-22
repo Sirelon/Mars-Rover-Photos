@@ -2,7 +2,7 @@ package com.sirelon.marsroverphotos.models
 
 import android.os.Parcel
 import android.os.Parcelable
-import android.support.annotation.Keep
+import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 import com.sirelon.marsroverphotos.extensions.createParcel
 

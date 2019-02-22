@@ -1,6 +1,6 @@
 package com.sirelon.marsroverphotos.feature.popular
 
-import android.arch.paging.DataSource
+import androidx.paging.DataSource
 import com.sirelon.marsroverphotos.feature.firebase.FirebasePhoto
 import com.sirelon.marsroverphotos.firebase.photos.IFirebasePhotos
 

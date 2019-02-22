@@ -6,12 +6,12 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.support.design.widget.Snackbar
-import android.support.v4.app.ActivityCompat
-import android.support.v4.view.MenuItemCompat
-import android.support.v4.view.ViewPager
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.ShareActionProvider
+import com.google.android.material.snackbar.Snackbar
+import androidx.core.app.ActivityCompat
+import androidx.core.view.MenuItemCompat
+import androidx.viewpager.widget.ViewPager
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.ShareActionProvider
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -134,7 +134,7 @@ class ImageActivity : RxActivity() {
         val index = it.indexOf(marsPhoto)
         imagePager.currentItem = index
 
-        imagePager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
+        imagePager.addOnPageChangeListener(object : androidx.viewpager.widget.ViewPager.SimpleOnPageChangeListener() {
             override fun onPageSelected(position: Int) {
                 // Set the marsPhoto as current
                 marsPhoto = it[position]

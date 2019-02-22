@@ -2,8 +2,8 @@ package com.sirelon.marsroverphotos.feature.rovers
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.sirelon.marsroverphotos.NoConnectionError
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.activity.PhotosActivity
@@ -44,10 +44,15 @@ class RoversActivity : RxActivity(), OnModelChooseListener {
         roversList.apply {
             setHasFixedSize(true)
 
-            layoutManager = LinearLayoutManager(this@RoversActivity)
+            layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this@RoversActivity)
 
             this.adapter = adapter
-            addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
+            addItemDecoration(
+                androidx.recyclerview.widget.DividerItemDecoration(
+                    context,
+                    androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
+                )
+            )
         }
 
         adapter.addOrReplace(PopularItem())

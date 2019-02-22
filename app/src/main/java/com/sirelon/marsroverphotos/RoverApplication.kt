@@ -1,7 +1,7 @@
 package com.sirelon.marsroverphotos
 
 import android.app.Application
-import android.support.multidex.MultiDex
+import androidx.multidex.MultiDex
 import com.crashlytics.android.Crashlytics
 import com.crashlytics.android.answers.Answers
 import com.google.android.gms.ads.MobileAds

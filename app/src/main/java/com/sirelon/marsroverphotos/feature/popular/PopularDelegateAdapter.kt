@@ -1,8 +1,8 @@
 package com.sirelon.marsroverphotos.feature.popular
 
 import android.graphics.Typeface
-import android.support.annotation.Keep
-import android.support.v7.widget.RecyclerView
+import androidx.annotation.Keep
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import com.sirelon.marsroverphotos.R
@@ -20,15 +20,15 @@ import kotlinx.android.synthetic.main.item_popular.view.*
 @Keep
 class PopularDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDelegateAdapter {
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType, payloads: List<Any>?) {
+    override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, item: ViewType, payloads: List<Any>?) {
         (holder as PopularViewHolder).bind(item as PopularItem)
         holder.itemView.setOnClickListener { callback.onModelChoose(item) }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder = PopularViewHolder(parent)
+    override fun onCreateViewHolder(parent: ViewGroup): androidx.recyclerview.widget.RecyclerView.ViewHolder = PopularViewHolder(parent)
 
     @Keep
-    class PopularViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate(R.layout.item_popular)) {
+    class PopularViewHolder(parent: ViewGroup) : androidx.recyclerview.widget.RecyclerView.ViewHolder(parent.inflate(R.layout.item_popular)) {
 
         fun bind(item: PopularItem) = with(itemView) {
             // for now it it invisible

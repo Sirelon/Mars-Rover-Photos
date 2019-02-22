@@ -1,7 +1,7 @@
 package com.sirelon.marsroverphotos.feature.popular
 
 import android.annotation.SuppressLint
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.adapter.ViewTypeDelegateAdapter
@@ -18,10 +18,10 @@ import kotlinx.android.synthetic.main.item_popular_photo.view.*
 class PopularPhotosDelegateAdapter(val callback: (item: FirebasePhoto) -> Unit) :
     ViewTypeDelegateAdapter {
 
-    override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
+    override fun onCreateViewHolder(parent: ViewGroup): androidx.recyclerview.widget.RecyclerView.ViewHolder =
         PopularPhotoViewHolder(parent)
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType,
+    override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, item: ViewType,
                                   payloads: List<Any>?) {
         val marsPhotoViewHolder = holder as PopularPhotoViewHolder
         marsPhotoViewHolder.bind(item as FirebasePhoto)
@@ -31,7 +31,7 @@ class PopularPhotosDelegateAdapter(val callback: (item: FirebasePhoto) -> Unit) 
     }
 
     class PopularPhotoViewHolder(parent: ViewGroup) :
-        RecyclerView.ViewHolder(parent.inflate(R.layout.item_popular_photo)) {
+        androidx.recyclerview.widget.RecyclerView.ViewHolder(parent.inflate(R.layout.item_popular_photo)) {
 
         @SuppressLint("SetTextI18n")
         fun bind(item: FirebasePhoto) = with(itemView) {

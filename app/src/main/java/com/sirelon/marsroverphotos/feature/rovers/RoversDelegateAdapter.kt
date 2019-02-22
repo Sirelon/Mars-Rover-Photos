@@ -2,8 +2,8 @@ package com.sirelon.marsroverphotos.feature.rovers
 
 import android.graphics.Color
 import android.graphics.Typeface
-import android.support.annotation.Keep
-import android.support.v7.widget.RecyclerView
+import androidx.annotation.Keep
+import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.R.id.*
@@ -23,15 +23,15 @@ import kotlinx.android.synthetic.main.item_rover.view.*
 @Keep
 class RoversDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDelegateAdapter {
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType, payloads: List<Any>?) {
+    override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, item: ViewType, payloads: List<Any>?) {
         (holder as RoverViewHolder).bind(item as Rover, payloads)
         holder.itemView.setOnClickListener { callback.onModelChoose(item) }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder = RoverViewHolder(parent)
+    override fun onCreateViewHolder(parent: ViewGroup): androidx.recyclerview.widget.RecyclerView.ViewHolder = RoverViewHolder(parent)
 
     @Keep
-    class RoverViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate(R.layout.item_rover)) {
+    class RoverViewHolder(parent: ViewGroup) : androidx.recyclerview.widget.RecyclerView.ViewHolder(parent.inflate(R.layout.item_rover)) {
 
         fun bind(item: Rover, payloads: List<Any>?) = with(itemView) {
             if (payloads == null || payloads.isEmpty()) {

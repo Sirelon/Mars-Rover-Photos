@@ -4,9 +4,9 @@ import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.StaggeredGridLayoutManager
+import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
@@ -120,20 +120,23 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         photosList.apply {
             setHasFixedSize(true)
 
-            layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+            layoutManager = androidx.recyclerview.widget.StaggeredGridLayoutManager(
+                2,
+                androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
+            )
 
             this.adapter = adapter
 
-            addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
+            addOnScrollListener(object : androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView?, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
                     if (dy > 0 || dy < 0 && actionRandom.isShown) {
                         actionRandom.hide()
                     }
                 }
 
-                override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
-                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                override fun onScrollStateChanged(recyclerView: androidx.recyclerview.widget.RecyclerView?, newState: Int) {
+                    if (newState == androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE) {
                         actionRandom.show()
                     }
 

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".feature.popular.PopularPhotosActivity">
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,7 +16,7 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         tools:targetApi="lollipop">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -26,19 +26,19 @@
             android:stateListAnimator="@null"
             app:elevation="0dp"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/popularPhotosList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@+id/adViewBanner"
-            app:layoutManager="android.support.v7.widget.StaggeredGridLayoutManager"
+            app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
             app:spanCount="2"
             tools:listitem="@layout/item_popular_photo" />
 
@@ -51,4 +51,4 @@
 
         <include layout="@layout/view_native_adview" />
     </RelativeLayout>
-</android.support.design.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

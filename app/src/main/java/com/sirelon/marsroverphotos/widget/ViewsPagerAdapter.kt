@@ -1,6 +1,6 @@
 package com.sirelon.marsroverphotos.widget
 
-import android.support.v4.view.PagerAdapter
+import androidx.viewpager.widget.PagerAdapter
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.view_image.view.*
  * @author romanishin
  * @since 16.11.16 on 18:11
  */
-class ViewsPagerAdapter(val data: List<MarsPhoto>?) : PagerAdapter() {
+class ViewsPagerAdapter(val data: List<MarsPhoto>?) : androidx.viewpager.widget.PagerAdapter() {
 
     var scaleCallback: (() -> Unit)? = null
 

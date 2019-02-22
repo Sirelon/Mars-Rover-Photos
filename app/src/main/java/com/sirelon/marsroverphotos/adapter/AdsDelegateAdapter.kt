@@ -1,7 +1,7 @@
 package com.sirelon.marsroverphotos.adapter
 
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.StaggeredGridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import android.view.ViewGroup
 import com.google.android.gms.ads.AdRequest
 import com.sirelon.marsroverphotos.R
@@ -24,16 +24,16 @@ class AdsDelegateAdapter : ViewTypeDelegateAdapter {
                 .build()
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder = AdvertizingViewHolder(parent)
+    override fun onCreateViewHolder(parent: ViewGroup): androidx.recyclerview.widget.RecyclerView.ViewHolder = AdvertizingViewHolder(parent)
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType, payloads: List<Any>?) {
+    override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, item: ViewType, payloads: List<Any>?) {
         holder.itemView.ad_item_photo.loadAd(adRequest)
     }
 
-    class AdvertizingViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate(R.layout.add_item_photo)) {
+    class AdvertizingViewHolder(parent: ViewGroup) : androidx.recyclerview.widget.RecyclerView.ViewHolder(parent.inflate(R.layout.add_item_photo)) {
         init {
-            if (itemView.layoutParams is StaggeredGridLayoutManager.LayoutParams) {
-                (itemView.layoutParams as StaggeredGridLayoutManager.LayoutParams).isFullSpan = true
+            if (itemView.layoutParams is androidx.recyclerview.widget.StaggeredGridLayoutManager.LayoutParams) {
+                (itemView.layoutParams as androidx.recyclerview.widget.StaggeredGridLayoutManager.LayoutParams).isFullSpan = true
             }
         }
     }

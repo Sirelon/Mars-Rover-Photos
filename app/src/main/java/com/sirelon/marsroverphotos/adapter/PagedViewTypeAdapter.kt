@@ -1,9 +1,9 @@
 package com.sirelon.marsroverphotos.adapter
 
-import android.arch.paging.AsyncPagedListDiffer
-import android.arch.paging.PagedList
-import android.support.v7.recyclerview.extensions.AsyncDifferConfig
-import android.support.v7.util.AdapterListUpdateCallback
+import androidx.paging.AsyncPagedListDiffer
+import androidx.paging.PagedList
+import androidx.recyclerview.widget.AsyncDifferConfig
+import androidx.recyclerview.widget.AdapterListUpdateCallback
 import com.sirelon.marsroverphotos.models.ViewType
 
 /**

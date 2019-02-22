@@ -1,6 +1,6 @@
 package com.sirelon.marsroverphotos.network
 
-import android.support.annotation.Keep
+import androidx.annotation.Keep
 import com.sirelon.marsroverphotos.models.MarsPhoto
 
 /**

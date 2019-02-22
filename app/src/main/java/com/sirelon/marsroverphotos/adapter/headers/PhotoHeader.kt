@@ -2,14 +2,14 @@ package com.sirelon.marsroverphotos.adapter.headers
 
 import android.graphics.Canvas
 import android.graphics.Rect
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 
 /**
  * @author romanishin
  * @since 01.11.16 on 14:51
  */
-class PhotoHeader( var headerView: View, val headerId: Int) : RecyclerView.ItemDecoration() {
+class PhotoHeader( var headerView: View, val headerId: Int) : androidx.recyclerview.widget.RecyclerView.ItemDecoration() {
 
 //    private var headerView: View
 
@@ -23,11 +23,11 @@ class PhotoHeader( var headerView: View, val headerId: Int) : RecyclerView.ItemD
 //        headerView.setOnClickListener {   Log.w("Sirelon", "ON CLICK OCCURED") }
     }
 
-    override fun getItemOffsets(outRect: Rect?, view: View, parent: RecyclerView, state: RecyclerView.State?) {
+    override fun getItemOffsets(outRect: Rect?, view: View, parent: androidx.recyclerview.widget.RecyclerView, state: androidx.recyclerview.widget.RecyclerView.State?) {
         super.getItemOffsets(outRect, view, parent, state)
 
         val itemPosition = parent.getChildAdapterPosition(view)
-        if (itemPosition == RecyclerView.NO_POSITION)
+        if (itemPosition == androidx.recyclerview.widget.RecyclerView.NO_POSITION)
             return
 
 //        if (headerId == parent.adapter.getItemViewType(itemPosition))
@@ -37,7 +37,7 @@ class PhotoHeader( var headerView: View, val headerId: Int) : RecyclerView.ItemD
             outRect?.top = headerView.measuredHeight
     }
 
-    override fun onDrawOver(c: Canvas, parent: RecyclerView, state: RecyclerView.State?) {
+    override fun onDrawOver(c: Canvas, parent: androidx.recyclerview.widget.RecyclerView, state: androidx.recyclerview.widget.RecyclerView.State?) {
         super.onDrawOver(c, parent, state)
 
         val childCount = parent.childCount
@@ -50,7 +50,7 @@ class PhotoHeader( var headerView: View, val headerId: Int) : RecyclerView.ItemD
         for (i in 0..childCount) {
             val view = parent.getChildAt(i)
             val position = parent.getChildAdapterPosition(view)
-            if (position == RecyclerView.NO_POSITION)
+            if (position == androidx.recyclerview.widget.RecyclerView.NO_POSITION)
                 continue
 
             if (parent.adapter.getItemViewType(position) == headerId){
