@@ -128,14 +128,14 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
             this.adapter = adapter
 
             addOnScrollListener(object : androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView?, dx: Int, dy: Int) {
+                override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
                     if (dy > 0 || dy < 0 && actionRandom.isShown) {
                         actionRandom.hide()
                     }
                 }
 
-                override fun onScrollStateChanged(recyclerView: androidx.recyclerview.widget.RecyclerView?, newState: Int) {
+                override fun onScrollStateChanged(recyclerView: androidx.recyclerview.widget.RecyclerView, newState: Int) {
                     if (newState == androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE) {
                         actionRandom.show()
                     }

@@ -55,7 +55,7 @@ object placeholder {
 infix fun ImageView.loadImage(imageUrl: String?) {
     if (TextUtils.isEmpty(imageUrl)) this.setImageDrawable(placeholder.drawable)
     else {
-        Picasso.with(context)
+        Picasso.get()
                 .load(imageUrl)
                 .placeholder(placeholder.drawable)
                 .into(this)

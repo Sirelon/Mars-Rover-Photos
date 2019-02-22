@@ -76,8 +76,8 @@ internal class FirestorePhotos : IFirebasePhotos {
             first.get().addOnCompleteListener {
                 if (it.isSuccessful) {
                     val documentSnapshots = it.result
-                    val objects = documentSnapshots.toObjects(FirebasePhoto::class.java)
-                    emitter.onNext(objects)
+                    val objects = documentSnapshots?.toObjects(FirebasePhoto::class.java)
+                    emitter.onNext(objects ?: emptyList())
                     emitter.onComplete()
                 } else {
                     emitter.onError(it.exception!!)

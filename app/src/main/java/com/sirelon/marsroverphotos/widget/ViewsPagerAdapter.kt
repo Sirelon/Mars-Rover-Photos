@@ -31,7 +31,8 @@ class ViewsPagerAdapter(val data: List<MarsPhoto>?) : androidx.viewpager.widget.
 
     override fun destroyItem(container: ViewGroup, position: Int, viewRoot: Any) {
         container.removeView(viewRoot as View)
-        Picasso.with(container.context).cancelTag(data?.get(position)?.id)
+        val id = data?.get(position)?.id ?: return
+        Picasso.get().cancelTag(id)
     }
 
     private fun showImage(imageView: ImageView, fullscreenImageProgress: View, position: Int) {
@@ -43,14 +44,14 @@ class ViewsPagerAdapter(val data: List<MarsPhoto>?) : androidx.viewpager.widget.
 
         val marsPhoto = data?.get(position) ?: return
 
-        Picasso.with(imageView.context).load(marsPhoto.imageUrl).tag(marsPhoto.id)
+        Picasso.get().load(marsPhoto.imageUrl).tag(marsPhoto.id)
             .into(imageView, object : Callback {
                 override fun onSuccess() {
                     fullscreenImageProgress.visibility = View.GONE
                     photoViewAttacher.update()
                 }
 
-                override fun onError() {
+                override fun onError(e: Exception) {
                     fullscreenImageProgress.visibility = View.GONE
                     Toast.makeText(imageView.context, "Cannot show this image", Toast.LENGTH_SHORT)
                         .show()

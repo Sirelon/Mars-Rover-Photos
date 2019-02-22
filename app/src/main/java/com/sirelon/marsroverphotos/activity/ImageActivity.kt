@@ -37,6 +37,7 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_image.*
 import kotlinx.android.synthetic.main.view_image.view.*
 import kotlinx.android.synthetic.main.view_native_adview.*
+import java.lang.Exception
 
 
 class ImageActivity : RxActivity() {
@@ -153,7 +154,7 @@ class ImageActivity : RxActivity() {
 
         val photoViewAttacher = PhotoViewAttacher(imageRoot.fullscreenImage)
 
-        Picasso.with(this)
+        Picasso.get()
                 .load(marsPhoto.imageUrl)
                 .tag(marsPhoto.id)
                 .into(imageRoot.fullscreenImage, object : Callback {
@@ -162,7 +163,7 @@ class ImageActivity : RxActivity() {
                         photoViewAttacher.update()
                     }
 
-                    override fun onError() {
+                    override fun onError(e: Exception) {
                         imageRoot.fullscreenImageProgress.visibility = View.GONE
                         showSnackBarError()
                     }
@@ -184,7 +185,7 @@ class ImageActivity : RxActivity() {
                 // Get Bitmap on background
                 .observeOn(Schedulers.io())
                 .map {
-                    Picasso.with(this)
+                    Picasso.get()
                             .load(marsPhoto.imageUrl)
                             .get()
                 }
