@@ -45,64 +45,35 @@ android {
                 optimizeCode true
                 proguardFile 'proguard-rules.pro'
             }
-        } 
+        }
         debug {
             multiDexEnabled true
         }
     }
-//    sourceSets {
-//        main.java.srcDirs += 'src/main/kotlin'
-//        test.java.srcDirs += 'src/test/kotlin'
-//        androidTest.java.srcDirs += 'src/androidTest/kotlin'
-//    }
-//
-//    packagingOptions {
-//        exclude 'META-INF/app_debug.kotlin_module'
-//    }
-//
-//    kapt { generateStubs = true }
 }
-
-//Ensure Kotlin will not be used in production code.
-//afterEvaluate {
-//    android.sourceSets.all { sourceSet ->
-//        if (!sourceSet.name.startsWith('test') || !sourceSet.name.startsWith('androidTest')) {
-//            sourceSet.kotlin.setSrcDirs([])
-//        }
-//    }
-//}
 
 dependencies {
 
-    def supportLibrary = '27.1.1'
-
-//Support Libraries dependencies
     def supportDependencies = [
-            design           : "com.android.support:design:${supportLibrary}",
-            recyclerView     : "com.android.support:recyclerview-v7:${supportLibrary}",
-            cardView         : "com.android.support:cardview-v7:${supportLibrary}",
-            appCompat        : "com.android.support:appcompat-v7:${supportLibrary}",
-            supportAnnotation: "com.android.support:support-annotations:${supportLibrary}",
-            customTabs       : "com.android.support:customtabs:${supportLibrary}",
-            // https://androidstudio.googleblog.com/
-            constraintLayout : "com.android.support.constraint:constraint-layout:1.1.2",
+            design           : "com.google.android.material:material:1.0.0-rc01",
+            recyclerView     : "androidx.recyclerview:recyclerview:1.0.0",
+            cardView         : "androidx.cardview:cardview:1.0.0",
+            appCompat        : "androidx.appcompat:appcompat:1.0.0",
+            supportAnnotation: "androidx.annotation:annotation:1.0.0",
+            customTabs       : "androidx.browser:browser:1.0.0",
+            constraintLayout : "androidx.constraintlayout:constraintlayout:2.0.0-alpha3",
     ]
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.multidex:multidex:2.0.0'
+    implementation 'androidx.multidex:multidex:2.0.1'
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     testImplementation 'org.jetbrains.kotlin:kotlin-test-junit:1.3.21'
     testImplementation 'com.nhaarman:mockito-kotlin:1.6.0'
     testImplementation 'org.amshove.kluent:kluent:1.29'
 
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-
-    // Because RxAndroid releases are few and far between, it is recommended you also
-// explicitly depend on RxJava's latest version for bug fixes and new features.
     implementation supportDependencies.values()
-
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.2'
 
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.1.0'
@@ -129,7 +100,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore:18.0.1'
     implementation 'com.google.firebase:firebase-perf:16.2.3'
 
-    implementation 'androidx.paging:paging-runtime:2.0.0'
+    implementation 'androidx.paging:paging-runtime:2.1.0'
 
     debugImplementation 'com.readystatesoftware.chuck:library:1.1.0'
     releaseImplementation 'com.readystatesoftware.chuck:library-no-op:1.1.0'
