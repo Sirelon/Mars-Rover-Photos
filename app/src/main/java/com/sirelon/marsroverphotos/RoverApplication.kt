@@ -6,12 +6,9 @@ import com.crashlytics.android.Crashlytics
 import com.crashlytics.android.answers.Answers
 import com.google.android.gms.ads.MobileAds
 import com.google.firebase.firestore.FirebaseFirestore
-import com.jakewharton.picasso.OkHttp3Downloader
-import com.sirelon.marsroverphotos.extensions.logE
-import com.sirelon.marsroverphotos.tracker.AnswersTracker
-import com.squareup.picasso.Picasso
-import io.fabric.sdk.android.Fabric
 import com.google.firebase.firestore.FirebaseFirestoreSettings
+import com.sirelon.marsroverphotos.tracker.AnswersTracker
+import io.fabric.sdk.android.Fabric
 
 
 
@@ -42,8 +39,6 @@ class RoverApplication : Application() {
                 .setPersistenceEnabled(true)
                 .build()
         FirebaseFirestore.getInstance().firestoreSettings = settings
-
-        Picasso.setSingletonInstance(picasso())
     }
 
     val dataManger by lazy {
@@ -53,8 +48,4 @@ class RoverApplication : Application() {
     override fun onTrimMemory(level: Int) {
         super.onTrimMemory(level)
     }
-
-    private fun picasso(): Picasso = Picasso.Builder(this).listener { _, _, exception ->
-        exception?.logE()
-    }.downloader(OkHttp3Downloader(this)).loggingEnabled(BuildConfig.DEBUG).build()
 }

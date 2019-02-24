@@ -11,17 +11,17 @@ import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
 import android.provider.Settings
-import com.google.android.material.snackbar.Snackbar
-import androidx.core.content.ContextCompat
 import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.content.ContextCompat
+import com.bumptech.glide.Glide
+import com.google.android.material.snackbar.Snackbar
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
-import com.squareup.picasso.Picasso
 import java.util.Random
 
 /**
@@ -55,10 +55,11 @@ object placeholder {
 infix fun ImageView.loadImage(imageUrl: String?) {
     if (TextUtils.isEmpty(imageUrl)) this.setImageDrawable(placeholder.drawable)
     else {
-        Picasso.get()
-                .load(imageUrl)
-                .placeholder(placeholder.drawable)
-                .into(this)
+        Glide.with(this).load(imageUrl).placeholder(placeholder.drawable).into(this)
+//        Picasso.get()
+//                .load(imageUrl)
+//                .placeholder(placeholder.drawable)
+//                .into(this)
     }
 }
 

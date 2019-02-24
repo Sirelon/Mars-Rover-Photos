@@ -21,37 +21,43 @@ class AnswersTracker : ITracker {
     }
 
     override fun trackSeen(photo: MarsPhoto) {
-        Answers.getInstance().logContentView(ContentViewEvent()
+        Answers.getInstance().logContentView(
+            ContentViewEvent()
                 .putContentId(photo.id.toString())
                 .putContentName(photo.name ?: "Null")
                 .putContentType(TYPE_MARS_PHOTO)
-                .putCustomAttribute(ATTR_MARS_PHOTO_URL, photo.imageUrl))
+                .putCustomAttribute(ATTR_MARS_PHOTO_URL, photo.imageUrl.substring(0, 100))
+        )
     }
 
     override fun trackScale(photo: MarsPhoto) {
-        Answers.getInstance().logCustom(CustomEvent(EVENT_MARS_PHOTO_SCALE)
+        Answers.getInstance().logCustom(
+            CustomEvent(EVENT_MARS_PHOTO_SCALE)
                 .putCustomAttribute(ATTR_MARS_PHOTO_ID, photo.id)
                 .putCustomAttribute(ATTR_MARS_PHOTO_NAME, photo.name ?: "Null")
-                .putCustomAttribute(ATTR_MARS_PHOTO_URL, photo.imageUrl))
+                .putCustomAttribute(ATTR_MARS_PHOTO_URL, photo.imageUrl.substring(0, 100))
+        )
     }
 
     override fun trackShare(photo: MarsPhoto, packageName: String) {
-        Answers.getInstance().logShare(ShareEvent()
+        Answers.getInstance().logShare(
+            ShareEvent()
                 .putMethod(packageName)
                 .putContentId(photo.id.toString())
                 .putContentName(photo.name ?: "Null")
                 .putContentType(TYPE_MARS_PHOTO)
-                .putCustomAttribute(ATTR_MARS_PHOTO_URL, photo.imageUrl))
+                .putCustomAttribute(ATTR_MARS_PHOTO_URL, photo.imageUrl.substring(0, 100))
+        )
     }
 
     override fun trackSave(photo: MarsPhoto) {
         try {
             val customEvent =
                 CustomEvent(EVENT_MARS_PHOTO_SAVE).putCustomAttribute(ATTR_MARS_PHOTO_ID, photo.id)
-                        .putCustomAttribute(ATTR_MARS_PHOTO_NAME, photo.name ?: "Null")
-                        .putCustomAttribute(ATTR_MARS_PHOTO_URL, photo.imageUrl)
+                    .putCustomAttribute(ATTR_MARS_PHOTO_NAME, photo.name ?: "Null")
+                    .putCustomAttribute(ATTR_MARS_PHOTO_URL, photo.imageUrl.substring(0, 100))
             Answers.getInstance().logCustom(customEvent)
-        } catch (e : Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }

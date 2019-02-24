@@ -16,6 +16,7 @@
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:usesCleartextTraffic="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
@@ -78,6 +79,9 @@
             android:name="io.fabric.ApiKey"
             android:value="a122b41ef36cbca5a4460276e8696075bbbdae18" />
 
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="@string/ad_application_id"/>
     </application>
 
 </manifest>
