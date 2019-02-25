@@ -39,14 +39,15 @@ class RestApi(context: Context) {
 
     fun getRoversPhotos(query: PhotosQueryRequest): Call<PhotosResponse> {
         // We should call another api if rover is insight
+        val sol = query.sol
         if (query.roverName.toLowerCase() == INSIGHT) {
             if (true)
                 return getFakeRawPhotos()
 
             // TODO
-            return nasaApi.getRawImages()
+            return nasaApi.getRawImages(fromSol = sol, toSol = sol)
         }
-        return nasaApi.getRoverPhotos(query.roverName, query.sol, query.camera)
+        return nasaApi.getRoverPhotos(query.roverName, sol, query.camera)
     }
 
     fun getRoverInfo(roverName: String): Call<RoverResponse> {
