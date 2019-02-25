@@ -24,7 +24,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_rovers.*
 
-class RoversActivity : RxActivity(), OnModelChooseListener {
+class RoversActivity : RxActivity(), OnModelChooseListener<ViewType> {
 
     override fun onModelChoose(model: ViewType, vararg sharedElements: Pair<View, String>) {
         when (model) {

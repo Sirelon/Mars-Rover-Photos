@@ -29,7 +29,6 @@ interface NasaApi {
         @Query("api_key") apiKey: String = APIKEY
     ): Call<PhotosResponse>
 
-    // TODO
     @GET("https://mars.nasa.gov/api/v1/raw_image_items/?order=sol+desc%2Cdate_taken+desc&per_page=100&page=0&condition_1=insight%3Amission&search=&extended=")
     fun getRawImages(
         @Query("begin_sol") fromSol: Long? = null,

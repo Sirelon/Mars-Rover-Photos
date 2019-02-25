@@ -16,7 +16,7 @@ import kotlinx.android.synthetic.main.item_mars_photo.view.*
  * @author romanishin
  * @since 31.10.16 on 11:41
  */
-class MarsPhotosDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDelegateAdapter {
+class MarsPhotosDelegateAdapter(val callback: OnModelChooseListener<MarsPhoto>) : ViewTypeDelegateAdapter {
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
         MarsPhotoViewHolder(parent)

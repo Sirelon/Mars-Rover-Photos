@@ -44,7 +44,7 @@ import java.util.Calendar
 import java.util.TimeZone
 
 
-class PhotosActivity : RxActivity(), OnModelChooseListener {
+class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
 
     companion object {
         const val EXTRA_ROVER = ".extraRover"
@@ -65,23 +65,21 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         outState?.putParcelable(EXTRA_ROVER, rover)
     }
 
-    override fun onModelChoose(model: ViewType, vararg sharedElements: Pair<View, String>) {
-        if (model is MarsPhoto) {
-            // Enable camera filter if the same camera was choose.
-            // If all camera choosed then no need to filtering
-            val cameraFilter = photosCamera.selectedItemPosition != 0
+    override fun onModelChoose(model: MarsPhoto, vararg sharedElements: Pair<View, String>) {
+        // Enable camera filter if the same camera was choose.
+        // If all camera choosed then no need to filtering
+        val cameraFilter = photosCamera.selectedItemPosition != 0
 
-            val intent = ImageActivity.createIntent(this, model, cameraFilter)
-            val args: Bundle?
-            if (sharedElements.isNotEmpty()) {
-                args = ActivityOptionsCompat.makeSceneTransitionAnimation(this, *sharedElements)
-                    .toBundle()
-            } else {
-                args = null
-            }
-
-            ActivityCompat.startActivity(this, intent, args)
+        val intent = ImageActivity.createIntent(this, model, cameraFilter)
+        val args: Bundle?
+        if (sharedElements.isNotEmpty()) {
+            args = ActivityOptionsCompat.makeSceneTransitionAnimation(this, *sharedElements)
+                .toBundle()
+        } else {
+            args = null
         }
+
+        ActivityCompat.startActivity(this, intent, args)
     }
 
     private val photosList by lazy { photos_list }

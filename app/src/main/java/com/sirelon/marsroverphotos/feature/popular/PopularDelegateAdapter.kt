@@ -18,7 +18,8 @@ import kotlinx.android.synthetic.main.item_popular.view.*
  * @since 31.10.16 on 18:48
  */
 @Keep
-class PopularDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDelegateAdapter {
+class PopularDelegateAdapter(private val callback: OnModelChooseListener<ViewType>) :
+    ViewTypeDelegateAdapter {
 
     override fun onBindViewHolder(
         holder: RecyclerView.ViewHolder,

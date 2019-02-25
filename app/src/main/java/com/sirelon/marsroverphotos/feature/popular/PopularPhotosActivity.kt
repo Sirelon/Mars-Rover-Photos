@@ -1,13 +1,14 @@
 package com.sirelon.marsroverphotos.feature.popular
 
+import android.os.Bundle
+import android.view.View
+import androidx.core.util.Pair
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
-import android.os.Bundle
 import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import android.view.View
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.activity.ImageActivity
 import com.sirelon.marsroverphotos.activity.RxActivity
@@ -18,6 +19,7 @@ import com.sirelon.marsroverphotos.feature.advertising.AdvertisingObjectFactory
 import com.sirelon.marsroverphotos.feature.firebase.FirebasePhoto
 import com.sirelon.marsroverphotos.feature.firebase.toMarsPhoto
 import com.sirelon.marsroverphotos.firebase.photos.FirebaseProvider
+import com.sirelon.marsroverphotos.models.OnModelChooseListener
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_popular_photos.*
@@ -73,7 +75,15 @@ class PopularPhotosActivity : RxActivity() {
         })
 
         adapter.addDelegateAdapter(
-            AdapterConstants.POPULAR_PHOTO, PopularPhotosDelegateAdapter(::openPhoto)
+            AdapterConstants.POPULAR_PHOTO,
+            PopularPhotosDelegateAdapter(object : OnModelChooseListener<FirebasePhoto> {
+                override fun onModelChoose(
+                    model: FirebasePhoto,
+                    vararg sharedElements: Pair<View, String>
+                ) {
+                    openPhoto(model)
+                }
+            })
         )
         popularPhotosList.apply {
             setHasFixedSize(true)

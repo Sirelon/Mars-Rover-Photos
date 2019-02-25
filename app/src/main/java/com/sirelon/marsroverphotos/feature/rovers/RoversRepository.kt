@@ -5,16 +5,17 @@ import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.sirelon.marsroverphotos.R
-import com.sirelon.marsroverphotos.models.CURIOSITY
-import com.sirelon.marsroverphotos.models.INSIGHT
-import com.sirelon.marsroverphotos.models.OPPORTUNITY
 import com.sirelon.marsroverphotos.models.Rover
-import com.sirelon.marsroverphotos.models.SPIRIT
 
 /**
  * @author romanishin
  * @since 07.11.16 on 12:42
  */
+private const val SPIRIT = "spirit"
+private const val CURIOSITY = "curiosity"
+private const val OPPORTUNITY = "opportunity"
+private const val INSIGHT = "insight"
+
 class RoversRepository(context: Context) {
 
     private val pref: SharedPreferences =

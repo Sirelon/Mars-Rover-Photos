@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.item_popular_photo.view.*
  * @author romanishin
  * @since 31.10.16 on 11:41
  */
-class PopularPhotosDelegateAdapter(val callback: OnModelChooseListener) :
+class PopularPhotosDelegateAdapter(val callback: OnModelChooseListener<FirebasePhoto>) :
     ViewTypeDelegateAdapter {
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =

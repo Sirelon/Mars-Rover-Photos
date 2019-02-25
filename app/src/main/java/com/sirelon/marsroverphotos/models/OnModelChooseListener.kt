@@ -7,8 +7,8 @@ import androidx.core.util.Pair
  * @author romanishin
  * @since 31.10.16 on 17:01
  */
-interface OnModelChooseListener {
+interface OnModelChooseListener<TYPE : ViewType> {
 
-    fun onModelChoose(model: ViewType, vararg sharedElements: Pair<View, String>)
+    fun onModelChoose(model: TYPE, vararg sharedElements: Pair<View, String>)
 
 }
