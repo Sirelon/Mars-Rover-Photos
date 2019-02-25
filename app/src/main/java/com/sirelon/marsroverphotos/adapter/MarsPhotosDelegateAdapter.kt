@@ -1,10 +1,8 @@
 package com.sirelon.marsroverphotos.adapter
 
-import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import com.sirelon.marsroverphotos.R
-import com.sirelon.marsroverphotos.R.id.cameraName
-import com.sirelon.marsroverphotos.R.id.photo
 import com.sirelon.marsroverphotos.extensions.inflate
 import com.sirelon.marsroverphotos.extensions.loadImage
 import com.sirelon.marsroverphotos.models.MarsPhoto
@@ -18,9 +16,14 @@ import kotlinx.android.synthetic.main.item_mars_photo.view.*
  */
 class MarsPhotosDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDelegateAdapter {
 
-    override fun onCreateViewHolder(parent: ViewGroup): androidx.recyclerview.widget.RecyclerView.ViewHolder = MarsPhotoViewHolder(parent)
+    override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
+        MarsPhotoViewHolder(parent)
 
-    override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, item: ViewType, payloads: List<Any>?) {
+    override fun onBindViewHolder(
+        holder: RecyclerView.ViewHolder,
+        item: ViewType,
+        payloads: List<Any>?
+    ) {
         val marsPhotoViewHolder = holder as MarsPhotoViewHolder
         marsPhotoViewHolder.bind(item as MarsPhoto)
         marsPhotoViewHolder.itemView.photo.setOnClickListener {
@@ -28,11 +31,12 @@ class MarsPhotosDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeD
         }
     }
 
-    class MarsPhotoViewHolder(parent: ViewGroup) : androidx.recyclerview.widget.RecyclerView.ViewHolder(parent.inflate(R.layout.item_mars_photo)) {
+    class MarsPhotoViewHolder(parent: ViewGroup) :
+        RecyclerView.ViewHolder(parent.inflate(R.layout.item_mars_photo)) {
 
         fun bind(item: MarsPhoto) = with(itemView) {
             photo.loadImage(item.imageUrl)
-            cameraName.text = item.camera.fullName
+            cameraName.text = item.camera?.fullName
         }
     }
 

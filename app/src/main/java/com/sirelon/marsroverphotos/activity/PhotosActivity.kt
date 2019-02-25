@@ -1,12 +1,10 @@
 package com.sirelon.marsroverphotos.activity
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AlertDialog
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
@@ -15,7 +13,10 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.SeekBar
 import android.widget.Toast
-import com.google.android.gms.ads.MobileAds
+import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.google.gson.GsonBuilder
 import com.sirelon.marsroverphotos.NoConnectionError
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
@@ -23,6 +24,7 @@ import com.sirelon.marsroverphotos.adapter.AdsDelegateAdapter
 import com.sirelon.marsroverphotos.adapter.MarsPhotosDelegateAdapter
 import com.sirelon.marsroverphotos.adapter.ViewTypeAdapter
 import com.sirelon.marsroverphotos.extensions.isConnected
+import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.extensions.random
 import com.sirelon.marsroverphotos.feature.advertising.AdvertisingObjectFactory
 import com.sirelon.marsroverphotos.models.MarsPhoto
@@ -31,6 +33,8 @@ import com.sirelon.marsroverphotos.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.RoverDateUtil
 import com.sirelon.marsroverphotos.models.ViewType
+import com.sirelon.marsroverphotos.network.FAKERESPONSE
+import com.sirelon.marsroverphotos.network.PhotosResponse
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -78,6 +82,17 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
     private lateinit var dateUtil: RoverDateUtil
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val gson = GsonBuilder().create()
+
+        val photosResponse =
+            gson.fromJson<PhotosResponse>(FAKERESPONSE, PhotosResponse::class.java)
+
+
+        photosResponse.logD()
+
+
+
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -127,15 +142,23 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
 
             this.adapter = adapter
 
-            addOnScrollListener(object : androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
+            addOnScrollListener(object :
+                                    androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
+                override fun onScrolled(
+                    recyclerView: androidx.recyclerview.widget.RecyclerView,
+                    dx: Int,
+                    dy: Int
+                ) {
                     super.onScrolled(recyclerView, dx, dy)
                     if (dy > 0 || dy < 0 && actionRandom.isShown) {
                         actionRandom.hide()
                     }
                 }
 
-                override fun onScrollStateChanged(recyclerView: androidx.recyclerview.widget.RecyclerView, newState: Int) {
+                override fun onScrollStateChanged(
+                    recyclerView: androidx.recyclerview.widget.RecyclerView,
+                    newState: Int
+                ) {
                     if (newState == androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE) {
                         actionRandom.show()
                     }
@@ -168,12 +191,14 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         queryRequest = randomPhotosQueryRequest()
     }
 
-    private fun randomPhotosQueryRequest() = PhotosQueryRequest(rover.name, 1.random(rover.maxSol.toInt()).toLong(), null)
+    private fun randomPhotosQueryRequest() =
+        PhotosQueryRequest(rover.name, 1.random(rover.maxSol.toInt()).toLong(), null)
 
     private fun loadCacheOrRequest() {
         // If we already have lastPhotosRequest - just use it, its returned to us cached results
-        val observable: Observable<List<ViewType>?> = if (dataManager.lastPhotosRequest != null) dataManager.lastPhotosRequest!! as Observable<List<ViewType>?>
-        else photosObservable
+        val observable: Observable<List<ViewType>?> =
+            if (dataManager.lastPhotosRequest != null) dataManager.lastPhotosRequest!! as Observable<List<ViewType>?>
+            else photosObservable
 
         loadDataWithObservable(observable)
     }
@@ -182,11 +207,13 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
     private fun loadDataWithObservable(observable: Observable<List<ViewType>?>) {
         subscriptions.clear()
         val subscription = observable.subscribe({
-            it!!
-            advertisingDelegate.integregrateAdToList(it)
-            (photosList.adapter as ViewTypeAdapter).addData(it)
-            updateCameraFilter(it)
-        }, Throwable::printStackTrace)
+                                                    it!!
+                                                    advertisingDelegate.integregrateAdToList(it)
+                                                    (photosList.adapter as ViewTypeAdapter).addData(
+                                                        it
+                                                    )
+                                                    updateCameraFilter(it)
+                                                }, Throwable::printStackTrace)
 
         subscriptions.add(subscription)
     }
@@ -195,41 +222,42 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         loadDataWithObservable(photosObservable)
     }
 
-    val photosObservable: Observable<List<ViewType>?> by lazy {
+    private val photosObservable: Observable<List<ViewType>?> by lazy {
         Observable
-                .just(isConnected())
-                .switchMap {
-                    if (it)
-                        dataManager.loadMarsPhotos(queryRequest)
-                    else
-                        Observable.error { NoConnectionError() }
-                }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnError { (photosList.adapter as ViewTypeAdapter).stopLoading() }
-                .doOnError(errorConsumer({ loadFreshData() }))
-                .map { advertisingDelegate.integregrateAdToList(it) }
+            .just(isConnected())
+            .switchMap {
+                if (it) dataManager.loadMarsPhotos(queryRequest)
+                else Observable.error { NoConnectionError() }
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnError { (photosList.adapter as ViewTypeAdapter).stopLoading() }
+            .doOnError(errorConsumer { loadFreshData() })
+            .map { advertisingDelegate.integregrateAdToList(it) }
     }
 
     private fun updateCameraFilter(photos: List<ViewType>) {
         val cameraFilterSub = Observable
-                .fromIterable(photos)
-                .filter { it is MarsPhoto }
-                .map { it as MarsPhoto }
-                .map { it.camera }
-                .distinct()
-                .map { it.fullName }
-                .toList()
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    photosCamera.apply {
-                        it.add(0, "All cameras")
-                        val arrayAdapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, it)
-                        arrayAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
-                        adapter = arrayAdapter
-                    }
-                }, Throwable::printStackTrace)
+            .fromIterable(photos)
+            .filter { it is MarsPhoto }
+            .map { it as MarsPhoto }
+            .filter { it.camera != null }
+            .map { it.camera }
+            .distinct()
+            .map { it.fullName }
+            .toList()
+            .subscribeOn(Schedulers.computation())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                           it.add(0, "All cameras")
+                           val arrayAdapter = ArrayAdapter(
+                               photosCamera.context,
+                               android.R.layout.simple_spinner_item,
+                               it
+                           )
+                           arrayAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
+                           photosCamera.adapter = arrayAdapter
+                       }, Throwable::printStackTrace)
 
         subscriptions.add(cameraFilterSub)
     }
@@ -252,17 +280,14 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         val cameraFullName: String? = photosCamera.adapter.getItem(position).toString()
 
         val filteredData = dataList.filter {
-            if (it is MarsPhoto) {
-                it.camera.fullName.equals(cameraFullName)
-            } else
-                false
+            if (it is MarsPhoto) cameraFullName.equals(it.camera?.fullName)
+            else false
         }
 
         // Add ad data to list
         val dataList1 = advertisingDelegate.integregrateAdToList(filteredData)
 
         (photosList.adapter as ViewTypeAdapter).applyFilteredData(dataList1)
-
     }
 
     private fun initHeaderView() {
@@ -281,18 +306,19 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         calender.timeInMillis = time
 
         val datePicker = DatePickerDialog(
-                this,
-                DatePickerDialog.OnDateSetListener
-                { _, year, monthOfYear, dayOfMonth ->
-                    calender.clear()
-                    calender.set(year, monthOfYear, dayOfMonth)
-                    val chooseDateMil = calender.timeInMillis
-                    updateDateEearthChoose(chooseDateMil)
-                    loadDataBySol(dateUtil.solFromDate(chooseDateMil))
-                },
-                calender.get(Calendar.YEAR),
-                calender.get(Calendar.MONTH),
-                calender.get(Calendar.DAY_OF_MONTH))
+            this,
+            DatePickerDialog.OnDateSetListener
+            { _, year, monthOfYear, dayOfMonth ->
+                calender.clear()
+                calender.set(year, monthOfYear, dayOfMonth)
+                val chooseDateMil = calender.timeInMillis
+                updateDateEearthChoose(chooseDateMil)
+                loadDataBySol(dateUtil.solFromDate(chooseDateMil))
+            },
+            calender.get(Calendar.YEAR),
+            calender.get(Calendar.MONTH),
+            calender.get(Calendar.DAY_OF_MONTH)
+        )
 
         datePicker.datePicker.maxDate = dateUtil.roverLastDate
         datePicker.datePicker.minDate = dateUtil.roverLandingDate
@@ -303,9 +329,10 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
             calender.timeInMillis = timeFromSol
 
             datePicker.updateDate(
-                    calender.get(Calendar.YEAR),
-                    calender.get(Calendar.MONTH),
-                    calender.get(Calendar.DAY_OF_MONTH))
+                calender.get(Calendar.YEAR),
+                calender.get(Calendar.MONTH),
+                calender.get(Calendar.DAY_OF_MONTH)
+            )
 
             // Hide title. Need to set AFTER all
             datePicker.setTitle("")
@@ -318,13 +345,13 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         val dialogView = layoutInflater.inflate(R.layout.view_choose_sol, null, false)
 
         val dialog = AlertDialog.Builder(this)
-                .setView(dialogView)
-                .setNegativeButton("Cancel", null)
-                .setPositiveButton("Ok", { _, _ ->
-                    val sol = dialogView.solInput.text.toString().toLong()
-                    updateDateEearthChoose(dateUtil.dateFromSol(sol))
-                    loadDataBySol(sol)
-                }).create()
+            .setView(dialogView)
+            .setNegativeButton("Cancel", null)
+            .setPositiveButton("Ok") { _, _ ->
+                val sol = dialogView.solInput.text.toString().toLong()
+                updateDateEearthChoose(dateUtil.dateFromSol(sol))
+                loadDataBySol(sol)
+            }.create()
 
         updateDateSolChoose()
         dateSolChoose.setOnClickListener {
@@ -352,24 +379,29 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
                 }
             })
         }
-                .filter { it.isNotEmpty() }
-                .filter { TextUtils.isDigitsOnly(it) }
-                .map { it.toString().toInt() }
-                .filter {
-                    if (it > rover.maxSol) {
-                        Toast.makeText(this, "The max sol for ${rover.name}'s rover is ${rover.maxSol}", Toast.LENGTH_SHORT).show()
-                        dialogView.solInput.setText("${rover.maxSol}")
-                        false
-                    } else {
-                        true
-                    }
+            .filter { it.isNotEmpty() }
+            .filter { TextUtils.isDigitsOnly(it) }
+            .map { it.toString().toInt() }
+            .filter {
+                if (it > rover.maxSol) {
+                    Toast.makeText(
+                        this,
+                        "The max sol for ${rover.name}'s rover is ${rover.maxSol}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    dialogView.solInput.setText("${rover.maxSol}")
+                    false
+                } else {
+                    true
                 }
-                .retry()
-                .subscribe({ dialogView.solSeekBar.progress = it }, { it.printStackTrace() })
+            }
+            .retry()
+            .subscribe({ dialogView.solSeekBar.progress = it }, { it.printStackTrace() })
 
         subscriptions.add(changeSubscription)
 
-        dialogView.solSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        dialogView.solSeekBar.setOnSeekBarChangeListener(object :
+                                                             SeekBar.OnSeekBarChangeListener {
             override fun onStartTrackingTouch(p0: SeekBar?) {
             }
 
@@ -386,10 +418,12 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         })
     }
 
+    @SuppressLint("SetTextI18n")
     private fun updateDateSolChoose() {
         dateSolChoose.text = "Sol date: ${queryRequest.sol}"
     }
 
+    @SuppressLint("SetTextI18n")
     private fun updateDateEearthChoose(time: Long) {
         dateEarthChoose.text = "Earth date: ${dateUtil.parseTime(time)}"
     }

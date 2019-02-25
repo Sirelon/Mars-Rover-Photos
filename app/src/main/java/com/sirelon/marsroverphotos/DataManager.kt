@@ -47,6 +47,8 @@ class DataManager(val context: Context, private val tracker: ITracker,
                             // Load rover from Inet
                             Observable.fromCallable {
 
+
+                                // we don't have ability to retrieve information about insight rover.
                                 val callResponse = api.getRoverInfo(it.name)
                                 val response = callResponse.execute()
                                 if (response.isSuccessful) {

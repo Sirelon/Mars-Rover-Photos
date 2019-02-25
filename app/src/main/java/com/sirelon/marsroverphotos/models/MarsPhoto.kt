@@ -19,16 +19,17 @@ data class MarsPhoto(
         @SerializedName(value = "sol")
         val sol: Long,
 
+        @SerializedName(value = "name", alternate = ["title"])
         val name: String?,
 
-        @SerializedName(value = "img_src")
+        @SerializedName(value = "img_src", alternate = ["url"])
         val imageUrl: String,
 
-        @SerializedName(value = "earth_date")
+        @SerializedName(value = "earth_date", alternate = ["created_at"])
         val earthDate: String,
 
         @SerializedName(value = "camera")
-        val camera: RoverCamera)
+        val camera: RoverCamera?)
 
 : ViewType, Parcelable {
 

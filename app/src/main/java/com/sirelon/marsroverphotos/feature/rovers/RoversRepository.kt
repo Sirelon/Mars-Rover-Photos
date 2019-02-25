@@ -5,7 +5,11 @@ import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.sirelon.marsroverphotos.R
+import com.sirelon.marsroverphotos.models.CURIOSITY
+import com.sirelon.marsroverphotos.models.INSIGHT
+import com.sirelon.marsroverphotos.models.OPPORTUNITY
 import com.sirelon.marsroverphotos.models.Rover
+import com.sirelon.marsroverphotos.models.SPIRIT
 
 /**
  * @author romanishin
@@ -13,8 +17,9 @@ import com.sirelon.marsroverphotos.models.Rover
  */
 class RoversRepository(context: Context) {
 
-    val pref: SharedPreferences = context.getSharedPreferences("MARS_ROVERS_PHOTOS_PREFS", Context.MODE_PRIVATE)
-    val gson: Gson = GsonBuilder().create()
+    private val pref: SharedPreferences =
+        context.getSharedPreferences("MARS_ROVERS_PHOTOS_PREFS", Context.MODE_PRIVATE)
+    private val gson: Gson = GsonBuilder().create()
 
     fun saveRover(rover: Rover) {
         pref.edit().putString(rover.name.toLowerCase(), gson.toJson(rover)).apply()
@@ -26,9 +31,10 @@ class RoversRepository(context: Context) {
         val roverJson = pref.getString(roverNamePref, null)
         if (roverJson == null) {
             when (roverNamePref) {
-                "curiosity" -> return curiosity
-                "opportunity" -> return opportunity
-                "spirit" -> return spirit
+                CURIOSITY -> return curiosity
+                OPPORTUNITY -> return opportunity
+                SPIRIT -> return spirit
+                INSIGHT -> return insight
                 else -> return curiosity
             }
 
@@ -37,49 +43,66 @@ class RoversRepository(context: Context) {
     }
 
     fun getAllRovers(): MutableList<Rover> =
-            mutableListOf(getRover("curiosity"), getRover("opportunity"), getRover("spirit"))
+        mutableListOf(
+            getRover(CURIOSITY), getRover(OPPORTUNITY), getRover(SPIRIT), getRover(INSIGHT)
+        )
 
     private val resourcePrefix = "android.resource://com.sirelon.marsroverphotos/"
 
-    val curiosity by lazy {
+    private val curiosity by lazy {
         Rover(
-                5,
-                "Curiosity",
-                resourcePrefix + R.drawable.img_curiosity,
-                "2012-08-06",
-                "2011-11-26",
-                "active",
-                1505,
-                "2017-09-18",
-                320999
+            5,
+            "Curiosity",
+            resourcePrefix + R.drawable.img_curiosity,
+            "2012-08-06",
+            "2011-11-26",
+            "active",
+            1505,
+            "2017-09-18",
+            320999
         )
     }
 
-    val opportunity by lazy {
+    private val opportunity by lazy {
         Rover(
-                6,
-                "Opportunity",
-                resourcePrefix + R.drawable.img_opportunity,
-                "2004-01-25",
-                "2003-07-07",
-                "active",
-                4535,
-                "2017-02-22",
-                187093
+            6,
+            "Opportunity",
+            resourcePrefix + R.drawable.img_opportunity,
+            "2004-01-25",
+            "2003-07-07",
+            "active",
+            4535,
+            "2017-02-22",
+            187093
         )
     }
 
-    val spirit by lazy {
+    private val spirit by lazy {
         Rover(
-                7,
-                "Spirit",
-                resourcePrefix + R.drawable.img_spirit,
-                "2004-01-04",
-                "2003-06-10",
-                "complete",
-                2208,
-                "2010-03-21",
-                124550
+            7,
+            "Spirit",
+            resourcePrefix + R.drawable.img_spirit,
+            "2004-01-04",
+            "2003-06-10",
+            "complete",
+            2208,
+            "2010-03-21",
+            124550
+        )
+    }
+
+    // TODO Fill in correct data
+    private val insight by lazy {
+        Rover(
+            7,
+            "Insight",
+            resourcePrefix + R.drawable.img_spirit,
+            "2004-01-04",
+            "2003-06-10",
+            "complete",
+            2208,
+            "2010-03-21",
+            124550
         )
     }
 }

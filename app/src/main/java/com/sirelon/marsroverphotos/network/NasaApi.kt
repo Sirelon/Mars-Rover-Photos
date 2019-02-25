@@ -15,15 +15,22 @@ interface NasaApi {
         val APIKEY = "zyVCPOCqaNBoEambV3n4awUf6TuaPZsHn1trst5E"
     }
 
-    @GET("/mars-photos/api/v1/rovers/{roverName}/photos")
-    fun getRoverPhotos(
-            @Path("roverName") roverName: String,
-            @Query("sol") sol: Long?,
-            @Query("camera") camera: String?,
-            @Query("api_key") apiKey: String = APIKEY): Call<PhotosResponse>
-
     @GET("/mars-photos/api/v1/manifests/{roverName}")
     fun getRoverInfo(
-            @Path("roverName") roverName: String,
-            @Query("api_key") apiKey: String = APIKEY): Call<RoverResponse>
+        @Path("roverName") roverName: String,
+        @Query("api_key") apiKey: String = APIKEY
+    ): Call<RoverResponse>
+
+    @GET("/mars-photos/api/v1/rovers/{roverName}/photos")
+    fun getRoverPhotos(
+        @Path("roverName") roverName: String,
+        @Query("sol") sol: Long?,
+        @Query("camera") camera: String?,
+        @Query("api_key") apiKey: String = APIKEY
+    ): Call<PhotosResponse>
+
+    // TODO
+    @GET("https://mars.nasa.gov/api/v1/raw_image_items/?order=sol+desc%2Cdate_taken+desc&per_page=50&page=0&condition_1=insight%3Amission&search=&extended=")
+    fun getRawImages(): Call<PhotosResponse>
+
 }

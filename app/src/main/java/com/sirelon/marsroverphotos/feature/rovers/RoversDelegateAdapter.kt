@@ -2,11 +2,10 @@ package com.sirelon.marsroverphotos.feature.rovers
 
 import android.graphics.Color
 import android.graphics.Typeface
+import android.view.ViewGroup
 import androidx.annotation.Keep
 import androidx.recyclerview.widget.RecyclerView
-import android.view.ViewGroup
 import com.sirelon.marsroverphotos.R
-import com.sirelon.marsroverphotos.R.id.*
 import com.sirelon.marsroverphotos.adapter.ViewTypeDelegateAdapter
 import com.sirelon.marsroverphotos.extensions.inflate
 import com.sirelon.marsroverphotos.extensions.loadImage
@@ -23,65 +22,68 @@ import kotlinx.android.synthetic.main.item_rover.view.*
 @Keep
 class RoversDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDelegateAdapter {
 
-    override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, item: ViewType, payloads: List<Any>?) {
+    override fun onBindViewHolder(
+        holder: RecyclerView.ViewHolder,
+        item: ViewType,
+        payloads: List<Any>?
+    ) {
         (holder as RoverViewHolder).bind(item as Rover, payloads)
         holder.itemView.setOnClickListener { callback.onModelChoose(item) }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup): androidx.recyclerview.widget.RecyclerView.ViewHolder = RoverViewHolder(parent)
+    override fun onCreateViewHolder(parent: ViewGroup): androidx.recyclerview.widget.RecyclerView.ViewHolder =
+        RoverViewHolder(parent)
 
     @Keep
-    class RoverViewHolder(parent: ViewGroup) : androidx.recyclerview.widget.RecyclerView.ViewHolder(parent.inflate(R.layout.item_rover)) {
+    class RoverViewHolder(parent: ViewGroup) :
+        RecyclerView.ViewHolder(parent.inflate(R.layout.item_rover)) {
 
-        fun bind(item: Rover, payloads: List<Any>?) = with(itemView) {
-            if (payloads == null || payloads.isEmpty()) {
-                bindFullInfo(item)
-            } else
-                for (payload in payloads) {
-                    if (payload is List<*>) {
-                        for (payloadFinal in payload)
-                            bindByPayload(item, payloadFinal)
-                    } else
-                        bindByPayload(item, payload)
-                }
-
-        }
+        fun bind(item: Rover, payloads: List<Any>?) = if (payloads == null || payloads.isEmpty()) {
+            bindFullInfo(item)
+        } else
+            for (payload in payloads) {
+                if (payload is List<*>) {
+                    for (payloadFinal in payload)
+                        bindByPayload(item, payloadFinal)
+                } else
+                    bindByPayload(item, payload)
+            }
 
         private fun bindByPayload(item: Rover, payloadFinal: Any?) = with(itemView) {
             when (payloadFinal) {
                 RoverDiff.IMAGE -> roverPhoto loadImage item.iamgeUrl
                 RoverDiff.TOTAL_PHOTOS -> totalPhotos.text =
-                        spannable {
-                            typeface(Typeface.BOLD) {
-                                +"Total photos: "
-                            }
-                            +"${item.totalPhotos}"
+                    spannable {
+                        typeface(Typeface.BOLD) {
+                            +"Total photos: "
+                        }
+                        +"${item.totalPhotos}"
 
-                        }.toCharSequence()
+                    }.toCharSequence()
 
                 RoverDiff.LAST_PHOTO_DATE -> lastPhotoDate.text =
-                        spannable {
-                            typeface(Typeface.BOLD) {
-                                +"Last photo date: "
-                            }
-                            +item.maxDate
-                        }.toCharSequence()
+                    spannable {
+                        typeface(Typeface.BOLD) {
+                            +"Last photo date: "
+                        }
+                        +item.maxDate
+                    }.toCharSequence()
 
                 RoverDiff.LAUNCH_DATE -> launchDate.text =
-                        spannable {
-                            typeface(Typeface.BOLD) {
-                                +"Launch date from Earth: "
-                            }
-                            +item.launchDate
-                        }.toCharSequence()
+                    spannable {
+                        typeface(Typeface.BOLD) {
+                            +"Launch date from Earth: "
+                        }
+                        +item.launchDate
+                    }.toCharSequence()
 
                 RoverDiff.LANDING_DATE -> roverLandingDate.text =
-                        spannable {
-                            typeface(Typeface.BOLD) {
-                                +"Landing date on Mars: "
-                            }
-                            +item.landingDate
-                        }.toCharSequence()
+                    spannable {
+                        typeface(Typeface.BOLD) {
+                            +"Landing date on Mars: "
+                        }
+                        +item.landingDate
+                    }.toCharSequence()
 
                 else -> {
                 }
@@ -93,7 +95,8 @@ class RoversDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDeleg
 
             roverName.text = item.name
 
-            val statusSpanColor = if ("active".equals(item.status, true)) Color.rgb(85, 139, 47) else Color.RED
+            val statusSpanColor =
+                if ("active".equals(item.status, true)) Color.rgb(85, 139, 47) else Color.RED
 
             roverStatus.text = spannable {
                 typeface(Typeface.BOLD) {
@@ -105,36 +108,36 @@ class RoversDelegateAdapter(val callback: OnModelChooseListener) : ViewTypeDeleg
             }.toCharSequence()
 
             totalPhotos.text =
-                    spannable {
-                        typeface(Typeface.BOLD) {
-                            +"Total photos: "
-                        }
-                        +"${item.totalPhotos}"
-                    }.toCharSequence()
+                spannable {
+                    typeface(Typeface.BOLD) {
+                        +"Total photos: "
+                    }
+                    +"${item.totalPhotos}"
+                }.toCharSequence()
 
             lastPhotoDate.text =
-                    spannable {
-                        typeface(Typeface.BOLD) {
-                            +"Last photo date: "
-                        }
-                        +item.maxDate
-                    }.toCharSequence()
+                spannable {
+                    typeface(Typeface.BOLD) {
+                        +"Last photo date: "
+                    }
+                    +item.maxDate
+                }.toCharSequence()
 
             launchDate.text =
-                    spannable {
-                        typeface(Typeface.BOLD) {
-                            +"Launch date from Earth: "
-                        }
-                        +item.launchDate
-                    }.toCharSequence()
+                spannable {
+                    typeface(Typeface.BOLD) {
+                        +"Launch date from Earth: "
+                    }
+                    +item.launchDate
+                }.toCharSequence()
 
             roverLandingDate.text =
-                    spannable {
-                        typeface(Typeface.BOLD) {
-                            +"Landing date on Mars: "
-                        }
-                        +item.landingDate
-                    }.toCharSequence()
+                spannable {
+                    typeface(Typeface.BOLD) {
+                        +"Landing date on Mars: "
+                    }
+                    +item.landingDate
+                }.toCharSequence()
         }
     }
 

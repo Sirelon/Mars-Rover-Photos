@@ -84,3 +84,8 @@ data class Rover(
             parcel.readInt()
     )
 }
+
+const val SPIRIT = "spirit"
+const val CURIOSITY = "curiosity"
+const val OPPORTUNITY = "opportunity"
+const val INSIGHT = "insight"

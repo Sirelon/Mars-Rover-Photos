@@ -81,7 +81,7 @@ class ImageActivity : RxActivity() {
             val subscribe = dataManager.lastPhotosRequest!!.flatMapIterable { it }
                 .compose {
                     // Filter by cameras
-                    if (cameraFilterEnable) it.filter { it.camera.id == marsPhoto.camera.id }
+                    if (cameraFilterEnable) it.filter { it.camera?.id == marsPhoto.camera?.id }
                     else it
                 }
                 .toList()
