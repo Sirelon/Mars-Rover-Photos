@@ -20,7 +20,8 @@ import kotlinx.android.synthetic.main.item_rover.view.*
  * @since 31.10.16 on 18:48
  */
 @Keep
-class RoversDelegateAdapter(private val callback: OnModelChooseListener<ViewType>) : ViewTypeDelegateAdapter {
+class RoversDelegateAdapter(private val callback: OnModelChooseListener<ViewType>) :
+    ViewTypeDelegateAdapter {
 
     override fun onBindViewHolder(
         holder: RecyclerView.ViewHolder,
@@ -31,7 +32,7 @@ class RoversDelegateAdapter(private val callback: OnModelChooseListener<ViewType
         holder.itemView.setOnClickListener { callback.onModelChoose(item) }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup): androidx.recyclerview.widget.RecyclerView.ViewHolder =
+    override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
         RoverViewHolder(parent)
 
     @Keep

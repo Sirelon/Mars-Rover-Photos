@@ -7,8 +7,15 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textViewStyle">@style/AppTextStyle</item>
-
+        <item name="android:buttonStyle">@style/ButtonStyle</item>
+        <item name="android:windowBackground">@color/windowBackground</item>
         <item name="android:windowActivityTransitions">true</item>
+    </style>
+
+    <style name="ButtonStyle" parent="android:Widget.Button">
+        <item name="android:textColor">?android:attr/textColorPrimaryInverse</item>
+        <item name="android:fontFamily">@font/oxygen</item>
+        <item name="fontFamily">@font/oxygen</item>
     </style>
 
     <style name="AppTextStyle" parent="android:Widget.TextView">
