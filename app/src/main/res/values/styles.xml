@@ -52,4 +52,13 @@
         <item name="android:gravity">center_vertical</item>
     </style>
 
+    <style name="TextSubhead">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingHorizontal">@dimen/padding.smallest</item>
+        <item name="android:paddingVertical">@dimen/padding.smallest</item>
+        <item name="android:lineSpacingExtra">2dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Subhead</item>
+    </style>
+
 </resources>

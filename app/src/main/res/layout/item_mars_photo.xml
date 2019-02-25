@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="4dp"
+    app:cardUseCompatPadding="true"
     android:clickable="true"
     android:foreground="?android:attr/selectableItemBackground"
     android:paddingBottom="8dp"
@@ -23,6 +23,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:transitionName="mars_photo"
+            tools:src="@tools:sample/backgrounds/scenic"
             android:adjustViewBounds="true"
             android:src="@drawable/img_placeholder" />
 
@@ -34,7 +35,7 @@
             android:padding="2dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
             android:textColor="@android:color/secondary_text_dark"
-            tools:text="asdas" />
+            tools:text="@tools:sample/full_names" />
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

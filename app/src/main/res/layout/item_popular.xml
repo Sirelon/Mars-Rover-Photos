@@ -4,15 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackground"
+    android:foreground="?attr/selectableItemBackground"
     android:clickable="true"
     android:orientation="vertical"
     android:paddingBottom="@dimen/padding"
     android:paddingLeft="@dimen/padding.small"
     android:paddingRight="@dimen/padding.small"
-    android:paddingTop="@dimen/padding"
-    tools:layout_editor_absoluteX="0dp"
-    tools:layout_editor_absoluteY="81dp">
+    android:paddingTop="@dimen/padding">
 
     <ImageView
         android:id="@+id/popularPhoto"
@@ -31,8 +29,7 @@
         android:id="@+id/popularName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/padding"
-        android:layout_marginRight="@dimen/padding.small"
+        android:paddingHorizontal="@dimen/padding.small"
         android:text="@string/popular_title"
         android:textAlignment="center"
         android:textAllCaps="true"

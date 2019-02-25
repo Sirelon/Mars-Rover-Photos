@@ -44,8 +44,8 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="2dp"
             android:autoLink="web"
+            android:padding="2dp"
             android:text="API provided by https://api.nasa.gov/api.html#MarsPhotos"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
@@ -54,8 +54,8 @@
             android:id="@+id/about_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="2dp"
             android:autoLink="email"
+            android:padding="2dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             tools:text="Email: sasha.sirelon@gmail.com" />
 
@@ -63,7 +63,7 @@
             android:id="@+id/about_app_version"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="2dp"
+            android:padding="2dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             tools:text="Version: 1.2.2" />
 
@@ -72,7 +72,7 @@
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="4dp"
+            android:padding="4dp"
             android:text="Rate this App" />
 
         <TextView
