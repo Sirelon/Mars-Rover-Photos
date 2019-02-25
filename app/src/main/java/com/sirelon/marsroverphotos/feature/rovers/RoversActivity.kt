@@ -2,7 +2,8 @@ package com.sirelon.marsroverphotos.feature.rovers
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.recyclerview.widget.DividerItemDecoration
+import android.view.View
+import androidx.core.util.Pair
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.sirelon.marsroverphotos.NoConnectionError
 import com.sirelon.marsroverphotos.R
@@ -14,7 +15,6 @@ import com.sirelon.marsroverphotos.extensions.isConnected
 import com.sirelon.marsroverphotos.feature.popular.PopularDelegateAdapter
 import com.sirelon.marsroverphotos.feature.popular.PopularItem
 import com.sirelon.marsroverphotos.feature.popular.PopularPhotosActivity
-import com.sirelon.marsroverphotos.firebase.photos.FirebaseProvider
 import com.sirelon.marsroverphotos.models.OnModelChooseListener
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.ViewType
@@ -25,7 +25,7 @@ import kotlinx.android.synthetic.main.activity_rovers.*
 
 class RoversActivity : RxActivity(), OnModelChooseListener {
 
-    override fun onModelChoose(model: ViewType) {
+    override fun onModelChoose(model: ViewType, vararg sharedElements: Pair<View, String>) {
         when (model) {
             is Rover -> startActivity(PhotosActivity.createIntent(this, model))
             is PopularItem -> startActivity(Intent(this, PopularPhotosActivity::class.java))

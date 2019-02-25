@@ -14,6 +14,9 @@ import android.widget.ArrayAdapter
 import android.widget.SeekBar
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityOptionsCompat
+import androidx.core.util.Pair
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.sirelon.marsroverphotos.NoConnectionError
@@ -62,12 +65,22 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         outState?.putParcelable(EXTRA_ROVER, rover)
     }
 
-    override fun onModelChoose(model: ViewType) {
+    override fun onModelChoose(model: ViewType, vararg sharedElements: Pair<View, String>) {
         if (model is MarsPhoto) {
             // Enable camera filter if the same camera was choose.
             // If all camera choosed then no need to filtering
             val cameraFilter = photosCamera.selectedItemPosition != 0
-            startActivity(ImageActivity.createIntent(this, model, cameraFilter))
+
+            val intent = ImageActivity.createIntent(this, model, cameraFilter)
+            val args: Bundle?
+            if (sharedElements.isNotEmpty()) {
+                args = ActivityOptionsCompat.makeSceneTransitionAnimation(this, *sharedElements)
+                    .toBundle()
+            } else {
+                args = null
+            }
+
+            ActivityCompat.startActivity(this, intent, args)
         }
     }
 
