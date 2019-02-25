@@ -6,6 +6,12 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textViewStyle">@style/AppTextStyle</item>
+    </style>
+
+    <style name="AppTextStyle" parent="android:Widget.TextView">
+        <item name="android:fontFamily">@font/oxygen</item>
+        <item name="fontFamily">@font/oxygen</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
