@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.core.util.Pair
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.sirelon.marsroverphotos.NoConnectionError
 import com.sirelon.marsroverphotos.R
@@ -38,21 +39,22 @@ class RoversActivity : RxActivity(), OnModelChooseListener {
         setContentView(R.layout.activity_rovers)
 
         val adapter = ViewTypeAdapter(false)
-        adapter.addDelegateAdapter(AdapterConstants.ROVER, RoversDelegateAdapter(this@RoversActivity))
-        adapter.addDelegateAdapter(AdapterConstants.POPULAR_ITEM, PopularDelegateAdapter(this@RoversActivity))
+        adapter.addDelegateAdapter(
+            AdapterConstants.ROVER,
+            RoversDelegateAdapter(this@RoversActivity)
+        )
+        adapter.addDelegateAdapter(
+            AdapterConstants.POPULAR_ITEM,
+            PopularDelegateAdapter(this@RoversActivity)
+        )
 
         roversList.apply {
             setHasFixedSize(true)
 
-            layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this@RoversActivity)
+            layoutManager = LinearLayoutManager(this@RoversActivity)
 
             this.adapter = adapter
-            addItemDecoration(
-                androidx.recyclerview.widget.DividerItemDecoration(
-                    context,
-                    androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
-                )
-            )
+            addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
         }
 
         adapter.addOrReplace(PopularItem())
@@ -62,16 +64,16 @@ class RoversActivity : RxActivity(), OnModelChooseListener {
 
     private fun loadData(adapter: ViewTypeAdapter) {
         val subscription =
-                Observable
-                        .just(isConnected())
-                        .switchMap {
-                            if (it) dataManager.getRovers()
-                            else Observable.error(NoConnectionError())
-                        }
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .doOnError(errorConsumer { loadData(adapter) })
-                        .subscribe({ adapter.addOrReplace(it) }, Throwable::printStackTrace)
+            Observable
+                .just(isConnected())
+                .switchMap {
+                    if (it) dataManager.getRovers()
+                    else Observable.error(NoConnectionError())
+                }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnError(errorConsumer { loadData(adapter) })
+                .subscribe({ adapter.addOrReplace(it) }, Throwable::printStackTrace)
 
         subscriptions.add(subscription)
     }

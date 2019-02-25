@@ -2,8 +2,8 @@ package com.sirelon.marsroverphotos.adapter
 
 import androidx.paging.AsyncPagedListDiffer
 import androidx.paging.PagedList
-import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.AdapterListUpdateCallback
+import androidx.recyclerview.widget.AsyncDifferConfig
 import com.sirelon.marsroverphotos.models.ViewType
 
 /**
@@ -12,9 +12,7 @@ import com.sirelon.marsroverphotos.models.ViewType
 class PagedViewTypeAdapter<T : ViewType>(diffCallback: AsyncDifferConfig<T>) :
     ViewTypeAdapter(false) {
 
-
     private val pagedHelper: AsyncPagedListDiffer<T>
-
 
     init {
         val listUpdateCallback = AdapterListUpdateCallback(this)
