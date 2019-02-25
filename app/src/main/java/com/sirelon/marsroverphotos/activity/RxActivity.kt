@@ -1,13 +1,13 @@
 package com.sirelon.marsroverphotos.activity
 
 import android.content.Intent
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.snackbar.Snackbar
 import com.sirelon.marsroverphotos.NoConnectionError
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
@@ -15,6 +15,7 @@ import com.sirelon.marsroverphotos.extensions.isConnected
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Consumer
 import kotlinx.android.synthetic.main.activity_main.*
+import java.net.UnknownHostException
 
 /**
  * @author romanishin
@@ -41,7 +42,7 @@ open class RxActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         if (item?.itemId == android.R.id.home) {
-            finish()
+            onBackPressed()
             return true
         } else if (item?.itemId == R.id.menu_item_about) {
 //            FirebaseProvider.proideTestFirebase.deleteUnusedItems()
@@ -57,18 +58,25 @@ open class RxActivity : AppCompatActivity() {
     fun errorConsumer(listener: () -> Unit): Consumer<in Throwable> {
         return Consumer {
             it.printStackTrace()
-            if (it is NoConnectionError) {
+            if (isItNoConnection(it)) {
                 showNoConnectionView(listener)
             } else {
                 it.printStackTrace()
-                Snackbar.make(activity_main_root, "Error occurred: ${it.message}", Snackbar.LENGTH_LONG)
-                        .setAction("Retry", {
-                            subscriptions.clear()
-                            listener()
-                        }).show()
+                Snackbar.make(
+                    activity_main_root,
+                    "Error occurred: ${it.message}",
+                    Snackbar.LENGTH_LONG
+                )
+                    .setAction("Retry") {
+                        subscriptions.clear()
+                        listener()
+                    }.show()
             }
         }
     }
+
+    private fun isItNoConnection(it: Throwable?) =
+        it is NoConnectionError || !isConnected() || it is UnknownHostException
 
     fun toast(msg: String) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
