@@ -16,7 +16,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.google.gson.GsonBuilder
 import com.sirelon.marsroverphotos.NoConnectionError
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
@@ -24,7 +23,6 @@ import com.sirelon.marsroverphotos.adapter.AdsDelegateAdapter
 import com.sirelon.marsroverphotos.adapter.MarsPhotosDelegateAdapter
 import com.sirelon.marsroverphotos.adapter.ViewTypeAdapter
 import com.sirelon.marsroverphotos.extensions.isConnected
-import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.extensions.random
 import com.sirelon.marsroverphotos.feature.advertising.AdvertisingObjectFactory
 import com.sirelon.marsroverphotos.models.MarsPhoto
@@ -33,8 +31,6 @@ import com.sirelon.marsroverphotos.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.RoverDateUtil
 import com.sirelon.marsroverphotos.models.ViewType
-import com.sirelon.marsroverphotos.network.FAKERESPONSE
-import com.sirelon.marsroverphotos.network.PhotosResponse
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -82,17 +78,6 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
     private lateinit var dateUtil: RoverDateUtil
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val gson = GsonBuilder().create()
-
-        val photosResponse =
-            gson.fromJson<PhotosResponse>(FAKERESPONSE, PhotosResponse::class.java)
-
-
-        photosResponse.logD()
-
-
-
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -135,31 +120,20 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
         photosList.apply {
             setHasFixedSize(true)
 
-            layoutManager = androidx.recyclerview.widget.StaggeredGridLayoutManager(
-                2,
-                androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
-            )
+            layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
 
             this.adapter = adapter
 
-            addOnScrollListener(object :
-                                    androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
-                override fun onScrolled(
-                    recyclerView: androidx.recyclerview.widget.RecyclerView,
-                    dx: Int,
-                    dy: Int
-                ) {
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
                     if (dy > 0 || dy < 0 && actionRandom.isShown) {
                         actionRandom.hide()
                     }
                 }
 
-                override fun onScrollStateChanged(
-                    recyclerView: androidx.recyclerview.widget.RecyclerView,
-                    newState: Int
-                ) {
-                    if (newState == androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE) {
+                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                         actionRandom.show()
                     }
 
@@ -237,6 +211,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
     }
 
     private fun updateCameraFilter(photos: List<ViewType>) {
+        photosCamera.visibility = View.GONE
         val cameraFilterSub = Observable
             .fromIterable(photos)
             .filter { it is MarsPhoto }
@@ -249,14 +224,17 @@ class PhotosActivity : RxActivity(), OnModelChooseListener {
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                           it.add(0, "All cameras")
-                           val arrayAdapter = ArrayAdapter(
-                               photosCamera.context,
-                               android.R.layout.simple_spinner_item,
-                               it
-                           )
-                           arrayAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
-                           photosCamera.adapter = arrayAdapter
+                           if (it.isNotEmpty()) {
+                               photosCamera.visibility = View.VISIBLE
+                               it.add(0, "All cameras")
+                               val arrayAdapter = ArrayAdapter(
+                                   photosCamera.context,
+                                   android.R.layout.simple_spinner_item,
+                                   it
+                               )
+                               arrayAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
+                               photosCamera.adapter = arrayAdapter
+                           }
                        }, Throwable::printStackTrace)
 
         subscriptions.add(cameraFilterSub)
