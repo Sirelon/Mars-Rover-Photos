@@ -23,6 +23,8 @@
         android:id="@+id/roverPhoto"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginEnd="@dimen/padding.small"
+        android:layout_marginTop="@dimen/padding.small"
         android:adjustViewBounds="true"
         android:contentDescription=""
         android:cropToPadding="false"
