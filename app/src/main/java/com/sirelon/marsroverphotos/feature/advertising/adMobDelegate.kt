@@ -21,6 +21,11 @@ internal object adMobDelegate : AdvertisingDelegate {
     override fun integregrateAdToList(
             dataList: List<ViewType>): MutableList<ViewType> {
 
+        // Due to Ad
+        if (true){
+            return dataList.toMutableList();
+        }
+
         var step = 30
 
         val data: MutableList<ViewType> = dataList.toMutableList()
