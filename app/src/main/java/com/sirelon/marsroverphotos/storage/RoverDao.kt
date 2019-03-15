@@ -14,7 +14,7 @@ import io.reactivex.Flowable
 interface RoverDao {
 
     // Emits the number of users added to the database.
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertRovers(vararg rovers: Rover)
 
     @Query("UPDATE rover SET totalPhotos = :photos WHERE id = :roverId")

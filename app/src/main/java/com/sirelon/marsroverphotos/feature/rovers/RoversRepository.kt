@@ -5,6 +5,7 @@ import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.extensions.logE
 import com.sirelon.marsroverphotos.models.Rover
+import com.sirelon.marsroverphotos.models.RoverDateUtil
 import com.sirelon.marsroverphotos.network.RoverInfo
 import com.sirelon.marsroverphotos.storage.DataBaseProvider
 import com.sirelon.marsroverphotos.storage.RoverDao
@@ -40,6 +41,13 @@ class RoversRepository(context: Context) {
             "2019-02-02",
             1072
         )
+
+        val dateUtil = RoverDateUtil(insight)
+
+        // Current date
+        val currentTimeMillis = System.currentTimeMillis()
+        insight.maxDate = dateUtil.parseTime(currentTimeMillis)
+        insight.maxSol = dateUtil.solFromDate(currentTimeMillis)
 
         val curiosity = Rover(
             5,
