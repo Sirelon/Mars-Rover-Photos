@@ -1,57 +1,47 @@
 package com.sirelon.marsroverphotos.feature.rovers
 
 import android.content.Context
-import android.content.SharedPreferences
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.sirelon.marsroverphotos.R
+import com.sirelon.marsroverphotos.extensions.logD
+import com.sirelon.marsroverphotos.extensions.logE
 import com.sirelon.marsroverphotos.models.Rover
+import com.sirelon.marsroverphotos.network.RoverInfo
+import com.sirelon.marsroverphotos.storage.DataBaseProvider
+import com.sirelon.marsroverphotos.storage.RoverDao
+import io.reactivex.Completable
+import io.reactivex.Observable
+import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
+
+
+const val INSIGHT_ID = 8L
 
 /**
  * @author romanishin
  * @since 07.11.16 on 12:42
  */
-private const val SPIRIT = "spirit"
-private const val CURIOSITY = "curiosity"
-private const val OPPORTUNITY = "opportunity"
-private const val INSIGHT = "insight"
-
 class RoversRepository(context: Context) {
 
-    private val pref: SharedPreferences =
-        context.getSharedPreferences("MARS_ROVERS_PHOTOS_PREFS", Context.MODE_PRIVATE)
-    private val gson: Gson = GsonBuilder().create()
+    private val roverDao: RoverDao
 
-    fun saveRover(rover: Rover) {
-        pref.edit().putString(rover.name.toLowerCase(), gson.toJson(rover)).apply()
-    }
+    init {
+        DataBaseProvider.init(context)
+        roverDao = DataBaseProvider.dataBase.roversDao()
 
-    fun getRover(roverName: String): Rover {
-        val roverNamePref = roverName.toLowerCase();
-
-        val roverJson = pref.getString(roverNamePref, null)
-        if (roverJson == null) {
-            when (roverNamePref) {
-                CURIOSITY -> return curiosity
-                OPPORTUNITY -> return opportunity
-                SPIRIT -> return spirit
-                INSIGHT -> return insight
-                else -> return curiosity
-            }
-
-        } else
-            return gson.fromJson(roverJson, Rover::class.java)!!
-    }
-
-    fun getAllRovers(): MutableList<Rover> =
-        mutableListOf(
-            getRover(CURIOSITY), getRover(OPPORTUNITY), getRover(SPIRIT), getRover(INSIGHT)
+        val resourcePrefix = "android.resource://com.sirelon.marsroverphotos/"
+        val insight = Rover(
+            INSIGHT_ID,
+            "Insight",
+            resourcePrefix + R.drawable.img_insight,
+            "2018-11-26",
+            "2018-05-05",
+            "active",
+            93,
+            "2019-02-02",
+            1072
         )
 
-    private val resourcePrefix = "android.resource://com.sirelon.marsroverphotos/"
-
-    private val curiosity by lazy {
-        Rover(
+        val curiosity = Rover(
             5,
             "Curiosity",
             resourcePrefix + R.drawable.img_curiosity,
@@ -62,10 +52,8 @@ class RoversRepository(context: Context) {
             "2017-09-18",
             320999
         )
-    }
 
-    private val opportunity by lazy {
-        Rover(
+        val opportunity = Rover(
             6,
             "Opportunity",
             resourcePrefix + R.drawable.img_opportunity,
@@ -76,10 +64,8 @@ class RoversRepository(context: Context) {
             "2017-02-22",
             187093
         )
-    }
 
-    private val spirit by lazy {
-        Rover(
+        val spirit = Rover(
             7,
             "Spirit",
             resourcePrefix + R.drawable.img_spirit,
@@ -90,20 +76,35 @@ class RoversRepository(context: Context) {
             "2010-03-21",
             124550
         )
+
+        Single.fromCallable {
+            roverDao.insertRovers(insight, curiosity, opportunity, spirit)
+        }
+            .subscribeOn(Schedulers.io())
+            .doOnSuccess { "ROVERS INSERTED $it".logD() }
+            .subscribe()
     }
 
-    // TODO Fill in correct data
-    private val insight by lazy {
-        Rover(
-            7,
-            "Insight",
-            resourcePrefix + R.drawable.img_spirit,
-            "2004-01-04",
-            "2003-06-10",
-            "complete",
-            2208,
-            "2010-03-21",
-            124550
+    fun updateRoverCountPhotos(roverId: Long, photos: Long): Completable {
+        "photos $photos".logD()
+        return Completable.fromCallable { roverDao.updateRoverCountPhotos(roverId, photos) }
+            .subscribeOn(Schedulers.io())
+            .doOnError(Throwable::logE)
+            .onErrorComplete()
+    }
+
+    fun getRoversObservable(): Observable<Rover> =
+        roverDao.getRoversFlowable().toObservable().flatMapIterable { it }.doOnNext(Rover::logD)
+
+    fun updateRoverByInfo(roverInfo: RoverInfo) {
+        // We will not post status, 'cause it's incorrect data
+        roverDao.updateRover(
+            roverInfo.name,
+            roverInfo.landingDate,
+            roverInfo.launchDate,
+            roverInfo.maxSol,
+            roverInfo.maxDate,
+            roverInfo.totalPhotos
         )
     }
 }

@@ -5,6 +5,8 @@ import com.google.gson.GsonBuilder
 import com.readystatesoftware.chuck.ChuckInterceptor
 import com.sirelon.marsroverphotos.models.INSIGHT
 import com.sirelon.marsroverphotos.models.PhotosQueryRequest
+import com.sirelon.marsroverphotos.models.Rover
+import io.reactivex.Observable
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import retrofit2.Call
@@ -41,19 +43,16 @@ class RestApi(context: Context) {
         // We should call another api if rover is insight
         val sol = query.sol
         if (query.roverName.toLowerCase() == INSIGHT) {
-            if (true)
-                return getFakeRawPhotos()
-
-            // TODO
+//            if (true)
+//                return getFakeRawPhotos()
+//
+//            // TODO
             return nasaApi.getRawImages(fromSol = sol, toSol = sol)
         }
         return nasaApi.getRoverPhotos(query.roverName, sol, query.camera)
     }
 
-    fun getRoverInfo(roverName: String): Call<RoverResponse> {
-        return nasaApi.getRoverInfo(roverName)
-    }
-
+    fun getRoverInfo(roverName: String):Observable<RoverInfo> = nasaApi.getRoverInfo(roverName).toObservable().map { it.roverInfo }
 
     private fun getFakeRawPhotos(): Call<PhotosResponse> {
         return object : Call<PhotosResponse> {

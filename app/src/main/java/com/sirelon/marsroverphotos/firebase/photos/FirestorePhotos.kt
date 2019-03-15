@@ -19,12 +19,29 @@ import io.reactivex.Single
  */
 internal class FirestorePhotos : IFirebasePhotos {
 
-    override fun countOfAllPhotos(): Single<Int> {
-        return Single.just(1)
-    }
+    private fun roversCollection() =
+        FirebaseFirestore.getInstance().collection(FirebaseConstants.COLECTION_ROVERS)
 
     private fun photosCollection() =
         FirebaseFirestore.getInstance().collection(FirebaseConstants.COLECTION_PHOTOS)
+
+    override fun countOfInsightPhotos(): Single<Long> {
+        return Single.create<Long> { emitter ->
+            roversCollection().document(FirebaseConstants.DOCUMENT_INSIGHT)
+                .addSnapshotListener { documentSnapshot, exception ->
+                    if (exception != null) {
+                        emitter.onError(exception)
+                    } else {
+                        val totalPhotos = documentSnapshot?.getLong("total_photos") ?: 0
+                        emitter.onSuccess(totalPhotos)
+                    }
+                }
+        }
+    }
+
+    override fun countOfAllPhotos(): Single<Long> {
+        return Single.just(1L)
+    }
 
     override fun updatePhotoShareCounter(photo: MarsPhoto): Observable<Long> {
         return getOrCreate(photo)
@@ -58,7 +75,10 @@ internal class FirestorePhotos : IFirebasePhotos {
             .map { it.seeCounter }
     }
 
-    override fun loadPopularPhotos(count: Int, lastPhoto: FirebasePhoto?): Observable<List<FirebasePhoto>> {
+    override fun loadPopularPhotos(
+        count: Int,
+        lastPhoto: FirebasePhoto?
+    ): Observable<List<FirebasePhoto>> {
         return Observable.create<List<FirebasePhoto>> { emitter: ObservableEmitter<List<FirebasePhoto>> ->
             val queryDirection = Query.Direction.DESCENDING
             var first = photosCollection()
@@ -68,8 +88,9 @@ internal class FirestorePhotos : IFirebasePhotos {
                 .orderBy("seeCounter", queryDirection)
                 .limit(count.toLong())
 
-            if (lastPhoto != null){
-                val documentSnapshot = Tasks.await(photosCollection().document(lastPhoto.id.toString()).get())
+            if (lastPhoto != null) {
+                val documentSnapshot =
+                    Tasks.await(photosCollection().document(lastPhoto.id.toString()).get())
                 first = first.startAfter(documentSnapshot)
             }
 

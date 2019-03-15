@@ -10,7 +10,8 @@ import io.reactivex.Single
  */
 interface IFirebasePhotos {
 
-    fun countOfAllPhotos(): Single<Int>
+    fun countOfAllPhotos(): Single<Long>
+    fun countOfInsightPhotos(): Single<Long>
     fun updatePhotoShareCounter(photo: MarsPhoto): Observable<Long>
     fun updatePhotoSaveCounter(photo: MarsPhoto): Observable<Long>
     fun updatePhotoScaleCounter(photo: MarsPhoto): Observable<Long>

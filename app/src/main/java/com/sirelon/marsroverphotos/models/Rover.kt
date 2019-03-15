@@ -3,6 +3,8 @@ package com.sirelon.marsroverphotos.models
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.Keep
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
 import com.sirelon.marsroverphotos.extensions.createParcel
@@ -12,8 +14,10 @@ import com.sirelon.marsroverphotos.extensions.createParcel
  * @since 31.10.16 on 15:14
  */
 @Keep
+@Entity
 data class Rover(
         @SerializedName(value = "id")
+        @PrimaryKey
         var id: Long,
 
         @SerializedName(value = "name")
@@ -40,18 +44,6 @@ data class Rover(
         var totalPhotos: Int) : ViewType, Parcelable {
 
     override fun getViewType(): Int = AdapterConstants.ROVER
-
-    override fun hashCode(): Int {
-        return id.hashCode();
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (other is Rover)
-            if (other.id == this.id)
-                return true
-
-        return false
-    }
 
     override fun writeToParcel(dest: Parcel, p1: Int) {
         dest.writeLong(id)
@@ -89,3 +81,5 @@ const val SPIRIT = "spirit"
 const val CURIOSITY = "curiosity"
 const val OPPORTUNITY = "opportunity"
 const val INSIGHT = "insight"
+
+

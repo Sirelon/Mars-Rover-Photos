@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos.network
 
+import io.reactivex.Single
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -19,7 +20,7 @@ interface NasaApi {
     fun getRoverInfo(
         @Path("roverName") roverName: String,
         @Query("api_key") apiKey: String = APIKEY
-    ): Call<RoverResponse>
+    ): Single<RoverResponse>
 
     @GET("/mars-photos/api/v1/rovers/{roverName}/photos")
     fun getRoverPhotos(
