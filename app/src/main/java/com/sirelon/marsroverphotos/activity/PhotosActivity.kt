@@ -37,12 +37,11 @@ import com.sirelon.marsroverphotos.models.ViewType
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_photos.*
 import kotlinx.android.synthetic.main.item_photo_header.*
 import kotlinx.android.synthetic.main.view_choose_sol.view.*
 import java.util.Calendar
 import java.util.TimeZone
-
 
 class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
 
@@ -90,7 +89,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_photos)
 
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)

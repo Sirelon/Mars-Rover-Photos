@@ -17,6 +17,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
@@ -30,19 +31,30 @@ import java.util.Random
  */
 fun View.showSnackBar(msg: String) {
     Snackbar.make(this, msg, Snackbar.LENGTH_LONG)
-            .show()
+        .show()
 }
 
-fun View.showSnackBar(msg: String, actionTxt: String, actionCallback: View.OnClickListener,
-                      duration: Int = Snackbar.LENGTH_LONG) {
+fun TextView.textOrHide(value: String?) {
+    if (value.isNullOrBlank()) {
+        visibility = View.GONE
+    } else {
+        visibility = View.VISIBLE
+        text = value
+    }
+}
+
+fun View.showSnackBar(
+    msg: String, actionTxt: String, actionCallback: View.OnClickListener,
+    duration: Int = Snackbar.LENGTH_LONG
+) {
     Snackbar.make(this, msg, duration)
-            .setAction(actionTxt, actionCallback)
-            .show()
+        .setAction(actionTxt, actionCallback)
+        .show()
 }
 
 fun ViewGroup.inflate(layoutId: Int, attachToRoot: Boolean = false): View {
     return LayoutInflater.from(context)
-            .inflate(layoutId, this, attachToRoot)
+        .inflate(layoutId, this, attachToRoot)
 }
 
 object placeholder {
@@ -51,15 +63,10 @@ object placeholder {
     }
 }
 
-
 infix fun ImageView.loadImage(imageUrl: String?) {
     if (TextUtils.isEmpty(imageUrl)) this.setImageDrawable(placeholder.drawable)
     else {
         Glide.with(this).load(imageUrl).placeholder(placeholder.drawable).into(this)
-//        Picasso.get()
-//                .load(imageUrl)
-//                .placeholder(placeholder.drawable)
-//                .into(this)
     }
 }
 
@@ -85,7 +92,8 @@ fun Int.random(max: Int): Int {
 
 // Inline function to create Parcel Creator
 inline fun <reified T : Parcelable> createParcel(
-        crossinline createFromParcel: (Parcel) -> T?): Parcelable.Creator<T> =
+    crossinline createFromParcel: (Parcel) -> T?
+): Parcelable.Creator<T> =
     object : Parcelable.Creator<T> {
         override fun createFromParcel(source: Parcel): T? = createFromParcel(source)
         override fun newArray(size: Int): Array<out T?> = arrayOfNulls(size)

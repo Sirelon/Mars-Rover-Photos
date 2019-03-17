@@ -14,7 +14,7 @@ import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.isConnected
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Consumer
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_photos.*
 import java.net.UnknownHostException
 
 /**

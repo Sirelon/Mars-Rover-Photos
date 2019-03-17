@@ -11,35 +11,44 @@
         android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:fitsSystemWindows="true"
+        android:background="@color/colorPrimary"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         tools:targetApi="lollipop">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+        <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
-            android:elevation="0dp"
-            android:minHeight="?attr/actionBarSize"
-            android:stateListAnimator="@null"
-            app:elevation="0dp"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+            app:layout_scrollFlags="exitUntilCollapsed|enterAlways">
 
-            <Spinner
-                android:id="@+id/photosCamera"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ellipsize="marquee"
-                android:marqueeRepeatLimit="marquee_forever"
-                android:scrollHorizontally="true"
-                app:popupTheme="@style/ThemeOverlay.AppCompat"
-                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+                android:orientation="vertical"
+                app:layout_collapseMode="parallax">
 
-        </androidx.appcompat.widget.Toolbar>
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/colorPrimary"
+                    android:minHeight="?attr/actionBarSize"
+                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
+                    <Spinner
+                        android:id="@+id/photosCamera"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="marquee"
+                        android:marqueeRepeatLimit="marquee_forever"
+                        android:scrollHorizontally="true"
+                        app:popupTheme="@style/ThemeOverlay.AppCompat"
+                        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+                </androidx.appcompat.widget.Toolbar>
+
+            </LinearLayout>
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
         <include
             android:id="@+id/item_photo_header"
             layout="@layout/item_photo_header" />
@@ -49,7 +58,6 @@
         android:id="@+id/photos_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/item_photo_header"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
         tools:listitem="@layout/item_mars_photo"

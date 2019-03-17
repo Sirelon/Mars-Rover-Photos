@@ -2,15 +2,16 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/CardView.Dark"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardUseCompatPadding="true"
     android:clickable="true"
     android:foreground="?android:attr/selectableItemBackground"
-    android:paddingBottom="8dp"
-    android:paddingEnd="8dp"
     android:paddingStart="8dp"
-    app:cardCornerRadius="4dp">
+    android:paddingEnd="8dp"
+    android:paddingBottom="8dp"
+    app:cardCornerRadius="4dp"
+    app:cardUseCompatPadding="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,10 +23,10 @@
             android:id="@+id/photo"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:transitionName="mars_photo"
-            tools:src="@tools:sample/backgrounds/scenic"
             android:adjustViewBounds="true"
-            android:src="@drawable/img_placeholder" />
+            android:src="@drawable/img_placeholder"
+            android:transitionName="mars_photo"
+            tools:src="@tools:sample/backgrounds/scenic" />
 
         <TextView
             android:id="@+id/cameraName"
@@ -33,8 +34,9 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="2dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-            android:textColor="@android:color/secondary_text_dark"
+            android:textSize="10sp"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+            android:textColor="@color/colorAccent"
             tools:text="@tools:sample/full_names" />
 
     </LinearLayout>
