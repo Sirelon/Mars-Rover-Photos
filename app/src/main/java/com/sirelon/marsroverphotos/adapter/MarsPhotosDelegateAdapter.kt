@@ -30,7 +30,7 @@ class MarsPhotosDelegateAdapter(val callback: OnModelChooseListener<MarsPhoto>) 
     ) {
         val marsPhotoViewHolder = holder as MarsPhotoViewHolder
         marsPhotoViewHolder.bind(item as MarsPhoto)
-        marsPhotoViewHolder.itemView.photo.setOnClickListener {
+        marsPhotoViewHolder.itemView.setOnClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 callback.onModelChoose(item, Pair.create(it, it.transitionName))
             } else {

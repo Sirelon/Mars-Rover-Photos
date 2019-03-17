@@ -49,6 +49,7 @@
 
             </LinearLayout>
         </com.google.android.material.appbar.CollapsingToolbarLayout>
+
         <include
             android:id="@+id/item_photo_header"
             layout="@layout/item_photo_header" />
@@ -62,6 +63,12 @@
         tools:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
         tools:listitem="@layout/item_mars_photo"
         tools:spanCount="2" />
+
+    <include
+        android:id="@+id/no_data_view"
+        android:visibility="gone"
+        layout="@layout/view_no_connection"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/actionRandom"

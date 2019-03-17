@@ -14,6 +14,7 @@
         android:src="@drawable/alien_icon" />
 
     <TextView
+        android:id="@+id/title"
         style="@style/Base.TextAppearance.AppCompat.Display2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,6 +25,7 @@
 
 
     <TextView
+        android:id="@+id/subtitle"
         style="@style/Base.TextAppearance.AppCompat.Title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

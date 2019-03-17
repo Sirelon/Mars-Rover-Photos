@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextUtils
@@ -14,8 +15,6 @@ import android.widget.ArrayAdapter
 import android.widget.SeekBar
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityOptionsCompat
 import androidx.core.util.Pair
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -40,6 +39,7 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_photos.*
 import kotlinx.android.synthetic.main.item_photo_header.*
 import kotlinx.android.synthetic.main.view_choose_sol.view.*
+import kotlinx.android.synthetic.main.view_no_connection.view.*
 import java.util.Calendar
 import java.util.TimeZone
 
@@ -58,6 +58,13 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
 
     private val advertisingDelegate = AdvertisingObjectFactory.getAdvertisingDelegate()
 
+    private val photosList by lazy { photos_list }
+    private val adapter = ViewTypeAdapter()
+
+    private lateinit var queryRequest: PhotosQueryRequest
+    private lateinit var rover: Rover
+    private lateinit var dateUtil: RoverDateUtil
+
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
         outState?.putParcelable(EXTRA_QUERY_REQUEST, queryRequest)
@@ -68,28 +75,20 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
         // Enable camera filter if the same camera was choose.
         // If all camera choosed then no need to filtering
         val cameraFilter = photosCamera.selectedItemPosition != 0
-
         val intent = ImageActivity.createIntent(this, model, cameraFilter)
-        val args: Bundle?
-        if (sharedElements.isNotEmpty()) {
-            args = ActivityOptionsCompat.makeSceneTransitionAnimation(this, *sharedElements)
-                .toBundle()
-        } else {
-            args = null
-        }
-
-        ActivityCompat.startActivity(this, intent, args)
+        startActivity(intent)
     }
-
-    private val photosList by lazy { photos_list }
-
-    private lateinit var queryRequest: PhotosQueryRequest
-    private lateinit var rover: Rover
-    private lateinit var dateUtil: RoverDateUtil
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_photos)
+
+        no_data_view.title.text = "No data here :("
+        no_data_view.setOnClickListener {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+                actionRandom.callOnClick()
+            }
+        }
 
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -122,7 +121,6 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
 
         initHeaderView()
 
-        val adapter = ViewTypeAdapter()
         adapter.addDelegateAdapter(AdapterConstants.MARS_PHOTO, MarsPhotosDelegateAdapter(this))
 
         adapter.addDelegateAdapter(AdapterConstants.ADVERTIZING, AdsDelegateAdapter())
@@ -132,7 +130,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
 
             layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
 
-            this.adapter = adapter
+            this.adapter = this@PhotosActivity.adapter
 
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -157,7 +155,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
             updateDateSolChoose()
             updateDateEearthChoose(dateUtil.dateFromSol(queryRequest.sol))
 
-            (photosList.adapter as ViewTypeAdapter).clearAll()
+            adapter.clearAll()
             loadFreshData()
         }
 
@@ -190,14 +188,21 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
     // Load data from given observable
     private fun loadDataWithObservable(observable: Observable<List<ViewType>?>) {
         subscriptions.clear()
-        val subscription = observable.subscribe({
-                                                    it!!
-                                                    advertisingDelegate.integregrateAdToList(it)
-                                                    (photosList.adapter as ViewTypeAdapter).addData(
-                                                        it
-                                                    )
-                                                    updateCameraFilter(it)
-                                                }, Throwable::printStackTrace)
+        val subscription = observable
+            .onErrorReturnItem(emptyList())
+            .subscribe {
+                if (it.isNullOrEmpty()) {
+                    photosList.visibility = View.GONE
+                    no_data_view.visibility = View.VISIBLE
+                } else {
+                    no_data_view.visibility = View.GONE
+                    photosList.visibility = View.VISIBLE
+                    advertisingDelegate.integregrateAdToList(it)
+//                    adapter.addData(it)
+                    adapter.replaceData(it)
+                    updateCameraFilter(it)
+                }
+            }
 
         subscriptions.add(subscription)
     }
@@ -215,7 +220,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
             }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnError { (photosList.adapter as ViewTypeAdapter).stopLoading() }
+            .doOnError { adapter.stopLoading() }
             .doOnError(errorConsumer { loadFreshData() })
             .map { advertisingDelegate.integregrateAdToList(it) }
     }
@@ -252,18 +257,18 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
 
     private fun filterDataByCamera(position: Int) {
 
-        var dataList = (photosList.adapter as ViewTypeAdapter).getSavedData()
+        var dataList = adapter.getSavedData()
         if (position == 0) {
             if (dataList == null)
                 return
 
-            (photosList.adapter as ViewTypeAdapter).clearAll()
-            (photosList.adapter as ViewTypeAdapter).addData(dataList)
+            adapter.clearAll()
+            adapter.addData(dataList)
             return
         }
 
         if (dataList == null)
-            dataList = (photosList.adapter as ViewTypeAdapter).getData()
+            dataList = adapter.getData()
 
         val cameraFullName: String? = photosCamera.adapter.getItem(position).toString()
 
@@ -275,7 +280,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
         // Add ad data to list
         val dataList1 = advertisingDelegate.integregrateAdToList(filteredData)
 
-        (photosList.adapter as ViewTypeAdapter).applyFilteredData(dataList1)
+        adapter.applyFilteredData(dataList1)
     }
 
     private fun initHeaderView() {
@@ -420,7 +425,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
         queryRequest.sol = sol
         updateDateSolChoose()
         // Clear adapter
-        (photosList.adapter as ViewTypeAdapter).clearAll()
+        adapter.clearAll()
         loadFreshData()
     }
 }

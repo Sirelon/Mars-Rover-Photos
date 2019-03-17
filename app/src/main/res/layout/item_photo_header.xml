@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center"
-    android:elevation="2dp"
     android:background="@color/colorPrimary"
+    android:elevation="2dp"
+    android:gravity="center"
     android:orientation="horizontal">
 
     <Button
@@ -17,7 +17,7 @@
         android:layout_weight="1"
         android:gravity="center"
         android:textAllCaps="false"
-        android:textColor="?android:textColorPrimaryInverse"
+        android:textColor="@android:color/white"
         tools:text="SOL Date: 1231" />
 
     <View
@@ -33,7 +33,7 @@
         android:layout_weight="1"
         android:gravity="center"
         android:textAllCaps="false"
-        android:textColor="?android:textColorPrimaryInverse"
+        android:textColor="@android:color/white"
         tools:text="Earth Date: 12.12.12" />
 
 </LinearLayout>

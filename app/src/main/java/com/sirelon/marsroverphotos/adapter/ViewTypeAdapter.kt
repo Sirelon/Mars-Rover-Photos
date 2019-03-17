@@ -76,6 +76,7 @@ open class ViewTypeAdapter(var withLoadingView: Boolean = true) :
             // insert news and the loading at the end of the list
             items.addAll(data)
 
+            notifyDataSetChanged()
 //            items.add(loadingItem)
 //            notifyItemRangeChanged(initPosition, items.size + 1 /* plus loading item */)
         } else {
