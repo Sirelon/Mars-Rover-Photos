@@ -116,6 +116,7 @@ dependencies {
 
     debugImplementation 'com.readystatesoftware.chuck:library:1.1.0'
     releaseImplementation 'com.readystatesoftware.chuck:library-no-op:1.1.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.1.0-alpha02'
 }
 apply plugin: 'com.google.gms.google-services'
 

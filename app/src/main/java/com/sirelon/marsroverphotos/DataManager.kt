@@ -11,6 +11,7 @@ import com.sirelon.marsroverphotos.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.network.RestApi
 import com.sirelon.marsroverphotos.tracker.ITracker
 import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
 
 /**
  * @author romanishin
@@ -29,6 +30,8 @@ class DataManager(
 
     private val roverRepo = RoversRepository(context)
 
+    val rovers = roverRepo.getRovers()
+
     init {
         firebasePhotos.countOfInsightPhotos()
             .flatMapCompletable { roverRepo.updateRoverCountPhotos(INSIGHT_ID, it) }
@@ -37,6 +40,7 @@ class DataManager(
         Observable.fromArray("curiosity", "opportunity", "spirit")
             .map(api::getRoverInfo)
             .toList()
+            .subscribeOn(Schedulers.io())
             .flatMapObservable { Observable.merge(it) }
             .subscribe(roverRepo::updateRoverByInfo, Throwable::logE)
     }
@@ -53,8 +57,6 @@ class DataManager(
 
         return lastPhotosRequest!!
     }
-
-    fun getRovers() = roverRepo.getRoversObservable()
 
     fun updatePhotoSeenCounter(marsPhoto: MarsPhoto?) {
         marsPhoto?.let {

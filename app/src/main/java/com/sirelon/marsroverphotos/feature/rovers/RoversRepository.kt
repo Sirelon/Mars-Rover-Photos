@@ -10,12 +10,11 @@ import com.sirelon.marsroverphotos.network.RoverInfo
 import com.sirelon.marsroverphotos.storage.DataBaseProvider
 import com.sirelon.marsroverphotos.storage.RoverDao
 import io.reactivex.Completable
-import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
 
-const val INSIGHT_ID = 8L
+const val INSIGHT_ID = 4L
 
 /**
  * @author romanishin
@@ -101,8 +100,7 @@ class RoversRepository(context: Context) {
             .onErrorComplete()
     }
 
-    fun getRoversObservable(): Observable<Rover> =
-        roverDao.getRoversFlowable().toObservable().flatMapIterable { it }.doOnNext(Rover::logD)
+    fun getRovers()= roverDao.getRovers()
 
     fun updateRoverByInfo(roverInfo: RoverInfo) {
         // We will not post status, 'cause it's incorrect data
