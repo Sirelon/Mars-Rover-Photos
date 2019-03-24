@@ -2,7 +2,6 @@ package com.sirelon.marsroverphotos.network
 
 import android.content.Context
 import com.readystatesoftware.chuck.ChuckInterceptor
-import com.sirelon.marsroverphotos.models.INSIGHT
 import com.sirelon.marsroverphotos.models.PhotosQueryRequest
 import io.reactivex.Observable
 import okhttp3.OkHttpClient
@@ -37,7 +36,7 @@ class RestApi(context: Context) {
     fun getRoversPhotos(query: PhotosQueryRequest): Call<PhotosResponse> {
         // We should call another api if rover is insight
         val sol = query.sol
-        if (query.roverName.toLowerCase() == INSIGHT) {
+        if (query.roverName.toLowerCase() == "insight") {
             return nasaApi.getRawImages(from = "$sol:sol", to = "$sol:sol")
         }
         return nasaApi.getRoverPhotos(query.roverName, sol, query.camera)

@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos.feature.rovers
 
+import androidx.recyclerview.widget.DiffUtil
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.ViewType
 import java.util.ArrayList
@@ -45,4 +46,10 @@ fun getChangePayload(oldRover: Rover, newRover: Rover): ArrayList<Int>? {
     }
 
     return array
+}
+
+object RoverDiffCallback : DiffUtil.ItemCallback<Rover>() {
+    override fun areItemsTheSame(oldItem: Rover, newItem: Rover) = oldItem.id == newItem.id
+
+    override fun areContentsTheSame(oldItem: Rover, newItem: Rover) = oldItem == newItem
 }

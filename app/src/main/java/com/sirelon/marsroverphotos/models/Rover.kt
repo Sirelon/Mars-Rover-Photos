@@ -75,11 +75,18 @@ data class Rover(
             parcel.readString(),
             parcel.readInt()
     )
-}
 
-const val SPIRIT = "spirit"
-const val CURIOSITY = "curiosity"
-const val OPPORTUNITY = "opportunity"
-const val INSIGHT = "insight"
+//    override fun hashCode(): Int {
+//        return id.hashCode();
+//    }
+//
+//    override fun equals(other: Any?): Boolean {
+//        if (other is Rover)
+//            if (other.id == this.id)
+//                return true
+//
+//        return false
+//    }
+}
 
 

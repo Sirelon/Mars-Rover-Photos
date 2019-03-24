@@ -12,6 +12,7 @@ import com.sirelon.marsroverphotos.activity.PhotosActivity
 import com.sirelon.marsroverphotos.activity.RxActivity
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
 import com.sirelon.marsroverphotos.adapter.ViewTypeAdapter
+import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.feature.popular.PopularDelegateAdapter
 import com.sirelon.marsroverphotos.feature.popular.PopularItem
 import com.sirelon.marsroverphotos.feature.popular.PopularPhotosActivity
@@ -53,10 +54,11 @@ class RoversActivity : RxActivity(), OnModelChooseListener<ViewType> {
             addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
         }
 
-        adapter.addOrReplace(PopularItem())
-
         dataManager.rovers.observe(this) { list ->
-            list.forEach { adapter.addOrReplace(it) }
+            val mutableList = list.toMutableList<ViewType>()
+            mutableList.logD()
+            mutableList.add(0, PopularItem())
+            adapter.replaceData(mutableList)
         }
     }
 
