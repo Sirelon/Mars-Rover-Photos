@@ -66,7 +66,7 @@ class RoversRepository(context: Context) {
             resourcePrefix + R.drawable.img_opportunity,
             "2004-01-25",
             "2003-07-07",
-            "active",
+            "complete",
             4535,
             "2017-02-22",
             187093
@@ -103,6 +103,7 @@ class RoversRepository(context: Context) {
     fun getRovers()= roverDao.getRovers()
 
     fun updateRoverByInfo(roverInfo: RoverInfo) {
+        "UPDATE ROVER BY INFO $roverInfo".logD()
         // We will not post status, 'cause it's incorrect data
         roverDao.updateRover(
             roverInfo.name,

@@ -18,21 +18,21 @@ import com.sirelon.marsroverphotos.extensions.createParcel
 data class Rover(
         @SerializedName(value = "id")
         @PrimaryKey
-        var id: Long,
+        val id: Long,
 
         @SerializedName(value = "name")
-        var name: String,
+        val name: String,
 
-        var iamgeUrl: String?,
+        val iamgeUrl: String?,
 
         @SerializedName(value = "landing_date")
-        var landingDate: String,
+        val landingDate: String,
 
         @SerializedName(value = "launch_date")
-        var launchDate: String,
+        val launchDate: String,
 
         @SerializedName(value = "status")
-        var status: String,
+        val status: String,
 
         @SerializedName(value = "max_sol")
         var maxSol: Long,
@@ -41,7 +41,7 @@ data class Rover(
         var maxDate: String,
 
         @SerializedName(value = "total_photos")
-        var totalPhotos: Int) : ViewType, Parcelable {
+        val totalPhotos: Int) : ViewType, Parcelable {
 
     override fun getViewType(): Int = AdapterConstants.ROVER
 
