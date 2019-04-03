@@ -6,7 +6,7 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="share">Share</string>
     <string name="save">Save</string>
-    <string name="all_rights_reserved_fmt">All rights reserved © %s</string>
+    <string name="all_rights_reserved_fmt">All rights reserved © %d</string>
 
     <string name="ad_image_activity">ca-app-pub-7516059448019339/6708131350</string>
     <string name="ad_item_photo">ca-app-pub-7516059448019339/7310766580</string>
