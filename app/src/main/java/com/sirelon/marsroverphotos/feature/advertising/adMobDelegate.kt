@@ -13,16 +13,17 @@ import com.sirelon.marsroverphotos.models.ViewType
  */
 internal object adMobDelegate : AdvertisingDelegate {
 
-    override fun loadAd(adView: NativeExpressAdView){
+    override fun loadAd(adView: NativeExpressAdView) {
         initializate(adView.context)
         adView.loadAd(AdRequest.Builder().build())
     }
 
     override fun integregrateAdToList(
-            dataList: List<ViewType>): MutableList<ViewType> {
+        dataList: List<ViewType>
+    ): MutableList<ViewType> {
 
         // Due to Ad
-        if (true){
+        if (true) {
             return dataList.toMutableList();
         }
 
@@ -31,10 +32,7 @@ internal object adMobDelegate : AdvertisingDelegate {
         val data: MutableList<ViewType> = dataList.toMutableList()
 
         if (step >= data.size / 2) {
-            val advertizingItem = object : ViewType {
-                override fun getViewType(): Int = AdapterConstants.ADVERTIZING
-            }
-            data.add(data.size, advertizingItem)
+            data.add(data.size, createAdverizingItem())
             return data
         }
 
@@ -43,16 +41,19 @@ internal object adMobDelegate : AdvertisingDelegate {
         }
 
         IntProgression.fromClosedRange(step, data.size, step)
-                .map {
-                    val advertizingItem = object : ViewType {
-                        override fun getViewType(): Int = AdapterConstants.ADVERTIZING
-                    }
-                    data.add(it, advertizingItem)
-                }
+            .map { data.add(it, createAdverizingItem()) }
         return data
     }
 
-    private fun initializate(context: Context){
+    private fun createAdverizingItem(): ViewType {
+        return object : ViewType {
+            override fun getId() = this.hashCode()
+
+            override fun getViewType(): Int = AdapterConstants.ADVERTIZING
+        }
+    }
+
+    private fun initializate(context: Context) {
         MobileAds.initialize(context, context.getString(R.string.ad_application_id))
     }
 

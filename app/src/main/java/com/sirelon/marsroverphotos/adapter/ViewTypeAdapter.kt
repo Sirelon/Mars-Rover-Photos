@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.sirelon.marsroverphotos.adapter.diffutils.ViewTypeDiffCallack
 import com.sirelon.marsroverphotos.adapter.headers.HeaderViewType
-import com.sirelon.marsroverphotos.feature.rovers.getChangePayload
+import com.sirelon.marsroverphotos.feature.rovers.RoverDiff
 import com.sirelon.marsroverphotos.models.ViewType
 import java.util.ArrayList
 
@@ -22,6 +22,7 @@ open class ViewTypeAdapter(var withLoadingView: Boolean = true) :
     private var items: ArrayList<ViewType>
     private var delegates = SparseArrayCompat<ViewTypeDelegateAdapter?>()
     protected val loadingItem = object : ViewType {
+        override fun getId() = this
         override fun getViewType(): Int = AdapterConstants.LOADING
     }
 
@@ -90,7 +91,7 @@ open class ViewTypeAdapter(var withLoadingView: Boolean = true) :
         if (items.contains(viewType)) {
             val position = items.indexOf(viewType)
             val oldModel = getItemByPosition(position) ?: return
-            val changePayload = getChangePayload(oldModel, viewType)
+            val changePayload = RoverDiff.getChangePayload(oldModel, viewType)
             items[position] = viewType
             notifyItemChanged(position, changePayload)
         } else {

@@ -54,10 +54,11 @@ class RoversActivity : RxActivity(), OnModelChooseListener<ViewType> {
             addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
         }
 
+        val popularItem = PopularItem()
         dataManager.rovers.observe(this) { list ->
             val mutableList = list.toMutableList<ViewType>()
             mutableList.logD()
-            mutableList.add(0, PopularItem())
+            mutableList.add(0, popularItem)
             adapter.replaceData(mutableList)
         }
     }

@@ -18,12 +18,12 @@ class ViewTypeDiffCallack(
     override fun getNewListSize(): Int = newData.size
 
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            viewTypeDiffResolver.areItemsTheSame(oldData[oldItemPosition], newData[newItemPosition])
+        viewTypeDiffResolver.areItemsTheSame(oldData[oldItemPosition], newData[newItemPosition])
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            viewTypeDiffResolver.areContentsTheSame(
-                oldData[oldItemPosition], newData[newItemPosition]
-            )
+        viewTypeDiffResolver.areContentsTheSame(
+            oldData[oldItemPosition], newData[newItemPosition]
+        )
 
     override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
         return viewTypeDiffResolver.getChangePayload(

@@ -33,6 +33,8 @@ data class MarsPhoto(
 
 : ViewType, Parcelable {
 
+    override fun getId() = id
+
     override fun getViewType(): Int = AdapterConstants.MARS_PHOTO
 
     override fun writeToParcel(dest: Parcel, p1: Int) {
