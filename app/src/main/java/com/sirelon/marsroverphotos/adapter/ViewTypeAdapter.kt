@@ -22,7 +22,7 @@ open class ViewTypeAdapter(var withLoadingView: Boolean = true) :
     private var items: ArrayList<ViewType>
     private var delegates = SparseArrayCompat<ViewTypeDelegateAdapter?>()
     protected val loadingItem = object : ViewType {
-        override fun getId() = this
+        override fun getViewId() = this
         override fun getViewType(): Int = AdapterConstants.LOADING
     }
 

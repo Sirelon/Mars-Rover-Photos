@@ -43,7 +43,7 @@ data class Rover(
         @SerializedName(value = "total_photos")
         val totalPhotos: Int) : ViewType, Parcelable {
 
-    override fun getId() = id
+    override fun getViewId() = id
 
     override fun getViewType(): Int = AdapterConstants.ROVER
 

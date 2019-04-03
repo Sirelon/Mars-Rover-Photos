@@ -12,6 +12,6 @@ interface ViewType {
     fun getViewType() : Int
 
     @Exclude
-    fun getId(): Any
+    fun getViewId(): Any
 
 }

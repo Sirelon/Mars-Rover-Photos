@@ -47,7 +47,7 @@ internal object adMobDelegate : AdvertisingDelegate {
 
     private fun createAdverizingItem(): ViewType {
         return object : ViewType {
-            override fun getId() = this.hashCode()
+            override fun getViewId() = this.hashCode()
 
             override fun getViewType(): Int = AdapterConstants.ADVERTIZING
         }

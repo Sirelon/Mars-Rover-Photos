@@ -8,7 +8,7 @@ import com.sirelon.marsroverphotos.models.ViewType
  */
 class PopularItem : ViewType{
 
-    override fun getId() = this
+    override fun getViewId() = this
 
     var totalPhotos: Int = 0
 

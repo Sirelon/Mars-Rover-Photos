@@ -9,7 +9,7 @@ import com.sirelon.marsroverphotos.models.ViewType
  */
 class HeaderViewType : ViewType{
 
-    override fun getId() = this
+    override fun getViewId() = this
 
     override fun getViewType(): Int = AdapterConstants.HEADER
 }

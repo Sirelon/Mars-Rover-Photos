@@ -21,7 +21,7 @@ data class FirebasePhoto(
 ) : ViewType {
 
     @Exclude
-    override fun getId() = id
+    override fun getViewId() = id
 
     constructor(photo: MarsPhoto) : this(
         id = photo.id,

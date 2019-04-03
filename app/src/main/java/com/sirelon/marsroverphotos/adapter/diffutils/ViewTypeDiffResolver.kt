@@ -9,7 +9,7 @@ import com.sirelon.marsroverphotos.models.ViewType
  */
 open class ItemDiffCallback<T : ViewType> : DiffUtil.ItemCallback<T>() {
     override fun areItemsTheSame(oldItem: T, newItem: T) =
-        oldItem.getId() == newItem.getId()
+        oldItem.getViewId() == newItem.getViewId()
 
     override fun areContentsTheSame(oldItem: T, newItem: T) =
         oldItem == newItem
