@@ -14,6 +14,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.ShareActionProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.view.MenuItemCompat
+import androidx.viewpager.widget.ViewPager
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import com.sirelon.marsroverphotos.R
@@ -126,8 +127,7 @@ class ImageActivity : RxActivity() {
         val index = it.indexOf(marsPhoto)
         imagePager.currentItem = index
 
-        imagePager.addOnPageChangeListener(object :
-                                               androidx.viewpager.widget.ViewPager.SimpleOnPageChangeListener() {
+        imagePager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
             override fun onPageSelected(position: Int) {
                 // Set the marsPhoto as current
                 marsPhoto = it[position]

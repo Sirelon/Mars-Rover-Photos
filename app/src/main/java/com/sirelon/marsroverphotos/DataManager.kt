@@ -42,7 +42,8 @@ class DataManager(
             .toList()
             .subscribeOn(Schedulers.io())
             .flatMapObservable { Observable.merge(it) }
-            .subscribe(roverRepo::updateRoverByInfo, Throwable::logE)
+            .toList()
+            .subscribe(roverRepo::updateRoversByInfo, Throwable::logE)
     }
 
     fun loadMarsPhotos(queryRequest: PhotosQueryRequest): Observable<List<MarsPhoto>?> {

@@ -102,6 +102,12 @@ class RoversRepository(context: Context) {
 
     fun getRovers()= roverDao.getRovers()
 
+    fun updateRoversByInfo(list: List<RoverInfo>){
+        DataBaseProvider.dataBase.runInTransaction {
+            list.forEach(this::updateRoverByInfo)
+        }
+    }
+
     fun updateRoverByInfo(roverInfo: RoverInfo) {
         "UPDATE ROVER BY INFO $roverInfo".logD()
         // We will not post status, 'cause it's incorrect data

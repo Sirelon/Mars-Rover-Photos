@@ -13,7 +13,7 @@ class AnswersTracker : ITracker {
 
     companion object {
         private val TYPE_MARS_PHOTO: String = "MARS_PHOTO"
-        private val ATTR_MARS_PHOTO_URL: String = "photoUrl"
+        private val EARTH_DATE: String = "earthDate"
         private val ATTR_MARS_PHOTO_ID: String = "photoId"
         private val ATTR_MARS_PHOTO_NAME: String = "photoName"
         private val EVENT_MARS_PHOTO_SCALE: String = "MarsPhotoScale"
@@ -26,7 +26,7 @@ class AnswersTracker : ITracker {
                 .putContentId(photo.id.toString())
                 .putContentName(photo.name ?: "Null")
                 .putContentType(TYPE_MARS_PHOTO)
-                .putCustomAttribute(ATTR_MARS_PHOTO_URL, photo.imageUrl.substring(0, 100))
+                .putCustomAttribute(EARTH_DATE, photo.earthDate)
         )
     }
 
@@ -35,7 +35,7 @@ class AnswersTracker : ITracker {
             CustomEvent(EVENT_MARS_PHOTO_SCALE)
                 .putCustomAttribute(ATTR_MARS_PHOTO_ID, photo.id)
                 .putCustomAttribute(ATTR_MARS_PHOTO_NAME, photo.name ?: "Null")
-                .putCustomAttribute(ATTR_MARS_PHOTO_URL, photo.imageUrl.substring(0, 100))
+                .putCustomAttribute(EARTH_DATE, photo.earthDate)
         )
     }
 
@@ -46,7 +46,7 @@ class AnswersTracker : ITracker {
                 .putContentId(photo.id.toString())
                 .putContentName(photo.name ?: "Null")
                 .putContentType(TYPE_MARS_PHOTO)
-                .putCustomAttribute(ATTR_MARS_PHOTO_URL, photo.imageUrl.substring(0, 100))
+                .putCustomAttribute(EARTH_DATE, photo.earthDate)
         )
     }
 
@@ -55,7 +55,7 @@ class AnswersTracker : ITracker {
             val customEvent =
                 CustomEvent(EVENT_MARS_PHOTO_SAVE).putCustomAttribute(ATTR_MARS_PHOTO_ID, photo.id)
                     .putCustomAttribute(ATTR_MARS_PHOTO_NAME, photo.name ?: "Null")
-                    .putCustomAttribute(ATTR_MARS_PHOTO_URL, photo.imageUrl.substring(0, 100))
+                    .putCustomAttribute(EARTH_DATE, photo.earthDate)
             Answers.getInstance().logCustom(customEvent)
         } catch (e: Exception) {
             e.printStackTrace()
