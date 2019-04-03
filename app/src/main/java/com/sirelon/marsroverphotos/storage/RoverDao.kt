@@ -23,7 +23,7 @@ interface RoverDao {
     @Query("SELECT * FROM rover")
     fun getRovers(): LiveData<List<Rover>>
 
-    @Query("UPDATE rover SET landingDate = :landingDate AND launchDate = :launchDate AND maxSol = :maxSol AND maxDate = :maxDate AND totalPhotos = :totalPhotos WHERE name = :name")
+    @Query("UPDATE rover SET landingDate = :landingDate, launchDate = :launchDate, maxSol = :maxSol, maxDate = :maxDate, totalPhotos = :totalPhotos WHERE name = :name")
     fun updateRover(
         name: String,
         landingDate: String,
