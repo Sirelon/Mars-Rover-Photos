@@ -47,6 +47,7 @@ class PopularPhotosActivity : RxActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_popular_photos)
+        dataManager.lastPhotosRequest = null
 
         setSupportActionBar(toolbar)
 
@@ -85,22 +86,16 @@ class PopularPhotosActivity : RxActivity() {
                 }
             })
         )
-        popularPhotosList.apply {
-            setHasFixedSize(true)
-
-            layoutManager = androidx.recyclerview.widget.StaggeredGridLayoutManager(
-                2,
-                androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
-            )
-
-            this.adapter = adapter
-        }
+        popularPhotosList.layoutManager =
+            StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+        popularPhotosList.setHasFixedSize(true)
+        popularPhotosList.adapter = adapter
 
         val firebasePhotos = FirebaseProvider.firebasePhotos
 
         val subscribe = firebasePhotos.loadPopularPhotos().subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ adapter.addData(it) }, Throwable::printStackTrace)
+            .subscribe(adapter::addData, Throwable::printStackTrace)
 
         subscriptions.add(subscribe)
     }
