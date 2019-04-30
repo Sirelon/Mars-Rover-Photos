@@ -20,6 +20,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.google.android.material.snackbar.Snackbar
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
@@ -66,10 +67,11 @@ object placeholder {
 fun ImageView.loadImage(imageUrl: String?, withPlaceholder: Boolean = true) {
     if (TextUtils.isEmpty(imageUrl)) this.setImageDrawable(placeholder.drawable)
     else {
-        var builder = Glide.with(this).load(imageUrl)
+        var builder = Glide.with(this).load(imageUrl).transition(withCrossFade())
         if (withPlaceholder) {
             builder = builder.placeholder(placeholder.drawable)
         }
+
         builder.into(this)
     }
 }
