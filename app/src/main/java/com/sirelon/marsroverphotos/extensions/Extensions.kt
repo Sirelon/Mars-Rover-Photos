@@ -63,10 +63,14 @@ object placeholder {
     }
 }
 
-infix fun ImageView.loadImage(imageUrl: String?) {
+fun ImageView.loadImage(imageUrl: String?, withPlaceholder: Boolean = true) {
     if (TextUtils.isEmpty(imageUrl)) this.setImageDrawable(placeholder.drawable)
     else {
-        Glide.with(this).load(imageUrl).placeholder(placeholder.drawable).into(this)
+        var builder = Glide.with(this).load(imageUrl)
+        if (withPlaceholder) {
+            builder = builder.placeholder(placeholder.drawable)
+        }
+        builder.into(this)
     }
 }
 

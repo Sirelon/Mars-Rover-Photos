@@ -39,7 +39,7 @@ class ViewsPagerAdapter(val data: List<MarsPhoto>?) : PagerAdapter() {
         }
 
         val marsPhoto = data?.get(position) ?: return
-        imageView.loadImage(marsPhoto.imageUrl)
+        imageView.loadImage(marsPhoto.imageUrl, false)
     }
 
     override fun isViewFromObject(view: View, `object`: Any) = `object` == view

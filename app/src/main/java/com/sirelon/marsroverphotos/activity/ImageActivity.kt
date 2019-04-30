@@ -143,7 +143,7 @@ class ImageActivity : RxActivity() {
         val imageRoot = fullscreenImageRoot.inflate(R.layout.view_image, false)
 
         fullscreenImageRoot.addView(imageRoot)
-        imageRoot.fullscreenImage.loadImage(marsPhoto.imageUrl)
+        imageRoot.fullscreenImage.loadImage(marsPhoto.imageUrl, false)
     }
 
     private fun saveImageToGallery() {
