@@ -1,9 +1,10 @@
 package com.sirelon.marsroverphotos.adapter
 
+import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import android.view.ViewGroup
 import com.google.android.gms.ads.AdRequest
+import com.sirelon.marsroverphotos.BuildConfig
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.extensions.inflate
 import com.sirelon.marsroverphotos.models.ViewType
@@ -18,22 +19,32 @@ class AdsDelegateAdapter : ViewTypeDelegateAdapter {
     val adRequest: AdRequest
 
     init {
-        adRequest = AdRequest.Builder()
-                // Nexus HUAWEI
-                .addTestDevice("62BAA18402F4E51A4A00784F96F0702C")
+        if (BuildConfig.DEBUG) {
+            adRequest = AdRequest.Builder()
+                // My Samsung
+                .addTestDevice("FD38E8F5CAC22C44E56CD3AD33ADDD1B")
                 .build()
+        } else {
+            adRequest = AdRequest.Builder().build()
+        }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup): androidx.recyclerview.widget.RecyclerView.ViewHolder = AdvertizingViewHolder(parent)
+    override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
+        AdvertizingViewHolder(parent)
 
-    override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, item: ViewType, payloads: List<Any>?) {
+    override fun onBindViewHolder(
+        holder: RecyclerView.ViewHolder,
+        item: ViewType,
+        payloads: List<Any>?
+    ) {
         holder.itemView.ad_item_photo.loadAd(adRequest)
     }
 
-    class AdvertizingViewHolder(parent: ViewGroup) : androidx.recyclerview.widget.RecyclerView.ViewHolder(parent.inflate(R.layout.add_item_photo)) {
+    class AdvertizingViewHolder(parent: ViewGroup) :
+        RecyclerView.ViewHolder(parent.inflate(R.layout.add_item_photo)) {
         init {
-            if (itemView.layoutParams is androidx.recyclerview.widget.StaggeredGridLayoutManager.LayoutParams) {
-                (itemView.layoutParams as androidx.recyclerview.widget.StaggeredGridLayoutManager.LayoutParams).isFullSpan = true
+            if (itemView.layoutParams is StaggeredGridLayoutManager.LayoutParams) {
+                (itemView.layoutParams as StaggeredGridLayoutManager.LayoutParams).isFullSpan = true
             }
         }
     }
