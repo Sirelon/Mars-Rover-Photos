@@ -65,10 +65,10 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
     private lateinit var rover: Rover
     private lateinit var dateUtil: RoverDateUtil
 
-    override fun onSaveInstanceState(outState: Bundle?) {
+    override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState?.putParcelable(EXTRA_QUERY_REQUEST, queryRequest)
-        outState?.putParcelable(EXTRA_ROVER, rover)
+        outState.putParcelable(EXTRA_QUERY_REQUEST, queryRequest)
+        outState.putParcelable(EXTRA_ROVER, rover)
     }
 
     override fun onModelChoose(model: MarsPhoto, vararg sharedElements: Pair<View, String>) {
