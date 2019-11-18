@@ -19,7 +19,7 @@ data class PhotosQueryRequest(
         }
     }
 
-    constructor(source: Parcel) : this(source.readString(), source.readLong(), source.readString())
+    constructor(source: Parcel) : this(source.readString()!!, source.readLong(), source.readString())
 
     override fun describeContents() = 0
 

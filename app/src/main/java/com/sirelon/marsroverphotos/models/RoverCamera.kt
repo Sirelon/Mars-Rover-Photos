@@ -44,7 +44,7 @@ data class RoverCamera(
     protected constructor(parcel: Parcel) : this(
             parcel.readInt(),
             parcel.readLong(),
-            parcel.readString(),
-            parcel.readString()
+            parcel.readString()!!,
+            parcel.readString()!!
     )
 }

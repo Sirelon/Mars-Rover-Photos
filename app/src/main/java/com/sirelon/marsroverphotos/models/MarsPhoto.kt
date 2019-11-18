@@ -57,8 +57,8 @@ data class MarsPhoto(
             parcel.readLong(),
             parcel.readLong(),
             parcel.readString(),
-            parcel.readString(),
-            parcel.readString(),
+            parcel.readString()!!,
+            parcel.readString()!!,
             parcel.readParcelable<RoverCamera>(RoverCamera::class.java.classLoader)
     )
 }

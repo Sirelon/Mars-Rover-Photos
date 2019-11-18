@@ -97,11 +97,11 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
 
         if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_QUERY_REQUEST)) {
             // Activity after savedInstance
-            rover = savedInstanceState.getParcelable(EXTRA_ROVER)
-            queryRequest = savedInstanceState.getParcelable(EXTRA_QUERY_REQUEST)
+            rover = savedInstanceState.getParcelable(EXTRA_ROVER)!!
+            queryRequest = savedInstanceState.getParcelable(EXTRA_QUERY_REQUEST)!!
         } else {
             // New Activity
-            rover = intent.getParcelableExtra(EXTRA_ROVER)
+            rover = intent.getParcelableExtra(EXTRA_ROVER)!!
 
             queryRequest = randomPhotosQueryRequest()
         }

@@ -68,13 +68,13 @@ data class Rover(
 
     protected constructor(parcel: Parcel) : this(
             parcel.readLong(),
+            parcel.readString()!!,
             parcel.readString(),
-            parcel.readString(),
-            parcel.readString(),
-            parcel.readString(),
-            parcel.readString(),
+            parcel.readString()!!,
+            parcel.readString()!!,
+            parcel.readString()!!,
             parcel.readLong(),
-            parcel.readString(),
+            parcel.readString()!!,
             parcel.readInt()
     )
 
