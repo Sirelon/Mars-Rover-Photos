@@ -100,8 +100,13 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
             rover = savedInstanceState.getParcelable(EXTRA_ROVER)!!
             queryRequest = savedInstanceState.getParcelable(EXTRA_QUERY_REQUEST)!!
         } else {
+            val parcelableExtra = intent.getParcelableExtra<Rover>(EXTRA_ROVER)
+            if (parcelableExtra == null){
+                finish()
+                return
+            }
             // New Activity
-            rover = intent.getParcelableExtra(EXTRA_ROVER)!!
+            rover = parcelableExtra
 
             queryRequest = randomPhotosQueryRequest()
         }
@@ -168,7 +173,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        rover = intent.getParcelableExtra(EXTRA_ROVER)
+        rover = intent.getParcelableExtra(EXTRA_ROVER)!!
 
         queryRequest = randomPhotosQueryRequest()
     }
@@ -190,6 +195,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
         subscriptions.clear()
         val subscription = observable
             .onErrorReturnItem(emptyList())
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
                 if (it.isNullOrEmpty()) {
                     photosList.visibility = View.GONE

@@ -35,6 +35,7 @@ class DataManager(
     init {
         firebasePhotos.countOfInsightPhotos()
             .flatMapCompletable { roverRepo.updateRoverCountPhotos(INSIGHT_ID, it) }
+            .onErrorComplete()
             .subscribe()
 
         Observable.fromArray("curiosity", "opportunity", "spirit")

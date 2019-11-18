@@ -67,7 +67,12 @@ class ImageActivity : RxActivity() {
 
         setContentView(R.layout.activity_image)
 
-        marsPhoto = intent.getParcelableExtra(EXTRA_PHOTO)
+        val parcelableExtra = intent.getParcelableExtra<MarsPhoto?>(EXTRA_PHOTO)
+        if (parcelableExtra == null) {
+            finish()
+            return
+        }
+        marsPhoto = parcelableExtra
 
         // Configure Ad
         AdvertisingObjectFactory.getAdvertisingDelegate()
@@ -86,6 +91,7 @@ class ImageActivity : RxActivity() {
                     else it
                 }
                 .toList()
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(::onCachePhotosAvailable) {
                     it.printStackTrace()
                     // Show Standalone Image

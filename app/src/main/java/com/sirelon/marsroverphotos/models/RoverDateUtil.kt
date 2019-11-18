@@ -14,7 +14,25 @@ class RoverDateUtil(val rover: Rover) {
     private val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
     private val SOL_TO_DAY_OFFSET = 1.0275
 
-    val roverLastDate: Long by lazy {
+    val roverLandingDate: Long
+        get() {
+            return if (_roverLandingDate < _roverLastDate){
+                _roverLandingDate
+            } else {
+                _roverLastDate
+            }
+        }
+
+    val roverLastDate: Long
+        get() {
+            return if (_roverLastDate > _roverLandingDate){
+                _roverLastDate
+            } else {
+                _roverLandingDate
+            }
+        }
+
+    val _roverLastDate: Long by lazy {
         try {
             simpleDateFormat.parse(rover.maxDate).time
         } catch (e: Exception) {
@@ -22,7 +40,7 @@ class RoverDateUtil(val rover: Rover) {
         }
     }
 
-    val roverLandingDate: Long by lazy {
+    val _roverLandingDate: Long by lazy {
         try {
             simpleDateFormat.parse(rover.landingDate).time
         } catch (e: Exception) {

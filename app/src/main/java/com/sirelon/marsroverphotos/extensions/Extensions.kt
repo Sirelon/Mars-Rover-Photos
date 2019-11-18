@@ -81,7 +81,7 @@ fun Activity.showAppSettings() {
     intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
     val uri = Uri.fromParts("package", this.packageName, null)
     intent.data = uri
-    this.startActivityForResult(intent, 7898)
+    kotlin.runCatching {  this.startActivityForResult(intent, 7898) }
 }
 
 fun Activity.isConnected(): Boolean {
