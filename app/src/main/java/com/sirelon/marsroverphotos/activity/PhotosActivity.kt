@@ -35,6 +35,7 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_photos.*
+import kotlinx.android.synthetic.main.item_mars_photo.*
 import kotlinx.android.synthetic.main.item_photo_header.*
 import kotlinx.android.synthetic.main.view_choose_sol.view.*
 import kotlinx.android.synthetic.main.view_no_connection.view.*
@@ -55,7 +56,6 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
     }
 
     private val advertisingDelegate = AdvertisingObjectFactory.getAdvertisingDelegate()
-    private val photosList by lazy { photos_list }
 
     private val adapter = ViewTypeAdapter()
     private lateinit var queryRequest: PhotosQueryRequest
@@ -85,9 +85,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
 
         no_data_view.title.text = "No data here :("
         no_data_view.setOnClickListener {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
-                actionRandom.callOnClick()
-            }
+            actionRandom.callOnClick()
         }
 
         setSupportActionBar(toolbar)
@@ -115,23 +113,14 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
         // Set Toolbar title
         title = "${rover.name}'s photos"
 
-
         photosCamera.setOnClickListener {
             AlertDialog.Builder(this)
-                .setSingleChoiceItems(camerasList.toTypedArray(), 0) { dialog, which -> }
-                .setPositiveButton(android.R.string.ok) { _, position ->
+                .setSingleChoiceItems(camerasList.toTypedArray(), 0) { dialog, position ->
                     filterDataByCamera(position)
+                    dialog.dismiss()
                 }
                 .show()
         }
-//        photosCamera.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-//            override fun onNothingSelected(p0: AdapterView<*>?) {
-//            }
-//
-//            override fun onItemSelected(p0: AdapterView<*>?, view: View?, position: Int, id: Long) {
-//                filterDataByCamera(position)
-//            }
-//        }
 
         initHeaderView()
 
@@ -139,7 +128,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
 
         adapter.addDelegateAdapter(AdapterConstants.ADVERTIZING, AdsDelegateAdapter())
 
-        photosList.apply {
+        photos_list.apply {
             setHasFixedSize(true)
 
             layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
@@ -207,11 +196,11 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
                 if (it.isNullOrEmpty()) {
-                    photosList.visibility = View.GONE
+                    photos_list.visibility = View.GONE
                     no_data_view.visibility = View.VISIBLE
                 } else {
                     no_data_view.visibility = View.GONE
-                    photosList.visibility = View.VISIBLE
+                    photos_list.visibility = View.VISIBLE
                     advertisingDelegate.integregrateAdToList(it)
 //                    adapter.addData(it)
                     adapter.replaceData(it)
@@ -253,6 +242,10 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
         if (camerasList.isNotEmpty()){
             photosCamera.visibility = View.VISIBLE
             camerasList = listOf("All cameras") + camerasList
+            filteredCamera = camerasList.first()
+            photosCamera.text = filteredCamera
+        } else{
+            photosCamera.visibility = View.GONE
         }
     }
 
@@ -281,6 +274,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
         val dataList1 = advertisingDelegate.integregrateAdToList(filteredData)
 
         adapter.applyFilteredData(dataList1)
+        photosCamera.text = filteredCamera
     }
 
     private fun initHeaderView() {

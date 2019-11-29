@@ -21,12 +21,6 @@
             android:layout_height="wrap_content"
             app:layout_scrollFlags="exitUntilCollapsed|enterAlways">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_collapseMode="parallax">
-
                 <androidx.appcompat.widget.Toolbar
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
@@ -35,18 +29,22 @@
                     android:minHeight="?attr/actionBarSize"
                     app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
-                    <TextView
+                    <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/photosCamera"
                         android:background="?android:attr/selectableItemBackground"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         tools:text="All cameras"
+                        android:visibility="gone"
+                        tools:visibility="visible"
+                        style="@style/Widget.AppCompat.Light.Spinner.DropDown.ActionBar"
+                        android:drawablePadding="8dp"
+                        app:drawableEndCompat="@android:drawable/arrow_down_float"
                         android:ellipsize="marquee"
                         android:marqueeRepeatLimit="marquee_forever"/>
 
                 </androidx.appcompat.widget.Toolbar>
 
-            </LinearLayout>
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
         <include
