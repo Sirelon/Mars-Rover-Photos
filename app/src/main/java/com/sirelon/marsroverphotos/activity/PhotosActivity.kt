@@ -10,8 +10,6 @@ import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.SeekBar
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -57,13 +55,15 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
     }
 
     private val advertisingDelegate = AdvertisingObjectFactory.getAdvertisingDelegate()
-
     private val photosList by lazy { photos_list }
-    private val adapter = ViewTypeAdapter()
 
+    private val adapter = ViewTypeAdapter()
     private lateinit var queryRequest: PhotosQueryRequest
+
     private lateinit var rover: Rover
     private lateinit var dateUtil: RoverDateUtil
+    private var filteredCamera: String? = null
+    private var camerasList = emptyList<String>()
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -74,7 +74,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
     override fun onModelChoose(model: MarsPhoto, vararg sharedElements: Pair<View, String>) {
         // Enable camera filter if the same camera was choose.
         // If all camera choosed then no need to filtering
-        val cameraFilter = photosCamera.selectedItemPosition != 0
+        val cameraFilter = filteredCamera != null
         val intent = ImageActivity.createIntent(this, model, cameraFilter)
         startActivity(intent)
     }
@@ -101,7 +101,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
             queryRequest = savedInstanceState.getParcelable(EXTRA_QUERY_REQUEST)!!
         } else {
             val parcelableExtra = intent.getParcelableExtra<Rover>(EXTRA_ROVER)
-            if (parcelableExtra == null){
+            if (parcelableExtra == null) {
                 finish()
                 return
             }
@@ -115,14 +115,23 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
         // Set Toolbar title
         title = "${rover.name}'s photos"
 
-        photosCamera.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(p0: AdapterView<*>?) {
-            }
 
-            override fun onItemSelected(p0: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                filterDataByCamera(position)
-            }
+        photosCamera.setOnClickListener {
+            AlertDialog.Builder(this)
+                .setSingleChoiceItems(camerasList.toTypedArray(), 0) { dialog, which -> }
+                .setPositiveButton(android.R.string.ok) { _, position ->
+                    filterDataByCamera(position)
+                }
+                .show()
         }
+//        photosCamera.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+//            override fun onNothingSelected(p0: AdapterView<*>?) {
+//            }
+//
+//            override fun onItemSelected(p0: AdapterView<*>?, view: View?, position: Int, id: Long) {
+//                filterDataByCamera(position)
+//            }
+//        }
 
         initHeaderView()
 
@@ -233,35 +242,23 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
 
     private fun updateCameraFilter(photos: List<ViewType>) {
         photosCamera.visibility = View.GONE
-        val cameraFilterSub = Observable
-            .fromIterable(photos)
-            .filter { it is MarsPhoto }
-            .map { it as MarsPhoto }
-            .filter { it.camera != null }
-            .map { it.camera }
-            .distinct()
+        camerasList = photos
+            .asSequence()
+            .filterIsInstance<MarsPhoto>()
+            .mapNotNull { it.camera }
             .map { it.fullName }
+            .distinct()
             .toList()
-            .subscribeOn(Schedulers.computation())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                           if (it.isNotEmpty()) {
-                               photosCamera.visibility = View.VISIBLE
-                               it.add(0, "All cameras")
-                               val arrayAdapter = ArrayAdapter(
-                                   photosCamera.context,
-                                   android.R.layout.simple_spinner_item,
-                                   it
-                               )
-                               arrayAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
-                               photosCamera.adapter = arrayAdapter
-                           }
-                       }, Throwable::printStackTrace)
 
-        subscriptions.add(cameraFilterSub)
+        if (camerasList.isNotEmpty()){
+            photosCamera.visibility = View.VISIBLE
+            camerasList = listOf("All cameras") + camerasList
+        }
     }
 
     private fun filterDataByCamera(position: Int) {
+
+        filteredCamera = camerasList.getOrNull(position) ?: return
 
         var dataList = adapter.getSavedData()
         if (position == 0) {
@@ -276,12 +273,9 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
         if (dataList == null)
             dataList = adapter.getData()
 
-        val cameraFullName: String? = photosCamera.adapter.getItem(position).toString()
-
-        val filteredData = dataList.filter {
-            if (it is MarsPhoto) cameraFullName.equals(it.camera?.fullName)
-            else false
-        }
+        val filteredData = dataList
+            .filterIsInstance<MarsPhoto>()
+            .filter { filteredCamera == it.camera?.fullName }
 
         // Add ad data to list
         val dataList1 = advertisingDelegate.integregrateAdToList(filteredData)

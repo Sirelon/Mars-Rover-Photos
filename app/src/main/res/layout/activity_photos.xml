@@ -35,15 +35,14 @@
                     android:minHeight="?attr/actionBarSize"
                     app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
-                    <Spinner
+                    <TextView
                         android:id="@+id/photosCamera"
+                        android:background="?android:attr/selectableItemBackground"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        tools:text="All cameras"
                         android:ellipsize="marquee"
-                        android:marqueeRepeatLimit="marquee_forever"
-                        android:scrollHorizontally="true"
-                        app:popupTheme="@style/ThemeOverlay.AppCompat"
-                        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+                        android:marqueeRepeatLimit="marquee_forever"/>
 
                 </androidx.appcompat.widget.Toolbar>
 

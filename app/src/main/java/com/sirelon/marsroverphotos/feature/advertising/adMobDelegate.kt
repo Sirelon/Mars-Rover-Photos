@@ -22,10 +22,7 @@ internal object adMobDelegate : AdvertisingDelegate {
         dataList: List<ViewType>
     ): MutableList<ViewType> {
 
-        // Due to Ad
-        if (true) {
-            return dataList.toMutableList();
-        }
+dataList.chunked(30).map { it.toMutableList().add(createAdverizingItem()) }
 
         var step = 30
 
