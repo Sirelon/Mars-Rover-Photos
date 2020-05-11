@@ -1,11 +1,12 @@
 package com.sirelon.marsroverphotos.feature.rovers
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import androidx.core.util.Pair
-import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.activity.PhotosActivity
@@ -45,10 +46,23 @@ class RoversActivity : RxActivity(), OnModelChooseListener<ViewType> {
             PopularDelegateAdapter(this@RoversActivity)
         )
 
+        val portrait = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        val spanCount = if (portrait) 1 else 2
+
         roversList.apply {
             setHasFixedSize(true)
 
-            layoutManager = LinearLayoutManager(this@RoversActivity)
+            layoutManager = GridLayoutManager(this@RoversActivity, spanCount).apply {
+                spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                    override fun getSpanSize(position: Int): Int {
+                        return when {
+                            portrait -> 1
+                            position == 0 -> 2
+                            else -> 1
+                        }
+                    }
+                }
+            }
 
             this.adapter = adapter
             addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))

@@ -77,7 +77,6 @@
         app:layout_constraintRight_toLeftOf="@+id/guideline2"
         tools:text="Landing Date: 2004-01-25 " />
 
-
     <TextView
         android:id="@+id/lastPhotoDate"
         android:layout_width="wrap_content"
