@@ -36,7 +36,7 @@ class FirebaseTracker(context: Context) : ITracker {
     }
 
     override fun trackClick(event: String) {
-        fb.logEvent(event)
+        fb.logEvent(event, null)
     }
 
     private fun MarsPhoto.arguments() =
