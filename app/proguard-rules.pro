@@ -88,10 +88,6 @@
 -dontwarn com.google.firebase.iid.**
 -dontwarn com.google.android.gms.**
 
-# Crashlytics 2.+
-
--keep class com.crashlytics.** { *; }
--keep class com.crashlytics.android.**
 -keepattributes SourceFile, LineNumberTable, *Annotation*
 
 -keepclassmembers class com.sirelon.marsroverphotos.feature.firebase.FirebasePhoto { *; }
