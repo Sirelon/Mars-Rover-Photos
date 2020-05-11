@@ -105,7 +105,7 @@ class ImageActivity : RxActivity() {
             subscriptions.add(subscribe)
         }
 
-        val dismissPathLength= resources.getDimensionPixelSize(R.dimen.dismiss_path_length)
+        val dismissPathLength = resources.getDimensionPixelSize(R.dimen.dismiss_path_length)
         imageDragLayout.setOnDragListener { dy ->
             val processedAlpha = 1 - min(abs(dy / (3 * dismissPathLength)), 1f)
 //            backgroundColorView.alpha = processedAlpha
@@ -170,8 +170,8 @@ class ImageActivity : RxActivity() {
         fullscreenImageRoot.removeView(imagePager)
 
         val imageRoot = fullscreenImageRoot.inflate(R.layout.view_image, false)
-        rootForDrag= imageRoot
-        fullscreenImageRoot.addView(imageRoot)
+        rootForDrag = imageRoot
+        imageDragLayout.addView(imageRoot)
         imageRoot.fullscreenImage.loadImage(marsPhoto.imageUrl, false)
     }
 

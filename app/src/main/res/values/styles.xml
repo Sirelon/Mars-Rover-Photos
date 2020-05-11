@@ -62,7 +62,7 @@
     </style>
 
     <style name="TxtCounter" parent="TextAppearance.AppCompat.Caption">
-        <item name="android:drawableTint">@color/colorAccent</item>
+        <item name="drawableTint">@color/colorAccent</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingTop">4dp</item>

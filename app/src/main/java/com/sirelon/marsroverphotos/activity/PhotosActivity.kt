@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextUtils
@@ -23,7 +22,6 @@ import com.sirelon.marsroverphotos.adapter.AdsDelegateAdapter
 import com.sirelon.marsroverphotos.adapter.MarsPhotosDelegateAdapter
 import com.sirelon.marsroverphotos.adapter.ViewTypeAdapter
 import com.sirelon.marsroverphotos.extensions.isConnected
-import com.sirelon.marsroverphotos.extensions.random
 import com.sirelon.marsroverphotos.feature.advertising.AdvertisingObjectFactory
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.models.OnModelChooseListener
@@ -35,12 +33,12 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_photos.*
-import kotlinx.android.synthetic.main.item_mars_photo.*
 import kotlinx.android.synthetic.main.item_photo_header.*
 import kotlinx.android.synthetic.main.view_choose_sol.view.*
 import kotlinx.android.synthetic.main.view_no_connection.view.*
 import java.util.Calendar
 import java.util.TimeZone
+import kotlin.random.Random
 
 class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
 
@@ -176,8 +174,10 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
         queryRequest = randomPhotosQueryRequest()
     }
 
-    private fun randomPhotosQueryRequest() =
-        PhotosQueryRequest(rover.name, 1.random(rover.maxSol.toInt()).toLong(), null)
+    private fun randomPhotosQueryRequest(): PhotosQueryRequest {
+        val sol = Random.nextLong(1L, rover.maxSol)
+        return PhotosQueryRequest(rover.name, sol, null)
+    }
 
     private fun loadCacheOrRequest() {
         // If we already have lastPhotosRequest - just use it, its returned to us cached results
@@ -239,12 +239,12 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
             .distinct()
             .toList()
 
-        if (camerasList.isNotEmpty()){
+        if (camerasList.isNotEmpty()) {
             photosCamera.visibility = View.VISIBLE
             camerasList = listOf("All cameras") + camerasList
             filteredCamera = camerasList.first()
             photosCamera.text = filteredCamera
-        } else{
+        } else {
             photosCamera.visibility = View.GONE
         }
     }
@@ -335,7 +335,8 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
             .setView(dialogView)
             .setNegativeButton("Cancel", null)
             .setPositiveButton("Ok") { _, _ ->
-                val sol = dialogView.solInput.text.toString().toLong()
+                val sol = dialogView.solInput.text.toString().toLongOrNull()
+                sol ?: return@setPositiveButton
                 updateDateEearthChoose(dateUtil.dateFromSol(sol))
                 loadDataBySol(sol)
             }.create()
@@ -353,19 +354,19 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
         }
 
         val changeSubscription = Observable.create<CharSequence> {
-            // Some setup for seek and edittext
-            dialogView.solInput.addTextChangedListener(object : TextWatcher {
-                override fun afterTextChanged(p0: Editable?) {
-                }
+                // Some setup for seek and edittext
+                dialogView.solInput.addTextChangedListener(object : TextWatcher {
+                    override fun afterTextChanged(p0: Editable?) {
+                    }
 
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                }
+                    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    }
 
-                override fun onTextChanged(text: CharSequence, p1: Int, p2: Int, p3: Int) {
-                    it.onNext(text)
-                }
-            })
-        }
+                    override fun onTextChanged(text: CharSequence, p1: Int, p2: Int, p3: Int) {
+                        it.onNext(text)
+                    }
+                })
+            }
             .filter { it.isNotEmpty() }
             .filter { TextUtils.isDigitsOnly(it) }
             .map { it.toString().toInt() }

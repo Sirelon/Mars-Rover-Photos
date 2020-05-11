@@ -30,7 +30,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 29
         versionCode 20
-        versionName "1.4.5"
+        versionName "1.5.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         signingConfig signingConfigs.release
         vectorDrawables.useSupportLibrary = true
@@ -119,6 +119,9 @@ dependencies {
 
     debugImplementation 'com.readystatesoftware.chuck:library:1.1.0'
     releaseImplementation 'com.readystatesoftware.chuck:library-no-op:1.1.0'
+
+    // Need to enable for android 4.4
+    implementation 'org.conscrypt:conscrypt-android:2.4.0'
 }
 apply plugin: 'com.google.gms.google-services'
 
