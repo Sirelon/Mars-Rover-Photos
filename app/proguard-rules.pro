@@ -154,8 +154,6 @@
 -keepattributes SourceFile,LineNumberTable
 #-keepresourcexmlelements manifest/application/meta-data@name=io.fabric.ApiKey
 -printmapping mapping.txt
--keep class com.crashlytics.** { *; }
--keep class io.fabric.sdk.android.Kit.** { *; }
 -dontwarn com.crashlytics.**
 -dontwarn javax.annotation.**
 -dontwarn com.sirelon.marsroverphotos.feature.rovers.**
