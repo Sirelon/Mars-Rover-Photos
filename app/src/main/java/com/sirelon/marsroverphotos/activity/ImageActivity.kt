@@ -31,6 +31,8 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_image.*
 import kotlinx.android.synthetic.main.view_image.view.*
 import kotlinx.android.synthetic.main.view_native_adview.*
+import kotlin.math.abs
+import kotlin.math.min
 
 
 class ImageActivity : RxActivity() {
@@ -62,6 +64,8 @@ class ImageActivity : RxActivity() {
         "https://play.google.com/store/apps/details?id=$packageName"
     }
 
+    private lateinit var rootForDrag: View
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -80,7 +84,7 @@ class ImageActivity : RxActivity() {
 
         val cameraFilterEnable = intent.getBooleanExtra(EXTRA_FILTER_BY_CAMERA, false)
         title = "Mars photo"
-
+        rootForDrag = imagePager
         if (dataManager.lastPhotosRequest == null) {
             showStandaloneImage()
         } else {
@@ -99,6 +103,25 @@ class ImageActivity : RxActivity() {
                 }
 
             subscriptions.add(subscribe)
+        }
+
+        val dismissPathLength= resources.getDimensionPixelSize(R.dimen.dismiss_path_length)
+        imageDragLayout.setOnDragListener { dy ->
+            val processedAlpha = 1 - min(abs(dy / (3 * dismissPathLength)), 1f)
+//            backgroundColorView.alpha = processedAlpha
+            rootForDrag.alpha = processedAlpha
+            rootForDrag.translationY = -dy
+        }
+
+        imageDragLayout.setOnReleaseDragListener { dy ->
+            if (abs(dy) > dismissPathLength) {
+                rootForDrag.visibility = View.GONE
+                finishAfterTransition()
+            } else {
+//                backgroundColorView.alpha = 1f
+                rootForDrag.alpha = 1f
+                rootForDrag.translationY = 0f
+            }
         }
     }
 
@@ -147,7 +170,7 @@ class ImageActivity : RxActivity() {
         fullscreenImageRoot.removeView(imagePager)
 
         val imageRoot = fullscreenImageRoot.inflate(R.layout.view_image, false)
-
+        rootForDrag= imageRoot
         fullscreenImageRoot.addView(imageRoot)
         imageRoot.fullscreenImage.loadImage(marsPhoto.imageUrl, false)
     }

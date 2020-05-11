@@ -5,6 +5,7 @@
     <dimen name="padding.smallest">3dp</dimen>
     <dimen name="padding.small">8dp</dimen>
     <dimen name="padding">16dp</dimen>
+    <dimen name="dismiss_path_length">100dp</dimen>
 
     <bool name="isTablet">false</bool>
 </resources>

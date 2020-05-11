@@ -7,6 +7,8 @@ import com.google.android.gms.ads.MobileAds
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.sirelon.marsroverphotos.tracker.AnswersTracker
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 
 /**
@@ -26,10 +28,15 @@ class RoverApplication : Application() {
         if (BuildConfig.DEBUG) {
             MultiDex.install(this)
         }
-        // Configurate ads
-        MobileAds.initialize(this) {
-            Log.d("RoverApplication", "On Add Init status $it")
+        GlobalScope.launch {
+            kotlin.runCatching {
+                // Configurate ads
+                MobileAds.initialize(this@RoverApplication) {
+                    Log.d("RoverApplication", "On Add Init status $it")
+                }
+            }
         }
+
 
         val settings = FirebaseFirestoreSettings.Builder()
             .setPersistenceEnabled(true)
@@ -39,9 +46,5 @@ class RoverApplication : Application() {
 
     val dataManger by lazy {
         DataManager(this, AnswersTracker())
-    }
-
-    override fun onTrimMemory(level: Int) {
-        super.onTrimMemory(level)
     }
 }

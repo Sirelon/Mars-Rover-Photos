@@ -40,32 +40,29 @@
             app:layout_constraintTop_toBottomOf="@+id/photo"
             tools:text="See counter" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtSaveCounter"
             style="@style/TxtCounter"
             android:paddingStart="16dp"
-            android:drawableStart="@drawable/ic_save_counter"
-            android:drawableLeft="@drawable/ic_save_counter"
+            app:drawableLeft="@drawable/ic_save_counter"
             app:layout_constraintStart_toStartOf="@id/txtSeeCounter"
             app:layout_constraintTop_toBottomOf="@+id/txtSeeCounter"
             tools:text="Save counter" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtScaleCounter"
             style="@style/TxtCounter"
             android:paddingEnd="16dp"
-            android:drawableStart="@drawable/ic_scale_counter"
-            android:drawableLeft="@drawable/ic_scale_counter"
+            app:drawableStart="@drawable/ic_scale_counter"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/photo"
             tools:text="Scale counter" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtShareCounter"
             style="@style/TxtCounter"
             android:paddingEnd="16dp"
-            android:drawableStart="@drawable/ic_share_counter"
-            android:drawableLeft="@drawable/ic_share_counter"
+            app:drawableStart="@drawable/ic_share_counter"
             app:layout_constraintEnd_toEndOf="@id/txtScaleCounter"
             app:layout_constraintTop_toBottomOf="@+id/txtScaleCounter"
             tools:text="Scale counter" />
