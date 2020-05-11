@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.core.util.Pair
 import androidx.recyclerview.widget.RecyclerView
 import com.sirelon.marsroverphotos.R
+import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.adapter.ViewTypeDelegateAdapter
 import com.sirelon.marsroverphotos.extensions.inflate
 import com.sirelon.marsroverphotos.extensions.loadImage
@@ -31,6 +32,7 @@ class PopularPhotosDelegateAdapter(val callback: OnModelChooseListener<FirebaseP
         val marsPhotoViewHolder = holder as PopularPhotoViewHolder
         marsPhotoViewHolder.bind(item as FirebasePhoto)
         marsPhotoViewHolder.itemView.photo.setOnClickListener {
+            RoverApplication.APP.dataManger.trackClick("photo_popular")
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 callback.onModelChoose(item, Pair.create(it, it.transitionName))
             } else {

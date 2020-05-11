@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.annotation.Keep
 import androidx.recyclerview.widget.RecyclerView
 import com.sirelon.marsroverphotos.R
+import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.adapter.ViewTypeDelegateAdapter
 import com.sirelon.marsroverphotos.extensions.inflate
 import com.sirelon.marsroverphotos.extensions.spannable
@@ -27,7 +28,10 @@ class PopularDelegateAdapter(private val callback: OnModelChooseListener<ViewTyp
         payloads: List<Any>?
     ) {
         (holder as PopularViewHolder).bind(item as PopularItem)
-        holder.itemView.setOnClickListener { callback.onModelChoose(item) }
+        holder.itemView.setOnClickListener {
+            RoverApplication.APP.dataManger.trackClick("popular")
+            callback.onModelChoose(item)
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =

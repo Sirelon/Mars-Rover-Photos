@@ -83,6 +83,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
 
         no_data_view.title.text = "No data here :("
         no_data_view.setOnClickListener {
+            dataManager.trackClick("refresh_no_data")
             actionRandom.callOnClick()
         }
 
@@ -112,6 +113,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
         title = "${rover.name}'s photos"
 
         photosCamera.setOnClickListener {
+            dataManager.trackClick("camera")
             AlertDialog.Builder(this)
                 .setSingleChoiceItems(camerasList.toTypedArray(), 0) { dialog, position ->
                     filterDataByCamera(position)
@@ -152,6 +154,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
         }
 
         actionRandom.setOnClickListener {
+            dataManager.trackClick("refresh")
             queryRequest = randomPhotosQueryRequest()
             updateDateSolChoose()
             updateDateEearthChoose(dateUtil.dateFromSol(queryRequest.sol))
@@ -310,6 +313,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
         datePicker.datePicker.maxDate = dateUtil.roverLastDate
         datePicker.datePicker.minDate = dateUtil.roverLandingDate
         dateEarthChoose.setOnClickListener {
+            dataManager.trackClick("choose_earth")
             // UPDATE TIME
             val timeFromSol = dateUtil.dateFromSol(queryRequest.sol)
 
@@ -343,6 +347,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
 
         updateDateSolChoose()
         dateSolChoose.setOnClickListener {
+            dataManager.trackClick("choose_sol")
             // Update views
             dialogView.solSeekBar.max = rover.maxSol.toInt()
             dialogView.solSeekBar.progress = queryRequest.sol.toInt()

@@ -9,6 +9,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.sirelon.marsroverphotos.BuildConfig
 import com.sirelon.marsroverphotos.R
+import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.spannable
 import kotlinx.android.synthetic.main.activity_about_app.*
 import java.util.Calendar
@@ -25,6 +26,7 @@ class AboutAppActivity : AppCompatActivity() {
             getString(R.string.all_rights_reserved_fmt, Calendar.getInstance().get(Calendar.YEAR))
 
         about_rate_action.setOnClickListener {
+            RoverApplication.APP.dataManger.trackClick("goToMarket")
             goToMarket()
         }
 

@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.core.util.Pair
 import androidx.recyclerview.widget.RecyclerView
 import com.sirelon.marsroverphotos.R
+import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.inflate
 import com.sirelon.marsroverphotos.extensions.loadImage
 import com.sirelon.marsroverphotos.extensions.textOrHide
@@ -31,6 +32,7 @@ class MarsPhotosDelegateAdapter(val callback: OnModelChooseListener<MarsPhoto>) 
         val marsPhotoViewHolder = holder as MarsPhotoViewHolder
         marsPhotoViewHolder.bind(item as MarsPhoto)
         marsPhotoViewHolder.itemView.setOnClickListener {
+            RoverApplication.APP.dataManger.trackClick("photo")
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 callback.onModelChoose(item, Pair.create(it, it.transitionName))
             } else {

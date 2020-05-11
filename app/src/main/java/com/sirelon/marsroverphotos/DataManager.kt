@@ -95,4 +95,8 @@ class DataManager(
             tracker.trackShare(marsPhoto, packageName ?: "Not Specified")
         }
     }
+
+    fun trackClick(event: String) {
+        tracker.trackClick("click_$event")
+    }
 }

@@ -88,6 +88,7 @@ open class RxActivity : AppCompatActivity() {
         }
         contentView.addView(noConnectionView)
         noConnectionView.setOnClickListener {
+            dataManager.trackClick("no_connection")
             if (isConnected()) {
                 contentView.removeView(noConnectionView)
                 for (i in 0..contentView.childCount) {

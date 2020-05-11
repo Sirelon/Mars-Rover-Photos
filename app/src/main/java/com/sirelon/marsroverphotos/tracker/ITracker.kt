@@ -15,4 +15,6 @@ interface ITracker {
 
     fun trackSave(photo: MarsPhoto)
 
+    fun trackClick(event: String)
+
 }
