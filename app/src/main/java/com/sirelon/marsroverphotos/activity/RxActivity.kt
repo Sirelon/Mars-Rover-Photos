@@ -40,11 +40,11 @@ open class RxActivity : AppCompatActivity() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        if (item?.itemId == android.R.id.home) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
             onBackPressed()
             return true
-        } else if (item?.itemId == R.id.menu_item_about) {
+        } else if (item.itemId == R.id.menu_item_about) {
 //            FirebaseProvider.proideTestFirebase.deleteUnusedItems()
 //            FirebaseProvider.proideTestFirebase.migrateToFirestore()
             startActivity(Intent(this, AboutAppActivity::class.java))

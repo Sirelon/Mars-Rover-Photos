@@ -139,8 +139,8 @@ class ImageActivity : RxActivity() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?) = when {
-        item?.itemId == R.id.menu_item_save -> true.apply { saveImageToGallery() }
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.menu_item_save -> true.apply { saveImageToGallery() }
         else -> super.onOptionsItemSelected(item)
     }
 
