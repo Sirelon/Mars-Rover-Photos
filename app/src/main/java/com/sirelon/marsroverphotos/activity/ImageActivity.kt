@@ -10,26 +10,27 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.ShareActionProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.view.MenuItemCompat
-import androidx.viewpager.widget.ViewPager
+import androidx.lifecycle.observe
+import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import com.sirelon.marsroverphotos.R
-import com.sirelon.marsroverphotos.extensions.inflate
-import com.sirelon.marsroverphotos.extensions.loadImage
 import com.sirelon.marsroverphotos.extensions.showAppSettings
 import com.sirelon.marsroverphotos.extensions.showSnackBar
 import com.sirelon.marsroverphotos.feature.advertising.AdvertisingObjectFactory
-import com.sirelon.marsroverphotos.models.MarsPhoto
-import com.sirelon.marsroverphotos.widget.ViewsPagerAdapter
+import com.sirelon.marsroverphotos.feature.images.ImageViewModel
+import com.sirelon.marsroverphotos.storage.MarsImage
+import com.sirelon.marsroverphotos.utils.transformers.DepthPageTransformer
+import com.sirelon.marsroverphotos.widget.ImagesPagerAdapter
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_image.*
-import kotlinx.android.synthetic.main.view_image.view.*
 import kotlinx.android.synthetic.main.view_native_adview.*
 import kotlin.math.abs
 import kotlin.math.min
@@ -38,24 +39,27 @@ import kotlin.math.min
 class ImageActivity : RxActivity() {
 
     companion object {
-        const val EXTRA_PHOTO = ".extraPhoto"
+        const val EXTRA_PHOTO_IDS = ".extraPhotosIds"
         const val EXTRA_FILTER_BY_CAMERA = ".extraCameraFilterEnable"
-        fun createIntent(context: Context, photo: MarsPhoto, cameraFilterEnable: Boolean): Intent {
+
+        fun createIntent(context: Context, list: List<Int>, cameraFilterEnable: Boolean): Intent {
             val intent = Intent(context, ImageActivity::class.java)
-            intent.putExtra(EXTRA_PHOTO, photo)
+            intent.putIntegerArrayListExtra(EXTRA_PHOTO_IDS, ArrayList(list))
             intent.putExtra(EXTRA_FILTER_BY_CAMERA, cameraFilterEnable)
             return intent
         }
     }
 
-    private lateinit var marsPhoto: MarsPhoto
+    private var marsPhoto: MarsImage? = null
 
     private var scaleWasSet = false
+
+    private val imagesViewModel: ImageViewModel by viewModels()
 
     private val shareIntent by lazy {
         val shareIntent = Intent(Intent.ACTION_SEND)
         val shareText =
-            "Take a look what I found on Mars ${marsPhoto.imageUrl} with this app \n\n$appUrl"
+            "Take a look what I found on Mars ${marsPhoto?.imageUrl} with this app \n\n$appUrl"
         shareIntent.type = "text/plain"
         shareIntent.putExtra(Intent.EXTRA_TEXT, shareText)
     }
@@ -71,12 +75,14 @@ class ImageActivity : RxActivity() {
 
         setContentView(R.layout.activity_image)
 
-        val parcelableExtra = intent.getParcelableExtra<MarsPhoto?>(EXTRA_PHOTO)
-        if (parcelableExtra == null) {
+        val ids = intent.getIntegerArrayListExtra(EXTRA_PHOTO_IDS)
+
+        if (ids == null) {
             finish()
             return
         }
-        marsPhoto = parcelableExtra
+
+        imagesViewModel.setIdsToShow(ids)
 
         // Configure Ad
         AdvertisingObjectFactory.getAdvertisingDelegate()
@@ -85,25 +91,38 @@ class ImageActivity : RxActivity() {
         val cameraFilterEnable = intent.getBooleanExtra(EXTRA_FILTER_BY_CAMERA, false)
         title = "Mars photo"
         rootForDrag = imagePager
-        if (dataManager.lastPhotosRequest == null) {
-            showStandaloneImage()
-        } else {
-            val subscribe = dataManager.lastPhotosRequest!!.flatMapIterable { it }
-                .compose {
-                    // Filter by cameras
-                    if (cameraFilterEnable) it.filter { it.camera?.id == marsPhoto.camera?.id }
-                    else it
-                }
-                .toList()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(::onCachePhotosAvailable) {
-                    it.printStackTrace()
-                    // Show Standalone Image
-                    showStandaloneImage()
-                }
 
-            subscriptions.add(subscribe)
+        val adapter = ImagesPagerAdapter(scaleCallback = {
+
+            if (!scaleWasSet) marsPhoto?.toMarsPhoto()
+                ?.let(dataManager::updatePhotoScaleCounter)
+
+            scaleWasSet = true
+        }, favoriteCallback = {
+            imagesViewModel.updateFavorite(it)
+        })
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            imagePager.setPageTransformer(DepthPageTransformer())
         }
+
+        // TODO: //                    // Filter by cameras
+        ////                    if (cameraFilterEnable) it.filter { it.camera?.id == marsPhoto.camera?.id }
+
+        imagePager.adapter = adapter
+        imagePager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                // Set the marsPhoto as current
+                marsPhoto = adapter.currentList[position]
+                scaleWasSet = false
+                marsPhoto?.toMarsPhoto()?.let(dataManager::updatePhotoSeenCounter)
+            }
+        })
+
+        imagesViewModel.imagesLiveData.observe(this) {
+            adapter.submitList(it)
+        }
+
 
         val dismissPathLength = resources.getDimensionPixelSize(R.dimen.dismiss_path_length)
         imageDragLayout.setOnDragListener { dy ->
@@ -116,7 +135,7 @@ class ImageActivity : RxActivity() {
         imageDragLayout.setOnReleaseDragListener { dy ->
             if (abs(dy) > dismissPathLength) {
                 rootForDrag.visibility = View.GONE
-                finishAfterTransition()
+                ActivityCompat.finishAfterTransition(this)
             } else {
 //                backgroundColorView.alpha = 1f
                 rootForDrag.alpha = 1f
@@ -132,7 +151,9 @@ class ImageActivity : RxActivity() {
         if (shareActionProvider is ShareActionProvider) {
             shareActionProvider.setShareIntent(shareIntent)
             shareActionProvider.setOnShareTargetSelectedListener { _, intent ->
-                dataManager.updatePhotoShareCounter(marsPhoto, intent.`package`)
+                marsPhoto?.toMarsPhoto()?.let {
+                    dataManager.updatePhotoShareCounter(it, intent.`package`)
+                }
                 false
             }
         }
@@ -144,38 +165,8 @@ class ImageActivity : RxActivity() {
         else -> super.onOptionsItemSelected(item)
     }
 
-    private fun onCachePhotosAvailable(it: List<MarsPhoto>) {
-        val pagerAdapter = ViewsPagerAdapter(it)
-        imagePager.adapter = pagerAdapter
-        pagerAdapter.scaleCallback = {
-            if (!scaleWasSet) dataManager.updatePhotoScaleCounter(marsPhoto)
-
-            scaleWasSet = true
-        }
-
-        val index = it.indexOf(marsPhoto)
-        imagePager.currentItem = index
-
-        imagePager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
-            override fun onPageSelected(position: Int) {
-                // Set the marsPhoto as current
-                marsPhoto = it[position]
-                scaleWasSet = false
-                dataManager.updatePhotoSeenCounter(marsPhoto)
-            }
-        })
-    }
-
-    private fun showStandaloneImage() {
-        fullscreenImageRoot.removeView(imagePager)
-
-        val imageRoot = fullscreenImageRoot.inflate(R.layout.view_image, false)
-        rootForDrag = imageRoot
-        imageDragLayout.addView(imageRoot)
-        imageRoot.fullscreenImage.loadImage(marsPhoto.imageUrl, false)
-    }
-
     private fun saveImageToGallery() {
+        val marsPhoto = marsPhoto ?: return
         val subscribe = RxPermissions(this)
             // Request permission for saving file.
             .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -205,7 +196,7 @@ class ImageActivity : RxActivity() {
                 sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse(it)))
             }
             // Update counter for save
-            .doOnNext { dataManager.updatePhotoSaveCounter(marsPhoto) }
+            .doOnNext { dataManager.updatePhotoSaveCounter(marsPhoto.toMarsPhoto()) }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(::showSnackBarOnSaved, ::onErrorOccurred)
 

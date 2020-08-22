@@ -11,10 +11,15 @@
         android:layout_height="match_parent"
         android:layout_above="@+id/adViewBanner">
 
-        <com.sirelon.marsroverphotos.widget.HackyViewPager
+        <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/imagePager"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent" />
+
+<!--        <com.sirelon.marsroverphotos.widget.HackyViewPager-->
+<!--            android:id="@+id/imagePager"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content" />-->
     </com.sirelon.marsroverphotos.widget.VerticalDragLayout>
 
     <include layout="@layout/view_native_adview" />

@@ -5,22 +5,24 @@ import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
-import androidx.viewpager.widget.PagerAdapter
 import com.bumptech.glide.Glide
 import com.github.chrisbanes.photoview.PhotoViewAttacher
 import com.sirelon.marsroverphotos.R
+import com.sirelon.marsroverphotos.adapter.diffutils.ItemDiffCallback
 import com.sirelon.marsroverphotos.extensions.inflate
-import com.sirelon.marsroverphotos.models.MarsPhoto
-import kotlinx.android.synthetic.main.view_image.view.*
+import com.sirelon.marsroverphotos.storage.MarsImage
 
 /**
  * @author romanishin
  * @since 16.11.16 on 18:11
  */
-class ViewsPagerAdapter(val data: List<MarsPhoto>?) : PagerAdapter() {
-
-    var scaleCallback: (() -> Unit)? = null
+class ImagesPagerAdapter(
+    private val scaleCallback: (() -> Unit),
+    private val favoriteCallback: ((photo: MarsImage) -> Unit)
+) : ListAdapter<MarsImage, ImagesPagerAdapter.ImageViewHolder>(ItemDiffCallback()) {
 
     private val colorsArr = listOf<Int>(
         Color.CYAN,
@@ -34,34 +36,32 @@ class ViewsPagerAdapter(val data: List<MarsPhoto>?) : PagerAdapter() {
         Color.GREEN
     )
 
-    override fun instantiateItem(container: ViewGroup, position: Int): Any {
-        val imageRoot = container.inflate(R.layout.view_image, false)
-        container.addView(imageRoot)
-        showImage(imageRoot.fullscreenImage, position)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ImageViewHolder(parent)
 
-        return imageRoot
+    override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
+        val item = getItem(position)
+
+        showImage(holder.imageView, item)
+        holder.iconFav.isSelected = item.favorite
+        holder.iconFav.setOnClickListener {
+            favoriteCallback(item)
+        }
     }
 
-    override fun destroyItem(container: ViewGroup, position: Int, viewRoot: Any) {
-        container.removeView(viewRoot as View)
-    }
-
-    private fun showImage(imageView: ImageView, position: Int) {
+    private fun showImage(imageView: ImageView, marsPhoto: MarsImage) {
         val photoViewAttacher = PhotoViewAttacher(imageView)
 
         photoViewAttacher.setOnScaleChangeListener { _, _, _ ->
-            scaleCallback?.invoke()
+            scaleCallback.invoke()
         }
-
-        val marsPhoto = data?.get(position) ?: return
 
         val drawable = CircularProgressDrawable(imageView.context)
         drawable.strokeWidth = 15f
         drawable.setStyle(CircularProgressDrawable.LARGE)
-        drawable.setColorSchemeColors(*colorsArr.shuffled().toIntArray())
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             drawable.applyTheme(imageView.resources.newTheme())
         }
+        drawable.setColorSchemeColors(*colorsArr.shuffled().toIntArray())
         drawable.start()
 
         Glide.with(imageView)
@@ -70,7 +70,10 @@ class ViewsPagerAdapter(val data: List<MarsPhoto>?) : PagerAdapter() {
             .into(imageView)
     }
 
-    override fun isViewFromObject(view: View, `object`: Any) = `object` == view
+    class ImageViewHolder(parent: ViewGroup) :
+        RecyclerView.ViewHolder(parent.inflate(R.layout.view_image)) {
 
-    override fun getCount(): Int = data?.size ?: 0
+        val imageView: ImageView = itemView.findViewById(R.id.fullscreenImage)
+        val iconFav: View = itemView.findViewById(R.id.favBtn)
+    }
 }

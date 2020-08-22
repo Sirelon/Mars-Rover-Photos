@@ -3,6 +3,7 @@ package com.sirelon.marsroverphotos
 import android.annotation.SuppressLint
 import android.content.Context
 import com.sirelon.marsroverphotos.extensions.logE
+import com.sirelon.marsroverphotos.feature.images.ImagesRepository
 import com.sirelon.marsroverphotos.feature.rovers.INSIGHT_ID
 import com.sirelon.marsroverphotos.feature.rovers.RoversRepository
 import com.sirelon.marsroverphotos.firebase.photos.FirebaseProvider.firebasePhotos
@@ -29,6 +30,7 @@ class DataManager(
     var lastPhotosRequest: Observable<List<MarsPhoto>?>? = null
 
     private val roverRepo = RoversRepository(context)
+    private val imagesRepo = ImagesRepository(context)
 
     val rovers = roverRepo.getRovers()
 
@@ -98,5 +100,9 @@ class DataManager(
 
     fun trackClick(event: String) {
         tracker.trackClick("click_$event")
+    }
+
+    fun cacheImages(photos: List<MarsPhoto>) {
+        imagesRepo.saveImages(photos)
     }
 }

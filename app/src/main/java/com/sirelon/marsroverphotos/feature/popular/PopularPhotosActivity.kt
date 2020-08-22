@@ -101,7 +101,8 @@ class PopularPhotosActivity : RxActivity() {
     }
 
     private fun openPhoto(photo: FirebasePhoto) {
-        val marsPhoto = photo.toMarsPhoto()
-        startActivity(ImageActivity.createIntent(this, marsPhoto, false))
+        // TODO: Implement it
+//        val marsPhoto = photo.toMarsPhoto()
+//        startActivity(ImageActivity.createIntent(this, marsPhoto, false))
     }
 }

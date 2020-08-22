@@ -70,10 +70,15 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
     }
 
     override fun onModelChoose(model: MarsPhoto, vararg sharedElements: Pair<View, String>) {
+        val photos = adapter.getData().filterIsInstance<MarsPhoto>()
+        dataManager.cacheImages(photos)
+
+        val ids = photos.map { it.id.toInt() }
+
         // Enable camera filter if the same camera was choose.
         // If all camera choosed then no need to filtering
         val cameraFilter = filteredCamera != null
-        val intent = ImageActivity.createIntent(this, model, cameraFilter)
+        val intent = ImageActivity.createIntent(this, ids, cameraFilter)
         startActivity(intent)
     }
 

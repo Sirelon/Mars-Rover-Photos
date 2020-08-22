@@ -111,6 +111,7 @@ class RoversRepository(context: Context) {
     fun updateRoverByInfo(roverInfo: RoverInfo) {
         "UPDATE ROVER BY INFO $roverInfo".logD()
         // We will not post status, 'cause it's incorrect data
+        kotlin.runCatching {
         roverDao.updateRover(
             roverInfo.name,
             roverInfo.landingDate,
@@ -119,5 +120,6 @@ class RoversRepository(context: Context) {
             roverInfo.maxDate,
             roverInfo.totalPhotos
         )
+        }.onFailure(Throwable::printStackTrace)
     }
 }

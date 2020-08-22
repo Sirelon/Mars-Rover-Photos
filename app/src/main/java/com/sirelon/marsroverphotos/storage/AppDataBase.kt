@@ -9,11 +9,12 @@ import com.sirelon.marsroverphotos.models.Rover
 /**
  * Created on 2019-03-14 12:54 for Mars-Rover-Photos.
  */
-@Database(entities = [Rover::class], version = 1)
+@Database(entities = [Rover::class, MarsImage::class], version = 2)
 abstract class AppDataBase : RoomDatabase() {
 
     abstract fun roversDao(): RoverDao
 
+    abstract fun imagesDao(): ImagesDao
 }
 
 object DataBaseProvider {
@@ -23,6 +24,7 @@ object DataBaseProvider {
     fun init(context: Context) {
         dataBase =
             Room.databaseBuilder(context, AppDataBase::class.java, "mars-rover-photos-database")
+                .fallbackToDestructiveMigration()
                 .build()
     }
 
