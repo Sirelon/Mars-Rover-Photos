@@ -5,6 +5,7 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import androidx.core.util.Pair
+import androidx.lifecycle.MediatorLiveData
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,7 +14,9 @@ import com.sirelon.marsroverphotos.activity.PhotosActivity
 import com.sirelon.marsroverphotos.activity.RxActivity
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
 import com.sirelon.marsroverphotos.adapter.ViewTypeAdapter
-import com.sirelon.marsroverphotos.extensions.logD
+import com.sirelon.marsroverphotos.feature.favorite.FavoriteItem
+import com.sirelon.marsroverphotos.feature.favorite.FavoritePhotosActivity
+import com.sirelon.marsroverphotos.feature.favorite.FavoritesDelegateAdapter
 import com.sirelon.marsroverphotos.feature.popular.PopularDelegateAdapter
 import com.sirelon.marsroverphotos.feature.popular.PopularItem
 import com.sirelon.marsroverphotos.feature.popular.PopularPhotosActivity
@@ -28,6 +31,7 @@ class RoversActivity : RxActivity(), OnModelChooseListener<ViewType> {
         when (model) {
             is Rover -> startActivity(PhotosActivity.createIntent(this, model))
             is PopularItem -> startActivity(Intent(this, PopularPhotosActivity::class.java))
+            is FavoriteItem -> startActivity(Intent(this, FavoritePhotosActivity::class.java))
 //            is PopularItem -> FirebaseProvider.proideTestFirebase.deleteUnusedItems()
         }
     }
@@ -45,6 +49,10 @@ class RoversActivity : RxActivity(), OnModelChooseListener<ViewType> {
             AdapterConstants.POPULAR_ITEM,
             PopularDelegateAdapter(this@RoversActivity)
         )
+        adapter.addDelegateAdapter(
+            AdapterConstants.FAVORITES,
+            FavoritesDelegateAdapter(this@RoversActivity)
+        )
 
         val portrait = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         val spanCount = if (portrait) 1 else 2
@@ -55,11 +63,9 @@ class RoversActivity : RxActivity(), OnModelChooseListener<ViewType> {
             layoutManager = GridLayoutManager(this@RoversActivity, spanCount).apply {
                 spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
                     override fun getSpanSize(position: Int): Int {
-                        return when {
-                            portrait -> 1
-                            position == 0 -> 2
-                            else -> 1
-                        }
+                        if (portrait) return 1
+                        val item = adapter.getItemByPosition(position)
+                        return if (item is Rover) 1 else 2
                     }
                 }
             }
@@ -69,10 +75,26 @@ class RoversActivity : RxActivity(), OnModelChooseListener<ViewType> {
         }
 
         val popularItem = PopularItem()
-        dataManager.rovers.observe(this) { list ->
-            val mutableList = list.toMutableList<ViewType>()
-            mutableList.logD()
-            mutableList.add(0, popularItem)
+
+        val mediator = MediatorLiveData<List<ViewType>>()
+
+        val roversLiveData = dataManager.rovers
+
+        mediator.addSource(roversLiveData) {
+            mediator.value = it
+        }
+
+        mediator.addSource(dataManager.loadFirstFavoriteItem()) {
+            if (it != null) {
+                val list = mediator.value?.toMutableList() ?: mutableListOf()
+                list.removeAll { it is FavoriteItem }
+                list.add(0, FavoriteItem(it))
+                mediator.value = list
+            }
+        }
+        mediator.observe(this) { list ->
+            val mutableList = list.toMutableList()
+            mutableList.add(popularItem)
             adapter.replaceData(mutableList)
         }
     }

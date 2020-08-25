@@ -13,11 +13,14 @@ import androidx.room.Update
 @Dao
 interface ImagesDao {
     // Emits the number of users added to the database.
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertImages(images: List<MarsImage>)
 
-    @Query("SELECT * FROM images")
-    fun getImages(): LiveData<List<MarsImage>>
+    @Query("SELECT * FROM images WHERE favorite = 1")
+    fun getFavoriteImages(): LiveData<List<MarsImage>>
+
+    @Query("SELECT * FROM images c LIMIT 1")
+    fun getOneImage(): LiveData<MarsImage?>
 
     @Query("SELECT * FROM images WHERE id IN (:ids)")
     fun getImagesByIds(ids: List<Int>): LiveData<List<MarsImage>>

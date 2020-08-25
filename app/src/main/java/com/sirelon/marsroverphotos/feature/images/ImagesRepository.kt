@@ -33,6 +33,8 @@ class ImagesRepository(private val context: Context) {
 
     fun loadImages(ids: List<Int>) = imagesDao.getImagesByIds(ids)
 
+    fun loadFirstImage() = imagesDao.getOneImage()
+
     fun updateFavForImage(item: MarsImage) {
         Observable.fromCallable {
             val updated = item.copy(favorite = !item.favorite)

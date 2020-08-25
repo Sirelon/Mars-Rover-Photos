@@ -100,26 +100,26 @@ class RoversRepository(context: Context) {
             .onErrorComplete()
     }
 
-    fun getRovers()= roverDao.getRovers()
+    fun getRovers() = roverDao.getRovers()
 
-    fun updateRoversByInfo(list: List<RoverInfo>){
-        DataBaseProvider.dataBase.runInTransaction {
+    fun updateRoversByInfo(list: List<RoverInfo>) {
+//        DataBaseProvider.dataBase.runInTransaction {
             list.forEach(this::updateRoverByInfo)
-        }
+//        }
     }
 
     fun updateRoverByInfo(roverInfo: RoverInfo) {
         "UPDATE ROVER BY INFO $roverInfo".logD()
         // We will not post status, 'cause it's incorrect data
         kotlin.runCatching {
-        roverDao.updateRover(
-            roverInfo.name,
-            roverInfo.landingDate,
-            roverInfo.launchDate,
-            roverInfo.maxSol,
-            roverInfo.maxDate,
-            roverInfo.totalPhotos
-        )
+            roverDao.updateRover(
+                roverInfo.name,
+                roverInfo.landingDate,
+                roverInfo.launchDate,
+                roverInfo.maxSol,
+                roverInfo.maxDate,
+                roverInfo.totalPhotos
+            )
         }.onFailure(Throwable::printStackTrace)
     }
 }

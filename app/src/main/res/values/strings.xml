@@ -11,6 +11,7 @@
     <string name="ad_image_activity">ca-app-pub-7516059448019339/6708131350</string>
     <string name="ad_item_photo">ca-app-pub-7516059448019339/7310766580</string>
     <string name="ad_application_id">ca-app-pub-7516059448019339~6607949007</string>
-    <string name="popular_title">Most popular mars photos</string>
+    <string name="popular_title">The most popular Mars Photos</string>
+    <string name="favorite_title">Your favorite Mars Photos</string>
 
 </resources>

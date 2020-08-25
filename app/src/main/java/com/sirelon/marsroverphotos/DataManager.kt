@@ -2,6 +2,7 @@ package com.sirelon.marsroverphotos
 
 import android.annotation.SuppressLint
 import android.content.Context
+import androidx.lifecycle.LiveData
 import com.sirelon.marsroverphotos.extensions.logE
 import com.sirelon.marsroverphotos.feature.images.ImagesRepository
 import com.sirelon.marsroverphotos.feature.rovers.INSIGHT_ID
@@ -10,6 +11,7 @@ import com.sirelon.marsroverphotos.firebase.photos.FirebaseProvider.firebasePhot
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.network.RestApi
+import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.tracker.ITracker
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
@@ -48,6 +50,8 @@ class DataManager(
             .toList()
             .subscribe(roverRepo::updateRoversByInfo, Throwable::logE)
     }
+
+    fun loadFirstFavoriteItem(): LiveData<MarsImage?> = imagesRepo.loadFirstImage()
 
     fun loadMarsPhotos(queryRequest: PhotosQueryRequest): Observable<List<MarsPhoto>?> {
         val mainObservable = Observable.fromCallable {
