@@ -39,8 +39,9 @@ class FavoritesDelegateAdapter(private val callback: OnModelChooseListener<ViewT
 
         override val containerView: View = itemView
 
-        fun bind(item: FavoriteItem) = with(itemView) {
+        fun bind(item: FavoriteItem) = with(this) {
             itemView.favoritePhoto.loadImage(item.image.imageUrl)
+
             // for now it it invisible
 //            itemView.totalPhotos.visibility = View.GONE
 //            itemView.totalPhotos.text =

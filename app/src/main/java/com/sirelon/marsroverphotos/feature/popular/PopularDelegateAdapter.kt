@@ -12,6 +12,7 @@ import com.sirelon.marsroverphotos.extensions.inflate
 import com.sirelon.marsroverphotos.extensions.spannable
 import com.sirelon.marsroverphotos.models.OnModelChooseListener
 import com.sirelon.marsroverphotos.models.ViewType
+import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_popular.view.*
 
 /**
@@ -39,7 +40,9 @@ class PopularDelegateAdapter(private val callback: OnModelChooseListener<ViewTyp
 
     @Keep
     class PopularViewHolder(parent: ViewGroup) :
-        RecyclerView.ViewHolder(parent.inflate(R.layout.item_popular)) {
+        RecyclerView.ViewHolder(parent.inflate(R.layout.item_popular)), LayoutContainer {
+
+        override val containerView: View = itemView
 
         fun bind(item: PopularItem) = with(itemView) {
             // for now it it invisible

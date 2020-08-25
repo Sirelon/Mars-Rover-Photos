@@ -43,4 +43,6 @@ class ImagesRepository(private val context: Context) {
             .subscribeOn(Schedulers.io())
             .subscribe()
     }
+
+    fun getFavoriteImages() = imagesDao.getFavoriteImages()
 }

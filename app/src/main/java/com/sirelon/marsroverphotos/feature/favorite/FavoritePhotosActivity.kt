@@ -40,7 +40,7 @@ class FavoritePhotosActivity : RxActivity() {
 
         adapter.addDelegateAdapter(
             AdapterConstants.MARS_PHOTO,
-            FavoriteDelegateAdapter(object : OnModelChooseListener<MarsImage> {
+            FavoriteDelegateAdapter(callback = object : OnModelChooseListener<MarsImage> {
                 override fun onModelChoose(
                     model: MarsImage,
                     vararg sharedElements: Pair<View, String>
@@ -52,6 +52,9 @@ class FavoritePhotosActivity : RxActivity() {
                     val intent = ImageActivity.createIntent(this@FavoritePhotosActivity, ids, false)
                     startActivity(intent)
                 }
+            },
+            favoriteCallback = {
+                viewModel.updateFavForImage(it)
             })
         )
         popularPhotosList.layoutManager =
