@@ -2,6 +2,7 @@ package com.sirelon.marsroverphotos.feature.favorite
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.feature.images.ImagesRepository
 import com.sirelon.marsroverphotos.storage.DataBaseProvider
 import com.sirelon.marsroverphotos.storage.ImagesDao
@@ -18,5 +19,8 @@ class FavoriteImagesViewModel(app: Application) : AndroidViewModel(app) {
 
     fun updateFavForImage(image: MarsImage) {
         repository.updateFavForImage(item = image)
+
+        val tracker = getApplication<RoverApplication>().tracker
+        tracker.trackFavorite(image.toMarsPhoto(), "FavoriteList", !image.favorite)
     }
 }

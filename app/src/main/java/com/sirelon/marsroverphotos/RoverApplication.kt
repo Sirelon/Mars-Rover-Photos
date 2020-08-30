@@ -8,6 +8,7 @@ import com.google.android.gms.ads.MobileAds
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.sirelon.marsroverphotos.tracker.FirebaseTracker
+import com.sirelon.marsroverphotos.tracker.ITracker
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.conscrypt.Conscrypt
@@ -52,7 +53,9 @@ class RoverApplication : Application() {
         FirebaseFirestore.getInstance().firestoreSettings = settings
     }
 
+    val tracker: ITracker = FirebaseTracker(this)
+
     val dataManger by lazy {
-        DataManager(this, FirebaseTracker(this))
+        DataManager(this,tracker )
     }
 }

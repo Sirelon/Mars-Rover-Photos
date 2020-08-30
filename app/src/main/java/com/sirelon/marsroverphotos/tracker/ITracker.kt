@@ -17,4 +17,5 @@ interface ITracker {
 
     fun trackClick(event: String)
 
+    fun trackFavorite(photo: MarsPhoto, from: String, fav: Boolean)
 }

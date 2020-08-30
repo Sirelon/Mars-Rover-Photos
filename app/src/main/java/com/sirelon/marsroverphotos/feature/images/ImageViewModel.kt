@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
+import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.storage.MarsImage
 
 /**
@@ -23,5 +24,8 @@ class ImageViewModel(app: Application) : AndroidViewModel(app) {
 
     fun updateFavorite(image: MarsImage) {
         repository.updateFavForImage(image)
+
+        val tracker = getApplication<RoverApplication>().tracker
+        tracker.trackFavorite(image.toMarsPhoto(), "Images", !image.favorite)
     }
 }

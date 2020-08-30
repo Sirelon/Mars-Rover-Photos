@@ -14,9 +14,12 @@ class FirebaseTracker(context: Context) : ITracker {
 
     companion object {
         private const val EARTH_DATE: String = "earthDate"
+        private const val SCREEN_NAME: String = "screenName"
         private const val EVENT_MARS_PHOTO_SCALE: String = "Scale"
         private const val EVENT_MARS_PHOTO_SHARE: String = "SharePhoto"
         private const val EVENT_MARS_PHOTO_SAVE: String = "SavePhoto"
+        private const val EVENT_MARS_PHOTO_FAVORITE: String = "FavoritePhoto"
+        private const val EVENT_MARS_PHOTO_UNFAVORITE: String = "UnFavoritePhoto"
     }
 
     override fun trackSeen(photo: MarsPhoto) {
@@ -37,6 +40,13 @@ class FirebaseTracker(context: Context) : ITracker {
 
     override fun trackClick(event: String) {
         fb.logEvent(event, null)
+    }
+
+    override fun trackFavorite(photo: MarsPhoto, from: String, fav: Boolean) {
+        val event = if (fav) EVENT_MARS_PHOTO_FAVORITE else EVENT_MARS_PHOTO_UNFAVORITE
+        val arguments = photo.arguments()
+        arguments.putString(SCREEN_NAME, from)
+        fb.logEvent(event, arguments)
     }
 
     private fun MarsPhoto.arguments() =
