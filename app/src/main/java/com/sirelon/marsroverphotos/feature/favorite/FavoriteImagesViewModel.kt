@@ -14,7 +14,7 @@ class FavoriteImagesViewModel(app: Application) : AndroidViewModel(app) {
 
     private val repository = ImagesRepository(app)
 
-    val favoriteImages = repository.getFavoriteImages()
+    val favoriteImagesFlow = repository.loadPagedSource()
 
     fun updateFavForImage(image: MarsImage) {
         repository.updateFavForImage(item = image)

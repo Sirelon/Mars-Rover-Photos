@@ -1,6 +1,7 @@
 package com.sirelon.marsroverphotos.storage
 
 import androidx.lifecycle.LiveData
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -27,5 +28,8 @@ interface ImagesDao {
 
     @Update
     fun update(item: MarsImage)
+
+    @Query("SELECT * FROM images")
+    fun loadPagedSource(): PagingSource<Int, MarsImage>
 
 }
