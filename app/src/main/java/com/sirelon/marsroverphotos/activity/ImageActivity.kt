@@ -30,6 +30,7 @@ import com.sirelon.marsroverphotos.widget.ImagesPagerAdapter
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.activity_about_app.*
 import kotlinx.android.synthetic.main.activity_image.*
 import kotlinx.android.synthetic.main.view_native_adview.*
 import kotlin.math.abs
@@ -39,13 +40,20 @@ import kotlin.math.min
 class ImageActivity : RxActivity() {
 
     companion object {
+        const val EXTRA_SELECTED_ID = ".extraSelectedId"
         const val EXTRA_PHOTO_IDS = ".extraPhotosIds"
         const val EXTRA_FILTER_BY_CAMERA = ".extraCameraFilterEnable"
 
-        fun createIntent(context: Context, list: List<Int>, cameraFilterEnable: Boolean): Intent {
+        fun createIntent(
+            context: Context,
+            selectedId: Int,
+            list: List<Int>,
+            cameraFilterEnable: Boolean
+        ): Intent {
             val intent = Intent(context, ImageActivity::class.java)
             intent.putIntegerArrayListExtra(EXTRA_PHOTO_IDS, ArrayList(list))
             intent.putExtra(EXTRA_FILTER_BY_CAMERA, cameraFilterEnable)
+            intent.putExtra(EXTRA_SELECTED_ID, selectedId)
             return intent
         }
     }
@@ -118,10 +126,19 @@ class ImageActivity : RxActivity() {
             }
         })
 
-        imagesViewModel.imagesLiveData.observe(this) {
-            adapter.submitList(it)
-        }
+        val selectedId = intent.getIntExtra(EXTRA_SELECTED_ID, 0)
+        var firstLoad = true
+        imagesViewModel.imagesLiveData.observe(this) {list->
+            adapter.submitList(list) {
+                if (firstLoad) {
 
+                    val selectItem = list.indexOfFirst { it.id == selectedId }
+
+                    imagePager.setCurrentItem(selectItem, false)
+                    firstLoad = false
+                }
+            }
+        }
 
         val dismissPathLength = resources.getDimensionPixelSize(R.dimen.dismiss_path_length)
         imageDragLayout.setOnDragListener { dy ->

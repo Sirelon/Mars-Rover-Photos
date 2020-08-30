@@ -54,7 +54,7 @@ class FavoritePhotosActivity : RxActivity() {
 
                     val ids = photos.map { it.id.toInt() }
 
-                    val intent = ImageActivity.createIntent(this@FavoritePhotosActivity, ids, false)
+                    val intent = ImageActivity.createIntent(this@FavoritePhotosActivity, model.id, ids, false)
                     startActivity(intent)
                 }
             },

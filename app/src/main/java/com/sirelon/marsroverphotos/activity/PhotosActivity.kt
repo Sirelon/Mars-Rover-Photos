@@ -78,7 +78,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
         // Enable camera filter if the same camera was choose.
         // If all camera choosed then no need to filtering
         val cameraFilter = filteredCamera != null
-        val intent = ImageActivity.createIntent(this, ids, cameraFilter)
+        val intent = ImageActivity.createIntent(this, model.id.toInt(), ids, cameraFilter)
         startActivity(intent)
     }
 
@@ -364,19 +364,19 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
         }
 
         val changeSubscription = Observable.create<CharSequence> {
-                // Some setup for seek and edittext
-                dialogView.solInput.addTextChangedListener(object : TextWatcher {
-                    override fun afterTextChanged(p0: Editable?) {
-                    }
+            // Some setup for seek and edittext
+            dialogView.solInput.addTextChangedListener(object : TextWatcher {
+                override fun afterTextChanged(p0: Editable?) {
+                }
 
-                    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    }
+                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                }
 
-                    override fun onTextChanged(text: CharSequence, p1: Int, p2: Int, p3: Int) {
-                        it.onNext(text)
-                    }
-                })
-            }
+                override fun onTextChanged(text: CharSequence, p1: Int, p2: Int, p3: Int) {
+                    it.onNext(text)
+                }
+            })
+        }
             .filter { it.isNotEmpty() }
             .filter { TextUtils.isDigitsOnly(it) }
             .map { it.toString().toInt() }
