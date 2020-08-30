@@ -14,8 +14,11 @@ import com.sirelon.marsroverphotos.models.Rover
 interface RoverDao {
 
     // Emits the number of users added to the database.
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertRovers(vararg rovers: Rover)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insertRovers(vararg rovers: Rover): List<Long>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertRoversList(rovers: List<Rover>)
 
     @Query("UPDATE rover SET totalPhotos = :photos WHERE id = :roverId")
     fun updateRoverCountPhotos(roverId: Long, photos: Long)

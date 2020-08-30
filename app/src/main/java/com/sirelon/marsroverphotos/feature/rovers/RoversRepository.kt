@@ -1,17 +1,22 @@
 package com.sirelon.marsroverphotos.feature.rovers
 
 import android.content.Context
+import android.os.Build
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.extensions.logE
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.RoverDateUtil
+import com.sirelon.marsroverphotos.network.RestApi
 import com.sirelon.marsroverphotos.network.RoverInfo
 import com.sirelon.marsroverphotos.storage.DataBaseProvider
 import com.sirelon.marsroverphotos.storage.RoverDao
 import io.reactivex.Completable
-import io.reactivex.Single
+import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import java.util.stream.Collectors
 
 
 const val INSIGHT_ID = 4L
@@ -20,7 +25,7 @@ const val INSIGHT_ID = 4L
  * @author romanishin
  * @since 07.11.16 on 12:42
  */
-class RoversRepository(context: Context) {
+class RoversRepository(context: Context, private val api: RestApi) {
 
     private val roverDao: RoverDao
 
@@ -84,12 +89,36 @@ class RoversRepository(context: Context) {
             124550
         )
 
-        Single.fromCallable {
-            roverDao.insertRovers(insight, curiosity, opportunity, spirit)
+        GlobalScope.launch {
+            val ids = roverDao.insertRovers(insight, curiosity, opportunity, spirit)
+
+            "Inseerted $ids".logD()
         }
-            .subscribeOn(Schedulers.io())
-            .doOnSuccess { "ROVERS INSERTED $it".logD() }
-            .subscribe()
+    }
+
+    // Keep it for updating inforamttion via some time.
+    private suspend fun loadFromServer() {
+        val roversName = listOf("curiosity", "opportunity", "spirit")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            val list = roversName
+                .parallelStream()
+                .map { api.getRoverInfo(it).blockingFirst() }
+                .collect(Collectors.toList())
+
+//            roverDao.insertRoversList(list)
+        } else {
+            val list = roversName
+                .map { api.getRoverInfo(it).blockingFirst() }
+//            roverDao.insertRoversList(list)
+        }
+
+//        Observable.fromArray("curiosity", "opportunity", "spirit")
+//            .map(api::getRoverInfo)
+//            .toList()
+//            .subscribeOn(Schedulers.io())
+//            .flatMapObservable { Observable.merge(it) }
+//            .toList()
+//            .subscribe(roverRepo::updateRoversByInfo, Throwable::logE)
     }
 
     fun updateRoverCountPhotos(roverId: Long, photos: Long): Completable {
@@ -104,7 +133,7 @@ class RoversRepository(context: Context) {
 
     fun updateRoversByInfo(list: List<RoverInfo>) {
 //        DataBaseProvider.dataBase.runInTransaction {
-            list.forEach(this::updateRoverByInfo)
+        list.forEach(this::updateRoverByInfo)
 //        }
     }
 
@@ -123,3 +152,4 @@ class RoversRepository(context: Context) {
         }.onFailure(Throwable::printStackTrace)
     }
 }
+

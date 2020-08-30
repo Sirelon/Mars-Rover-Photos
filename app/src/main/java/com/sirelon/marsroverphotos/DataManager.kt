@@ -31,7 +31,7 @@ class DataManager(
      */
     var lastPhotosRequest: Observable<List<MarsPhoto>?>? = null
 
-    private val roverRepo = RoversRepository(context)
+    private val roverRepo = RoversRepository(context, api)
     private val imagesRepo = ImagesRepository(context)
 
     val rovers = roverRepo.getRovers()
@@ -41,14 +41,6 @@ class DataManager(
             .flatMapCompletable { roverRepo.updateRoverCountPhotos(INSIGHT_ID, it) }
             .onErrorComplete()
             .subscribe()
-
-        Observable.fromArray("curiosity", "opportunity", "spirit")
-            .map(api::getRoverInfo)
-            .toList()
-            .subscribeOn(Schedulers.io())
-            .flatMapObservable { Observable.merge(it) }
-            .toList()
-            .subscribe(roverRepo::updateRoversByInfo, Throwable::logE)
     }
 
     fun loadFirstFavoriteItem(): LiveData<MarsImage?> = imagesRepo.loadFirstImage()
