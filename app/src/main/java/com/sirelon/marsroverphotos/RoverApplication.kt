@@ -53,9 +53,9 @@ class RoverApplication : Application() {
         FirebaseFirestore.getInstance().firestoreSettings = settings
     }
 
-    val tracker: ITracker = FirebaseTracker(this)
+    val tracker: ITracker by lazy { FirebaseTracker(this) }
 
     val dataManger by lazy {
-        DataManager(this,tracker )
+        DataManager(this, tracker)
     }
 }

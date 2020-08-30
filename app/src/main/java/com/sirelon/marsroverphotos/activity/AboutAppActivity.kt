@@ -5,18 +5,24 @@ import android.content.Intent
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
+import android.text.format.Formatter
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.cache.DiskCache
 import com.sirelon.marsroverphotos.BuildConfig
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.spannable
 import kotlinx.android.synthetic.main.activity_about_app.*
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
 import java.util.Calendar
 
 class AboutAppActivity : AppCompatActivity() {
@@ -60,9 +66,27 @@ class AboutAppActivity : AppCompatActivity() {
     }
 
     private fun clearCache() {
-        lifecycleScope.launch(Dispatchers.IO) {
-            Glide.get(this@AboutAppActivity).clearDiskCache()
+        val ctx = application
+        lifecycleScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, throwable -> throwable.printStackTrace() }) {
+            val cacheFile = File(cacheDir, DiskCache.Factory.DEFAULT_DISK_CACHE_DIR)
+            val size = calculateSize(cacheFile)
+
+            Glide.get(ctx).clearDiskCache()
+
+            val sizeStr = Formatter.formatFileSize(ctx, size)
+            withContext(Dispatchers.Main) {
+                Toast.makeText(ctx, "Cleared $sizeStr", Toast.LENGTH_SHORT).show()
+            }
         }
+    }
+
+    private fun calculateSize(dir: File?): Long {
+        if (dir == null) return 0
+        if (!dir.isDirectory()) return dir.length()
+        var result: Long = 0
+        val children: Array<File>? = dir.listFiles()
+        if (children != null) for (child in children) result += calculateSize(child)
+        return result
     }
 
     private fun goToMarket() {

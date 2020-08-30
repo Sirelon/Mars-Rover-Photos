@@ -57,7 +57,6 @@
             android:text="API provided by https://api.nasa.gov/api.html#MarsPhotos"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
-
         <TextView
             android:id="@+id/about_email"
             android:layout_width="match_parent"
