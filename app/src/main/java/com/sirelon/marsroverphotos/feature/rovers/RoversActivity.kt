@@ -81,7 +81,10 @@ class RoversActivity : RxActivity(), OnModelChooseListener<ViewType> {
         val roversLiveData = dataManager.rovers
 
         mediator.addSource(roversLiveData) {
-            mediator.value = it
+            val favItem = mediator.value?.find { it is FavoriteItem }
+            val list = it.toMutableList<ViewType>()
+            favItem?.let { list.add(0, favItem) }
+            mediator.value = list
         }
 
         mediator.addSource(dataManager.loadFirstFavoriteItem()) {
