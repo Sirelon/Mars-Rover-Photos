@@ -136,9 +136,9 @@ open class ViewTypeAdapter(var withLoadingView: Boolean = true) :
         }
     }
 
-    fun getData(): ArrayList<ViewType> = items
+    open fun getData(): List<ViewType> = items
 
-    fun getSavedData(): ArrayList<ViewType>? = savedItems
+    fun getSavedData(): List<ViewType>? = savedItems
 
     fun applyFilteredData(filteredData: List<ViewType>) {
         if (savedItems == null) savedItems = ArrayList(items)

@@ -4,10 +4,12 @@ import androidx.paging.AsyncPagedListDiffer
 import androidx.paging.AsyncPagingDataDiffer
 import androidx.paging.PagedList
 import androidx.paging.PagingData
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.AdapterListUpdateCallback
 import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.DiffUtil
 import com.sirelon.marsroverphotos.models.ViewType
+import java.util.ArrayList
 
 /**
  * Created on 2/5/18 00:32 for Mars-Rover-Photos.
@@ -44,4 +46,8 @@ class PagedViewTypeAdapter3<T : ViewType>(diffCallback: DiffUtil.ItemCallback<T>
     suspend fun setPagedList(pagedList: PagingData<T>) = pagedHelper.submitData(pagedList)
 
     override fun getItemByPosition(position: Int) = pagedHelper.getItem(position)
+
+    override fun getData(): List<ViewType> {
+        return pagedHelper.snapshot().items
+    }
 }

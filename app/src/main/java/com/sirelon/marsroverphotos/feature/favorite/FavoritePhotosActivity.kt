@@ -50,9 +50,9 @@ class FavoritePhotosActivity : RxActivity() {
                     model: MarsImage,
                     vararg sharedElements: Pair<View, String>
                 ) {
-                    val photos = adapter.getData().filterIsInstance<MarsPhoto>()
+                    val photos = adapter.getData().filterIsInstance<MarsImage>()
 
-                    val ids = photos.map { it.id.toInt() }
+                    val ids = photos.map { it.id }
 
                     val intent = ImageActivity.createIntent(this@FavoritePhotosActivity, model.id, ids, false)
                     startActivity(intent)
