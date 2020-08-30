@@ -9,9 +9,8 @@
     <com.github.chrisbanes.photoview.PhotoView
         android:id="@+id/fullscreenImage"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:adjustViewBounds="true"
         android:transitionName="mars_photo"
         tools:showIn="@layout/activity_image"
         tools:src="@drawable/img_placeholder" />

@@ -93,7 +93,6 @@ class ImageActivity : RxActivity() {
         rootForDrag = imagePager
 
         val adapter = ImagesPagerAdapter(scaleCallback = {
-
             if (!scaleWasSet) marsPhoto?.toMarsPhoto()
                 ?.let(dataManager::updatePhotoScaleCounter)
 

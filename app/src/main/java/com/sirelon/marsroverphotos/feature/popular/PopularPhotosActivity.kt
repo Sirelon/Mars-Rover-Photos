@@ -35,7 +35,6 @@ class PopularPhotosActivity : RxActivity() {
         }
 
         override fun onInserted(position: Int, count: Int) {
-            popularProgressBar.visibility = View.GONE
             userList.value?.removeWeakCallback(this)
         }
 

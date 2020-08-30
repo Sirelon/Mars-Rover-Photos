@@ -43,8 +43,6 @@ class FavoritePhotosActivity : RxActivity() {
             viewModel.favoriteImagesFlow.collectLatest(adapter::setPagedList)
         }
 
-//        viewModel.favoriteImages.observe(this, adapter::replaceData)
-
         adapter.addDelegateAdapter(
             AdapterConstants.MARS_PHOTO,
             FavoriteDelegateAdapter(callback = object : OnModelChooseListener<MarsImage> {
