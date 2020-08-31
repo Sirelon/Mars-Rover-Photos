@@ -21,10 +21,8 @@ import kotlinx.android.synthetic.main.view_native_adview.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class FavoritePhotosActivity : RxActivity() {
-
-    private val viewModel by viewModels<FavoriteImagesViewModel>()
-
+open class BasePhotosActivity : RxActivity() {
+    val adapter = PagedViewTypeAdapter3(ItemDiffCallback<MarsImage>())
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_popular_photos)
@@ -37,12 +35,6 @@ class FavoritePhotosActivity : RxActivity() {
         title = getString(R.string.favorite_title)
         AdvertisingObjectFactory.getAdvertisingDelegate().loadAd(adViewBanner)
 
-        val adapter = PagedViewTypeAdapter3(ItemDiffCallback<MarsImage>())
-
-        lifecycleScope.launch {
-            viewModel.favoriteImagesFlow.collectLatest(adapter::setPagedList)
-        }
-
         adapter.addDelegateAdapter(
             AdapterConstants.MARS_PHOTO,
             FavoriteDelegateAdapter(callback = object : OnModelChooseListener<MarsImage> {
@@ -54,12 +46,12 @@ class FavoritePhotosActivity : RxActivity() {
 
                     val ids = photos.map { it.id }
 
-                    val intent = ImageActivity.createIntent(this@FavoritePhotosActivity, model.id, ids, false)
+                    val intent = ImageActivity.createIntent(this@BasePhotosActivity, model.id, ids, false)
                     startActivity(intent)
                 }
             },
                                     favoriteCallback = {
-                                        viewModel.updateFavForImage(it)
+//                                        viewModel.updateFavForImage(it)
                                     })
         )
         popularPhotosList.layoutManager =
@@ -67,4 +59,20 @@ class FavoritePhotosActivity : RxActivity() {
         popularPhotosList.setHasFixedSize(true)
         popularPhotosList.adapter = adapter
     }
+}
+
+/**
+ * Created on 31.08.2020 22:07 for Mars-Rover-Photos.
+ */
+class FavoritePhotosActivity : BasePhotosActivity() {
+
+    private val viewModel by viewModels<FavoriteImagesViewModel>()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        lifecycleScope.launch {
+            viewModel.favoriteImagesFlow.collectLatest(adapter::setPagedList)
+        }
+    }
+
 }

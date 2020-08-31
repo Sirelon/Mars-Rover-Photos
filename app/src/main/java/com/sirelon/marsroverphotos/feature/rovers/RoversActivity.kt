@@ -15,8 +15,8 @@ import com.sirelon.marsroverphotos.activity.RxActivity
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
 import com.sirelon.marsroverphotos.adapter.ViewTypeAdapter
 import com.sirelon.marsroverphotos.feature.favorite.FavoriteItem
-import com.sirelon.marsroverphotos.feature.favorite.FavoritePhotosActivity
 import com.sirelon.marsroverphotos.feature.favorite.FavoritesDelegateAdapter
+import com.sirelon.marsroverphotos.feature.favorite.FavoritePhotosActivity
 import com.sirelon.marsroverphotos.feature.popular.PopularDelegateAdapter
 import com.sirelon.marsroverphotos.feature.popular.PopularItem
 import com.sirelon.marsroverphotos.feature.popular.PopularPhotosActivity
