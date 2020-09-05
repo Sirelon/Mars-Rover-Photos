@@ -98,7 +98,7 @@ class DataManager(
         tracker.trackClick("click_$event")
     }
 
-    fun cacheImages(photos: List<MarsPhoto>) {
+    suspend fun cacheImages(photos: List<MarsPhoto>) {
         imagesRepo.saveImages(photos)
     }
 }

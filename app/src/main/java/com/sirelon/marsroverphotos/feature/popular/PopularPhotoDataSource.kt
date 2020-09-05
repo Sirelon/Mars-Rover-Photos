@@ -1,12 +1,18 @@
 package com.sirelon.marsroverphotos.feature.popular
 
+import android.util.Log
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.ItemKeyedDataSource
+import androidx.paging.LoadType
 import androidx.paging.PagingSource
+import androidx.paging.PagingState
+import androidx.paging.RemoteMediator
 import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.feature.firebase.FirebasePhoto
 import com.sirelon.marsroverphotos.firebase.photos.IFirebasePhotos
+import com.sirelon.marsroverphotos.storage.ImagesDao
+import com.sirelon.marsroverphotos.storage.MarsImage
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -36,21 +42,21 @@ class PopularPhotoDataSource(private val firebasePhotos: IFirebasePhotos) :
         params: LoadInitialParams<FirebasePhoto>,
         callback: LoadInitialCallback<FirebasePhoto>
     ) {
-        "loadInitial".logD()
-        firebasePhotos.loadPopularPhotos(
-            count = params.requestedLoadSize,
-            lastPhoto = params.requestedInitialKey
-        )
-            .subscribeOn(Schedulers.io())
-            .onErrorReturnItem(emptyList())
-            .subscribe {
-                if (it.isEmpty()) {
-                    callback.onResult(it)
-                } else {
-                    callback.onResult(it, 0, params.requestedLoadSize)
-                }
-            }
-            .apply { disposables.add(this) }
+//        "loadInitial".logD()
+//        firebasePhotos.loadPopularPhotos(
+//            count = params.requestedLoadSize,
+//            lastPhoto = params.requestedInitialKey
+//        )
+//            .subscribeOn(Schedulers.io())
+//            .onErrorReturnItem(emptyList())
+//            .subscribe {
+//                if (it.isEmpty()) {
+//                    callback.onResult(it)
+//                } else {
+//                    callback.onResult(it, 0, params.requestedLoadSize)
+//                }
+//            }
+//            .apply { disposables.add(this) }
     }
 
     override fun loadAfter(
@@ -59,11 +65,11 @@ class PopularPhotoDataSource(private val firebasePhotos: IFirebasePhotos) :
     ) {
         "LoadAfter".logD()
 
-        firebasePhotos.loadPopularPhotos(count = params.requestedLoadSize, lastPhoto = params.key)
-            .subscribeOn(Schedulers.io())
-            .doOnNext { it.logD() }
-            .subscribe { callback.onResult(it) }
-            .apply { disposables.add(this) }
+//        firebasePhotos.loadPopularPhotos(count = params.requestedLoadSize, lastPhoto = params.key)
+//            .subscribeOn(Schedulers.io())
+//            .doOnNext { it.logD() }
+//            .subscribe { callback.onResult(it) }
+//            .apply { disposables.add(this) }
     }
 
     override fun getKey(item: FirebasePhoto) = item
@@ -82,5 +88,51 @@ class PopularPhotosSource(private val firebasePhotos: IFirebasePhotos) :
                 LoadResult.Error(e)
             }
         }
+
+}
+
+@ExperimentalPagingApi
+class PopularRemoteMediator(
+    private val firebasePhotos: IFirebasePhotos,
+    private val dao: ImagesDao
+) : RemoteMediator<Int, MarsImage>() {
+
+    @ExperimentalPagingApi
+    override suspend fun load(
+        loadType: LoadType,
+        state: PagingState<Int, MarsImage>
+    ) = withContext(Dispatchers.IO) {
+        loadSync(loadType, state)
+    }
+
+    private suspend fun loadSync(
+        loadType: LoadType,
+        state: PagingState<Int, MarsImage>
+    ): MediatorResult {
+        val alreadyInDb = state.pages.map { it.data.size }.sum()
+        if (loadType == LoadType.PREPEND) return MediatorResult.Success(endOfPaginationReached = true)
+
+        try {
+            val loadSize = state.config.pageSize
+            val list =
+                firebasePhotos.loadPopularPhotos(loadSize, state.lastItemOrNull()?.id?.toString())
+                    .blockingFirst()
+                    .mapIndexed { index, item -> item.toMarsImage(index + alreadyInDb) }
+
+            dao.withTransaction {
+                if (loadType == LoadType.REFRESH) {
+                    dao.deleteAllPopular()
+                }
+
+                dao.replaceImages(list)
+            }
+
+            val endOfPaginationReached: Boolean = list.lastOrNull() == null
+            return MediatorResult.Success(true)
+        } catch (e: Throwable) {
+            Log.e("SIrelon", "Error", e)
+            return MediatorResult.Error(e)
+        }
+    }
 
 }

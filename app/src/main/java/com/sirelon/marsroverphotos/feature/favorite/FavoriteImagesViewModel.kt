@@ -4,8 +4,6 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.feature.images.ImagesRepository
-import com.sirelon.marsroverphotos.storage.DataBaseProvider
-import com.sirelon.marsroverphotos.storage.ImagesDao
 import com.sirelon.marsroverphotos.storage.MarsImage
 
 /**
@@ -15,7 +13,7 @@ class FavoriteImagesViewModel(app: Application) : AndroidViewModel(app) {
 
     private val repository = ImagesRepository(app)
 
-    val favoriteImagesFlow = repository.loadPagedSource()
+    val favoriteImagesFlow = repository.loadFavoritePagedSource()
 
     fun updateFavForImage(image: MarsImage) {
         repository.updateFavForImage(item = image)

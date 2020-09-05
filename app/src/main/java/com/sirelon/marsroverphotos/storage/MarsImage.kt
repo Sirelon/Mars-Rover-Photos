@@ -15,6 +15,7 @@ import com.sirelon.marsroverphotos.models.ViewType
 data class MarsImage(
     @PrimaryKey
     val id: Int,
+    val order: Int,
     val sol: Long,
     val name: String?,
     val imageUrl: String,
@@ -23,7 +24,10 @@ data class MarsImage(
     @Embedded(prefix = "camera_")
     val camera: RoverCamera?,
 
-    val favorite: Boolean = false
+    val favorite: Boolean = false,
+    val popular: Boolean = false,
+    @Embedded(prefix = "counter_")
+    val stats: Stats
 ) : ViewType {
 
     override fun getViewId() = id
@@ -32,4 +36,10 @@ data class MarsImage(
 
     fun toMarsPhoto() = MarsPhoto(id.toLong(), sol, name, imageUrl, earthDate, camera)
 
+    class Stats(
+        val see: Long,
+        val scale: Long,
+        val save: Long,
+        val share: Long
+    )
 }

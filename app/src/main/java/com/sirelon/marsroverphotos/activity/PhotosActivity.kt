@@ -13,6 +13,7 @@ import android.widget.SeekBar
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.util.Pair
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.sirelon.marsroverphotos.NoConnectionError
@@ -36,6 +37,8 @@ import kotlinx.android.synthetic.main.activity_photos.*
 import kotlinx.android.synthetic.main.item_photo_header.*
 import kotlinx.android.synthetic.main.view_choose_sol.view.*
 import kotlinx.android.synthetic.main.view_no_connection.view.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.TimeZone
 import kotlin.random.Random
@@ -71,7 +74,10 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
 
     override fun onModelChoose(model: MarsPhoto, vararg sharedElements: Pair<View, String>) {
         val photos = adapter.getData().filterIsInstance<MarsPhoto>()
-        dataManager.cacheImages(photos)
+        GlobalScope.launch {
+            dataManager.cacheImages(photos)
+        }
+
 
         val ids = photos.map { it.id.toInt() }
 

@@ -77,7 +77,7 @@ internal class FirestorePhotos : IFirebasePhotos {
 
     override fun loadPopularPhotos(
         count: Int,
-        lastPhoto: FirebasePhoto?
+        lastPhotoId: String?
     ): Observable<List<FirebasePhoto>> {
         return Observable.create<List<FirebasePhoto>> { emitter: ObservableEmitter<List<FirebasePhoto>> ->
             val queryDirection = Query.Direction.DESCENDING
@@ -88,9 +88,9 @@ internal class FirestorePhotos : IFirebasePhotos {
                 .orderBy("seeCounter", queryDirection)
                 .limit(count.toLong())
 
-            if (lastPhoto != null) {
+            if (lastPhotoId != null) {
                 val documentSnapshot =
-                    Tasks.await(photosCollection().document(lastPhoto.id.toString()).get())
+                    Tasks.await(photosCollection().document(lastPhotoId).get())
                 first = first.startAfter(documentSnapshot)
             }
 

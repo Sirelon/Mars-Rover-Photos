@@ -97,10 +97,7 @@ class PopularPhotosActivity : BasePhotosActivity() {
         super.onCreate(savedInstanceState)
 
         lifecycleScope.launch {
-            viewModel.popularPhotos.collectLatest(adapter::setPagedList)
-//            viewModel.popularPhotos.collectLatest {
-//                it.logD()
-//            }
+            viewModel.popularPhotos.collectLatest(adapter::submitData)
         }
     }
 

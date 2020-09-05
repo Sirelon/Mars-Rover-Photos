@@ -4,6 +4,7 @@ import com.google.firebase.firestore.Exclude
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.models.ViewType
+import com.sirelon.marsroverphotos.storage.MarsImage
 
 /**
  * Created on 12/04/2017 19:05.
@@ -48,4 +49,22 @@ data class FirebasePhoto(
     )
 
     override fun getViewType() = AdapterConstants.POPULAR_PHOTO
+
+    fun toMarsImage(order: Int) = MarsImage(
+        id = id.toInt(),
+        sol = sol,
+        name = name,
+        imageUrl = imageUrl,
+        earthDate = earthDate,
+        camera = null, // TODO: Load camera and favorite from DataBase
+        favorite = false, // TODO: Load camera and favorite from DataBase
+        popular = true,
+        order = order,
+        stats = MarsImage.Stats(
+            see = seeCounter,
+            scale = scaleCounter,
+            save = saveCounter,
+            share = shareCounter
+        )
+    )
 }
