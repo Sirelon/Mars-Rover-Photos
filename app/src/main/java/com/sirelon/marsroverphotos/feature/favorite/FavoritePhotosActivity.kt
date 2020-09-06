@@ -42,7 +42,7 @@ abstract class BasePhotosActivity : RxActivity(), ImagesAdapterClickListener {
 //        popularPhotosList.setHasFixedSize(true)
 
         popularPhotosList.adapter =
-            adapter.withLoadStateHeaderAndFooter(header = LoadAdapter(), footer = LoadAdapter())
+            adapter.withLoadStateFooter(footer = LoadAdapter())
     }
 
     override fun openPhoto(image: MarsImage, vararg sharedElements: View) {

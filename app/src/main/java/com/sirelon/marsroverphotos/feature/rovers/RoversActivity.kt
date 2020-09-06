@@ -15,8 +15,8 @@ import com.sirelon.marsroverphotos.activity.RxActivity
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
 import com.sirelon.marsroverphotos.adapter.ViewTypeAdapter
 import com.sirelon.marsroverphotos.feature.favorite.FavoriteItem
-import com.sirelon.marsroverphotos.feature.favorite.FavoritesDelegateAdapter
 import com.sirelon.marsroverphotos.feature.favorite.FavoritePhotosActivity
+import com.sirelon.marsroverphotos.feature.favorite.FavoritesDelegateAdapter
 import com.sirelon.marsroverphotos.feature.popular.PopularDelegateAdapter
 import com.sirelon.marsroverphotos.feature.popular.PopularItem
 import com.sirelon.marsroverphotos.feature.popular.PopularPhotosActivity
@@ -80,26 +80,33 @@ class RoversActivity : RxActivity(), OnModelChooseListener<ViewType> {
 
         val roversLiveData = dataManager.rovers
 
-        mediator.addSource(roversLiveData) {
-            val favItem = mediator.value?.find { it is FavoriteItem }
-            val list = it.toMutableList<ViewType>()
-            favItem?.let { list.add(0, favItem) }
-            mediator.value = list
-        }
-
-        mediator.addSource(dataManager.loadFirstFavoriteItem()) {
-            if (it != null) {
-                val list = mediator.value?.toMutableList() ?: mutableListOf()
-                list.removeAll { it is FavoriteItem }
-                list.add(0, FavoriteItem(it))
-                mediator.value = list
-            }
-        }
-        mediator.observe(this) { list ->
-            val mutableList = list.toMutableList()
-            mutableList.add(popularItem)
+        roversLiveData.observe(this, {
+            val mutableList = it.toMutableList<ViewType>()
+            mutableList.add(0, popularItem)
             adapter.replaceData(mutableList)
-        }
+        })
+
+        // ACtivate it when favorite photos logic will be enabled
+//        mediator.addSource(roversLiveData) {
+//            val favItem = mediator.value?.find { it is FavoriteItem }
+//            val list = it.toMutableList<ViewType>()
+//            favItem?.let { list.add(0, favItem) }
+//            mediator.value = list
+//        }
+//
+//        mediator.addSource(dataManager.loadFirstFavoriteItem()) {
+//            if (it != null) {
+//                val list = mediator.value?.toMutableList() ?: mutableListOf()
+//                list.removeAll { it is FavoriteItem }
+//                list.add(0, FavoriteItem(it))
+//                mediator.value = list
+//            }
+//        }
+//        mediator.observe(this) { list ->
+//            val mutableList = list.toMutableList()
+//            mutableList.add(popularItem)
+//            adapter.replaceData(mutableList)
+//        }
     }
 
 }

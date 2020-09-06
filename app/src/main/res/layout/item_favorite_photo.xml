@@ -27,6 +27,7 @@
         android:layout_width="75dp"
         android:layout_height="75dp"
         android:layout_gravity="end"
+        android:visibility="gone"
         app:srcCompat="@drawable/ic_fav"
         app:tint="@color/colorAccent" />
 </androidx.cardview.widget.CardView>

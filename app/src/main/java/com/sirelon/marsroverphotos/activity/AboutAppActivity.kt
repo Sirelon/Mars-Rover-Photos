@@ -82,7 +82,7 @@ class AboutAppActivity : AppCompatActivity() {
 
     private fun calculateSize(dir: File?): Long {
         if (dir == null) return 0
-        if (!dir.isDirectory()) return dir.length()
+        if (!dir.isDirectory) return dir.length()
         var result: Long = 0
         val children: Array<File>? = dir.listFiles()
         if (children != null) for (child in children) result += calculateSize(child)

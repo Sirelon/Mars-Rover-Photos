@@ -19,6 +19,7 @@
         android:id="@+id/favBtn"
         android:layout_width="75dp"
         android:layout_height="75dp"
+        android:visibility="gone"
         android:layout_gravity="end"
         app:srcCompat="@drawable/ic_fav"
         app:tint="@color/colorAccent" />

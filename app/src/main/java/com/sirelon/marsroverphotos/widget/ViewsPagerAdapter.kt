@@ -11,9 +11,9 @@ import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
 import com.github.chrisbanes.photoview.PhotoViewAttacher
 import com.sirelon.marsroverphotos.R
-import com.sirelon.marsroverphotos.adapter.diffutils.ItemDiffCallback
 import com.sirelon.marsroverphotos.extensions.inflate
 import com.sirelon.marsroverphotos.storage.MarsImage
+import com.sirelon.marsroverphotos.storage.MarsImageDiffCallback
 
 /**
  * @author romanishin
@@ -22,7 +22,7 @@ import com.sirelon.marsroverphotos.storage.MarsImage
 class ImagesPagerAdapter(
     private val scaleCallback: (() -> Unit),
     private val favoriteCallback: ((photo: MarsImage) -> Unit)
-) : ListAdapter<MarsImage, ImagesPagerAdapter.ImageViewHolder>(ItemDiffCallback()) {
+) : ListAdapter<MarsImage, ImagesPagerAdapter.ImageViewHolder>(MarsImageDiffCallback) {
 
     private val colorsArr = listOf<Int>(
         Color.CYAN,
