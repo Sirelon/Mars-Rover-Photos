@@ -15,9 +15,6 @@ open class ItemDiffCallback<T : ViewType> : DiffUtil.ItemCallback<T>() {
         oldItem == newItem
 
     override fun getChangePayload(oldItem: T, newItem: T): Any? {
-        return RoverDiff.getChangePayload(oldItem, newItem) ?: super.getChangePayload(
-            oldItem,
-            newItem
-        )
+        return RoverDiff.getChangePayload(oldItem, newItem) ?: "" // super.getChangePayload(oldItem, newItem)
     }
 }

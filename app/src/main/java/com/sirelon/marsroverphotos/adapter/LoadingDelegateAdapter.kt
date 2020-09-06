@@ -13,16 +13,16 @@ import com.sirelon.marsroverphotos.models.ViewType
  */
 class LoadingDelegateAdapter : ViewTypeDelegateAdapter {
 
-    override fun onCreateViewHolder(parent: ViewGroup): androidx.recyclerview.widget.RecyclerView.ViewHolder = LoadingViewHolder(parent)
+    override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder = LoadingViewHolder(parent)
 
-    override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, item: ViewType, payloads: List<Any>?) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType, payloads: List<Any>?) {
 
     }
 
-    class LoadingViewHolder(parent: ViewGroup) : androidx.recyclerview.widget.RecyclerView.ViewHolder(parent.inflate(R.layout.item_loading)) {
+    class LoadingViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate(R.layout.item_loading)) {
         init {
-            if (itemView.layoutParams is androidx.recyclerview.widget.StaggeredGridLayoutManager.LayoutParams) {
-                (itemView.layoutParams as androidx.recyclerview.widget.StaggeredGridLayoutManager.LayoutParams).isFullSpan = true
+            if (itemView.layoutParams is StaggeredGridLayoutManager.LayoutParams) {
+                (itemView.layoutParams as StaggeredGridLayoutManager.LayoutParams).isFullSpan = true
             }
         }
     }

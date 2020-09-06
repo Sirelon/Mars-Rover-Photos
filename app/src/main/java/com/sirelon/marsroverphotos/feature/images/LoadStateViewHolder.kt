@@ -25,7 +25,6 @@ class LoadStateViewHolder(val parent: ViewGroup) :
     private val progress: View = itemView.findViewById(R.id.loadStateProgress)
 
     fun bind(loadState: LoadState) {
-
         loadState.logD()
         progress.visibility = View.VISIBLE
     }
