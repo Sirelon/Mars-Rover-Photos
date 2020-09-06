@@ -74,7 +74,7 @@ class ImagesRepository(private val context: Context) {
     @OptIn(ExperimentalPagingApi::class)
     fun loadPopularPagedSource(): Flow<PagingData<MarsImage>> {
         return Pager(
-            config = PagingConfig(15, 2),
+            config = PagingConfig(20, 2),
             pagingSourceFactory = { imagesDao.loadPopularPagedSource() },
             remoteMediator = PopularRemoteMediator(FirebaseProvider.firebasePhotos, imagesDao)
         ).flow
