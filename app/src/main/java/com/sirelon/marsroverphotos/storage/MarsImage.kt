@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos.storage
 
+import androidx.recyclerview.widget.DiffUtil
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -42,4 +43,15 @@ data class MarsImage(
         val save: Long,
         val share: Long
     )
+}
+
+val MarsImageDiffCallback = object : DiffUtil.ItemCallback<MarsImage>() {
+    override fun areItemsTheSame(oldItem: MarsImage, newItem: MarsImage) = oldItem.id == newItem.id
+
+    override fun areContentsTheSame(oldItem: MarsImage, newItem: MarsImage): Boolean {
+        if (oldItem != newItem) {
+            return oldItem.imageUrl == newItem.imageUrl
+        } else return true
+    }
+
 }

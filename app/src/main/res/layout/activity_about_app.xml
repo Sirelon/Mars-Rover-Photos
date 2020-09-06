@@ -44,6 +44,7 @@
         <Button
             android:id="@+id/clearCacheAction"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:textColor="?android:attr/colorPrimary"
             android:layout_width="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_height="wrap_content"

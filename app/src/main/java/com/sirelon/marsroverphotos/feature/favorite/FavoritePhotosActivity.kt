@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.activity.ImageActivity
@@ -30,15 +31,18 @@ abstract class BasePhotosActivity : RxActivity(), ImagesAdapterClickListener {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
 
-        title = getString(R.string.favorite_title)
+        toolbar.title = title()
+
         AdvertisingObjectFactory.getAdvertisingDelegate().loadAd(adViewBanner)
 
+        val popularPhotosList = findViewById<RecyclerView>(R.id.popularPhotosList)
+        popularPhotosList.setItemViewCacheSize(30)
         popularPhotosList.layoutManager =
             StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
-        popularPhotosList.setHasFixedSize(true)
+//        popularPhotosList.setHasFixedSize(true)
+
         popularPhotosList.adapter =
             adapter.withLoadStateHeaderAndFooter(header = LoadAdapter(), footer = LoadAdapter())
-
     }
 
     override fun openPhoto(image: MarsImage, vararg sharedElements: View) {
@@ -47,6 +51,8 @@ abstract class BasePhotosActivity : RxActivity(), ImagesAdapterClickListener {
         val intent = ImageActivity.createIntent(this@BasePhotosActivity, image.id, ids, false)
         startActivity(intent)
     }
+
+    abstract fun title(): CharSequence
 }
 
 /**
@@ -66,5 +72,7 @@ class FavoritePhotosActivity : BasePhotosActivity() {
     override fun updateFavorite(image: MarsImage) {
         viewModel.updateFavForImage(image)
     }
+
+    override fun title(): CharSequence = getString(R.string.favorite_title)
 
 }

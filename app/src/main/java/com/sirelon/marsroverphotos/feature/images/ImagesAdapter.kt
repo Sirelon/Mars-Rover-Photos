@@ -12,12 +12,17 @@ import com.sirelon.marsroverphotos.adapter.diffutils.ItemDiffCallback
 import com.sirelon.marsroverphotos.extensions.inflate
 import com.sirelon.marsroverphotos.extensions.loadImage
 import com.sirelon.marsroverphotos.storage.MarsImage
+import com.sirelon.marsroverphotos.storage.MarsImageDiffCallback
 
 ///**
 // * Created on 31.08.2020 23:21 for Mars-Rover-Photos.
 // */
 class ImagesAdapter(private val callback: ImagesAdapterClickListener) :
-    PagingDataAdapter<MarsImage, MarsPhotoViewHolder>(ItemDiffCallback<MarsImage>()) {
+    PagingDataAdapter<MarsImage, MarsPhotoViewHolder>(MarsImageDiffCallback) {
+
+    init {
+        setHasStableIds(true)
+    }
 
     override fun onBindViewHolder(holder: MarsPhotoViewHolder, position: Int) {
         val image = getItem(position) ?: return
