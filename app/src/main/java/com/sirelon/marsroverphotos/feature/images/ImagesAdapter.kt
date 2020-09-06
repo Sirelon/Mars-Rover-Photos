@@ -20,10 +20,6 @@ import com.sirelon.marsroverphotos.storage.MarsImageDiffCallback
 class ImagesAdapter(private val callback: ImagesAdapterClickListener) :
     PagingDataAdapter<MarsImage, MarsPhotoViewHolder>(MarsImageDiffCallback) {
 
-    init {
-        setHasStableIds(true)
-    }
-
     override fun onBindViewHolder(holder: MarsPhotoViewHolder, position: Int) {
         val image = getItem(position) ?: return
         holder.bind(image)
