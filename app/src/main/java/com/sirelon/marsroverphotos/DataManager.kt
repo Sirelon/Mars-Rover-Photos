@@ -3,7 +3,6 @@ package com.sirelon.marsroverphotos
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.LiveData
-import com.sirelon.marsroverphotos.extensions.logE
 import com.sirelon.marsroverphotos.feature.images.ImagesRepository
 import com.sirelon.marsroverphotos.feature.rovers.INSIGHT_ID
 import com.sirelon.marsroverphotos.feature.rovers.RoversRepository
@@ -14,7 +13,9 @@ import com.sirelon.marsroverphotos.network.RestApi
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.tracker.ITracker
 import io.reactivex.Observable
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 /**
  * @author romanishin
@@ -36,11 +37,14 @@ class DataManager(
 
     val rovers = roverRepo.getRovers()
 
+    private val exceptionHandler =
+        CoroutineExceptionHandler { _, throwable -> throwable.printStackTrace() }
+
     init {
-        firebasePhotos.countOfInsightPhotos()
-            .flatMapCompletable { roverRepo.updateRoverCountPhotos(INSIGHT_ID, it) }
-            .onErrorComplete()
-            .subscribe()
+        GlobalScope.launch(exceptionHandler) {
+            val count = firebasePhotos.countOfInsightPhotos()
+            roverRepo.updateRoverCountPhotos(INSIGHT_ID, count)
+        }
     }
 
     fun loadFirstFavoriteItem(): LiveData<MarsImage?> = imagesRepo.loadFirstImage()

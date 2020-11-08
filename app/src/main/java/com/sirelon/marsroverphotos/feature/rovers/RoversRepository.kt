@@ -1,22 +1,21 @@
 package com.sirelon.marsroverphotos.feature.rovers
 
 import android.content.Context
-import android.os.Build
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.extensions.logD
-import com.sirelon.marsroverphotos.extensions.logE
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.RoverDateUtil
 import com.sirelon.marsroverphotos.network.RestApi
 import com.sirelon.marsroverphotos.network.RoverInfo
 import com.sirelon.marsroverphotos.storage.DataBaseProvider
 import com.sirelon.marsroverphotos.storage.RoverDao
-import io.reactivex.Completable
-import io.reactivex.Observable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
-import java.util.stream.Collectors
 
 
 const val INSIGHT_ID = 4L
@@ -97,36 +96,18 @@ class RoversRepository(context: Context, private val api: RestApi) {
     }
 
     // Keep it for updating inforamttion via some time.
-    private suspend fun loadFromServer() {
+    private suspend fun loadFromServer() = coroutineScope{
         val roversName = listOf("curiosity", "opportunity", "spirit")
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            val list = roversName
-                .parallelStream()
-                .map { api.getRoverInfo(it).blockingFirst() }
-                .collect(Collectors.toList())
-
-//            roverDao.insertRoversList(list)
-        } else {
-            val list = roversName
-                .map { api.getRoverInfo(it).blockingFirst() }
-//            roverDao.insertRoversList(list)
-        }
-
-//        Observable.fromArray("curiosity", "opportunity", "spirit")
-//            .map(api::getRoverInfo)
-//            .toList()
-//            .subscribeOn(Schedulers.io())
-//            .flatMapObservable { Observable.merge(it) }
-//            .toList()
-//            .subscribe(roverRepo::updateRoversByInfo, Throwable::logE)
+        val rovers = roversName.asFlow()
+            .map { async {  api.getRoverInfo(it) } }
+            .map { it.await() }
+            .toList()
+//        roverDao.insertRoversList(rovers)
     }
 
-    fun updateRoverCountPhotos(roverId: Long, photos: Long): Completable {
+    suspend fun updateRoverCountPhotos(roverId: Long, photos: Long) {
         "photos $photos".logD()
-        return Completable.fromCallable { roverDao.updateRoverCountPhotos(roverId, photos) }
-            .subscribeOn(Schedulers.io())
-            .doOnError(Throwable::logE)
-            .onErrorComplete()
+        roverDao.updateRoverCountPhotos(roverId, photos)
     }
 
     fun getRovers() = roverDao.getRovers()

@@ -3,7 +3,6 @@ package com.sirelon.marsroverphotos.network
 import android.content.Context
 import com.readystatesoftware.chuck.ChuckInterceptor
 import com.sirelon.marsroverphotos.models.PhotosQueryRequest
-import io.reactivex.Observable
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Retrofit
@@ -42,6 +41,6 @@ class RestApi(context: Context) {
         return nasaApi.getRoverPhotos(query.roverName, sol, query.camera)
     }
 
-    fun getRoverInfo(roverName: String): Observable<RoverInfo> =
-        nasaApi.getRoverInfo(roverName).toObservable().map { it.roverInfo }
+    suspend fun getRoverInfo(roverName: String): RoverInfo =
+        nasaApi.getRoverInfo(roverName).roverInfo
 }

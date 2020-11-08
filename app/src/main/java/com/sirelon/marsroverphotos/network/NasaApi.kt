@@ -17,10 +17,10 @@ interface NasaApi {
     }
 
     @GET("/mars-photos/api/v1/manifests/{roverName}")
-    fun getRoverInfo(
+    suspend fun getRoverInfo(
         @Path("roverName") roverName: String,
         @Query("api_key") apiKey: String = APIKEY
-    ): Single<RoverResponse>
+    ): RoverResponse
 
     @GET("/mars-photos/api/v1/rovers/{roverName}/photos")
     fun getRoverPhotos(

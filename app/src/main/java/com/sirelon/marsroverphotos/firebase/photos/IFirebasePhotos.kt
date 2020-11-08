@@ -11,10 +11,13 @@ import io.reactivex.Single
 interface IFirebasePhotos {
 
     fun countOfAllPhotos(): Single<Long>
-    fun countOfInsightPhotos(): Single<Long>
+    suspend fun countOfInsightPhotos(): Long
     fun updatePhotoShareCounter(photo: MarsPhoto): Observable<Long>
     fun updatePhotoSaveCounter(photo: MarsPhoto): Observable<Long>
     fun updatePhotoScaleCounter(photo: MarsPhoto): Observable<Long>
     fun updatePhotoSeenCounter(photo: MarsPhoto): Observable<Long>
-    fun loadPopularPhotos(count: Int = 10, lastPhotoId: String? = null): Observable<List<FirebasePhoto>>
+    fun loadPopularPhotos(
+        count: Int = 10,
+        lastPhotoId: String? = null
+    ): Observable<List<FirebasePhoto>>
 }

@@ -25,18 +25,9 @@ internal class FirestorePhotos : IFirebasePhotos {
     private fun photosCollection() =
         FirebaseFirestore.getInstance().collection(FirebaseConstants.COLECTION_PHOTOS)
 
-    override fun countOfInsightPhotos(): Single<Long> {
-        return Single.create<Long> { emitter ->
-            roversCollection().document(FirebaseConstants.DOCUMENT_INSIGHT)
-                .addSnapshotListener { documentSnapshot, exception ->
-                    if (exception != null) {
-                        emitter.onError(exception)
-                    } else {
-                        val totalPhotos = documentSnapshot?.getLong("total_photos") ?: 0
-                        emitter.onSuccess(totalPhotos)
-                    }
-                }
-        }
+    override suspend fun countOfInsightPhotos(): Long {
+        val task = roversCollection().document(FirebaseConstants.DOCUMENT_INSIGHT).get()
+        Tasks.await(task).getLong("total_photos")
     }
 
     override fun countOfAllPhotos(): Single<Long> {
