@@ -3,6 +3,7 @@ package com.sirelon.marsroverphotos.activity
 import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -10,11 +11,15 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.ShareActionProvider
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.MenuItemCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
@@ -25,13 +30,14 @@ import com.sirelon.marsroverphotos.extensions.showAppSettings
 import com.sirelon.marsroverphotos.extensions.showSnackBar
 import com.sirelon.marsroverphotos.feature.advertising.AdvertisingObjectFactory
 import com.sirelon.marsroverphotos.feature.images.ImageViewModel
+import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.utils.transformers.DepthPageTransformer
 import com.sirelon.marsroverphotos.widget.ImagesPagerAdapter
 import com.sirelon.marsroverphotos.widget.VerticalDragLayout
-import com.tbruyelle.rxpermissions2.RxPermissions
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.math.abs
 import kotlin.math.min
 
@@ -63,6 +69,8 @@ class ImageActivity : RxActivity() {
 
     private val imagesViewModel: ImageViewModel by viewModels()
 
+    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
+
     private val shareIntent by lazy {
         val shareIntent = Intent(Intent.ACTION_SEND)
         val shareText =
@@ -81,6 +89,15 @@ class ImageActivity : RxActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_image)
+
+        requestPermissionLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+                if (isGranted) {
+                    marsPhoto?.toMarsPhoto()?.let { savePhotoToLocal(it) }
+                } else {
+                    permissionNotGrant()
+                }
+            }
 
         val ids = intent.getIntegerArrayListExtra(EXTRA_PHOTO_IDS)
 
@@ -128,7 +145,7 @@ class ImageActivity : RxActivity() {
 
         val selectedId = intent.getIntExtra(EXTRA_SELECTED_ID, 0)
         var firstLoad = true
-        imagesViewModel.imagesLiveData.observe(this) {list->
+        imagesViewModel.imagesLiveData.observe(this) { list ->
             adapter.submitList(list) {
                 if (firstLoad) {
 
@@ -183,41 +200,43 @@ class ImageActivity : RxActivity() {
     }
 
     private fun saveImageToGallery() {
-        val marsPhoto = marsPhoto ?: return
-        val subscribe = RxPermissions(this)
-            // Request permission for saving file.
-            .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            // filter not granted permission
-            .filter {
-                //  If permission not granted and shouldShowRequestPermissionRationale = show explain dialog. else show snackbar with gotosettings
-                if (!it) {
-                    permissionNotGrant()
-                }
-                it
-            }
-            // Get Bitmap on background
-            .observeOn(Schedulers.io())
-            .map {
-                Glide.with(this).asBitmap().load(marsPhoto.imageUrl).submit().get()
-            }
-            // Save bitmap to gallery
-            .map {
-                MediaStore.Images.Media.insertImage(
-                    contentResolver, it,
-                    "mars_photo_${marsPhoto.id}",
+        val marsPhoto = marsPhoto?.toMarsPhoto() ?: return
+
+        val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
+        val grated =
+            ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+        if (grated) {
+            // blabla
+            savePhotoToLocal(marsPhoto)
+        } else {
+            requestPermissionLauncher.launch(permission)
+        }
+    }
+
+    private fun savePhotoToLocal(photo: MarsPhoto) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            kotlin.runCatching {
+                val bitmap =
+                    Glide.with(this@ImageActivity).asBitmap().load(photo.imageUrl).submit().get()
+                val localUrl = MediaStore.Images.Media.insertImage(
+                    contentResolver, bitmap,
+                    "mars_photo_${photo.id}",
                     "Photo saved from $appUrl"
                 )
+                sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse(localUrl)))
+                dataManager.updatePhotoSaveCounter(photo)
+                // Update counter for save
+                localUrl
+            }.onSuccess {
+                withContext(Dispatchers.Main) {
+                    showSnackBarOnSaved(it)
+                }
+            }.onFailure {
+                withContext(Dispatchers.Main) {
+                    onErrorOccurred(it)
+                }
             }
-            // Send broadcast for updating gallery
-            .doOnNext {
-                sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse(it)))
-            }
-            // Update counter for save
-            .doOnNext { dataManager.updatePhotoSaveCounter(marsPhoto.toMarsPhoto()) }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(::showSnackBarOnSaved, ::onErrorOccurred)
-
-        subscriptions.add(subscribe)
+        }
     }
 
     private fun permissionNotGrant() {

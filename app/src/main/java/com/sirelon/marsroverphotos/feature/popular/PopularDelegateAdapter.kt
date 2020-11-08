@@ -41,7 +41,7 @@ class PopularDelegateAdapter(private val callback: OnModelChooseListener<ViewTyp
     class PopularViewHolder(parent: ViewGroup) :
         RecyclerView.ViewHolder(parent.inflate(R.layout.item_popular)) {
 
-        val totalPhotos = parent.findViewById<TextView>(R.id.totalPhotos)
+        val totalPhotos = itemView.findViewById<TextView>(R.id.totalPhotos)
 
         fun bind(item: PopularItem) = with(itemView) {
             // for now it it invisible

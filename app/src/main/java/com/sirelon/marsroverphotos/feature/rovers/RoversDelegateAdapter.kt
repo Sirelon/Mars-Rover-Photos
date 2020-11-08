@@ -40,13 +40,13 @@ class RoversDelegateAdapter(private val callback: OnModelChooseListener<ViewType
     class RoverViewHolder(parent: ViewGroup) :
         RecyclerView.ViewHolder(parent.inflate(R.layout.item_rover)) {
 
-        private val roverPhoto = parent.findViewById<ImageView>(R.id.roverPhoto)
-        private val totalPhotos = parent.findViewById<TextView>(R.id.totalPhotos)
-        private val lastPhotoDate = parent.findViewById<TextView>(R.id.lastPhotoDate)
-        private val launchDate = parent.findViewById<TextView>(R.id.launchDate)
-        private val roverLandingDate = parent.findViewById<TextView>(R.id.roverLandingDate)
-        private val roverStatus = parent.findViewById<TextView>(R.id.roverStatus)
-        private val roverName = parent.findViewById<TextView>(R.id.roverName)
+        private val roverPhoto = itemView.findViewById<ImageView>(R.id.roverPhoto)
+        private val totalPhotos = itemView.findViewById<TextView>(R.id.totalPhotos)
+        private val lastPhotoDate = itemView.findViewById<TextView>(R.id.lastPhotoDate)
+        private val launchDate = itemView.findViewById<TextView>(R.id.launchDate)
+        private val roverLandingDate = itemView.findViewById<TextView>(R.id.roverLandingDate)
+        private val roverStatus = itemView.findViewById<TextView>(R.id.roverStatus)
+        private val roverName = itemView.findViewById<TextView>(R.id.roverName)
 
         fun bind(item: Rover, payloads: List<Any>?) = if (payloads == null || payloads.isEmpty()) {
             bindFullInfo(item)

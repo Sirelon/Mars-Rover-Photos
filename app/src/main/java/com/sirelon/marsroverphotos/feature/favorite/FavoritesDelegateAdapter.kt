@@ -35,7 +35,7 @@ class FavoritesDelegateAdapter(private val callback: OnModelChooseListener<ViewT
     class FavoriteViewHolder(parent: ViewGroup) :
         RecyclerView.ViewHolder(parent.inflate(R.layout.item_favorites)) {
 
-        val favoritePhoto = parent.findViewById<ImageView>(R.id.favoritePhoto)
+        val favoritePhoto = itemView.findViewById<ImageView>(R.id.favoritePhoto)
 
         fun bind(item: FavoriteItem) = with(this) {
             favoritePhoto.loadImage(item.image.imageUrl)

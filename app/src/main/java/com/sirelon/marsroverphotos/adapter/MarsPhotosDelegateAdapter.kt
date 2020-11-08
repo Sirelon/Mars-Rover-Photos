@@ -46,8 +46,8 @@ class MarsPhotosDelegateAdapter(val callback: OnModelChooseListener<MarsPhoto>) 
     class MarsPhotoViewHolder(parent: ViewGroup) :
         RecyclerView.ViewHolder(parent.inflate(R.layout.item_mars_photo)) {
 
-        private val photo = parent.findViewById<ImageView>(R.id.photo)
-        private val cameraName = parent.findViewById<TextView>(R.id.cameraName)
+        private val photo = itemView.findViewById<ImageView>(R.id.photo)
+        private val cameraName = itemView.findViewById<TextView>(R.id.cameraName)
         fun bind(item: MarsPhoto) = with(itemView) {
             photo.loadImage(item.imageUrl)
             val name = item.name

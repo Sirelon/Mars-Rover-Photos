@@ -43,7 +43,7 @@ class AdsDelegateAdapter : ViewTypeDelegateAdapter {
 
     class AdvertizingViewHolder(parent: ViewGroup) :
         RecyclerView.ViewHolder(parent.inflate(R.layout.add_item_photo)) {
-        val ad_item_photo = parent.findViewById<NativeExpressAdView>(R.id.ad_item_photo)
+        val ad_item_photo = itemView.findViewById<NativeExpressAdView>(R.id.ad_item_photo)
         init {
             if (itemView.layoutParams is StaggeredGridLayoutManager.LayoutParams) {
                 (itemView.layoutParams as StaggeredGridLayoutManager.LayoutParams).isFullSpan = true
