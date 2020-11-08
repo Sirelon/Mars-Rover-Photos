@@ -30,7 +30,6 @@ import com.sirelon.marsroverphotos.widget.ImagesPagerAdapter
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_about_app.*
 import kotlinx.android.synthetic.main.activity_image.*
 import kotlinx.android.synthetic.main.view_native_adview.*
 import kotlin.math.abs

@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.text.format.Formatter
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -17,7 +18,6 @@ import com.sirelon.marsroverphotos.BuildConfig
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.spannable
-import kotlinx.android.synthetic.main.activity_about_app.*
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,13 +35,16 @@ class AboutAppActivity : AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        val about_rights = findViewById<TextView>(R.id.about_rights)
         about_rights.text =
             getString(R.string.all_rights_reserved_fmt, Calendar.getInstance().get(Calendar.YEAR))
 
-        about_rate_action.setOnClickListener {
+        findViewById<View>(R.id.about_rate_action).setOnClickListener {
             tracker.trackClick("goToMarket")
             goToMarket()
         }
+
+        val about_app_version = findViewById<TextView>(R.id.about_app_version)
 
         about_app_version.text = spannable {
             tracker.trackClick("About App")
@@ -50,6 +53,8 @@ class AboutAppActivity : AppCompatActivity() {
             }
             +BuildConfig.VERSION_NAME
         }.toCharSequence()
+
+        val about_email = findViewById<TextView>(R.id.about_email)
 
         about_email.text = spannable {
             tracker.trackClick("Email")
