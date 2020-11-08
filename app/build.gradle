@@ -114,7 +114,6 @@ dependencies {
     def retrofitVer = '2.9.0'
     implementation "com.squareup.retrofit2:retrofit:$retrofitVer"
     implementation "com.squareup.retrofit2:converter-gson:$retrofitVer"
-    implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofitVer"
 
     implementation 'com.google.firebase:firebase-core:18.0.0'
     implementation 'com.google.firebase:firebase-analytics:18.0.0'

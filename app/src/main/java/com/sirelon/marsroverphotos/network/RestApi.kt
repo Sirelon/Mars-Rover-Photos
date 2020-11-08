@@ -6,7 +6,6 @@ import com.sirelon.marsroverphotos.models.PhotosQueryRequest
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
 /**
@@ -26,7 +25,6 @@ class RestApi(context: Context) {
             .client(okkClient)
             .baseUrl("https://api.nasa.gov")
             .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
 
         nasaApi = retrofit.create(NasaApi::class.java)
