@@ -14,7 +14,6 @@ import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.isConnected
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Consumer
-import kotlinx.android.synthetic.main.activity_photos.*
 import java.net.UnknownHostException
 
 /**
@@ -62,6 +61,7 @@ open class RxActivity : AppCompatActivity() {
                 showNoConnectionView(listener)
             } else {
                 it.printStackTrace()
+                val activity_main_root = findViewById<View>(R.id.activity_main_root)
                 Snackbar.make(
                     activity_main_root,
                     "Error occurred: ${it.message}",

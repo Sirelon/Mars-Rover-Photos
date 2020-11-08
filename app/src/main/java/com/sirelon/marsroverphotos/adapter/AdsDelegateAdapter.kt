@@ -4,11 +4,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.NativeExpressAdView
 import com.sirelon.marsroverphotos.BuildConfig
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.extensions.inflate
 import com.sirelon.marsroverphotos.models.ViewType
-import kotlinx.android.synthetic.main.add_item_photo.view.*
 
 /**
  * @author romanishin
@@ -37,11 +37,13 @@ class AdsDelegateAdapter : ViewTypeDelegateAdapter {
         item: ViewType,
         payloads: List<Any>?
     ) {
-        holder.itemView.ad_item_photo.loadAd(adRequest)
+        holder as AdvertizingViewHolder
+        holder.ad_item_photo.loadAd(adRequest)
     }
 
     class AdvertizingViewHolder(parent: ViewGroup) :
         RecyclerView.ViewHolder(parent.inflate(R.layout.add_item_photo)) {
+        val ad_item_photo = parent.findViewById<NativeExpressAdView>(R.id.ad_item_photo)
         init {
             if (itemView.layoutParams is StaggeredGridLayoutManager.LayoutParams) {
                 (itemView.layoutParams as StaggeredGridLayoutManager.LayoutParams).isFullSpan = true

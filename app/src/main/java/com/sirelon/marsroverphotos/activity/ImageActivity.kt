@@ -18,6 +18,7 @@ import androidx.core.view.MenuItemCompat
 import androidx.lifecycle.observe
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
+import com.google.android.gms.ads.NativeExpressAdView
 import com.google.android.material.snackbar.Snackbar
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.extensions.showAppSettings
@@ -27,11 +28,10 @@ import com.sirelon.marsroverphotos.feature.images.ImageViewModel
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.utils.transformers.DepthPageTransformer
 import com.sirelon.marsroverphotos.widget.ImagesPagerAdapter
+import com.sirelon.marsroverphotos.widget.VerticalDragLayout
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_image.*
-import kotlinx.android.synthetic.main.view_native_adview.*
 import kotlin.math.abs
 import kotlin.math.min
 
@@ -91,10 +91,11 @@ class ImageActivity : RxActivity() {
 
         imagesViewModel.setIdsToShow(ids)
 
+        val adViewBanner = findViewById<NativeExpressAdView>(R.id.adViewBanner)
         // Configure Ad
         AdvertisingObjectFactory.getAdvertisingDelegate()
             .loadAd(adViewBanner)
-
+        val imagePager = findViewById<ViewPager2>(R.id.imagePager)
         val cameraFilterEnable = intent.getBooleanExtra(EXTRA_FILTER_BY_CAMERA, false)
         title = "Mars photo"
         rootForDrag = imagePager
@@ -139,6 +140,7 @@ class ImageActivity : RxActivity() {
             }
         }
 
+        val imageDragLayout = findViewById<VerticalDragLayout>(R.id.imageDragLayout)
         val dismissPathLength = resources.getDimensionPixelSize(R.dimen.dismiss_path_length)
         imageDragLayout.setOnDragListener { dy ->
             val processedAlpha = 1 - min(abs(dy / (3 * dismissPathLength)), 1f)
@@ -230,21 +232,15 @@ class ImageActivity : RxActivity() {
         }
     }
 
-    private fun ImageActivity.showSnackBarError() {
-        fullscreenImageRoot.showSnackBar(
-            "Cannot show this image", "Close",
-            View.OnClickListener { finish() },
-            Snackbar.LENGTH_INDEFINITE
-        )
-    }
-
     private fun showSnackBarOnSettings() {
+        val fullscreenImageRoot = findViewById<View>(R.id.fullscreenImageRoot)
         fullscreenImageRoot.showSnackBar(
             "Without this permission I cannot save this nice photo to your gallery. If you want to save image please give permission in settings",
             "Go to Settings", View.OnClickListener { showAppSettings() })
     }
 
     private fun showSnackBarOnSaved(imagePath: String?) {
+        val fullscreenImageRoot = findViewById<View>(R.id.fullscreenImageRoot)
         fullscreenImageRoot.showSnackBar(
             msg = "File was saved on path $imagePath",
             actionTxt = "View", actionCallback = View.OnClickListener {
