@@ -65,6 +65,10 @@ android {
     }
 }
 
+androidExtensions {
+    features = ["parcelize"]
+}
+
 dependencies {
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
