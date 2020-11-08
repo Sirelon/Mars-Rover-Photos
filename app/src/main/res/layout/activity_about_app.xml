@@ -33,7 +33,7 @@
             android:gravity="center"
             android:lineSpacingExtra="3dp"
             android:padding="8dp"
-            android:text="Discover Mars with exploration rovers!\nGreat amount of recent and old photos directly from the Red Planet. \nSee what discovered mars rovers during their missions. \nMaybe you will manage to find Martian life ;-)"
+            android:text="@string/about_description"
             android:textColor="?attr/colorPrimary" />
 
         <Space
@@ -48,14 +48,14 @@
             android:layout_width="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_height="wrap_content"
-            android:text="Clear cache" />
+            android:text="@string/clear_cache" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autoLink="web"
             android:padding="2dp"
-            android:text="API provided by https://api.nasa.gov/api.html#MarsPhotos"
+            android:text="@string/provided_api"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
         <TextView
@@ -81,7 +81,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="4dp"
-            android:text="Rate this App" />
+            android:text="@string/action_rate" />
 
         <TextView
             android:id="@+id/about_rights"
