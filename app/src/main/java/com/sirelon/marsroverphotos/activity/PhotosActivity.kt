@@ -9,13 +9,17 @@ import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
 import android.view.View
+import android.widget.EditText
 import android.widget.SeekBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.Toolbar
 import androidx.core.util.Pair
-import androidx.lifecycle.lifecycleScope
+import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.sirelon.marsroverphotos.NoConnectionError
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
@@ -33,10 +37,6 @@ import com.sirelon.marsroverphotos.models.ViewType
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_photos.*
-import kotlinx.android.synthetic.main.item_photo_header.*
-import kotlinx.android.synthetic.main.view_choose_sol.view.*
-import kotlinx.android.synthetic.main.view_no_connection.view.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -66,6 +66,11 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
     private var filteredCamera: String? = null
     private var camerasList = emptyList<String>()
 
+    private lateinit var actionRandom: FloatingActionButton
+    private lateinit var photos_list: RecyclerView
+    private lateinit var no_data_view: View
+    private lateinit var  photosCamera: TextView
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putParcelable(EXTRA_QUERY_REQUEST, queryRequest)
@@ -91,13 +96,16 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_photos)
-
-        no_data_view.title.text = "No data here :("
+        actionRandom = findViewById(R.id.actionRandom)
+        no_data_view = findViewById<View>(R.id.no_data_view)
+        val noData = findViewById<TextView>(R.id.title)
+        noData.text = "No data here :("
         no_data_view.setOnClickListener {
             dataManager.trackClick("refresh_no_data")
             actionRandom.callOnClick()
         }
 
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -123,6 +131,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
         // Set Toolbar title
         title = "${rover.name}'s photos"
 
+        photosCamera = findViewById(R.id.photosCamera)
         photosCamera.setOnClickListener {
             dataManager.trackClick("camera")
             AlertDialog.Builder(this)
@@ -139,6 +148,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
 
         adapter.addDelegateAdapter(AdapterConstants.ADVERTIZING, AdsDelegateAdapter())
 
+        photos_list = findViewById<RecyclerView>(R.id.photos_list)
         photos_list.apply {
             setHasFixedSize(true)
 
@@ -323,7 +333,8 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
 
         datePicker.datePicker.maxDate = dateUtil.roverLastDate
         datePicker.datePicker.minDate = dateUtil.roverLandingDate
-        dateEarthChoose.setOnClickListener {
+
+        findViewById<View>(R.id.dateEarthChoose).setOnClickListener {
             dataManager.trackClick("choose_earth")
             // UPDATE TIME
             val timeFromSol = dateUtil.dateFromSol(queryRequest.sol)
@@ -346,42 +357,37 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
     private fun setupViewsForSetSol() {
         val dialogView = layoutInflater.inflate(R.layout.view_choose_sol, null, false)
 
+        val solInput = dialogView.findViewById<EditText>(R.id.solInput)
+        val solSeekBar = dialogView.findViewById<SeekBar>(R.id.solSeekBar)
+
         val dialog = AlertDialog.Builder(this)
             .setView(dialogView)
             .setNegativeButton("Cancel", null)
             .setPositiveButton("Ok") { _, _ ->
-                val sol = dialogView.solInput.text.toString().toLongOrNull()
+                val sol = solInput.text.toString().toLongOrNull()
                 sol ?: return@setPositiveButton
                 updateDateEearthChoose(dateUtil.dateFromSol(sol))
                 loadDataBySol(sol)
             }.create()
 
         updateDateSolChoose()
-        dateSolChoose.setOnClickListener {
+        findViewById<View>(R.id.dateSolChoose).setOnClickListener {
             dataManager.trackClick("choose_sol")
             // Update views
-            dialogView.solSeekBar.max = rover.maxSol.toInt()
-            dialogView.solSeekBar.progress = queryRequest.sol.toInt()
+            solSeekBar.max = rover.maxSol.toInt()
+            solSeekBar.progress = queryRequest.sol.toInt()
             val solStr = queryRequest.sol.toString()
-            dialogView.solInput.setText(solStr)
-            dialogView.solInput.setSelection(solStr.length)
+            solInput.setText(solStr)
+            solInput.setSelection(solStr.length)
             // Show dialog
             dialog.show()
         }
 
         val changeSubscription = Observable.create<CharSequence> {
             // Some setup for seek and edittext
-            dialogView.solInput.addTextChangedListener(object : TextWatcher {
-                override fun afterTextChanged(p0: Editable?) {
-                }
-
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                }
-
-                override fun onTextChanged(text: CharSequence, p1: Int, p2: Int, p3: Int) {
-                    it.onNext(text)
-                }
-            })
+            solInput.doOnTextChanged { text, _, _, _ ->
+                it.onNext(text ?: "")
+            }
         }
             .filter { it.isNotEmpty() }
             .filter { TextUtils.isDigitsOnly(it) }
@@ -393,18 +399,18 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
                         "The max sol for ${rover.name}'s rover is ${rover.maxSol}",
                         Toast.LENGTH_SHORT
                     ).show()
-                    dialogView.solInput.setText("${rover.maxSol}")
+                    solInput.setText("${rover.maxSol}")
                     false
                 } else {
                     true
                 }
             }
             .retry()
-            .subscribe({ dialogView.solSeekBar.progress = it }, { it.printStackTrace() })
+            .subscribe({ solSeekBar.progress = it }, { it.printStackTrace() })
 
         subscriptions.add(changeSubscription)
 
-        dialogView.solSeekBar.setOnSeekBarChangeListener(object :
+        solSeekBar.setOnSeekBarChangeListener(object :
                                                              SeekBar.OnSeekBarChangeListener {
             override fun onStartTrackingTouch(p0: SeekBar?) {
             }
@@ -416,19 +422,21 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
                 @Suppress("NAME_SHADOWING")
                 var progress = progress
                 if (progress <= 0) progress = 1
-                dialogView.solInput.setText("$progress")
-                dialogView.solInput.setSelection(dialogView.solInput.text.length)
+                solInput.setText("$progress")
+                solInput.setSelection(solInput.text.length)
             }
         })
     }
 
     @SuppressLint("SetTextI18n")
     private fun updateDateSolChoose() {
+        val dateSolChoose = findViewById<TextView>(R.id.dateSolChoose)
         dateSolChoose.text = "Sol date: ${queryRequest.sol}"
     }
 
     @SuppressLint("SetTextI18n")
     private fun updateDateEearthChoose(time: Long) {
+        val dateEarthChoose = findViewById<TextView>(R.id.dateEarthChoose)
         dateEarthChoose.text = "Earth date: ${dateUtil.parseTime(time)}"
     }
 

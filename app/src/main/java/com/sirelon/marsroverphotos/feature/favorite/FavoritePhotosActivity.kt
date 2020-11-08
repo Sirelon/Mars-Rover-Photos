@@ -3,9 +3,11 @@ package com.sirelon.marsroverphotos.feature.favorite
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
+import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.google.android.gms.ads.NativeExpressAdView
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.activity.ImageActivity
 import com.sirelon.marsroverphotos.activity.RxActivity
@@ -14,8 +16,6 @@ import com.sirelon.marsroverphotos.feature.images.ImagesAdapter
 import com.sirelon.marsroverphotos.feature.images.ImagesAdapterClickListener
 import com.sirelon.marsroverphotos.feature.images.LoadAdapter
 import com.sirelon.marsroverphotos.storage.MarsImage
-import kotlinx.android.synthetic.main.activity_popular_photos.*
-import kotlinx.android.synthetic.main.view_native_adview.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -25,6 +25,7 @@ abstract class BasePhotosActivity : RxActivity(), ImagesAdapterClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_popular_photos)
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -33,6 +34,7 @@ abstract class BasePhotosActivity : RxActivity(), ImagesAdapterClickListener {
 
         toolbar.title = title()
 
+        val adViewBanner = findViewById<NativeExpressAdView>(R.id.adViewBanner)
         AdvertisingObjectFactory.getAdvertisingDelegate().loadAd(adViewBanner)
 
         val popularPhotosList = findViewById<RecyclerView>(R.id.popularPhotosList)

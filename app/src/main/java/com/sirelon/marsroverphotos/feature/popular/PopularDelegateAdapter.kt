@@ -3,6 +3,7 @@ package com.sirelon.marsroverphotos.feature.popular
 import android.graphics.Typeface
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.annotation.Keep
 import androidx.recyclerview.widget.RecyclerView
 import com.sirelon.marsroverphotos.R
@@ -12,8 +13,6 @@ import com.sirelon.marsroverphotos.extensions.inflate
 import com.sirelon.marsroverphotos.extensions.spannable
 import com.sirelon.marsroverphotos.models.OnModelChooseListener
 import com.sirelon.marsroverphotos.models.ViewType
-import kotlinx.android.extensions.LayoutContainer
-import kotlinx.android.synthetic.main.item_popular.view.*
 
 /**
  * @author romanishin
@@ -40,14 +39,14 @@ class PopularDelegateAdapter(private val callback: OnModelChooseListener<ViewTyp
 
     @Keep
     class PopularViewHolder(parent: ViewGroup) :
-        RecyclerView.ViewHolder(parent.inflate(R.layout.item_popular)), LayoutContainer {
+        RecyclerView.ViewHolder(parent.inflate(R.layout.item_popular)) {
 
-        override val containerView: View = itemView
+        val totalPhotos = parent.findViewById<TextView>(R.id.totalPhotos)
 
         fun bind(item: PopularItem) = with(itemView) {
             // for now it it invisible
-            itemView.totalPhotos.visibility = View.GONE
-            itemView.totalPhotos.text =
+            totalPhotos.visibility = View.GONE
+            totalPhotos.text =
                 spannable {
                     typeface(Typeface.BOLD) {
                         +"Total photos: "

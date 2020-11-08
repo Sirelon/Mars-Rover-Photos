@@ -3,6 +3,8 @@ package com.sirelon.marsroverphotos.adapter
 import android.os.Build
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.util.Pair
 import androidx.recyclerview.widget.RecyclerView
 import com.sirelon.marsroverphotos.R
@@ -13,8 +15,6 @@ import com.sirelon.marsroverphotos.extensions.textOrHide
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.models.OnModelChooseListener
 import com.sirelon.marsroverphotos.models.ViewType
-import kotlinx.android.extensions.LayoutContainer
-import kotlinx.android.synthetic.main.item_mars_photo.view.*
 
 /**
  * @author romanishin
@@ -44,10 +44,10 @@ class MarsPhotosDelegateAdapter(val callback: OnModelChooseListener<MarsPhoto>) 
     }
 
     class MarsPhotoViewHolder(parent: ViewGroup) :
-        RecyclerView.ViewHolder(parent.inflate(R.layout.item_mars_photo)), LayoutContainer {
+        RecyclerView.ViewHolder(parent.inflate(R.layout.item_mars_photo)) {
 
-        override val containerView: View = itemView
-
+        private val photo = parent.findViewById<ImageView>(R.id.photo)
+        private val cameraName = parent.findViewById<TextView>(R.id.cameraName)
         fun bind(item: MarsPhoto) = with(itemView) {
             photo.loadImage(item.imageUrl)
             val name = item.name

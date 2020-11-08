@@ -9,6 +9,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.activity.PhotosActivity
 import com.sirelon.marsroverphotos.activity.RxActivity
@@ -23,7 +24,6 @@ import com.sirelon.marsroverphotos.feature.popular.PopularPhotosActivity
 import com.sirelon.marsroverphotos.models.OnModelChooseListener
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.ViewType
-import kotlinx.android.synthetic.main.activity_rovers.*
 
 class RoversActivity : RxActivity(), OnModelChooseListener<ViewType> {
 
@@ -57,6 +57,7 @@ class RoversActivity : RxActivity(), OnModelChooseListener<ViewType> {
         val portrait = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         val spanCount = if (portrait) 1 else 2
 
+        val roversList = findViewById<RecyclerView>(R.id.roversList)
         roversList.apply {
             setHasFixedSize(true)
 

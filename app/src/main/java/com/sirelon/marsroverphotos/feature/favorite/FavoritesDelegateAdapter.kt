@@ -1,7 +1,7 @@
 package com.sirelon.marsroverphotos.feature.favorite
 
-import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
@@ -10,8 +10,6 @@ import com.sirelon.marsroverphotos.extensions.inflate
 import com.sirelon.marsroverphotos.extensions.loadImage
 import com.sirelon.marsroverphotos.models.OnModelChooseListener
 import com.sirelon.marsroverphotos.models.ViewType
-import kotlinx.android.extensions.LayoutContainer
-import kotlinx.android.synthetic.main.item_favorites.view.*
 
 /**
  * Created on 22.08.2020 20:10 for Mars-Rover-Photos.
@@ -35,12 +33,12 @@ class FavoritesDelegateAdapter(private val callback: OnModelChooseListener<ViewT
         FavoriteViewHolder(parent)
 
     class FavoriteViewHolder(parent: ViewGroup) :
-        RecyclerView.ViewHolder(parent.inflate(R.layout.item_favorites)), LayoutContainer {
+        RecyclerView.ViewHolder(parent.inflate(R.layout.item_favorites)) {
 
-        override val containerView: View = itemView
+        val favoritePhoto = parent.findViewById<ImageView>(R.id.favoritePhoto)
 
         fun bind(item: FavoriteItem) = with(this) {
-            itemView.favoritePhoto.loadImage(item.image.imageUrl)
+            favoritePhoto.loadImage(item.image.imageUrl)
 
             // for now it it invisible
 //            itemView.totalPhotos.visibility = View.GONE

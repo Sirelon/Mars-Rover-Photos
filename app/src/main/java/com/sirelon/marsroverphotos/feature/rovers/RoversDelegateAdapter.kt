@@ -2,8 +2,9 @@ package com.sirelon.marsroverphotos.feature.rovers
 
 import android.graphics.Color
 import android.graphics.Typeface
-import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.annotation.Keep
 import androidx.recyclerview.widget.RecyclerView
 import com.sirelon.marsroverphotos.R
@@ -14,8 +15,6 @@ import com.sirelon.marsroverphotos.extensions.spannable
 import com.sirelon.marsroverphotos.models.OnModelChooseListener
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.ViewType
-import kotlinx.android.extensions.LayoutContainer
-import kotlinx.android.synthetic.main.item_rover.view.*
 
 /**
  * @author romanishin
@@ -39,9 +38,15 @@ class RoversDelegateAdapter(private val callback: OnModelChooseListener<ViewType
 
     @Keep
     class RoverViewHolder(parent: ViewGroup) :
-        RecyclerView.ViewHolder(parent.inflate(R.layout.item_rover)), LayoutContainer {
+        RecyclerView.ViewHolder(parent.inflate(R.layout.item_rover)) {
 
-        override val containerView: View = itemView
+        private val roverPhoto = parent.findViewById<ImageView>(R.id.roverPhoto)
+        private val totalPhotos = parent.findViewById<TextView>(R.id.totalPhotos)
+        private val lastPhotoDate = parent.findViewById<TextView>(R.id.lastPhotoDate)
+        private val launchDate = parent.findViewById<TextView>(R.id.launchDate)
+        private val roverLandingDate = parent.findViewById<TextView>(R.id.roverLandingDate)
+        private val roverStatus = parent.findViewById<TextView>(R.id.roverStatus)
+        private val roverName = parent.findViewById<TextView>(R.id.roverName)
 
         fun bind(item: Rover, payloads: List<Any>?) = if (payloads == null || payloads.isEmpty()) {
             bindFullInfo(item)
