@@ -27,11 +27,7 @@ internal class FirestorePhotos : IFirebasePhotos {
 
     override suspend fun countOfInsightPhotos(): Long {
         val task = roversCollection().document(FirebaseConstants.DOCUMENT_INSIGHT).get()
-        Tasks.await(task).getLong("total_photos")
-    }
-
-    override fun countOfAllPhotos(): Single<Long> {
-        return Single.just(1L)
+        return Tasks.await(task).getLong("total_photos") ?: 0L
     }
 
     override fun updatePhotoShareCounter(photo: MarsPhoto): Observable<Long> {

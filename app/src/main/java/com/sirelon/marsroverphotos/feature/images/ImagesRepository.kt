@@ -12,8 +12,6 @@ import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.storage.DataBaseProvider
 import com.sirelon.marsroverphotos.storage.ImagesDao
 import com.sirelon.marsroverphotos.storage.MarsImage
-import io.reactivex.Observable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -59,17 +57,12 @@ class ImagesRepository(private val context: Context) {
         ).flow
     }
 
-    fun updateFavForImage(item: MarsImage) {
-        Observable.fromCallable {
-            val updated = item.copy(favorite = !item.favorite)
-            imagesDao.update(updated)
-        }
-            .subscribeOn(Schedulers.io())
-            .subscribe()
+    suspend fun updateFavForImage(item: MarsImage) {
+        val updated = item.copy(favorite = !item.favorite)
+        imagesDao.update(updated)
     }
 
     fun getFavoriteImages() = imagesDao.getFavoriteImages()
-
 
     @OptIn(ExperimentalPagingApi::class)
     fun loadPopularPagedSource(): Flow<PagingData<MarsImage>> {
