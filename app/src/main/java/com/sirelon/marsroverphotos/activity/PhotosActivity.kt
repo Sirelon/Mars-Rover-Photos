@@ -83,7 +83,6 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsPhoto> {
             dataManager.cacheImages(photos)
         }
 
-
         val ids = photos.map { it.id.toInt() }
 
         // Enable camera filter if the same camera was choose.
