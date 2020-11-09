@@ -19,13 +19,18 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.gesture.tapGestureFilter
+import androidx.compose.ui.platform.UriHandlerAmbient
 import androidx.compose.ui.platform.setContent
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.annotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -41,6 +46,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.util.Calendar
 
 class ComposeAboutAppActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -111,7 +117,6 @@ class ComposeAboutAppActivity : AppCompatActivity() {
 
     @Composable
     fun AboutAppContent() {
-
         MaterialTheme {
             val typography = MaterialTheme.typography
             val colors = MaterialTheme.colors
@@ -134,8 +139,8 @@ class ComposeAboutAppActivity : AppCompatActivity() {
                 }
 
                 Column(modifier = Modifier.padding(vertical = 24.dp).fillMaxWidth()) {
-                    LinkifyText(text = "API provided by ", link = "https://example.com")
-                    LinkifyText(text = "Email: ", link = "sasha.sirelon@gmail.com")
+                    LinkifyText(text = "API provided by ", link = "https://api.nasa.gov/")
+                    LinkifyText(text = "Email: ", link = "mailto:sasha.sirelon@gmail.com")
                     Text(
                         text = "Version: ${BuildConfig.VERSION_NAME}",
                         modifier = Modifier.padding(4.dp)
@@ -145,21 +150,58 @@ class ComposeAboutAppActivity : AppCompatActivity() {
                 Button(onClick = ::onRateApp) {
                     Text(text = stringResource(id = R.string.action_rate))
                 }
+                val copyrightText = stringResource(
+                    R.string.all_rights_reserved_fmt,
+                    Calendar.getInstance().get(Calendar.YEAR)
+                )
+                Text(
+                    text = copyrightText,
+                    style = MaterialTheme.typography.caption,
+                    modifier = Modifier.padding(16.dp)
+                )
             }
         }
     }
 
     @Composable
     fun LinkifyText(text: String, link: String) {
+        val uriHandler = UriHandlerAmbient.current
+
+        val layoutResult = remember { mutableStateOf<TextLayoutResult?>(null) }
+
         val colors = MaterialTheme.colors
-        val apiString = AnnotatedString.Builder(text)
-        apiString.pushStyle(
-            style = SpanStyle(
-                color = colors.primary,
-                textDecoration = TextDecoration.Underline
+
+        val apiString = annotatedString {
+            append(text)
+            pushStyle(
+                style = SpanStyle(
+                    color = colors.primary,
+                    textDecoration = TextDecoration.Underline
+                )
             )
-        )
-        apiString.append(link)
-        Text(text = apiString.toAnnotatedString(), modifier = Modifier.padding(4.dp))
+            append(link)
+            addStringAnnotation(
+                tag = "URL",
+                annotation = link,
+                start = text.length,
+                end = text.length + link.length
+            )
+        }
+
+        val tapGesture = Modifier.tapGestureFilter { offset ->
+            layoutResult.value?.let {
+                val position = it.getOffsetForPosition(offset)
+                apiString.getStringAnnotations(position, position).firstOrNull()?.let { result ->
+                    if (result.tag == "URL") {
+                        uriHandler.openUri(result.item)
+                    }
+                }
+            }
+        }
+
+        Text(
+            text = apiString,
+            modifier = Modifier.padding(4.dp).then(tapGesture),
+            onTextLayout = { layoutResult.value = it })
     }
 }
