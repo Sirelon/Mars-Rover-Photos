@@ -2,7 +2,7 @@ package com.sirelon.marsroverphotos.activity.ui
 
 import androidx.compose.ui.graphics.Color
 
-val purple200 = Color(0xFFBB86FC)
-val purple500 = Color(0xFF6200EE)
-val purple700 = Color(0xFF3700B3)
-val teal200 = Color(0xFF03DAC5)
+val primary = Color(0xFF385C8A)
+val primaryDark = Color(0xFF6200EE)
+val primaryVariant = Color(0xFF1A283D)
+val accent = Color(0xFFFC6C4B)
