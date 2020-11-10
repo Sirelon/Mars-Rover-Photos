@@ -40,6 +40,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.cache.DiskCache
 import com.sirelon.marsroverphotos.BuildConfig
 import com.sirelon.marsroverphotos.R
+import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.activity.ui.MarsRoverPhotosTheme
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -49,6 +50,8 @@ import java.io.File
 import java.util.Calendar
 
 class ComposeAboutAppActivity : AppCompatActivity() {
+    private val tracker = RoverApplication.APP.tracker
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -61,7 +64,8 @@ class ComposeAboutAppActivity : AppCompatActivity() {
         }
     }
 
-    fun clearCache() {
+    private fun clearCache() {
+        tracker.trackClick("Clear cache")
         val ctx = application
         lifecycleScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, throwable -> throwable.printStackTrace() }) {
             val cacheFile = File(cacheDir, DiskCache.Factory.DEFAULT_DISK_CACHE_DIR)
@@ -90,6 +94,7 @@ class ComposeAboutAppActivity : AppCompatActivity() {
     }
 
     private fun goToMarket() {
+        tracker.trackClick("goToMarket")
         val uri = Uri.parse("market://details?id=$packageName")
         val goToMarket = Intent(Intent.ACTION_VIEW, uri)
         try {
@@ -118,6 +123,7 @@ class ComposeAboutAppActivity : AppCompatActivity() {
     @Composable
     fun AboutAppContent() {
         MaterialTheme {
+
             val typography = MaterialTheme.typography
             val colors = MaterialTheme.colors
             Column(

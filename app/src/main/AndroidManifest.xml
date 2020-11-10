@@ -82,7 +82,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.PhotosActivity" />
         </activity>
-        <activity android:name=".activity.AboutAppActivity" />
         <activity
             android:name=".feature.favorite.FavoritePhotosActivity"
             android:launchMode="singleTop"
