@@ -8,9 +8,11 @@ import android.text.format.Formatter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.preferredHeight
@@ -126,8 +128,8 @@ class ComposeAboutAppActivity : AppCompatActivity() {
 
             val typography = MaterialTheme.typography
             val colors = MaterialTheme.colors
-            Column(
-                modifier = Modifier.padding(16.dp),
+            ScrollableColumn(
+                modifier = Modifier.fillMaxHeight().then(Modifier.padding(16.dp)),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(asset = imageResource(id = R.drawable.alien_icon))
