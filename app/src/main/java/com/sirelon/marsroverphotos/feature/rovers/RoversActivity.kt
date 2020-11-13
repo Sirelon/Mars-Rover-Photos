@@ -181,15 +181,16 @@ fun DefaultPreview() {
 fun PopularItem(rover: PopularItem, onClick: (rover: PopularItem) -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(8.dp).clickable(onClick = { onClick(rover) })
+        modifier = Modifier.padding(16.dp)
+            .clickable(onClick = { onClick(rover) })
     ) {
         TitleText(stringResource(id = R.string.popular_title))
         Spacer(modifier = Modifier.preferredHeight(8.dp))
         Image(
             asset = imageResource(id = R.drawable.popular),
+            contentScale = ContentScale.FillWidth,
             modifier = Modifier.clip(MaterialTheme.shapes.small).fillMaxWidth()
         )
-        Spacer(modifier = Modifier.preferredHeight(8.dp))
         // Not implemented yet
 //        InfoText(
 //            label = stringResource(id = R.string.label_photos_total),
