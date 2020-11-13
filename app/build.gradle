@@ -107,6 +107,8 @@ dependencies {
     // Integration with observables
     implementation "androidx.compose.runtime:runtime-livedata:$composeVer"
 
+    implementation "com.github.skydoves:landscapist-glide:1.0.8"
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"

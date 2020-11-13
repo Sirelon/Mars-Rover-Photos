@@ -18,5 +18,6 @@
     <string name="clear_cache">Clear cache</string>
     <string name="provided_api">API provided by https://api.nasa.gov/api.html#MarsPhotos</string>
     <string name="action_rate">Rate this App</string>
+    <string name="label_photos_total">Total photos: </string>
 
 </resources>

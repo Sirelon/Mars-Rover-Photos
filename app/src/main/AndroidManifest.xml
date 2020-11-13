@@ -22,13 +22,8 @@
         <activity
             android:name=".activity.ComposeAboutAppActivity"
             android:label="@string/title_activity_compose_about_app"
-            android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:theme="@style/AppTheme.NoActionBar" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
         <activity
             android:name=".feature.rovers.RoversActivity"
             android:icon="@mipmap/ic_launcher"
