@@ -35,7 +35,6 @@ import androidx.core.util.Pair
 import androidx.ui.tooling.preview.Preview
 import com.sirelon.marsroverphotos.DataManager
 import com.sirelon.marsroverphotos.R
-import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.activity.PhotosActivity
 import com.sirelon.marsroverphotos.activity.RxActivity
 import com.sirelon.marsroverphotos.activity.ui.MarsRoverPhotosTheme
@@ -43,14 +42,13 @@ import com.sirelon.marsroverphotos.feature.favorite.FavoriteItem
 import com.sirelon.marsroverphotos.feature.favorite.FavoritePhotosActivity
 import com.sirelon.marsroverphotos.feature.popular.PopularItem
 import com.sirelon.marsroverphotos.feature.popular.PopularPhotosActivity
-import com.sirelon.marsroverphotos.models.OnModelChooseListener
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.ViewType
 import com.skydoves.landscapist.glide.GlideImage
 
-class RoversActivity : RxActivity(), OnModelChooseListener<ViewType> {
+class RoversActivity : RxActivity() {
 
-    override fun onModelChoose(model: ViewType, vararg sharedElements: Pair<View, String>) {
+    private fun onModelChoose(model: ViewType, vararg sharedElements: Pair<View, String>) {
         when (model) {
             is Rover -> startActivity(PhotosActivity.createIntent(this, model))
             is PopularItem -> startActivity(Intent(this, PopularPhotosActivity::class.java))
@@ -59,80 +57,6 @@ class RoversActivity : RxActivity(), OnModelChooseListener<ViewType> {
         }
     }
 
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setContentView(R.layout.activity_rovers)
-//
-//        val adapter = ViewTypeAdapter(false)
-//        adapter.addDelegateAdapter(
-//            AdapterConstants.ROVER,
-//            RoversDelegateAdapter(this@RoversActivity)
-//        )
-//        adapter.addDelegateAdapter(
-//            AdapterConstants.POPULAR_ITEM,
-//            PopularDelegateAdapter(this@RoversActivity)
-//        )
-//        adapter.addDelegateAdapter(
-//            AdapterConstants.FAVORITES,
-//            FavoritesDelegateAdapter(this@RoversActivity)
-//        )
-//
-//        val portrait = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
-//        val spanCount = if (portrait) 1 else 2
-//
-//        val roversList = findViewById<RecyclerView>(R.id.roversList)
-//        roversList.apply {
-//            setHasFixedSize(true)
-//
-//            layoutManager = GridLayoutManager(this@RoversActivity, spanCount).apply {
-//                spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-//                    override fun getSpanSize(position: Int): Int {
-//                        if (portrait) return 1
-//                        val item = adapter.getItemByPosition(position)
-//                        return if (item is Rover) 1 else 2
-//                    }
-//                }
-//            }
-//
-//            this.adapter = adapter
-//            addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
-//        }
-//
-//        val popularItem = PopularItem()
-//
-//        val mediator = MediatorLiveData<List<ViewType>>()
-//
-//        val roversLiveData = dataManager.rovers
-//
-//        roversLiveData.observe(this, {
-//            val mutableList = it.toMutableList<ViewType>()
-//            mutableList.add(0, popularItem)
-//            adapter.replaceData(mutableList)
-//        })
-//
-//        // ACtivate it when favorite photos logic will be enabled
-////        mediator.addSource(roversLiveData) {
-////            val favItem = mediator.value?.find { it is FavoriteItem }
-////            val list = it.toMutableList<ViewType>()
-////            favItem?.let { list.add(0, favItem) }
-////            mediator.value = list
-////        }
-////
-////        mediator.addSource(dataManager.loadFirstFavoriteItem()) {
-////            if (it != null) {
-////                val list = mediator.value?.toMutableList() ?: mutableListOf()
-////                list.removeAll { it is FavoriteItem }
-////                list.add(0, FavoriteItem(it))
-////                mediator.value = list
-////            }
-////        }
-////        mediator.observe(this) { list ->
-////            val mutableList = list.toMutableList()
-////            mutableList.add(popularItem)
-////            adapter.replaceData(mutableList)
-////        }
-//    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -140,7 +64,7 @@ class RoversActivity : RxActivity(), OnModelChooseListener<ViewType> {
             MarsRoverPhotosTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-                    RoversContent(RoverApplication.APP.dataManger) {
+                    RoversContent(dataManager) {
                         onModelChoose(it)
                     }
                 }
