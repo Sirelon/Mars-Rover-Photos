@@ -24,6 +24,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ImageAsset
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.setContent
 import androidx.compose.ui.res.imageResource
@@ -77,13 +78,16 @@ class RoversActivity : RxActivity() {
 fun RoversContent(dataManager: DataManager, onClick: (rover: ViewType) -> Unit) {
     MaterialTheme {
         val popular = PopularItem()
+        val favoriteItem = FavoriteItem(null)
         val rovers: List<Rover> by dataManager.rovers.observeAsState(emptyList())
         val items = rovers.toMutableList<ViewType>()
         items.add(0, popular)
+        items.add(1, favoriteItem)
         LazyColumnFor(items = items) { item ->
             when (item) {
                 is Rover -> RoverItem(rover = item, onClick = onClick)
                 is PopularItem -> PopularItem(item, onClick = onClick)
+                is FavoriteItem -> FavoriteItem(item, onClick = onClick)
             }
 
             Divider()
@@ -102,25 +106,29 @@ fun DefaultPreview() {
 }
 
 @Composable
-fun PopularItem(rover: PopularItem, onClick: (rover: PopularItem) -> Unit) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(16.dp)
-            .clickable(onClick = { onClick(rover) })
-    ) {
-        TitleText(stringResource(id = R.string.popular_title))
-        Spacer(modifier = Modifier.preferredHeight(8.dp))
-        Image(
-            asset = imageResource(id = R.drawable.popular),
-            contentScale = ContentScale.FillWidth,
-            modifier = Modifier.clip(MaterialTheme.shapes.small).fillMaxWidth()
-        )
-        // Not implemented yet
+fun FavoriteItem(rover: FavoriteItem, onClick: (rover: FavoriteItem) -> Unit) {
+    CommonItem(
+        title = stringResource(id = R.string.favorite_title),
+        imageAsset = imageResource(id = R.drawable.popular),
+        onClick = { onClick(rover) })
+    // Not implemented yet
 //        InfoText(
 //            label = stringResource(id = R.string.label_photos_total),
 //            text = "${rover.totalPhotos}"
 //        )
-    }
+}
+
+@Composable
+fun PopularItem(rover: PopularItem, onClick: (rover: PopularItem) -> Unit) {
+    CommonItem(
+        title = stringResource(id = R.string.popular_title),
+        imageAsset = imageResource(id = R.drawable.popular),
+        onClick = { onClick(rover) })
+    // Not implemented yet
+//        InfoText(
+//            label = stringResource(id = R.string.label_photos_total),
+//            text = "${rover.totalPhotos}"
+//        )
 }
 
 @Composable
@@ -153,6 +161,22 @@ fun RoverItem(rover: Rover, onClick: (rover: Rover) -> Unit) {
                 InfoText(label = "Landing date on Mars:", text = rover.landingDate)
             }
         }
+    }
+}
+
+@Composable
+fun CommonItem(title: String, imageAsset: ImageAsset, onClick: () -> Unit) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(16.dp).clickable(onClick = onClick)
+    ) {
+        TitleText(title)
+        Spacer(modifier = Modifier.preferredHeight(8.dp))
+        Image(
+            asset = imageAsset,
+            contentScale = ContentScale.FillWidth,
+            modifier = Modifier.clip(MaterialTheme.shapes.small).fillMaxWidth()
+        )
     }
 }
 

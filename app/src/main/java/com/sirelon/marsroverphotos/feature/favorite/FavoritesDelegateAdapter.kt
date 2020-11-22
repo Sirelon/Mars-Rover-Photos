@@ -38,7 +38,12 @@ class FavoritesDelegateAdapter(private val callback: OnModelChooseListener<ViewT
         val favoritePhoto = itemView.findViewById<ImageView>(R.id.favoritePhoto)
 
         fun bind(item: FavoriteItem) = with(this) {
-            favoritePhoto.loadImage(item.image.imageUrl)
+            val imageUrl = item.image?.imageUrl
+            if (imageUrl != null) {
+                favoritePhoto.loadImage(imageUrl)
+            } else {
+                favoritePhoto.setImageResource(R.drawable.popular)
+            }
 
             // for now it it invisible
 //            itemView.totalPhotos.visibility = View.GONE

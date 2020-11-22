@@ -89,12 +89,12 @@ androidExtensions {
 }
 
 dependencies {
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.0-alpha06'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.0-beta01'
 
 
     // COMPOSEEEE
-    def composeVer = "1.0.0-alpha06"
-    implementation "androidx.compose.ui:ui:"
+    def composeVer = "1.0.0-alpha07"
+    implementation "androidx.compose.ui:ui:$composeVer"
     // Tooling support (Previews, etc.)
     implementation "androidx.ui:ui-tooling:$composeVer"
     // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
@@ -135,7 +135,7 @@ dependencies {
     implementation "androidx.room:room-ktx:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
 
-    def paging_version = "3.0.0-alpha08"
+    def paging_version = "3.0.0-alpha09"
     implementation "androidx.paging:paging-runtime-ktx:$paging_version"
     // https://github.com/material-components/material-components-android/releases
     implementation 'com.google.android.material:material:1.3.0-alpha03'
@@ -156,8 +156,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics:18.0.0'
     implementation 'com.google.firebase:firebase-ads:19.5.0'
     implementation 'com.google.android.gms:play-services-ads:19.5.0'
-    implementation 'com.google.firebase:firebase-crashlytics:17.2.2'
-    implementation 'com.google.firebase:firebase-perf:19.0.9'
+    implementation 'com.google.firebase:firebase-crashlytics:17.3.0'
+    implementation 'com.google.firebase:firebase-perf:19.0.10'
     implementation 'com.google.firebase:firebase-firestore:22.0.0'
     implementation 'com.google.firebase:firebase-messaging:21.0.0'
 
