@@ -15,16 +15,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.preferredHeight
 import androidx.compose.foundation.layout.preferredWidth
 import androidx.compose.foundation.lazy.LazyColumnFor
+import androidx.compose.material.BottomAppBar
 import androidx.compose.material.Divider
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
+import androidx.compose.material.Scaffold
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.ViewCarousel
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ImageAsset
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.setContent
 import androidx.compose.ui.res.imageResource
@@ -34,7 +40,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.util.Pair
 import androidx.ui.tooling.preview.Preview
-import com.sirelon.marsroverphotos.DataManager
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.activity.PhotosActivity
 import com.sirelon.marsroverphotos.activity.RxActivity
@@ -64,22 +69,37 @@ class RoversActivity : RxActivity() {
         setContent {
             MarsRoverPhotosTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(color = MaterialTheme.colors.background) {
-                    RoversContent(dataManager) {
-                        onModelChoose(it)
+//                Surface(color = MaterialTheme.colors.background) {
+//                    RoversContent(dataManager) {
+//                        onModelChoose(it)
+//                    }
+//                }
+
+                Scaffold(
+                    bodyContent = {
+                        val rovers by dataManager.rovers.observeAsState(emptyList())
+                        RoversContent(
+                            rovers = rovers,
+                            onClick = { onModelChoose(it) })
+                    },
+                    bottomBar = {
+                        BottomAppBar() {
+                            IconButton(content = { Icons.Outlined.Favorite }, onClick = {})
+                            IconButton(content = { Icons.Outlined.ViewCarousel }, onClick = {})
+                            IconButton(content = { Icons.Outlined.Info }, onClick = {})
+                        }
                     }
-                }
+                )
             }
         }
     }
 }
 
 @Composable
-fun RoversContent(dataManager: DataManager, onClick: (rover: ViewType) -> Unit) {
+fun RoversContent(rovers: List<Rover>, onClick: (rover: ViewType) -> Unit) {
     MaterialTheme {
         val popular = PopularItem()
         val favoriteItem = FavoriteItem(null)
-        val rovers: List<Rover> by dataManager.rovers.observeAsState(emptyList())
         val items = rovers.toMutableList<ViewType>()
         items.add(0, popular)
         items.add(1, favoriteItem)
@@ -145,11 +165,11 @@ fun RoverItem(rover: Rover, onClick: (rover: Rover) -> Unit) {
             GlideImage(
                 contentScale = ContentScale.FillHeight,
                 imageModel = rover.iamgeUrl ?: "",
-                modifier = height + Modifier.weight(1f).clip(shape = MaterialTheme.shapes.small)
+                modifier = height.weight(1f).clip(shape = MaterialTheme.shapes.small)
             )
             Spacer(modifier = Modifier.preferredWidth(8.dp))
             Column(
-                modifier = height + Modifier.weight(1f),
+                modifier = height.weight(1f),
                 verticalArrangement = Arrangement.SpaceAround
             ) {
                 InfoText(
@@ -165,7 +185,7 @@ fun RoverItem(rover: Rover, onClick: (rover: Rover) -> Unit) {
 }
 
 @Composable
-fun CommonItem(title: String, imageAsset: ImageAsset, onClick: () -> Unit) {
+fun CommonItem(title: String, imageAsset: ImageBitmap, onClick: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.padding(16.dp).clickable(onClick = onClick)
@@ -173,7 +193,7 @@ fun CommonItem(title: String, imageAsset: ImageAsset, onClick: () -> Unit) {
         TitleText(title)
         Spacer(modifier = Modifier.preferredHeight(8.dp))
         Image(
-            asset = imageAsset,
+            bitmap = imageAsset,
             contentScale = ContentScale.FillWidth,
             modifier = Modifier.clip(MaterialTheme.shapes.small).fillMaxWidth()
         )

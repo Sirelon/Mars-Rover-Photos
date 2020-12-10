@@ -143,7 +143,7 @@ class ComposeAboutAppActivity : AppCompatActivity() {
                 modifier = Modifier.fillMaxHeight().then(Modifier.padding(16.dp)),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(asset = imageResource(id = R.drawable.alien_icon))
+                Image(bitmap = imageResource(id = R.drawable.alien_icon))
                 Spacer(Modifier.preferredHeight(16.dp))
                 Text(text = "Mars rover photos", style = typography.h5)
                 Text(
