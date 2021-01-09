@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.setContent
 import androidx.compose.ui.res.imageResource
@@ -40,8 +41,15 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.util.Pair
+import androidx.navigation.compose.KEY_ROUTE
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.navigate
+import androidx.navigation.compose.rememberNavController
 import androidx.ui.tooling.preview.Preview
 import com.sirelon.marsroverphotos.R
+import com.sirelon.marsroverphotos.activity.ComposeAboutAppActivity
 import com.sirelon.marsroverphotos.activity.PhotosActivity
 import com.sirelon.marsroverphotos.activity.RxActivity
 import com.sirelon.marsroverphotos.activity.ui.MarsRoverPhotosTheme
@@ -67,40 +75,58 @@ class RoversActivity : RxActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val bottomItems = listOf(Screen.Rovers, Screen.Favorite, Screen.About)
+
         setContent {
             MarsRoverPhotosTheme {
-                // A surface container using the 'background' color from the theme
-//                Surface(color = MaterialTheme.colors.background) {
-//                    RoversContent(dataManager) {
-//                        onModelChoose(it)
-//                    }
-//                }
+                val navController = rememberNavController()
 
                 Scaffold(
-                    bodyContent = {
-                        val rovers by dataManager.rovers.observeAsState(emptyList())
-                        RoversContent(
-                            rovers = rovers,
-                            onClick = { onModelChoose(it) })
-                    },
                     bottomBar = {
                         BottomNavigation() {
-                            BottomNavigationItem(
-                                icon = { Icon(Icons.Outlined.Favorite) }, selected = true,
-                                onClick = {})
-                            BottomNavigationItem(
-                                icon = { Icon(Icons.Outlined.ViewCarousel) }, selected = false,
-                                onClick = {}
-                            )
-                            BottomNavigationItem(
-                                icon = { Icon(Icons.Outlined.Info) }, selected = false,
-                                onClick = {})
+                            val navBackStackEntry by navController.currentBackStackEntryAsState()
+                            val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
+                            bottomItems.forEach { screen ->
+                                BottomNavigationItem(
+                                    icon = { Icon(screen.icon) },
+                                    selected = currentRoute == screen.route,
+                                    onClick = {
+                                        navController.navigate(screen.route) {
+                                            // Pop up to the start destination of the graph to
+                                            // avoid building up a large stack of destinations
+                                            // on the back stack as users select items
+                                            popUpTo = navController.graph.startDestination
+                                            // Avoid multiple copies of the same destination when
+                                            // reselecting the same item
+                                            launchSingleTop = true
+                                        }
+                                    }
+                                )
+                            }
                         }
                     }
-                )
+                ) {
+                    NavHost(navController = navController, startDestination = Screen.Rovers.route) {
+                        composable(Screen.Rovers.route) {
+                            val rovers by dataManager.rovers.observeAsState(emptyList())
+                            RoversContent(
+                                rovers = rovers,
+                                onClick = { onModelChoose(it) })
+                        }
+                        composable(Screen.About.route) {
+                            ComposeAboutAppActivity().AboutAppContent()
+                        }
+                    }
+                }
             }
         }
     }
+}
+
+sealed class Screen(val route: String, val icon: ImageVector) {
+    object Favorite : Screen("favorite", Icons.Outlined.Favorite)
+    object About : Screen("about", Icons.Outlined.Info)
+    object Rovers : Screen("rovers", Icons.Outlined.ViewCarousel)
 }
 
 @Composable
