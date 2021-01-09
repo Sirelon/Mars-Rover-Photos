@@ -22,6 +22,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Explore
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.ViewCarousel
@@ -75,7 +76,7 @@ class RoversActivity : RxActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val bottomItems = listOf(Screen.Rovers, Screen.Favorite, Screen.About)
+        val bottomItems = listOf(Screen.Rovers, Screen.Favorite, Screen.Popular, Screen.About)
 
         setContent {
             MarsRoverPhotosTheme {
@@ -91,6 +92,16 @@ class RoversActivity : RxActivity() {
                                     icon = { Icon(screen.icon) },
                                     selected = currentRoute == screen.route,
                                     onClick = {
+                                        //FIXME: Until we don't have compose version of photos list open just activity
+                                        if (screen is Screen.Favorite) {
+                                            onModelChoose(FavoriteItem(null))
+                                            return@BottomNavigationItem
+                                        }
+                                        if (screen is Screen.Popular) {
+                                            onModelChoose(PopularItem())
+                                            return@BottomNavigationItem
+                                        }
+
                                         navController.navigate(screen.route) {
                                             // Pop up to the start destination of the graph to
                                             // avoid building up a large stack of destinations
@@ -125,6 +136,7 @@ class RoversActivity : RxActivity() {
 
 sealed class Screen(val route: String, val icon: ImageVector) {
     object Favorite : Screen("favorite", Icons.Outlined.Favorite)
+    object Popular : Screen("popular", Icons.Outlined.Explore)
     object About : Screen("about", Icons.Outlined.Info)
     object Rovers : Screen("rovers", Icons.Outlined.ViewCarousel)
 }
