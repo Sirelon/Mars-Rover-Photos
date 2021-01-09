@@ -15,9 +15,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.preferredHeight
 import androidx.compose.foundation.layout.preferredWidth
 import androidx.compose.foundation.lazy.LazyColumnFor
-import androidx.compose.material.BottomAppBar
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Divider
-import androidx.compose.material.IconButton
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
@@ -83,10 +84,17 @@ class RoversActivity : RxActivity() {
                             onClick = { onModelChoose(it) })
                     },
                     bottomBar = {
-                        BottomAppBar() {
-                            IconButton(content = { Icons.Outlined.Favorite }, onClick = {})
-                            IconButton(content = { Icons.Outlined.ViewCarousel }, onClick = {})
-                            IconButton(content = { Icons.Outlined.Info }, onClick = {})
+                        BottomNavigation() {
+                            BottomNavigationItem(
+                                icon = { Icon(Icons.Outlined.Favorite) }, selected = true,
+                                onClick = {})
+                            BottomNavigationItem(
+                                icon = { Icon(Icons.Outlined.ViewCarousel) }, selected = false,
+                                onClick = {}
+                            )
+                            BottomNavigationItem(
+                                icon = { Icon(Icons.Outlined.Info) }, selected = false,
+                                onClick = {})
                         }
                     }
                 )
@@ -155,7 +163,9 @@ fun PopularItem(rover: PopularItem, onClick: (rover: PopularItem) -> Unit) {
 fun RoverItem(rover: Rover, onClick: (rover: Rover) -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(8.dp).clickable(onClick = { onClick(rover) })
+        modifier = Modifier
+            .padding(8.dp)
+            .clickable(onClick = { onClick(rover) })
     ) {
         TitleText(rover.name)
         InfoText(label = "Status:", text = rover.status)
@@ -165,7 +175,9 @@ fun RoverItem(rover: Rover, onClick: (rover: Rover) -> Unit) {
             GlideImage(
                 contentScale = ContentScale.FillHeight,
                 imageModel = rover.iamgeUrl ?: "",
-                modifier = height.weight(1f).clip(shape = MaterialTheme.shapes.small)
+                modifier = height
+                    .weight(1f)
+                    .clip(shape = MaterialTheme.shapes.small)
             )
             Spacer(modifier = Modifier.preferredWidth(8.dp))
             Column(
@@ -188,14 +200,18 @@ fun RoverItem(rover: Rover, onClick: (rover: Rover) -> Unit) {
 fun CommonItem(title: String, imageAsset: ImageBitmap, onClick: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(16.dp).clickable(onClick = onClick)
+        modifier = Modifier
+            .padding(16.dp)
+            .clickable(onClick = onClick)
     ) {
         TitleText(title)
         Spacer(modifier = Modifier.preferredHeight(8.dp))
         Image(
             bitmap = imageAsset,
             contentScale = ContentScale.FillWidth,
-            modifier = Modifier.clip(MaterialTheme.shapes.small).fillMaxWidth()
+            modifier = Modifier
+                .clip(MaterialTheme.shapes.small)
+                .fillMaxWidth()
         )
     }
 }
