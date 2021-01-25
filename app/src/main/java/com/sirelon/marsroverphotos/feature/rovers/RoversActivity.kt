@@ -3,10 +3,12 @@ package com.sirelon.marsroverphotos.feature.rovers
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.Text
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,7 +16,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.preferredHeight
 import androidx.compose.foundation.layout.preferredWidth
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyColumnFor
+import androidx.compose.foundation.lazy.LazyColumnForIndexed
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Divider
@@ -48,6 +53,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigate
 import androidx.navigation.compose.rememberNavController
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemsIndexed
 import androidx.ui.tooling.preview.Preview
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.activity.ComposeAboutAppActivity
@@ -58,8 +66,10 @@ import com.sirelon.marsroverphotos.feature.favorite.FavoriteItem
 import com.sirelon.marsroverphotos.feature.favorite.FavoritePhotosActivity
 import com.sirelon.marsroverphotos.feature.popular.PopularItem
 import com.sirelon.marsroverphotos.feature.popular.PopularPhotosActivity
+import com.sirelon.marsroverphotos.feature.popular.PopularPhotosViewModel
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.ViewType
+import com.sirelon.marsroverphotos.storage.MarsImage
 import com.skydoves.landscapist.glide.GlideImage
 
 class RoversActivity : RxActivity() {
@@ -97,10 +107,10 @@ class RoversActivity : RxActivity() {
                                             onModelChoose(FavoriteItem(null))
                                             return@BottomNavigationItem
                                         }
-                                        if (screen is Screen.Popular) {
-                                            onModelChoose(PopularItem())
-                                            return@BottomNavigationItem
-                                        }
+//                                        if (screen is Screen.Popular) {
+//                                            onModelChoose(PopularItem())
+//                                            return@BottomNavigationItem
+//                                        }
 
                                         navController.navigate(screen.route) {
                                             // Pop up to the start destination of the graph to
@@ -127,6 +137,12 @@ class RoversActivity : RxActivity() {
                         composable(Screen.About.route) {
                             ComposeAboutAppActivity().AboutAppContent()
                         }
+
+                        composable(Screen.Popular.route) {
+                            val viewModel by viewModels<PopularPhotosViewModel>()
+                            val items = viewModel.popularPhotos.collectAsLazyPagingItems()
+                            FavoritePhotosContent(items)
+                        }
                     }
                 }
             }
@@ -139,6 +155,95 @@ sealed class Screen(val route: String, val icon: ImageVector) {
     object Popular : Screen("popular", Icons.Outlined.Explore)
     object About : Screen("about", Icons.Outlined.Info)
     object Rovers : Screen("rovers", Icons.Outlined.ViewCarousel)
+}
+
+@Composable
+fun FavoritePhotosContent(items: LazyPagingItems<MarsImage>) {
+
+    LazyColumn {
+        itemsIndexed(items) { index, image ->
+            val first = image
+            val second = kotlin.runCatching { items.get(index + 1) }.getOrNull()
+
+            listOf<Int>().chunked(2)
+
+            Row() {
+                if (first != null) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1F)
+                            .align(Alignment.Top)
+                            .padding(8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        ImageItem(marsImage = first)
+                    }
+                }
+                if (second != null) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1F)
+                            .align(Alignment.Top)
+                            .padding(8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        ImageItem(marsImage = second)
+                    }
+                }
+            }
+        }
+//        items(items) {
+//            ImageItem(it!!)
+//        }
+    }
+}
+
+@Composable
+fun ImageItem(marsImage: MarsImage) {
+    GlideImage(imageModel = marsImage.imageUrl)
+}
+
+@Composable
+fun <T> LazyGridFor(
+    items: List<T> = listOf(),
+    rows: Int = 3,
+    hPadding: Int = 8,
+    itemContent: @Composable LazyItemScope.(T, Int) -> Unit
+) {
+    val chunkedList = items.chunked(rows)
+    LazyColumnForIndexed(
+        items = chunkedList,
+        modifier = Modifier.padding(horizontal = hPadding.dp)
+    ) { index, it ->
+        if (index == 0) {
+            columnSpacer(value = 8)
+        }
+
+        Row {
+            it.forEachIndexed { rowIndex, item ->
+                Box(
+                    modifier = Modifier
+                        .weight(1F)
+                        .align(Alignment.Top)
+                        .padding(8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    itemContent(item, index * rows + rowIndex)
+                }
+            }
+            repeat(rows - it.size) {
+                Box(
+                    modifier = Modifier
+                        .weight(1F)
+                        .padding(8.dp)
+                ) {}
+            }
+        }
+    }
+}
+
+fun columnSpacer(value: Int) {
+
 }
 
 @Composable

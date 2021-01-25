@@ -93,6 +93,7 @@ dependencies {
     // Tooling support (Previews, etc.)
     implementation "androidx.ui:ui-tooling:1.0.0-alpha07"
     implementation "androidx.navigation:navigation-compose:1.0.0-alpha04"
+    implementation "androidx.paging:paging-compose:1.0.0-alpha04"
 
     // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
     implementation "androidx.compose.foundation:foundation:$composeVer"
