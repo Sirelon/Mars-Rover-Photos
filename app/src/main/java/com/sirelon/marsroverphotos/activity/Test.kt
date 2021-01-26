@@ -1,6 +1,5 @@
 package com.sirelon.marsroverphotos.activity
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -18,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.SupervisorJob
@@ -25,14 +25,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.flow.transform
-import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 
 
@@ -75,13 +67,38 @@ class TestViewModel : ViewModel() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val stateFlow = counterQueue
-        .transform {
-            emit(it)
-            delay(1000)
-        }
-        .transformLatest {
+//        .transform {
+//            emit(it)
+//            delay(1000)
+//        }
+//        .transformLatest {
+//            job.cancelChildren()
+//            viewModelScope.launch(job) {
+////                delay(timeMillis)
+//                val start = System.currentTimeMillis() + timeMillis
+//                val delay = async { delay(timeMillis) }
+//                while (delay.isActive) {
+//                    val now = System.currentTimeMillis()
+//                    delay(80)
+//                    timerQueue.emit(start - now)
+//                }
+//                emit(0)
+//            }.invokeOnCompletion { timerQueue.tryEmit(timeMillis) }
+//            emit(it)
+//        }.onEach {
+//            Log.d("Sirelon", "ON EACH $it")
+//        }
+
+    fun incrementCounter() {
+
+        viewModelScope.launch {
+//            Log.d("Sirelon", "COLLECT ${stateFlow.toList()}")
+//            val counter = stateFlow.first() + 1
+            val counter = counterQueue.value + 1
+            counterQueue.emit(counter)
             job.cancelChildren()
-            viewModelScope.launch(job) {
+
+            launch(job + Dispatchers.IO) {
 //                delay(timeMillis)
                 val start = System.currentTimeMillis() + timeMillis
                 val delay = async { delay(timeMillis) }
@@ -90,31 +107,8 @@ class TestViewModel : ViewModel() {
                     delay(80)
                     timerQueue.emit(start - now)
                 }
-                emit(0)
+                counterQueue.emit(0)
             }.invokeOnCompletion { timerQueue.tryEmit(timeMillis) }
-            emit(it)
-        }.onEach {
-            Log.d("Sirelon", "ON EACH $it")
-        }
-
-init {
-    viewModelScope.launch {
-        stateFlow.collect {
-            Log.d("Sirelon", "COLLECT $it")
-//                counterQueue.emit(it+1)
-        }
-    }
-}
-    fun incrementCounter() {
-
-        viewModelScope.launch {
-//            Log.d("Sirelon", "COLLECT ${stateFlow.toList()}")
-            val counter = stateFlow.first() + 1
-            counterQueue.emit(counter)
-//            stateFlow.collect {
-//                Log.d("Sirelon", "COLLECT $it")
-////                counterQueue.emit(it+1)
-//            }
 
         }
     }
