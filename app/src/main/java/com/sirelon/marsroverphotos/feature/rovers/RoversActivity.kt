@@ -61,6 +61,7 @@ import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.activity.ComposeAboutAppActivity
 import com.sirelon.marsroverphotos.activity.PhotosActivity
 import com.sirelon.marsroverphotos.activity.RxActivity
+import com.sirelon.marsroverphotos.activity.TestCompose
 import com.sirelon.marsroverphotos.activity.ui.MarsRoverPhotosTheme
 import com.sirelon.marsroverphotos.feature.favorite.FavoriteItem
 import com.sirelon.marsroverphotos.feature.favorite.FavoritePhotosActivity
@@ -89,63 +90,65 @@ class RoversActivity : RxActivity() {
         val bottomItems = listOf(Screen.Rovers, Screen.Favorite, Screen.Popular, Screen.About)
 
         setContent {
-            MarsRoverPhotosTheme {
-                val navController = rememberNavController()
+            TestCompose()
 
-                Scaffold(
-                    bottomBar = {
-                        BottomNavigation() {
-                            val navBackStackEntry by navController.currentBackStackEntryAsState()
-                            val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
-                            bottomItems.forEach { screen ->
-                                BottomNavigationItem(
-                                    icon = { Icon(screen.icon) },
-                                    selected = currentRoute == screen.route,
-                                    onClick = {
-                                        //FIXME: Until we don't have compose version of photos list open just activity
-                                        if (screen is Screen.Favorite) {
-                                            onModelChoose(FavoriteItem(null))
-                                            return@BottomNavigationItem
-                                        }
-//                                        if (screen is Screen.Popular) {
-//                                            onModelChoose(PopularItem())
+//            MarsRoverPhotosTheme {
+//                val navController = rememberNavController()
+//
+//                Scaffold(
+//                    bottomBar = {
+//                        BottomNavigation() {
+//                            val navBackStackEntry by navController.currentBackStackEntryAsState()
+//                            val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
+//                            bottomItems.forEach { screen ->
+//                                BottomNavigationItem(
+//                                    icon = { Icon(screen.icon) },
+//                                    selected = currentRoute == screen.route,
+//                                    onClick = {
+//                                        //FIXME: Until we don't have compose version of photos list open just activity
+//                                        if (screen is Screen.Favorite) {
+//                                            onModelChoose(FavoriteItem(null))
 //                                            return@BottomNavigationItem
 //                                        }
-
-                                        navController.navigate(screen.route) {
-                                            // Pop up to the start destination of the graph to
-                                            // avoid building up a large stack of destinations
-                                            // on the back stack as users select items
-                                            popUpTo = navController.graph.startDestination
-                                            // Avoid multiple copies of the same destination when
-                                            // reselecting the same item
-                                            launchSingleTop = true
-                                        }
-                                    }
-                                )
-                            }
-                        }
-                    }
-                ) {
-                    NavHost(navController = navController, startDestination = Screen.Rovers.route) {
-                        composable(Screen.Rovers.route) {
-                            val rovers by dataManager.rovers.observeAsState(emptyList())
-                            RoversContent(
-                                rovers = rovers,
-                                onClick = { onModelChoose(it) })
-                        }
-                        composable(Screen.About.route) {
-                            ComposeAboutAppActivity().AboutAppContent()
-                        }
-
-                        composable(Screen.Popular.route) {
-                            val viewModel by viewModels<PopularPhotosViewModel>()
-                            val items = viewModel.popularPhotos.collectAsLazyPagingItems()
-                            FavoritePhotosContent(items)
-                        }
-                    }
-                }
-            }
+////                                        if (screen is Screen.Popular) {
+////                                            onModelChoose(PopularItem())
+////                                            return@BottomNavigationItem
+////                                        }
+//
+//                                        navController.navigate(screen.route) {
+//                                            // Pop up to the start destination of the graph to
+//                                            // avoid building up a large stack of destinations
+//                                            // on the back stack as users select items
+//                                            popUpTo = navController.graph.startDestination
+//                                            // Avoid multiple copies of the same destination when
+//                                            // reselecting the same item
+//                                            launchSingleTop = true
+//                                        }
+//                                    }
+//                                )
+//                            }
+//                        }
+//                    }
+//                ) {
+//                    NavHost(navController = navController, startDestination = Screen.Rovers.route) {
+//                        composable(Screen.Rovers.route) {
+//                            val rovers by dataManager.rovers.observeAsState(emptyList())
+//                            RoversContent(
+//                                rovers = rovers,
+//                                onClick = { onModelChoose(it) })
+//                        }
+//                        composable(Screen.About.route) {
+//                            ComposeAboutAppActivity().AboutAppContent()
+//                        }
+//
+//                        composable(Screen.Popular.route) {
+//                            val viewModel by viewModels<PopularPhotosViewModel>()
+//                            val items = viewModel.popularPhotos.collectAsLazyPagingItems()
+//                            FavoritePhotosContent(items)
+//                        }
+//                    }
+//                }
+//            }
         }
     }
 }
