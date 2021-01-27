@@ -25,6 +25,9 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 
 
@@ -67,6 +70,7 @@ class TestViewModel : ViewModel() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val stateFlow = counterQueue
+        .debounce(1000)
 //        .transform {
 //            emit(it)
 //            delay(1000)
@@ -94,7 +98,8 @@ class TestViewModel : ViewModel() {
         viewModelScope.launch {
 //            Log.d("Sirelon", "COLLECT ${stateFlow.toList()}")
 //            val counter = stateFlow.first() + 1
-            val counter = counterQueue.value + 1
+//            val counter = counterQueue.value + 1
+            val counter = stateFlow.first() + 1
             counterQueue.emit(counter)
             job.cancelChildren()
 
