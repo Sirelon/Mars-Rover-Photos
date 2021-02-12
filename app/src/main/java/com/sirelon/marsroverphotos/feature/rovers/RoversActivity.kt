@@ -16,9 +16,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.preferredHeight
 import androidx.compose.foundation.layout.preferredWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyColumnForIndexed
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Divider
@@ -213,35 +213,35 @@ fun <T> LazyGridFor(
     itemContent: @Composable LazyItemScope.(T, Int) -> Unit
 ) {
     val chunkedList = items.chunked(rows)
-    LazyColumnForIndexed(
-        items = chunkedList,
-        modifier = Modifier.padding(horizontal = hPadding.dp)
-    ) { index, it ->
-        if (index == 0) {
-            columnSpacer(value = 8)
-        }
 
-        Row {
-            it.forEachIndexed { rowIndex, item ->
-                Box(
-                    modifier = Modifier
-                        .weight(1F)
-                        .align(Alignment.Top)
-                        .padding(8.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    itemContent(item, index * rows + rowIndex)
+    LazyColumn(modifier = Modifier.padding(horizontal = hPadding.dp), content = {
+        itemsIndexed(chunkedList) { index, it ->
+            if (index == 0) {
+                columnSpacer(value = 8)
+            }
+
+            Row {
+                it.forEachIndexed { rowIndex, item ->
+                    Box(
+                        modifier = Modifier
+                            .weight(1F)
+                            .align(Alignment.Top)
+                            .padding(8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        itemContent(item, index * rows + rowIndex)
+                    }
+                }
+                repeat(rows - it.size) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1F)
+                            .padding(8.dp)
+                    ) {}
                 }
             }
-            repeat(rows - it.size) {
-                Box(
-                    modifier = Modifier
-                        .weight(1F)
-                        .padding(8.dp)
-                ) {}
-            }
         }
-    }
+    })
 }
 
 fun columnSpacer(value: Int) {

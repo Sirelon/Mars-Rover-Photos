@@ -9,13 +9,15 @@ import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.ScrollableColumn
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.preferredHeight
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -31,16 +33,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.gesture.tapGestureFilter
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.platform.UriHandler
-import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,7 +47,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.cache.DiskCache
-import com.google.common.io.Files.append
 import com.sirelon.marsroverphotos.BuildConfig
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
@@ -58,9 +56,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.text.Format
 import java.util.Calendar
-import java.util.Formatter
 
 class ComposeAboutAppActivity : AppCompatActivity() {
     private val tracker = RoverApplication.APP.tracker
@@ -76,7 +72,10 @@ class ComposeAboutAppActivity : AppCompatActivity() {
                         title = { Text(stringResource(id = R.string.app_name)) },
                         navigationIcon = {
                             IconButton(onClick = { finish() }) {
-                                Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "back")
+                                Icon(
+                                    imageVector = Icons.Filled.ArrowBack,
+                                    contentDescription = "back"
+                                )
                             }
                         })
                 }, bodyContent = { AboutAppContent() })
@@ -146,11 +145,17 @@ class ComposeAboutAppActivity : AppCompatActivity() {
 
             val typography = MaterialTheme.typography
             val colors = MaterialTheme.colors
-            ScrollableColumn(
-                modifier = Modifier.fillMaxHeight().then(Modifier.padding(16.dp)),
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(painter = painterResource(id = R.drawable.alien_icon), contentDescription = "logo")
+                Image(
+                    painter = painterResource(id = R.drawable.alien_icon),
+                    contentDescription = "logo"
+                )
                 Spacer(Modifier.preferredHeight(16.dp))
                 Text(text = "Mars rover photos", style = typography.h5)
                 Text(
@@ -164,7 +169,11 @@ class ComposeAboutAppActivity : AppCompatActivity() {
                     Text(text = stringResource(id = R.string.clear_cache))
                 }
 
-                Column(modifier = Modifier.padding(vertical = 24.dp).fillMaxWidth()) {
+                Column(
+                    modifier = Modifier
+                        .padding(vertical = 24.dp)
+                        .fillMaxWidth()
+                ) {
                     LinkifyText(text = "API provided by ", link = "https://api.nasa.gov/")
                     LinkifyText(text = "Email: ", link = "mailto:sasha.sirelon@gmail.com")
                     Text(
@@ -214,20 +223,25 @@ class ComposeAboutAppActivity : AppCompatActivity() {
             )
         }.toAnnotatedString()
 
-        val tapGesture = Modifier.tapGestureFilter { offset ->
-            layoutResult.value?.let {
-                val position = it.getOffsetForPosition(offset)
-                apiString.getStringAnnotations(position, position).firstOrNull()?.let { result ->
-                    if (result.tag == "URL") {
-                        uriHandler.openUri(result.item)
-                    }
+        val tapGesture = Modifier.pointerInput(Unit) {
+            detectTapGestures { offset ->
+                layoutResult.value?.let {
+                    val position = it.getOffsetForPosition(offset)
+                    apiString.getStringAnnotations(position, position).firstOrNull()
+                        ?.let { result ->
+                            if (result.tag == "URL") {
+                                uriHandler.openUri(result.item)
+                            }
+                        }
                 }
             }
         }
 
         Text(
             text = apiString,
-            modifier = Modifier.padding(4.dp).then(tapGesture),
+            modifier = Modifier
+                .padding(4.dp)
+                .then(tapGesture),
             onTextLayout = { layoutResult.value = it })
     }
 }
