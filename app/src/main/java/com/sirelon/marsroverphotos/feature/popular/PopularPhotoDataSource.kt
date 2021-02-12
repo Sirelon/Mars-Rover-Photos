@@ -32,6 +32,10 @@ class PopularPhotosSource(private val firebasePhotos: IFirebasePhotos) :
                 LoadResult.Error(e)
             }
         }
+
+    override fun getRefreshKey(state: PagingState<FirebasePhoto, FirebasePhoto>): FirebasePhoto? {
+        TODO("Not yet implemented")
+    }
 }
 
 @ExperimentalPagingApi

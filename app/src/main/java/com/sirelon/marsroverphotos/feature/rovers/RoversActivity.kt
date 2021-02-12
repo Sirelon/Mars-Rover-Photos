@@ -3,9 +3,7 @@ package com.sirelon.marsroverphotos.feature.rovers
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.activity.viewModels
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.Text
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,45 +18,33 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyColumnFor
 import androidx.compose.foundation.lazy.LazyColumnForIndexed
 import androidx.compose.foundation.lazy.LazyItemScope
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Divider
-import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Explore
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.ViewCarousel
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.setContent
 import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.util.Pair
-import androidx.navigation.compose.KEY_ROUTE
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.navigate
-import androidx.navigation.compose.rememberNavController
 import androidx.paging.compose.LazyPagingItems
-import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
-import androidx.ui.tooling.preview.Preview
 import com.sirelon.marsroverphotos.R
-import com.sirelon.marsroverphotos.activity.ComposeAboutAppActivity
 import com.sirelon.marsroverphotos.activity.PhotosActivity
 import com.sirelon.marsroverphotos.activity.RxActivity
 import com.sirelon.marsroverphotos.activity.TestCompose
@@ -67,7 +53,6 @@ import com.sirelon.marsroverphotos.feature.favorite.FavoriteItem
 import com.sirelon.marsroverphotos.feature.favorite.FavoritePhotosActivity
 import com.sirelon.marsroverphotos.feature.popular.PopularItem
 import com.sirelon.marsroverphotos.feature.popular.PopularPhotosActivity
-import com.sirelon.marsroverphotos.feature.popular.PopularPhotosViewModel
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.ViewType
 import com.sirelon.marsroverphotos.storage.MarsImage
@@ -283,8 +268,8 @@ fun DefaultPreview() {
 fun FavoriteItem(rover: FavoriteItem, onClick: (rover: FavoriteItem) -> Unit) {
     CommonItem(
         title = stringResource(id = R.string.favorite_title),
-        imageAsset = imageResource(id = R.drawable.popular),
-        onClick = { onClick(rover) })
+        imageAsset = painterResource(id = R.drawable.popular)
+    ) { onClick(rover) }
     // Not implemented yet
 //        InfoText(
 //            label = stringResource(id = R.string.label_photos_total),
@@ -296,8 +281,8 @@ fun FavoriteItem(rover: FavoriteItem, onClick: (rover: FavoriteItem) -> Unit) {
 fun PopularItem(rover: PopularItem, onClick: (rover: PopularItem) -> Unit) {
     CommonItem(
         title = stringResource(id = R.string.popular_title),
-        imageAsset = imageResource(id = R.drawable.popular),
-        onClick = { onClick(rover) })
+        imageAsset = painterResource(id = R.drawable.popular)
+    ) { onClick(rover) }
     // Not implemented yet
 //        InfoText(
 //            label = stringResource(id = R.string.label_photos_total),
@@ -343,7 +328,7 @@ fun RoverItem(rover: Rover, onClick: (rover: Rover) -> Unit) {
 }
 
 @Composable
-fun CommonItem(title: String, imageAsset: ImageBitmap, onClick: () -> Unit) {
+fun CommonItem(title: String, imageAsset: Painter, onClick: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -353,11 +338,12 @@ fun CommonItem(title: String, imageAsset: ImageBitmap, onClick: () -> Unit) {
         TitleText(title)
         Spacer(modifier = Modifier.preferredHeight(8.dp))
         Image(
-            bitmap = imageAsset,
+            painter = imageAsset,
             contentScale = ContentScale.FillWidth,
             modifier = Modifier
                 .clip(MaterialTheme.shapes.small)
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            contentDescription = title
         )
     }
 }

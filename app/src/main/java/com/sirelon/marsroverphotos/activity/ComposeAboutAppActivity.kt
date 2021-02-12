@@ -4,12 +4,12 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.text.format.Formatter
+import android.text.format.Formatter.formatFileSize
 import android.widget.Toast
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollableColumn
-import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -21,6 +21,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -31,20 +32,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.gesture.tapGestureFilter
-import androidx.compose.ui.platform.UriHandlerAmbient
-import androidx.compose.ui.platform.setContent
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
-import androidx.compose.ui.text.annotatedString
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
-import androidx.ui.tooling.preview.Preview
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.cache.DiskCache
+import com.google.common.io.Files.append
 import com.sirelon.marsroverphotos.BuildConfig
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
@@ -54,13 +58,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.text.Format
 import java.util.Calendar
+import java.util.Formatter
 
 class ComposeAboutAppActivity : AppCompatActivity() {
     private val tracker = RoverApplication.APP.tracker
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             MarsRoverPhotosTheme {
                 // A surface container using the 'background' color from the theme
@@ -69,7 +76,7 @@ class ComposeAboutAppActivity : AppCompatActivity() {
                         title = { Text(stringResource(id = R.string.app_name)) },
                         navigationIcon = {
                             IconButton(onClick = { finish() }) {
-                                Icon(Icons.Filled.ArrowBack)
+                                Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "back")
                             }
                         })
                 }, bodyContent = { AboutAppContent() })
@@ -86,7 +93,7 @@ class ComposeAboutAppActivity : AppCompatActivity() {
 
             Glide.get(ctx).clearDiskCache()
 
-            val sizeStr = Formatter.formatFileSize(ctx, size)
+            val sizeStr = formatFileSize(ctx, size)
             withContext(Dispatchers.Main) {
                 Toast.makeText(ctx, "Cleared $sizeStr", Toast.LENGTH_SHORT).show()
             }
@@ -143,7 +150,7 @@ class ComposeAboutAppActivity : AppCompatActivity() {
                 modifier = Modifier.fillMaxHeight().then(Modifier.padding(16.dp)),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(bitmap = imageResource(id = R.drawable.alien_icon))
+                Image(painter = painterResource(id = R.drawable.alien_icon), contentDescription = "logo")
                 Spacer(Modifier.preferredHeight(16.dp))
                 Text(text = "Mars rover photos", style = typography.h5)
                 Text(
@@ -184,13 +191,13 @@ class ComposeAboutAppActivity : AppCompatActivity() {
 
     @Composable
     fun LinkifyText(text: String, link: String) {
-        val uriHandler = UriHandlerAmbient.current
+        val uriHandler = LocalUriHandler.current
 
         val layoutResult = remember { mutableStateOf<TextLayoutResult?>(null) }
 
         val colors = MaterialTheme.colors
 
-        val apiString = annotatedString {
+        val apiString = AnnotatedString.Builder("").apply {
             append(text)
             pushStyle(
                 style = SpanStyle(
@@ -205,7 +212,7 @@ class ComposeAboutAppActivity : AppCompatActivity() {
                 start = text.length,
                 end = text.length + link.length
             )
-        }
+        }.toAnnotatedString()
 
         val tapGesture = Modifier.tapGestureFilter { offset ->
             layoutResult.value?.let {
