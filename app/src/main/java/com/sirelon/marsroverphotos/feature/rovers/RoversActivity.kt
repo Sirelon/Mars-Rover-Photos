@@ -3,6 +3,7 @@ package com.sirelon.marsroverphotos.feature.rovers
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,11 +16,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.preferredHeight
 import androidx.compose.foundation.layout.preferredWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyColumnFor
 import androidx.compose.foundation.lazy.LazyColumnForIndexed
 import androidx.compose.foundation.lazy.LazyItemScope
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Explore
@@ -27,6 +32,8 @@ import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.ViewCarousel
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,7 +41,6 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.setContent
-import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -42,17 +48,25 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.util.Pair
+import androidx.navigation.compose.KEY_ROUTE
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.navigate
+import androidx.navigation.compose.rememberNavController
 import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
 import com.sirelon.marsroverphotos.R
+import com.sirelon.marsroverphotos.activity.ComposeAboutAppActivity
 import com.sirelon.marsroverphotos.activity.PhotosActivity
 import com.sirelon.marsroverphotos.activity.RxActivity
-import com.sirelon.marsroverphotos.activity.TestCompose
 import com.sirelon.marsroverphotos.activity.ui.MarsRoverPhotosTheme
 import com.sirelon.marsroverphotos.feature.favorite.FavoriteItem
 import com.sirelon.marsroverphotos.feature.favorite.FavoritePhotosActivity
 import com.sirelon.marsroverphotos.feature.popular.PopularItem
 import com.sirelon.marsroverphotos.feature.popular.PopularPhotosActivity
+import com.sirelon.marsroverphotos.feature.popular.PopularPhotosViewModel
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.ViewType
 import com.sirelon.marsroverphotos.storage.MarsImage
@@ -75,65 +89,65 @@ class RoversActivity : RxActivity() {
         val bottomItems = listOf(Screen.Rovers, Screen.Favorite, Screen.Popular, Screen.About)
 
         setContent {
-            TestCompose()
+//            TestCompose()
 
-//            MarsRoverPhotosTheme {
-//                val navController = rememberNavController()
-//
-//                Scaffold(
-//                    bottomBar = {
-//                        BottomNavigation() {
-//                            val navBackStackEntry by navController.currentBackStackEntryAsState()
-//                            val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
-//                            bottomItems.forEach { screen ->
-//                                BottomNavigationItem(
-//                                    icon = { Icon(screen.icon) },
-//                                    selected = currentRoute == screen.route,
-//                                    onClick = {
-//                                        //FIXME: Until we don't have compose version of photos list open just activity
-//                                        if (screen is Screen.Favorite) {
-//                                            onModelChoose(FavoriteItem(null))
+            MarsRoverPhotosTheme {
+                val navController = rememberNavController()
+
+                Scaffold(
+                    bottomBar = {
+                        BottomNavigation() {
+                            val navBackStackEntry by navController.currentBackStackEntryAsState()
+                            val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
+                            bottomItems.forEach { screen ->
+                                BottomNavigationItem(
+                                    icon = { Icon(screen.icon, contentDescription = screen.route) },
+                                    selected = currentRoute == screen.route,
+                                    onClick = {
+                                        //FIXME: Until we don't have compose version of photos list open just activity
+                                        if (screen is Screen.Favorite) {
+                                            onModelChoose(FavoriteItem(null))
+                                            return@BottomNavigationItem
+                                        }
+//                                        if (screen is Screen.Popular) {
+//                                            onModelChoose(PopularItem())
 //                                            return@BottomNavigationItem
 //                                        }
-////                                        if (screen is Screen.Popular) {
-////                                            onModelChoose(PopularItem())
-////                                            return@BottomNavigationItem
-////                                        }
-//
-//                                        navController.navigate(screen.route) {
-//                                            // Pop up to the start destination of the graph to
-//                                            // avoid building up a large stack of destinations
-//                                            // on the back stack as users select items
-//                                            popUpTo = navController.graph.startDestination
-//                                            // Avoid multiple copies of the same destination when
-//                                            // reselecting the same item
-//                                            launchSingleTop = true
-//                                        }
-//                                    }
-//                                )
-//                            }
-//                        }
-//                    }
-//                ) {
-//                    NavHost(navController = navController, startDestination = Screen.Rovers.route) {
-//                        composable(Screen.Rovers.route) {
-//                            val rovers by dataManager.rovers.observeAsState(emptyList())
-//                            RoversContent(
-//                                rovers = rovers,
-//                                onClick = { onModelChoose(it) })
-//                        }
-//                        composable(Screen.About.route) {
-//                            ComposeAboutAppActivity().AboutAppContent()
-//                        }
-//
-//                        composable(Screen.Popular.route) {
-//                            val viewModel by viewModels<PopularPhotosViewModel>()
-//                            val items = viewModel.popularPhotos.collectAsLazyPagingItems()
-//                            FavoritePhotosContent(items)
-//                        }
-//                    }
-//                }
-//            }
+
+                                        navController.navigate(screen.route) {
+                                            // Pop up to the start destination of the graph to
+                                            // avoid building up a large stack of destinations
+                                            // on the back stack as users select items
+                                            popUpTo = navController.graph.startDestination
+                                            // Avoid multiple copies of the same destination when
+                                            // reselecting the same item
+                                            launchSingleTop = true
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                    }
+                ) {
+                    NavHost(navController = navController, startDestination = Screen.Rovers.route) {
+                        composable(Screen.Rovers.route) {
+                            val rovers by dataManager.rovers.observeAsState(emptyList())
+                            RoversContent(
+                                rovers = rovers,
+                                onClick = { onModelChoose(it) })
+                        }
+                        composable(Screen.About.route) {
+                            ComposeAboutAppActivity().AboutAppContent()
+                        }
+
+                        composable(Screen.Popular.route) {
+                            val viewModel by viewModels<PopularPhotosViewModel>()
+                            val items = viewModel.popularPhotos.collectAsLazyPagingItems()
+                            FavoritePhotosContent(items)
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -242,15 +256,17 @@ fun RoversContent(rovers: List<Rover>, onClick: (rover: ViewType) -> Unit) {
         val items = rovers.toMutableList<ViewType>()
         items.add(0, popular)
         items.add(1, favoriteItem)
-        LazyColumnFor(items = items) { item ->
-            when (item) {
-                is Rover -> RoverItem(rover = item, onClick = onClick)
-                is PopularItem -> PopularItem(item, onClick = onClick)
-                is FavoriteItem -> FavoriteItem(item, onClick = onClick)
-            }
+        LazyColumn(content = {
+            items(items) { item ->
+                when (item) {
+                    is Rover -> RoverItem(rover = item, onClick = onClick)
+                    is PopularItem -> PopularItem(item, onClick = onClick)
+                    is FavoriteItem -> FavoriteItem(item, onClick = onClick)
+                }
 
-            Divider()
-        }
+                Divider()
+            }
+        })
     }
 }
 
