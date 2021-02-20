@@ -40,8 +40,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.setContent
-import androidx.compose.ui.res.imageResource
+import androidx.activity.compose.setContent
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
@@ -280,7 +281,7 @@ fun DefaultPreview() {
 fun FavoriteItem(rover: FavoriteItem, onClick: (rover: FavoriteItem) -> Unit) {
     CommonItem(
         title = stringResource(id = R.string.favorite_title),
-        imageAsset = imageResource(id = R.drawable.popular),
+        imageAsset = painterResource(id = R.drawable.popular),
         onClick = { onClick(rover) })
     // Not implemented yet
 //        InfoText(
@@ -293,7 +294,7 @@ fun FavoriteItem(rover: FavoriteItem, onClick: (rover: FavoriteItem) -> Unit) {
 fun PopularItem(rover: PopularItem, onClick: (rover: PopularItem) -> Unit) {
     CommonItem(
         title = stringResource(id = R.string.popular_title),
-        imageAsset = imageResource(id = R.drawable.popular),
+        imageAsset = painterResource(id = R.drawable.popular),
         onClick = { onClick(rover) })
     // Not implemented yet
 //        InfoText(
@@ -340,7 +341,7 @@ fun RoverItem(rover: Rover, onClick: (rover: Rover) -> Unit) {
 }
 
 @Composable
-fun CommonItem(title: String, imageAsset: ImageBitmap, onClick: () -> Unit) {
+fun CommonItem(title: String, imageAsset: Painter, onClick: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -350,7 +351,7 @@ fun CommonItem(title: String, imageAsset: ImageBitmap, onClick: () -> Unit) {
         TitleText(title)
         Spacer(modifier = Modifier.preferredHeight(8.dp))
         Image(
-            bitmap = imageAsset,
+            painter = imageAsset,
             contentScale = ContentScale.FillWidth,
             modifier = Modifier
                 .clip(MaterialTheme.shapes.small)
