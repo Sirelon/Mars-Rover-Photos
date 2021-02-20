@@ -30,7 +30,7 @@ interface NasaApi {
     ): Call<PhotosResponse>
 
     @GET("https://mars.nasa.gov/api/v1/raw_image_items/?order=sol+desc%2Cdate_taken+desc&per_page=100&page=0&condition_1=insight:mission")
-    fun getRawImages(
+    fun getInsightRawImages(
         @Query("condition_2") from: String? = null,
         @Query("condition_3") to: String? = null
     ): Call<PhotosResponse>

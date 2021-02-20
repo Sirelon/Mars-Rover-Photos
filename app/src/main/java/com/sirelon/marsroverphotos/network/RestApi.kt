@@ -34,7 +34,7 @@ class RestApi(context: Context) {
         // We should call another api if rover is insight
         val sol = query.sol
         if (query.roverName.toLowerCase() == "insight") {
-            return nasaApi.getRawImages(from = "$sol:sol", to = "$sol:sol")
+            return nasaApi.getInsightRawImages(from = "$sol:sol", to = "$sol:sol")
         }
         return nasaApi.getRoverPhotos(query.roverName, sol, query.camera)
     }
