@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.Text
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,6 +25,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Explore
 import androidx.compose.material.icons.outlined.Favorite
@@ -45,6 +45,7 @@ import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.util.Pair
 import androidx.navigation.compose.KEY_ROUTE
@@ -56,7 +57,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
-import androidx.ui.tooling.preview.Preview
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.activity.ComposeAboutAppActivity
 import com.sirelon.marsroverphotos.activity.PhotosActivity
@@ -99,7 +99,7 @@ class RoversActivity : RxActivity() {
                             val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
                             bottomItems.forEach { screen ->
                                 BottomNavigationItem(
-                                    icon = { Icon(screen.icon) },
+                                    icon = { Icon(screen.icon, contentDescription = null) },
                                     selected = currentRoute == screen.route,
                                     onClick = {
                                         //FIXME: Until we don't have compose version of photos list open just activity
@@ -354,7 +354,8 @@ fun CommonItem(title: String, imageAsset: ImageBitmap, onClick: () -> Unit) {
             contentScale = ContentScale.FillWidth,
             modifier = Modifier
                 .clip(MaterialTheme.shapes.small)
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            contentDescription = null
         )
     }
 }

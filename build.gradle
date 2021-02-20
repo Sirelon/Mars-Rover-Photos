@@ -29,3 +29,10 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+buildscript {
+    ext {
+        composeVer = '1.0.0-alpha12'
+    }
+    ext.kotlin_version = "1.4.30"
+}
