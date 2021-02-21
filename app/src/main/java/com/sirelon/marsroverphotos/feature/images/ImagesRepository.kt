@@ -6,6 +6,7 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import com.sirelon.marsroverphotos.feature.photos.mapToUi
 import com.sirelon.marsroverphotos.feature.popular.PopularRemoteMediator
 import com.sirelon.marsroverphotos.firebase.photos.FirebaseProvider
 import com.sirelon.marsroverphotos.models.MarsPhoto
@@ -27,23 +28,8 @@ class ImagesRepository(private val context: Context) {
     }
 
     @SuppressLint("CheckResult")
-    suspend fun saveImages(photos: List<MarsPhoto>) {
-        val t1 = photos.mapIndexed { index, it ->
-            // It's okay to use not correct data for favorite and popular with Stats, 'cause if these images already in database, we'll ignore replacing them.
-            MarsImage(
-                id = it.id.toInt(),
-                sol = it.sol,
-                name = it.name,
-                imageUrl = it.imageUrl,
-                earthDate = it.earthDate,
-                camera = it.camera,
-                favorite = false,
-                popular = false,
-                order = index,
-                stats = MarsImage.Stats(0, 0, 0, 0)
-            )
-        }
-        imagesDao.insertImages(t1)
+    suspend fun saveImages(photos: List<MarsImage>) {
+        imagesDao.insertImages(photos)
     }
 
     fun loadImages(ids: List<Int>) = imagesDao.getImagesByIds(ids)

@@ -47,20 +47,22 @@ class DataManager(
         }
     }
 
-    fun loadFirstFavoriteItem(): LiveData<MarsImage?> = imagesRepo.loadFirstImage()
+//    fun loadFirstFavoriteItem(): LiveData<MarsImage?> = imagesRepo.loadFirstImage()
 
-    fun loadMarsPhotos(queryRequest: PhotosQueryRequest): Observable<List<MarsPhoto>?> {
-        val mainObservable = Observable.fromCallable {
-            val callResponse = api.getRoversPhotos(queryRequest)
-            val response = callResponse.execute()
-            if (response.isSuccessful) response.body()?.photos
-            else throw RuntimeException(response.errorBody()?.string())
-        }
+//    fun loadMarsPhotos(queryRequest: PhotosQueryRequest): Observable<List<MarsImage>?> {
+//        api.getRoversPhotos(queryRequest)
 
-        lastPhotosRequest = mainObservable.cache()
-
-        return lastPhotosRequest!!
-    }
+//        val mainObservable = Observable.fromCallable {
+//            val callResponse = api.getRoversPhotos(queryRequest)
+//            val response = callResponse.execute()
+//            if (response.isSuccessful) response.body()?.photos
+//            else throw RuntimeException(response.errorBody()?.string())
+//        }
+//
+//        lastPhotosRequest = mainObservable.cache()
+//
+//        return lastPhotosRequest!!
+//    }
 
     fun updatePhotoSeenCounter(marsPhoto: MarsPhoto?) {
         marsPhoto?.let {
@@ -102,7 +104,7 @@ class DataManager(
         tracker.trackClick("click_$event")
     }
 
-    suspend fun cacheImages(photos: List<MarsPhoto>) {
+    suspend fun cacheImages(photos: List<MarsImage>) {
         imagesRepo.saveImages(photos)
     }
 }

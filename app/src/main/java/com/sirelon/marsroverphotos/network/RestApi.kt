@@ -30,7 +30,7 @@ class RestApi(context: Context) {
         nasaApi = retrofit.create(NasaApi::class.java)
     }
 
-    fun getRoversPhotos(query: PhotosQueryRequest): Call<PhotosResponse> {
+    suspend fun getRoversPhotos(query: PhotosQueryRequest): PhotosResponse {
         // We should call another api if rover is insight
         val sol = query.sol
         if (query.roverName.toLowerCase() == "insight") {

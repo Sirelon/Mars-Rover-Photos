@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos.network
 
+import androidx.annotation.Keep
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -9,6 +10,7 @@ import retrofit2.http.Query
  * @author romanishin
  * @since 31.10.16 on 15:20
  */
+@Keep
 interface NasaApi {
 
     companion object {
@@ -22,17 +24,17 @@ interface NasaApi {
     ): RoverResponse
 
     @GET("/mars-photos/api/v1/rovers/{roverName}/photos")
-    fun getRoverPhotos(
+    suspend fun getRoverPhotos(
         @Path("roverName") roverName: String,
         @Query("sol") sol: Long?,
         @Query("camera") camera: String?,
         @Query("api_key") apiKey: String = APIKEY
-    ): Call<PhotosResponse>
+    ): PhotosResponse
 
     @GET("https://mars.nasa.gov/api/v1/raw_image_items/?order=sol+desc%2Cdate_taken+desc&per_page=100&page=0&condition_1=insight:mission")
-    fun getInsightRawImages(
+    suspend fun getInsightRawImages(
         @Query("condition_2") from: String? = null,
         @Query("condition_3") to: String? = null
-    ): Call<PhotosResponse>
+    ): PhotosResponse
 
 }
