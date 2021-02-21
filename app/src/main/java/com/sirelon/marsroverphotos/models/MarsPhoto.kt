@@ -25,7 +25,7 @@ data class MarsPhoto(
     @SerializedName(value = "img_src", alternate = ["url"])
     val imageUrl: String,
 
-    @SerializedName(value = "date_taken_utc")
+    @SerializedName(value = "earth_date", alternate = ["created_at"])
     val earthDate: String,
 
     @SerializedName(value = "camera")
