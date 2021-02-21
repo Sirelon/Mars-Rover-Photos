@@ -4,6 +4,8 @@ import android.content.Context
 import com.readystatesoftware.chuck.ChuckInterceptor
 import com.sirelon.marsroverphotos.feature.photos.mapToUi
 import com.sirelon.marsroverphotos.feature.photos.preveranceToUI
+import com.sirelon.marsroverphotos.feature.rovers.INSIGHT_ID
+import com.sirelon.marsroverphotos.feature.rovers.PERSEVARANCE_ID
 import com.sirelon.marsroverphotos.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.storage.MarsImage
 import okhttp3.OkHttpClient
@@ -36,9 +38,9 @@ class RestApi(context: Context) {
         // We should call another api if rover is insight
         val sol = query.sol
         val roverName = query.rover.name
-        val list = if (roverName.toLowerCase() == "insight") {
+        val list = if (query.rover.id == PERSEVARANCE_ID) {
             return loadPerseverance(query)
-        } else if (roverName.toLowerCase() == "insight") {
+        } else if (query.rover.id == INSIGHT_ID) {
             nasaApi.getInsightRawImages(from = "$sol:sol", to = "$sol:sol").photos.mapToUi()
         } else {
             nasaApi.getRoverPhotos(roverName, sol, query.camera).photos.mapToUi()

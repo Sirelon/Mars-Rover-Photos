@@ -214,7 +214,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsImage> {
     }
 
     private fun randomPhotosQueryRequest(): PhotosQueryRequest {
-        val sol = Random.nextLong(1L, rover.maxSol)
+        val sol = Random.nextLong(0L, rover.maxSol)
         return PhotosQueryRequest(rover, sol, null)
     }
 
@@ -390,7 +390,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsImage> {
             override fun onProgressChanged(p0: SeekBar?, progress: Int, p2: Boolean) {
                 @Suppress("NAME_SHADOWING")
                 var progress = progress
-                if (progress <= 0) progress = 1
+                if (progress < 0) progress = 1
                 solInput.setText("$progress")
                 solInput.setSelection(solInput.text.length)
             }

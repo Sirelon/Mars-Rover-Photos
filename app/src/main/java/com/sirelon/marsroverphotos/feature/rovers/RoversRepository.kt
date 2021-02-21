@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 
 
 const val INSIGHT_ID = 4L
+const val PERSEVARANCE_ID = 3L
 
 /**
  * @author romanishin
@@ -32,7 +33,29 @@ class RoversRepository(context: Context, private val api: RestApi) {
         DataBaseProvider.init(context)
         roverDao = DataBaseProvider.dataBase.roversDao()
 
+        // Current date
+        val currentTimeMillis = System.currentTimeMillis()
+
         val resourcePrefix = "android.resource://com.sirelon.marsroverphotos/"
+
+        val perseverance = Rover(
+            PERSEVARANCE_ID,
+            "Perseverance",
+            resourcePrefix + R.drawable.img_insight,
+            "2021-02-18",
+            "2020-07-30",
+            "active",
+            3,
+            "2021-02-18",
+            3
+        )
+
+        val dateUtilP = RoverDateUtil(perseverance)
+
+        // Current date
+        perseverance.maxDate = dateUtilP.parseTime(currentTimeMillis)
+        perseverance.maxSol = dateUtilP.solFromDate(currentTimeMillis)
+
         val insight = Rover(
             INSIGHT_ID,
             "Insight",
@@ -47,8 +70,6 @@ class RoversRepository(context: Context, private val api: RestApi) {
 
         val dateUtil = RoverDateUtil(insight)
 
-        // Current date
-        val currentTimeMillis = System.currentTimeMillis()
         insight.maxDate = dateUtil.parseTime(currentTimeMillis)
         insight.maxSol = dateUtil.solFromDate(currentTimeMillis)
 
@@ -89,17 +110,17 @@ class RoversRepository(context: Context, private val api: RestApi) {
         )
 
         GlobalScope.launch {
-            val ids = roverDao.insertRovers(insight, curiosity, opportunity, spirit)
+            val ids = roverDao.insertRovers(perseverance, insight, curiosity, opportunity, spirit)
 
             "Inseerted $ids".logD()
         }
     }
 
     // Keep it for updating inforamttion via some time.
-    private suspend fun loadFromServer() = coroutineScope{
+    private suspend fun loadFromServer() = coroutineScope {
         val roversName = listOf("curiosity", "opportunity", "spirit")
         val rovers = roversName.asFlow()
-            .map { async {  api.getRoverInfo(it) } }
+            .map { async { api.getRoverInfo(it) } }
             .map { it.await() }
             .toList()
 //        roverDao.insertRoversList(rovers)
