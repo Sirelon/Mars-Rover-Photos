@@ -16,11 +16,11 @@ class ImageViewModel(app: Application) : AndroidViewModel(app) {
 
     private val repository = ImagesRepository(app)
 
-    private val idsEmitor = MutableLiveData<List<Int>>()
+    private val idsEmitor = MutableLiveData<List<String>>()
 
     val imagesLiveData = idsEmitor.switchMap { repository.loadImages(it) }
 
-    fun setIdsToShow(ids: List<Int>) {
+    fun setIdsToShow(ids: List<String>) {
         idsEmitor.value = ids
     }
 

@@ -20,7 +20,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuItemCompat
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.google.android.gms.ads.NativeExpressAdView
@@ -51,12 +50,12 @@ class ImageActivity : RxActivity() {
 
         fun createIntent(
             context: Context,
-            selectedId: Int,
-            list: List<Int>,
+            selectedId: String,
+            list: List<String>,
             cameraFilterEnable: Boolean
         ): Intent {
             val intent = Intent(context, ImageActivity::class.java)
-            intent.putIntegerArrayListExtra(EXTRA_PHOTO_IDS, ArrayList(list))
+            intent.putStringArrayListExtra(EXTRA_PHOTO_IDS, ArrayList(list))
             intent.putExtra(EXTRA_FILTER_BY_CAMERA, cameraFilterEnable)
             intent.putExtra(EXTRA_SELECTED_ID, selectedId)
             return intent
@@ -99,7 +98,7 @@ class ImageActivity : RxActivity() {
                 }
             }
 
-        val ids = intent.getIntegerArrayListExtra(EXTRA_PHOTO_IDS)
+        val ids = intent.getStringArrayListExtra(EXTRA_PHOTO_IDS)
 
         if (ids == null) {
             finish()
@@ -143,7 +142,7 @@ class ImageActivity : RxActivity() {
             }
         })
 
-        val selectedId = intent.getIntExtra(EXTRA_SELECTED_ID, 0)
+        val selectedId = intent.getStringExtra(EXTRA_SELECTED_ID)
         var firstLoad = true
         imagesViewModel.imagesLiveData.observe(this) { list ->
             adapter.submitList(list) {

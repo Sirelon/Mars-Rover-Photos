@@ -15,7 +15,7 @@ import com.sirelon.marsroverphotos.models.ViewType
 @Entity(tableName = "images")
 data class MarsImage(
     @PrimaryKey
-    val id: Int,
+    val id: String,
     val order: Int,
     val sol: Long,
     val name: String?,
@@ -35,7 +35,7 @@ data class MarsImage(
 
     override fun getViewType(): Int = AdapterConstants.MARS_PHOTO
 
-    fun toMarsPhoto() = MarsPhoto(id.toLong(), sol, name, imageUrl, earthDate, camera)
+    fun toMarsPhoto() = MarsPhoto(id, sol, name, imageUrl, earthDate, camera)
 
     class Stats(
         val see: Long,

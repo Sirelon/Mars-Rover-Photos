@@ -9,7 +9,7 @@ import com.sirelon.marsroverphotos.models.Rover
 /**
  * Created on 2019-03-14 12:54 for Mars-Rover-Photos.
  */
-@Database(entities = [Rover::class, MarsImage::class], version = 3)
+@Database(entities = [Rover::class, MarsImage::class], version = 4)
 abstract class AppDataBase : RoomDatabase() {
 
     abstract fun roversDao(): RoverDao
@@ -24,7 +24,7 @@ object DataBaseProvider {
     fun init(context: Context) {
         dataBase =
             Room.databaseBuilder(context, AppDataBase::class.java, "mars-rover-photos-database")
-                // .fallbackToDestructiveMigration()
+                 .fallbackToDestructiveMigration()
                 // From version 3, I've add favorite photos into database. So, I cannot use simple destructive Migration here.
                 .build()
     }

@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-parcelize'
 apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'kotlin-kapt'
@@ -63,10 +63,6 @@ android {
     configurations{
         all*.exclude group: 'com.google.guava', module: 'listenablefuture'
     }
-}
-
-androidExtensions {
-    features = ["parcelize"]
 }
 
 dependencies {

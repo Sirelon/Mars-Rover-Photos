@@ -10,7 +10,7 @@ import com.sirelon.marsroverphotos.storage.MarsImage
  * Created on 12/04/2017 19:05.
  */
 data class FirebasePhoto(
-    val id: Long,
+    val id: String,
     val sol: Long,
     val name: String?,
     val imageUrl: String,
@@ -25,7 +25,7 @@ data class FirebasePhoto(
     override fun getViewId() = id
 
     constructor(photo: MarsPhoto) : this(
-        id = photo.id,
+        id = photo.id.toString(),
         sol = photo.sol,
         name = photo.name,
         imageUrl = photo.imageUrl,
@@ -37,7 +37,7 @@ data class FirebasePhoto(
     )
 
     constructor() : this(
-        id = -1,
+        id = "",
         sol = -1,
         name = null,
         imageUrl = "",
@@ -51,7 +51,7 @@ data class FirebasePhoto(
     override fun getViewType() = AdapterConstants.POPULAR_PHOTO
 
     fun toMarsImage(order: Int) = MarsImage(
-        id = id.toInt(),
+        id = id,
         sol = sol,
         name = name,
         imageUrl = imageUrl,

@@ -32,7 +32,7 @@ class ImagesRepository(private val context: Context) {
         imagesDao.insertImages(photos)
     }
 
-    fun loadImages(ids: List<Int>) = imagesDao.getImagesByIds(ids)
+    fun loadImages(ids: List<String>) = imagesDao.getImagesByIds(ids)
 
     fun loadFirstImage() = imagesDao.getOneImage()
 

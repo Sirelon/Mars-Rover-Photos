@@ -12,7 +12,7 @@ class PhotosRepository(private val api: RestApi) {
 
     @WorkerThread
     suspend fun refreshImages(query: PhotosQueryRequest): List<MarsImage> {
-        return api.getRoversPhotos(query).photos.mapToUi()
+        return api.getRoversPhotos(query)
     }
 
 }

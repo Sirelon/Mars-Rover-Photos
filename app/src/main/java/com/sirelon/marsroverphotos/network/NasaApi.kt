@@ -31,10 +31,18 @@ interface NasaApi {
         @Query("api_key") apiKey: String = APIKEY
     ): PhotosResponse
 
+//
+
     @GET("https://mars.nasa.gov/api/v1/raw_image_items/?order=sol+desc%2Cdate_taken+desc&per_page=100&page=0&condition_1=insight:mission")
     suspend fun getInsightRawImages(
         @Query("condition_2") from: String? = null,
         @Query("condition_3") to: String? = null
     ): PhotosResponse
+
+    @GET("https://mars.nasa.gov/rss/api/?feed=raw_images&category=mars2020&feedtype=json&num=50&page=0&order=sol+desc")
+    suspend fun getPerseveranceRawImages(
+        @Query("condition_2") from: String? = null,
+        @Query("condition_3") to: String? = null
+    ): PerseverancePhotosResponse
 
 }

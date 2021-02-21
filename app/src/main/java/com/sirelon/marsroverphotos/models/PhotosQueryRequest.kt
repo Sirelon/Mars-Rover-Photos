@@ -1,31 +1,20 @@
 package com.sirelon.marsroverphotos.models
 
-import android.os.Parcel
 import android.os.Parcelable
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 
 /**
  * @author romanishin
  * @since 31.10.16 on 19:53
  */
+@Parcelize
 data class PhotosQueryRequest(
-        var roverName: String,
-        var sol: Long,
-        var camera: String?
+    var rover: Rover,
+    var sol: Long,
+    var camera: String?
 ) : Parcelable {
-    companion object {
-        @JvmField val CREATOR: Parcelable.Creator<PhotosQueryRequest> = object : Parcelable.Creator<PhotosQueryRequest> {
-            override fun createFromParcel(source: Parcel): PhotosQueryRequest = PhotosQueryRequest(source)
-            override fun newArray(size: Int): Array<PhotosQueryRequest?> = arrayOfNulls(size)
-        }
-    }
 
-    constructor(source: Parcel) : this(source.readString()!!, source.readLong(), source.readString())
-
-    override fun describeContents() = 0
-
-    override fun writeToParcel(dest: Parcel?, flags: Int) {
-        dest?.writeString(roverName)
-        dest?.writeLong(sol)
-        dest?.writeString(camera)
-    }
+    @IgnoredOnParcel
+    val dateUtil by lazy { RoverDateUtil(rover) }
 }
