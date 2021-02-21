@@ -25,7 +25,7 @@ data class FirebasePhoto(
     override fun getViewId() = id
 
     constructor(photo: MarsPhoto) : this(
-        id = photo.id.toString(),
+        id = photo.id,
         sol = photo.sol,
         name = photo.name,
         imageUrl = photo.imageUrl,

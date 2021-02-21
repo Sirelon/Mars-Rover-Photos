@@ -84,7 +84,20 @@ internal class FirestorePhotos : IFirebasePhotos {
             first.get().addOnCompleteListener {
                 if (it.isSuccessful) {
                     val documentSnapshots = it.result
-                    val objects = documentSnapshots?.toObjects(FirebasePhoto::class.java)
+
+                    val objects = documentSnapshots?.documents?.map {
+                        FirebasePhoto(
+                            it["id"].toString(),
+                            it["sol"] as Long,
+                            it["name"] as String?,
+                            it["imageUrl"] as String,
+                            it["earthDate"] as String,
+                            it["seeCounter"] as Long,
+                            it["scaleCounter"] as Long,
+                            it["saveCounter"] as Long,
+                            it["shareCounter"] as Long,
+                        )
+                    }
                     emitter.onNext(objects ?: emptyList())
                     emitter.onComplete()
                 } else {
@@ -95,7 +108,7 @@ internal class FirestorePhotos : IFirebasePhotos {
     }
 
     private fun updatePhoto(photo: FirebasePhoto): Observable<FirebasePhoto> {
-        return photosCollection().document(photo.id.toString()).setPhoto(photo)
+        return photosCollection().document(photo.id).setPhoto(photo)
     }
 
     private fun getOrCreate(photo: MarsPhoto) =
