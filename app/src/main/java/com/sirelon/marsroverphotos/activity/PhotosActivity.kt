@@ -20,17 +20,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.sirelon.marsroverphotos.NoConnectionError
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
 import com.sirelon.marsroverphotos.adapter.AdsDelegateAdapter
 import com.sirelon.marsroverphotos.adapter.MarsPhotosDelegateAdapter
 import com.sirelon.marsroverphotos.adapter.ViewTypeAdapter
-import com.sirelon.marsroverphotos.extensions.isConnected
 import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.feature.advertising.AdvertisingObjectFactory
 import com.sirelon.marsroverphotos.feature.photos.PhotosViewModel
-import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.models.OnModelChooseListener
 import com.sirelon.marsroverphotos.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.models.Rover
@@ -39,7 +36,6 @@ import com.sirelon.marsroverphotos.models.ViewType
 import com.sirelon.marsroverphotos.storage.MarsImage
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -90,7 +86,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsImage> {
             dataManager.cacheImages(photos)
         }
 
-        val ids = photos.map { it.id.toInt() }
+        val ids = photos.map { it.id }
 
         // Enable camera filter if the same camera was choose.
         // If all camera choosed then no need to filtering
@@ -190,13 +186,6 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsImage> {
             loadFreshData()
         }
 
-        // if we recreate activity - we want to use cache, if available
-//        if (savedInstanceState != null)
-//            loadCacheOrRequest()
-//        else
-//            loadFreshData()
-
-
         viewModel.photosFlow
             .onEach {
                 it.logD()
@@ -229,38 +218,6 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsImage> {
         return PhotosQueryRequest(rover.name, sol, null)
     }
 
-//    private fun loadCacheOrRequest() {
-//        // If we already have lastPhotosRequest - just use it, its returned to us cached results
-//        val observable: Observable<List<ViewType>?> =
-//            if (dataManager.lastPhotosRequest != null) dataManager.lastPhotosRequest!! as Observable<List<ViewType>?>
-//            else photosObservable
-//
-//        loadDataWithObservable(observable)
-//    }
-
-    // Load data from given observable
-    private fun loadDataWithObservable(observable: Observable<List<ViewType>?>) {
-        subscriptions.clear()
-        val subscription = observable
-            .onErrorReturnItem(emptyList())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
-                if (it.isNullOrEmpty()) {
-                    photos_list.visibility = View.GONE
-                    no_data_view.visibility = View.VISIBLE
-                } else {
-                    no_data_view.visibility = View.GONE
-                    photos_list.visibility = View.VISIBLE
-                    advertisingDelegate.integregrateAdToList(it)
-//                    adapter.addData(it)
-                    adapter.replaceData(it)
-                    updateCameraFilter(it)
-                }
-            }
-
-        subscriptions.add(subscription)
-    }
-
     private fun loadFreshData() {
         viewModel.setPhotosQuery(queryRequest)
     }
@@ -269,7 +226,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsImage> {
         photosCamera.visibility = View.GONE
         camerasList = photos
             .asSequence()
-            .filterIsInstance<MarsPhoto>()
+            .filterIsInstance<MarsImage>()
             .mapNotNull { it.camera }
             .map { it.fullName }
             .distinct()
@@ -303,7 +260,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsImage> {
             dataList = adapter.getData()
 
         val filteredData = dataList
-            .filterIsInstance<MarsPhoto>()
+            .filterIsInstance<MarsImage>()
             .filter { filteredCamera == it.camera?.fullName }
 
         // Add ad data to list

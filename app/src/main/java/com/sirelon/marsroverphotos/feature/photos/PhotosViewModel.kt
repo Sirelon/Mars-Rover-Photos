@@ -8,6 +8,7 @@ import com.sirelon.marsroverphotos.network.RestApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -23,6 +24,7 @@ class PhotosViewModel(app: Application) : AndroidViewModel(app) {
     private val queryEmmiter = MutableSharedFlow<PhotosQueryRequest>()
 
     val photosFlow = queryEmmiter
+        .distinctUntilChanged()
         .map { photosRepository.refreshImages(it) }
         .catch { it.printStackTrace() }
         .flowOn(Dispatchers.IO)
