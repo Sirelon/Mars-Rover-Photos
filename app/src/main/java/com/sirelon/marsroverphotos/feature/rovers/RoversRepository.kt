@@ -41,7 +41,7 @@ class RoversRepository(context: Context, private val api: RestApi) {
         val perseverance = Rover(
             PERSEVARANCE_ID,
             "Perseverance",
-            resourcePrefix + R.drawable.img_insight,
+            resourcePrefix + R.drawable.img_perseverance,
             "2021-02-18",
             "2020-07-30",
             "active",
