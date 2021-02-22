@@ -3,6 +3,7 @@ package com.sirelon.marsroverphotos.feature.photos
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.network.RestApi
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +31,7 @@ class PhotosViewModel(app: Application) : AndroidViewModel(app) {
         .flowOn(Dispatchers.IO)
 
     fun setPhotosQuery(query: PhotosQueryRequest) {
+        query.logD()
         viewModelScope.launch {
             queryEmmiter.emit(query)
         }
