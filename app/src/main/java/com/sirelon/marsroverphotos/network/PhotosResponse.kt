@@ -14,11 +14,13 @@ data class PhotosResponse(
     val photos: List<MarsPhoto>
 )
 
+@Keep
 class PerseverancePhotosResponse(
     @SerializedName("images")
     val photos: List<PerseverancePhotoItemResponse>
 )
 
+@Keep
 class PerseverancePhotoItemResponse(
     @SerializedName(value = "imageid")
     val id: String,
@@ -45,6 +47,7 @@ class PerseverancePhotoItemResponse(
     val camera: PerseveranceCameraResponse?
 )
 
+@Keep
 class PerseveranceCameraResponse(
     @SerializedName(value = "camera_model_type")
     val id: String,
@@ -56,6 +59,7 @@ class PerseveranceCameraResponse(
     val fullName: String
 )
 
+@Keep
 class ImageSourceResponse(
     @SerializedName(value = "medium")
     val medium: String?,
