@@ -41,8 +41,7 @@ interface NasaApi {
 
     @GET("https://mars.nasa.gov/rss/api/?feed=raw_images&category=mars2020&feedtype=json&num=50&page=0&order=sol+desc")
     suspend fun getPerseveranceRawImages(
-        @Query("condition_2") from: String? = null,
-        @Query("condition_3") to: String? = null
+        @Query("condition_3") sol: String? = null
     ): PerseverancePhotosResponse
 
 }

@@ -410,7 +410,9 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsImage> {
     }
 
     private fun loadDataBySol(sol: Long) {
-        queryRequest.sol = sol
+        if (sol == queryRequest.sol) return
+
+        queryRequest = queryRequest.copy(sol = sol)
         updateDateSolChoose()
         // Clear adapter
         adapter.clearAll()
