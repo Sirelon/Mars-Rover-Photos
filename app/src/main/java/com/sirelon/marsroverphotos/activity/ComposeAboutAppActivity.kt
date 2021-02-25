@@ -9,13 +9,14 @@ import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.ScrollableColumn
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.preferredHeight
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -31,7 +32,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.gesture.tapGestureFilter
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -72,7 +73,7 @@ class ComposeAboutAppActivity : AppCompatActivity() {
                                 Icon(Icons.Filled.ArrowBack, contentDescription = null)
                             }
                         })
-                }, bodyContent = { AboutAppContent() })
+                }, content = { AboutAppContent() })
             }
         }
     }
@@ -139,45 +140,51 @@ class ComposeAboutAppActivity : AppCompatActivity() {
 
             val typography = MaterialTheme.typography
             val colors = MaterialTheme.colors
-            ScrollableColumn(
+            LazyColumn(
                 modifier = Modifier.fillMaxHeight().then(Modifier.padding(16.dp)),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(painter = painterResource(id = R.drawable.alien_icon), contentDescription = null)
-                Spacer(Modifier.preferredHeight(16.dp))
-                Text(text = "Mars rover photos", style = typography.h5)
-                Text(
-                    text = stringResource(id = R.string.about_description),
-                    style = typography.body1,
-                    textAlign = TextAlign.Center,
-                    color = colors.secondaryVariant
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                TextButton(onClick = ::clearCache) {
-                    Text(text = stringResource(id = R.string.clear_cache))
-                }
-
-                Column(modifier = Modifier.padding(vertical = 24.dp).fillMaxWidth()) {
-                    LinkifyText(text = "API provided by ", link = "https://api.nasa.gov/")
-                    LinkifyText(text = "Email: ", link = "mailto:sasha.sirelon@gmail.com")
+                item {
+                    Image(
+                        painter = painterResource(id = R.drawable.alien_icon),
+                        contentDescription = null
+                    )
+                    Spacer(Modifier.width(16.dp))
+                    Text(text = "Mars rover photos", style = typography.h5)
                     Text(
-                        text = "Version: ${BuildConfig.VERSION_NAME}",
-                        modifier = Modifier.padding(4.dp)
+                        text = stringResource(id = R.string.about_description),
+                        style = typography.body1,
+                        textAlign = TextAlign.Center,
+                        color = colors.secondaryVariant
+                    )
+                    // TODO
+//                Spacer(modifier = Modifier.weight(1f))
+                    TextButton(onClick = ::clearCache) {
+                        Text(text = stringResource(id = R.string.clear_cache))
+                    }
+
+                    Column(modifier = Modifier.padding(vertical = 24.dp).fillMaxWidth()) {
+                        LinkifyText(text = "API provided by ", link = "https://api.nasa.gov/")
+                        LinkifyText(text = "Email: ", link = "mailto:sasha.sirelon@gmail.com")
+                        Text(
+                            text = "Version: ${BuildConfig.VERSION_NAME}",
+                            modifier = Modifier.padding(4.dp)
+                        )
+                    }
+
+                    Button(onClick = ::onRateApp) {
+                        Text(text = stringResource(id = R.string.action_rate))
+                    }
+                    val copyrightText = stringResource(
+                        R.string.all_rights_reserved_fmt,
+                        Calendar.getInstance().get(Calendar.YEAR)
+                    )
+                    Text(
+                        text = copyrightText,
+                        style = MaterialTheme.typography.caption,
+                        modifier = Modifier.padding(16.dp)
                     )
                 }
-
-                Button(onClick = ::onRateApp) {
-                    Text(text = stringResource(id = R.string.action_rate))
-                }
-                val copyrightText = stringResource(
-                    R.string.all_rights_reserved_fmt,
-                    Calendar.getInstance().get(Calendar.YEAR)
-                )
-                Text(
-                    text = copyrightText,
-                    style = MaterialTheme.typography.caption,
-                    modifier = Modifier.padding(16.dp)
-                )
             }
         }
     }
@@ -206,13 +213,16 @@ class ComposeAboutAppActivity : AppCompatActivity() {
             )
         }.toAnnotatedString()
 
-        val tapGesture = Modifier.tapGestureFilter { offset ->
-            layoutResult.value?.let {
-                val position = it.getOffsetForPosition(offset)
-                apiString.getStringAnnotations(position, position).firstOrNull()?.let { result ->
-                    if (result.tag == "URL") {
-                        uriHandler.openUri(result.item)
-                    }
+        val tapGesture = Modifier.pointerInput(null) {
+            detectTapGestures { offset ->
+                layoutResult.value?.let {
+                    val position = it.getOffsetForPosition(offset)
+                    apiString.getStringAnnotations(position, position).firstOrNull()
+                        ?.let { result ->
+                            if (result.tag == "URL") {
+                                uriHandler.openUri(result.item)
+                            }
+                        }
                 }
             }
         }

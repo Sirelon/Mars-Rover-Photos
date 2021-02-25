@@ -3,6 +3,7 @@ package com.sirelon.marsroverphotos.feature.rovers
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -12,13 +13,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.preferredHeight
-import androidx.compose.foundation.layout.preferredWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyColumnFor
-import androidx.compose.foundation.lazy.LazyColumnForIndexed
 import androidx.compose.foundation.lazy.LazyItemScope
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Divider
@@ -37,11 +38,9 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.activity.compose.setContent
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -212,32 +211,33 @@ fun <T> LazyGridFor(
     itemContent: @Composable LazyItemScope.(T, Int) -> Unit
 ) {
     val chunkedList = items.chunked(rows)
-    LazyColumnForIndexed(
-        items = chunkedList,
+    LazyColumn(
         modifier = Modifier.padding(horizontal = hPadding.dp)
-    ) { index, it ->
-        if (index == 0) {
-            columnSpacer(value = 8)
-        }
-
-        Row {
-            it.forEachIndexed { rowIndex, item ->
-                Box(
-                    modifier = Modifier
-                        .weight(1F)
-                        .align(Alignment.Top)
-                        .padding(8.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    itemContent(item, index * rows + rowIndex)
-                }
+    ) {
+        itemsIndexed(chunkedList) { index, it ->
+            if (index == 0) {
+                columnSpacer(value = 8)
             }
-            repeat(rows - it.size) {
-                Box(
-                    modifier = Modifier
-                        .weight(1F)
-                        .padding(8.dp)
-                ) {}
+
+            Row {
+                it.forEachIndexed { rowIndex, item ->
+                    Box(
+                        modifier = Modifier
+                            .weight(1F)
+                            .align(Alignment.Top)
+                            .padding(8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        itemContent(item, index * rows + rowIndex)
+                    }
+                }
+                repeat(rows - it.size) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1F)
+                            .padding(8.dp)
+                    ) {}
+                }
             }
         }
     }
@@ -255,14 +255,16 @@ fun RoversContent(rovers: List<Rover>, onClick: (rover: ViewType) -> Unit) {
         val items = rovers.toMutableList<ViewType>()
         items.add(0, popular)
         items.add(1, favoriteItem)
-        LazyColumnFor(items = items) { item ->
-            when (item) {
-                is Rover -> RoverItem(rover = item, onClick = onClick)
-                is PopularItem -> PopularItem(item, onClick = onClick)
-                is FavoriteItem -> FavoriteItem(item, onClick = onClick)
-            }
+        LazyColumn {
+            items(items) { item ->
+                when (item) {
+                    is Rover -> RoverItem(rover = item, onClick = onClick)
+                    is PopularItem -> PopularItem(item, onClick = onClick)
+                    is FavoriteItem -> FavoriteItem(item, onClick = onClick)
+                }
 
-            Divider()
+                Divider()
+            }
         }
     }
 }
@@ -314,7 +316,7 @@ fun RoverItem(rover: Rover, onClick: (rover: Rover) -> Unit) {
         TitleText(rover.name)
         InfoText(label = "Status:", text = rover.status)
 
-        val height = Modifier.preferredHeight(175.dp)
+        val height = Modifier.height(175.dp)
         Row(modifier = Modifier.padding(8.dp)) {
             GlideImage(
                 contentScale = ContentScale.FillHeight,
@@ -323,7 +325,7 @@ fun RoverItem(rover: Rover, onClick: (rover: Rover) -> Unit) {
                     .weight(1f)
                     .clip(shape = MaterialTheme.shapes.small)
             )
-            Spacer(modifier = Modifier.preferredWidth(8.dp))
+            Spacer(modifier = Modifier.width(8.dp))
             Column(
                 modifier = height.weight(1f),
                 verticalArrangement = Arrangement.SpaceAround
@@ -349,7 +351,7 @@ fun CommonItem(title: String, imageAsset: Painter, onClick: () -> Unit) {
             .clickable(onClick = onClick)
     ) {
         TitleText(title)
-        Spacer(modifier = Modifier.preferredHeight(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         Image(
             painter = imageAsset,
             contentScale = ContentScale.FillWidth,
