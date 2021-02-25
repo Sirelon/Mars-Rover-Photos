@@ -19,12 +19,14 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.45" />
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/roverPhoto"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginEnd="@dimen/padding.small"
         android:layout_marginTop="@dimen/padding.small"
+        app:shapeAppearance="@style/Shappable"
+        app:shapeAppearanceOverlay="@style/Shappable"
         android:adjustViewBounds="true"
         android:contentDescription=""
         android:cropToPadding="false"

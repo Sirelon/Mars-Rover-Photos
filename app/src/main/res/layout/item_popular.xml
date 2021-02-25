@@ -10,13 +10,16 @@
     android:paddingBottom="@dimen/padding"
     android:paddingLeft="@dimen/padding.small"
     android:paddingRight="@dimen/padding.small"
-    android:paddingTop="@dimen/padding">
+    android:paddingTop="@dimen/padding"
+    android:focusable="true">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/popularPhoto"
+        app:shapeAppearanceOverlay="@style/Shappable"
         android:layout_width="match_parent"
         android:layout_height="193dp"
         android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
         android:contentDescription=""
         android:cropToPadding="false"
         android:src="@drawable/popular"

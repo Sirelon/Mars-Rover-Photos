@@ -14,7 +14,7 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class MarsPhoto(
     @SerializedName(value = "id")
-    val id: Long,
+    val id: String,
 
     @SerializedName(value = "sol")
     val sol: Long,

@@ -10,14 +10,16 @@
     android:paddingLeft="@dimen/padding.small"
     android:paddingTop="@dimen/padding"
     android:paddingRight="@dimen/padding.small"
-    android:paddingBottom="@dimen/padding">
+    android:paddingBottom="@dimen/padding"
+    android:focusable="true">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/roverPhoto"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:adjustViewBounds="true"
         android:contentDescription="Rover Image"
+        app:shapeAppearanceOverlay="@style/Shappable"
         android:cropToPadding="true"
         app:layout_constraintBottom_toTopOf="@+id/roverStatus"
         app:layout_constraintLeft_toLeftOf="parent"

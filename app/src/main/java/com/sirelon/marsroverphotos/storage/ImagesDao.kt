@@ -28,7 +28,7 @@ interface ImagesDao {
     fun getOneImage(): LiveData<MarsImage?>
 
     @Query("SELECT * FROM images WHERE id IN (:ids)")
-    fun getImagesByIds(ids: List<Int>): LiveData<List<MarsImage>>
+    fun getImagesByIds(ids: List<String>): LiveData<List<MarsImage>>
 
     @Update
     fun update(item: MarsImage)

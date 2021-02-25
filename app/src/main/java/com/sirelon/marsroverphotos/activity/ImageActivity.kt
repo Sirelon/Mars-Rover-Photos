@@ -20,16 +20,17 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuItemCompat
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.google.android.gms.ads.NativeExpressAdView
 import com.google.android.material.snackbar.Snackbar
+import com.sirelon.marsroverphotos.BuildConfig
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.extensions.showAppSettings
 import com.sirelon.marsroverphotos.extensions.showSnackBar
 import com.sirelon.marsroverphotos.feature.advertising.AdvertisingObjectFactory
 import com.sirelon.marsroverphotos.feature.images.ImageViewModel
+import com.sirelon.marsroverphotos.firebase.photos.FirestorePhotos
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.utils.transformers.DepthPageTransformer
@@ -51,12 +52,12 @@ class ImageActivity : RxActivity() {
 
         fun createIntent(
             context: Context,
-            selectedId: Int,
-            list: List<Int>,
+            selectedId: String,
+            list: List<String>,
             cameraFilterEnable: Boolean
         ): Intent {
             val intent = Intent(context, ImageActivity::class.java)
-            intent.putIntegerArrayListExtra(EXTRA_PHOTO_IDS, ArrayList(list))
+            intent.putStringArrayListExtra(EXTRA_PHOTO_IDS, ArrayList(list))
             intent.putExtra(EXTRA_FILTER_BY_CAMERA, cameraFilterEnable)
             intent.putExtra(EXTRA_SELECTED_ID, selectedId)
             return intent
@@ -99,7 +100,7 @@ class ImageActivity : RxActivity() {
                 }
             }
 
-        val ids = intent.getIntegerArrayListExtra(EXTRA_PHOTO_IDS)
+        val ids = intent.getStringArrayListExtra(EXTRA_PHOTO_IDS)
 
         if (ids == null) {
             finish()
@@ -143,7 +144,7 @@ class ImageActivity : RxActivity() {
             }
         })
 
-        val selectedId = intent.getIntExtra(EXTRA_SELECTED_ID, 0)
+        val selectedId = intent.getStringExtra(EXTRA_SELECTED_ID)
         var firstLoad = true
         imagesViewModel.imagesLiveData.observe(this) { list ->
             adapter.submitList(list) {
@@ -185,8 +186,16 @@ class ImageActivity : RxActivity() {
         if (shareActionProvider is ShareActionProvider) {
             shareActionProvider.setShareIntent(shareIntent)
             shareActionProvider.setOnShareTargetSelectedListener { _, intent ->
+
                 marsPhoto?.toMarsPhoto()?.let {
-                    dataManager.updatePhotoShareCounter(it, intent.`package`)
+
+                    if (BuildConfig.DEBUG) {
+                        lifecycleScope.launch(Dispatchers.IO) {
+                            FirestorePhotos().removePhoto(it)
+                        }
+                    } else {
+                        dataManager.updatePhotoShareCounter(it, intent.`package`)
+                    }
                 }
                 false
             }
@@ -201,6 +210,14 @@ class ImageActivity : RxActivity() {
 
     private fun saveImageToGallery() {
         val marsPhoto = marsPhoto?.toMarsPhoto() ?: return
+
+        // Do some stuff with photo at debug mode
+        if (BuildConfig.DEBUG) {
+            lifecycleScope.launch(Dispatchers.IO) {
+                FirestorePhotos().removePhoto(marsPhoto)
+            }
+            return
+        }
 
         val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
         val grated =
