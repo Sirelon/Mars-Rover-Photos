@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos.firebase.photos
 
+import androidx.annotation.WorkerThread
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
@@ -10,6 +11,7 @@ import com.sirelon.marsroverphotos.feature.firebase.FirebaseConstants
 import com.sirelon.marsroverphotos.feature.firebase.FirebasePhoto
 import com.sirelon.marsroverphotos.feature.firebase.toFireBase
 import com.sirelon.marsroverphotos.models.MarsPhoto
+import com.sirelon.marsroverphotos.utils.randomInt
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.Single
@@ -24,6 +26,31 @@ internal class FirestorePhotos : IFirebasePhotos {
 
     private fun photosCollection() =
         FirebaseFirestore.getInstance().collection(FirebaseConstants.COLECTION_PHOTOS)
+
+    @WorkerThread
+    suspend fun removePhoto(photo: MarsPhoto) {
+        val task = photosCollection().document(photo.id).delete()
+        Tasks.await(task)
+    }
+
+    @WorkerThread
+    suspend fun makeItPopular(photo: MarsPhoto) {
+        val see = randomInt(50, 500)
+        val scale = randomInt(10, see)
+        val db = mapOf(
+            "seeCounter" to see,
+            "scaleCounter" to scale,
+            "saveCounter" to randomInt(0, scale),
+            "shareCounter" to randomInt(0, scale),
+        )
+
+        //                .orderBy("shareCounter", queryDirection)
+//                .orderBy("saveCounter", queryDirection)
+//            .orderBy("seeCounter", queryDirection)
+//            .orderBy("scaleCounter", queryDirection)
+        val task = photosCollection().document(photo.id).update(db)
+
+    }
 
     override suspend fun countOfInsightPhotos(): Long {
         val task = roversCollection().document(FirebaseConstants.DOCUMENT_INSIGHT).get()
@@ -74,6 +101,9 @@ internal class FirestorePhotos : IFirebasePhotos {
                 .orderBy("scaleCounter", queryDirection)
                 .orderBy("seeCounter", queryDirection)
                 .limit(count.toLong())
+
+//                .orderBy("seeCounter", queryDirection)
+//                .orderBy("scaleCounter", queryDirection)
 
             if (lastPhotoId != null) {
                 val documentSnapshot =

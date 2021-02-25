@@ -24,11 +24,13 @@ import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.google.android.gms.ads.NativeExpressAdView
 import com.google.android.material.snackbar.Snackbar
+import com.sirelon.marsroverphotos.BuildConfig
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.extensions.showAppSettings
 import com.sirelon.marsroverphotos.extensions.showSnackBar
 import com.sirelon.marsroverphotos.feature.advertising.AdvertisingObjectFactory
 import com.sirelon.marsroverphotos.feature.images.ImageViewModel
+import com.sirelon.marsroverphotos.firebase.photos.FirestorePhotos
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.utils.transformers.DepthPageTransformer
@@ -184,8 +186,16 @@ class ImageActivity : RxActivity() {
         if (shareActionProvider is ShareActionProvider) {
             shareActionProvider.setShareIntent(shareIntent)
             shareActionProvider.setOnShareTargetSelectedListener { _, intent ->
+
                 marsPhoto?.toMarsPhoto()?.let {
-                    dataManager.updatePhotoShareCounter(it, intent.`package`)
+
+                    if (BuildConfig.DEBUG) {
+                        lifecycleScope.launch(Dispatchers.IO) {
+                            FirestorePhotos().removePhoto(it)
+                        }
+                    } else {
+                        dataManager.updatePhotoShareCounter(it, intent.`package`)
+                    }
                 }
                 false
             }
@@ -200,6 +210,14 @@ class ImageActivity : RxActivity() {
 
     private fun saveImageToGallery() {
         val marsPhoto = marsPhoto?.toMarsPhoto() ?: return
+
+        // Do some stuff with photo at debug mode
+        if (BuildConfig.DEBUG) {
+            lifecycleScope.launch(Dispatchers.IO) {
+                FirestorePhotos().removePhoto(marsPhoto)
+            }
+            return
+        }
 
         val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
         val grated =
