@@ -109,7 +109,7 @@ class ComposeAboutAppActivity : AppCompatActivity() {
 
     private fun goToMarket() {
         tracker.trackClick("goToMarket")
-        val uri = Uri.parse("market://details?id=$packageName")
+        val uri = Uri.parse("market://details?id=${this.packageName}")
         val goToMarket = Intent(Intent.ACTION_VIEW, uri)
         try {
             startActivity(goToMarket)
@@ -117,9 +117,9 @@ class ComposeAboutAppActivity : AppCompatActivity() {
             e.printStackTrace()
             val intent = Intent(
                 Intent.ACTION_VIEW,
-                Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
+                Uri.parse("https://play.google.com/store/apps/details?id=${this.packageName}")
             )
-            if (intent.resolveActivity(packageManager) != null) {
+            if (intent.resolveActivity(this.packageManager) != null) {
                 startActivity(intent)
             }
         }
