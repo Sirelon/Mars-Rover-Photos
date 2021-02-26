@@ -75,7 +75,7 @@ class PopularRemoteMediator(
             }
 
             val endOfPaginationReached: Boolean = list.lastOrNull() == null
-            return MediatorResult.Success(true)
+            return MediatorResult.Success(endOfPaginationReached)
         } catch (e: Throwable) {
             Log.e("SIrelon", "Error", e)
             return MediatorResult.Error(e)

@@ -39,8 +39,9 @@ interface NasaApi {
         @Query("condition_3") to: String? = null
     ): PhotosResponse
 
-    @GET("https://mars.nasa.gov/rss/api/?feed=raw_images&category=mars2020&feedtype=json&num=50&page=0&order=sol+desc")
+    @GET("https://mars.nasa.gov/rss/api/?feed=raw_images&category=mars2020&feedtype=json&page=0&order=sol+desc")
     suspend fun getPerseveranceRawImages(
+        @Query("num") count: Int = 500,
         @Query("condition_3") sol: String? = null
     ): PerseverancePhotosResponse
 
