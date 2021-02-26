@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,8 +17,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
+import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.BottomNavigation
@@ -72,6 +75,7 @@ import com.sirelon.marsroverphotos.models.ViewType
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.skydoves.landscapist.glide.GlideImage
 
+@OptIn(ExperimentalFoundationApi::class)
 class RoversActivity : RxActivity() {
 
     private fun onModelChoose(model: ViewType, vararg sharedElements: Pair<View, String>) {
@@ -157,45 +161,56 @@ sealed class Screen(val route: String, val icon: ImageVector) {
     object Rovers : Screen("rovers", Icons.Outlined.ViewCarousel)
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FavoritePhotosContent(items: LazyPagingItems<MarsImage>) {
 
-    LazyColumn {
-        itemsIndexed(items) { index, image ->
-            val first = image
-            val second = kotlin.runCatching { items.get(index + 1) }.getOrNull()
-
-            listOf<Int>().chunked(2)
-
-            Row() {
-                if (first != null) {
-                    Box(
-                        modifier = Modifier
-                            .weight(1F)
-                            .align(Alignment.Top)
-                            .padding(8.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        ImageItem(marsImage = first)
-                    }
-                }
-                if (second != null) {
-                    Box(
-                        modifier = Modifier
-                            .weight(1F)
-                            .align(Alignment.Top)
-                            .padding(8.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        ImageItem(marsImage = second)
-                    }
-                }
-            }
+    LazyVerticalGrid(cells = GridCells.Fixed(2), content = {
+        items(items.itemCount) {
+            val image = items[it]
+            if (image != null)
+                ImageItem(marsImage = image)
+            else
+                Text(text = "I am null")
         }
-//        items(items) {
-//            ImageItem(it!!)
+    })
+    
+//    LazyColumn {
+//        itemsIndexed(items) { index, image ->
+//            val first = image
+//            val second = kotlin.runCatching { items.get(index + 1) }.getOrNull()
+//
+//            listOf<Int>().chunked(2)
+//
+//            Row() {
+//                if (first != null) {
+//                    Box(
+//                        modifier = Modifier
+//                            .weight(1F)
+//                            .align(Alignment.Top)
+//                            .padding(8.dp),
+//                        contentAlignment = Alignment.Center
+//                    ) {
+//                        ImageItem(marsImage = first)
+//                    }
+//                }
+//                if (second != null) {
+//                    Box(
+//                        modifier = Modifier
+//                            .weight(1F)
+//                            .align(Alignment.Top)
+//                            .padding(8.dp),
+//                        contentAlignment = Alignment.Center
+//                    ) {
+//                        ImageItem(marsImage = second)
+//                    }
+//                }
+//            }
 //        }
-    }
+////        items(items) {
+////            ImageItem(it!!)
+////        }
+//    }
 }
 
 @Composable
@@ -247,6 +262,7 @@ fun columnSpacer(value: Int) {
 
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun RoversContent(rovers: List<Rover>, onClick: (rover: ViewType) -> Unit) {
     MaterialTheme {
@@ -255,7 +271,7 @@ fun RoversContent(rovers: List<Rover>, onClick: (rover: ViewType) -> Unit) {
         val items = rovers.toMutableList<ViewType>()
         items.add(0, popular)
         items.add(1, favoriteItem)
-        LazyColumn {
+        LazyVerticalGrid(cells = GridCells.Fixed(2)) {
             items(items) { item ->
                 when (item) {
                     is Rover -> RoverItem(rover = item, onClick = onClick)
