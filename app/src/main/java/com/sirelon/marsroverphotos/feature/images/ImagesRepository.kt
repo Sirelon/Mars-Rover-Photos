@@ -34,6 +34,8 @@ class ImagesRepository(private val context: Context) {
 
     fun loadImages(ids: List<String>) = imagesDao.getImagesByIds(ids)
 
+    fun loadPopularPhotos() = imagesDao.loadPopularImages()
+
     fun loadFirstImage() = imagesDao.getOneImage()
 
     fun loadFavoritePagedSource(): Flow<PagingData<MarsImage>> {

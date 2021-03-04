@@ -8,6 +8,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Created on 22.08.2020 17:42 for Mars-Rover-Photos.
@@ -40,7 +41,7 @@ interface ImagesDao {
     fun loadPopularPagedSource(): PagingSource<Int, MarsImage>
 
     @Query("SELECT * FROM images WHERE popular = 1 ORDER BY `order` ASC")
-    fun loadPopularImages(): List<MarsImage>
+    fun loadPopularImages(): Flow<List<MarsImage>>
 
     @Query("DELETE FROM images WHERE popular = 1")
     fun deleteAllPopular()

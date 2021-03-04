@@ -105,6 +105,7 @@ dependencies {
     implementation "androidx.compose.runtime:runtime-livedata:$composeVer"
 
     implementation "com.github.skydoves:landscapist-glide:1.1.6"
+    implementation "com.github.skydoves:landscapist-coil:1.1.6"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.multidex:multidex:2.0.1'

@@ -1,12 +1,14 @@
 package com.sirelon.marsroverphotos.feature.popular
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.feature.images.ImagesRepository
 import com.sirelon.marsroverphotos.storage.MarsImage
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 /**
@@ -15,7 +17,12 @@ import kotlinx.coroutines.launch
 class PopularPhotosViewModel(app: Application) : AndroidViewModel(app) {
     private val imagesRepository = ImagesRepository(app)
 
-    val popularPhotos = imagesRepository.loadPopularPagedSource().cachedIn(viewModelScope)
+    val popularPhotos = imagesRepository.loadPopularPagedSource().map {
+        Log.d("Sirelon", "MAP $it")
+        it
+    }
+
+    fun loadPopular() = imagesRepository.loadPopularPhotos()
 
     fun updateFavorite(image: MarsImage) {
         viewModelScope.launch {
