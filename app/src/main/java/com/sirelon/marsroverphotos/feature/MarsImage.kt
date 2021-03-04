@@ -7,23 +7,27 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
+import androidx.compose.material.IconToggleButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -61,28 +65,43 @@ fun MarsImageComposable(marsImage: MarsImage) {
 fun PhotoStats(marsImage: MarsImage) {
     val stats = marsImage.stats
 
-    Column(
+    Row(
+//        horizontalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier
-            .padding(8.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
             .fillMaxWidth()
     ) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        Column {
             StatsInfoText(stats.see, R.drawable.ic_see_counter, "counterSee")
             StatsInfoText(stats.scale, R.drawable.ic_scale_counter, "counterScale")
         }
-        val name = marsImage.name
-        if (name == null) {
-            Spacer(modifier = Modifier.height(8.dp))
-        } else {
-            Text(
-                modifier = Modifier.padding(horizontal = 42.dp),
-                textAlign = TextAlign.Center,
-                text = name
-            )
-        }
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        Spacer(modifier = Modifier.width(16.dp))
+        Column {
             StatsInfoText(stats.save, R.drawable.ic_save_counter, "counterSave")
             StatsInfoText(stats.share, R.drawable.ic_share_counter, "counterShare")
+        }
+//        val name = marsImage.name
+//        if (name == null) {
+//            Spacer(modifier = Modifier.width(8.dp))
+//        } else {
+//            Text(
+//                modifier = Modifier.padding(horizontal = 8.dp),
+//                textAlign = TextAlign.Center,
+//                text = name
+//            )
+//        }
+
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+            var favorite by remember { mutableStateOf(marsImage.favorite) }
+            IconToggleButton(
+                checked = marsImage.favorite,
+                onCheckedChange = { favorite = !favorite }) {
+                Icon(
+                    tint = colorResource(id = R.color.colorAccent),
+                    imageVector = if (favorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                    contentDescription = null // handled by click label of parent
+                )
+            }
         }
     }
 }
