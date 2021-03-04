@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.sirelon.marsroverphotos.R
-import com.sirelon.marsroverphotos.feature.rovers.ImageItem
+import com.sirelon.marsroverphotos.feature.MarsImageComposable
 import com.sirelon.marsroverphotos.storage.MarsImage
 
 /**
@@ -48,7 +48,7 @@ fun FavoritePhotosContent(items: LazyPagingItems<MarsImage>) {
             val image = items[it]
             if (image != null) {
 
-                ImageItem(marsImage = image)
+                MarsImageComposable(marsImage = image)
             } else
                 Image(
                     painter = painterResource(id = R.drawable.img_placeholder),
