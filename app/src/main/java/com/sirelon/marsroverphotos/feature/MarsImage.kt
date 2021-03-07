@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeightIn
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
@@ -29,6 +31,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -37,6 +40,7 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.sirelon.marsroverphotos.R
+import com.sirelon.marsroverphotos.feature.favorite.FavoriteImagesViewModel
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.skydoves.landscapist.glide.GlideImage
 
@@ -62,7 +66,7 @@ fun MarsImageComposable(marsImage: MarsImage) {
 }
 
 @Composable
-fun PhotoStats(marsImage: MarsImage) {
+fun PhotoStats(marsImage: MarsImage, favoriteImagesViewModel: FavoriteImagesViewModel = viewModel()) {
     val stats = marsImage.stats
 
     Row(
@@ -95,7 +99,10 @@ fun PhotoStats(marsImage: MarsImage) {
             var favorite by remember { mutableStateOf(marsImage.favorite) }
             IconToggleButton(
                 checked = marsImage.favorite,
-                onCheckedChange = { favorite = !favorite }) {
+                onCheckedChange = {
+                    favorite = !favorite
+                    favoriteImagesViewModel.updateFavForImage(marsImage)
+                }) {
                 Icon(
                     tint = colorResource(id = R.color.colorAccent),
                     imageVector = if (favorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
@@ -108,6 +115,7 @@ fun PhotoStats(marsImage: MarsImage) {
 
 @Composable
 private fun ImageLoader(imageUrl: String, success: () -> Unit) {
+
     val requestListener = object : RequestListener<Bitmap> {
         override fun onLoadFailed(
             e: GlideException?,
@@ -130,6 +138,7 @@ private fun ImageLoader(imageUrl: String, success: () -> Unit) {
         }
     }
     GlideImage(
+        modifier = Modifier.requiredHeightIn(200.dp, 400.dp),
         imageModel = imageUrl,
         requestBuilder = Glide
             .with(LocalContext.current)
@@ -138,7 +147,7 @@ private fun ImageLoader(imageUrl: String, success: () -> Unit) {
             .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL)),
         requestOptions = RequestOptions()
             .override(1500, 800)
-            .centerCrop(),
+            .optionalCenterCrop(),
         contentScale = ContentScale.Crop,
         circularRevealedEnabled = true,
     )

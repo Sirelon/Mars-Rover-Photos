@@ -17,6 +17,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.items
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.feature.MarsImageComposable
 import com.sirelon.marsroverphotos.storage.MarsImage
@@ -30,8 +31,8 @@ import com.sirelon.marsroverphotos.storage.MarsImage
 fun FavoritePhotosContent(items: LazyPagingItems<MarsImage>) {
     // If I dont call it, paging doesn't work.
 //    items.loadState
-    val scrollState = rememberLazyListState()
-    LazyColumn(state = scrollState, contentPadding = PaddingValues(16.dp), content = {
+//    val scrollState = rememberLazyListState()
+    LazyColumn(contentPadding = PaddingValues(16.dp), content = {
         if (items.loadState.refresh == LoadState.Loading) {
             item {
                 Column(
@@ -44,10 +45,8 @@ fun FavoritePhotosContent(items: LazyPagingItems<MarsImage>) {
             }
         }
 
-        items(items.itemCount) {
-            val image = items[it]
+        items(items) { image ->
             if (image != null) {
-
                 MarsImageComposable(marsImage = image)
             } else
                 Image(
