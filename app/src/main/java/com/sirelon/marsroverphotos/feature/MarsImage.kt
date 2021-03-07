@@ -2,6 +2,7 @@ package com.sirelon.marsroverphotos.feature
 
 import android.graphics.Bitmap
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -48,12 +49,13 @@ import com.skydoves.landscapist.glide.GlideImage
  * Created on 01.03.2021 22:33 for Mars-Rover-Photos.
  */
 @Composable
-fun MarsImageComposable(marsImage: MarsImage) {
+fun MarsImageComposable(marsImage: MarsImage, onClick: () -> Unit) {
     val ready = remember { mutableStateOf(false) }
     Card(
         modifier = Modifier
             .padding(vertical = 8.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable { onClick() },
         shape = MaterialTheme.shapes.small
     ) {
         Column {

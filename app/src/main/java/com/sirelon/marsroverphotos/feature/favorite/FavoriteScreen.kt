@@ -28,7 +28,7 @@ import com.sirelon.marsroverphotos.storage.MarsImage
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun FavoritePhotosContent(items: LazyPagingItems<MarsImage>) {
+fun FavoritePhotosContent(items: LazyPagingItems<MarsImage>, onItemClick: (image: MarsImage) -> Unit) {
     // If I dont call it, paging doesn't work.
 //    items.loadState
 //    val scrollState = rememberLazyListState()
@@ -47,7 +47,9 @@ fun FavoritePhotosContent(items: LazyPagingItems<MarsImage>) {
 
         items(items) { image ->
             if (image != null) {
-                MarsImageComposable(marsImage = image)
+                MarsImageComposable(marsImage = image) {
+                    onItemClick(image)
+                }
             } else
                 Image(
                     painter = painterResource(id = R.drawable.img_placeholder),
