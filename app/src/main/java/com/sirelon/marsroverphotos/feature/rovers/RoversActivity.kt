@@ -13,7 +13,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -52,6 +55,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.navigate
 import androidx.navigation.compose.rememberNavController
+import com.bumptech.glide.request.RequestOptions
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.activity.PhotosActivity
 import com.sirelon.marsroverphotos.activity.RxActivity
@@ -259,7 +263,7 @@ fun CommonItem(title: String, imageAsset: Painter, onClick: () -> Unit) {
             painter = imageAsset,
             contentScale = ContentScale.FillWidth,
             modifier = Modifier
-                .clip(MaterialTheme.shapes.small)
+                .clip(MaterialTheme.shapes.large)
                 .fillMaxWidth(),
             contentDescription = null
         )
