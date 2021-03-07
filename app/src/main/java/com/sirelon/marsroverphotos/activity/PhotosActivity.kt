@@ -29,20 +29,16 @@ import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.feature.advertising.AdvertisingObjectFactory
 import com.sirelon.marsroverphotos.feature.photos.PhotosViewModel
 import com.sirelon.marsroverphotos.models.OnModelChooseListener
-import com.sirelon.marsroverphotos.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.models.Rover
-import com.sirelon.marsroverphotos.models.RoverDateUtil
 import com.sirelon.marsroverphotos.models.ViewType
 import com.sirelon.marsroverphotos.storage.MarsImage
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.TimeZone
-import kotlin.random.Random
 
 class PhotosActivity : RxActivity(), OnModelChooseListener<MarsImage> {
 
@@ -63,7 +59,6 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsImage> {
 //    private lateinit var queryRequest: PhotosQueryRequest
 
     private lateinit var rover: Rover
-    private lateinit var dateUtil: RoverDateUtil
     private var filteredCamera: String? = null
     private var camerasList = emptyList<String>()
 
@@ -128,7 +123,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsImage> {
 
 //            queryRequest = randomPhotosQueryRequest()
         }
-        dateUtil = RoverDateUtil(rover)
+
 
         viewModel.setRoverId(rover.id)
 
@@ -182,7 +177,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsImage> {
             dataManager.trackClick("refresh")
 //            queryRequest = randomPhotosQueryRequest()
             updateDateSolChoose()
-            updateDateEearthChoose(dateUtil.dateFromSol(viewModel.getSol()))
+            updateDateEearthChoose()
 
             adapter.clearAll()
 //            loadFreshData()
@@ -278,33 +273,31 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsImage> {
         val calender = Calendar.getInstance(TimeZone.getDefault())
         calender.clear()
 
-        val time = dateUtil.dateFromSol(viewModel.getSol())
-        updateDateEearthChoose(time)
+        val time = viewModel.earthTime()
+        updateDateEearthChoose()
 
         calender.timeInMillis = time
 
         val datePicker = DatePickerDialog(
             this,
-            DatePickerDialog.OnDateSetListener
             { _, year, monthOfYear, dayOfMonth ->
                 calender.clear()
                 calender.set(year, monthOfYear, dayOfMonth)
-                val chooseDateMil = calender.timeInMillis
-                updateDateEearthChoose(chooseDateMil)
-                loadDataBySol(dateUtil.solFromDate(chooseDateMil))
+                viewModel.setEarthTime(calender.timeInMillis)
+                updateDateEearthChoose()
             },
             calender.get(Calendar.YEAR),
             calender.get(Calendar.MONTH),
             calender.get(Calendar.DAY_OF_MONTH)
         )
 
-        datePicker.datePicker.maxDate = dateUtil.roverLastDate
-        datePicker.datePicker.minDate = dateUtil.roverLandingDate
+        datePicker.datePicker.maxDate = viewModel.maxDate()
+        datePicker.datePicker.minDate = viewModel.minDate()
 
         findViewById<View>(R.id.dateEarthChoose).setOnClickListener {
             dataManager.trackClick("choose_earth")
             // UPDATE TIME
-            val timeFromSol = dateUtil.dateFromSol(viewModel.getSol())
+            val timeFromSol = viewModel.dateFromSol()
 
             calender.timeInMillis = timeFromSol
 
@@ -333,8 +326,8 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsImage> {
             .setPositiveButton("Ok") { _, _ ->
                 val sol = solInput.text.toString().toLongOrNull()
                 sol ?: return@setPositiveButton
-                updateDateEearthChoose(dateUtil.dateFromSol(sol))
                 loadDataBySol(sol)
+                updateDateEearthChoose()
             }.create()
 
         updateDateSolChoose()
@@ -402,9 +395,9 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsImage> {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun updateDateEearthChoose(time: Long) {
+    private fun updateDateEearthChoose() {
         val dateEarthChoose = findViewById<TextView>(R.id.dateEarthChoose)
-        dateEarthChoose.text = "Earth date: ${dateUtil.parseTime(time)}"
+        dateEarthChoose.text = "Earth date: ${viewModel.earthDateStr(viewModel.getSol())}"
     }
 
     private fun loadDataBySol(sol: Long) {

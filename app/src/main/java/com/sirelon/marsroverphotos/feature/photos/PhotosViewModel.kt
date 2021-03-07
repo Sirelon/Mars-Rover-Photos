@@ -8,6 +8,7 @@ import com.sirelon.marsroverphotos.feature.images.ImagesRepository
 import com.sirelon.marsroverphotos.feature.rovers.PERSEVARANCE_ID
 import com.sirelon.marsroverphotos.feature.rovers.RoversRepository
 import com.sirelon.marsroverphotos.models.PhotosQueryRequest
+import com.sirelon.marsroverphotos.models.RoverDateUtil
 import com.sirelon.marsroverphotos.network.RestApi
 import com.sirelon.marsroverphotos.storage.MarsImage
 import kotlinx.coroutines.Dispatchers
@@ -17,6 +18,8 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
@@ -32,10 +35,12 @@ class PhotosViewModel(app: Application) : AndroidViewModel(app) {
 
     private val queryEmmiter = MutableStateFlow<PhotosQueryRequest?>(null)
     private val roverIdEmmiter = MutableStateFlow<Long?>(null)
+    private var dateUtil: RoverDateUtil? = null
 
-    val roverFlow = roverIdEmmiter
+    private val roverFlow = roverIdEmmiter
         .filterNotNull()
-        .map { roversRepository.loadRoverById(it) }
+        .mapNotNull { roversRepository.loadRoverById(it) }
+        .onEach { dateUtil = RoverDateUtil(it) }
         .catch { it.printStackTrace() }
         .flowOn(Dispatchers.IO)
 
@@ -45,6 +50,7 @@ class PhotosViewModel(app: Application) : AndroidViewModel(app) {
         .catch { it.printStackTrace() }
         .flowOn(Dispatchers.IO)
 
+    val solFlow = queryEmmiter.mapNotNull { it?.sol }
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -73,6 +79,24 @@ class PhotosViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun getSol() = queryEmmiter.value?.sol ?: 0
+
+    fun earthDateStr(sol: Long ): String {
+        val time = earthTime(sol)
+        return dateUtil?.parseTime(time) ?: ""
+    }
+
+    fun earthTime(sol: Long = getSol()) = dateUtil?.dateFromSol(sol) ?: System.currentTimeMillis()
+
+    fun setEarthTime(time: Long) {
+        val sol = dateUtil?.solFromDate(time) ?: 1
+        loadBySol(sol)
+    }
+
+    fun maxDate() = dateUtil?.roverLastDate ?: System.currentTimeMillis()
+
+    fun minDate() = dateUtil?.roverLandingDate ?: System.currentTimeMillis()
+
+    fun dateFromSol() = dateUtil?.dateFromSol(getSol()) ?: System.currentTimeMillis()
 
     private suspend fun randomPhotosQueryRequest(): PhotosQueryRequest {
         val rover = roverFlow.first()

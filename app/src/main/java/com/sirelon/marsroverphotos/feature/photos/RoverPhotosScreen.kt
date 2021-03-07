@@ -1,19 +1,27 @@
 package com.sirelon.marsroverphotos.feature.photos
 
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Card
+import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -41,45 +49,70 @@ fun RoverPhotosScreen(
     viewModel.setRoverId(roverId)
 
     val photos: List<MarsImage> by viewModel.photosFlow.collectAsState(initial = emptyList())
+    val sol by viewModel.solFlow.collectAsState(initial = 0)
 
-    LazyVerticalGrid(cells = GridCells.Fixed(2), modifier = modifier) {
-        items(photos) { image ->
-//            MarsImageComposable(
-//                marsImage = it,
-//                onClick = { /*TODO*/ },
-//                onFavoriteClick = { /*TODO*/ })
+    Column {
+        Row(modifier = Modifier.height(52.dp)) {
+            HeaderButton("Sol date: \n$sol") {
 
-            Card(
+            }
+            Divider(
                 modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth()
-                    .clickable {
-                        viewModel.onPhotoClick(image)
+                    .width(1.dp)
+                    .fillMaxHeight()
+            )
+            HeaderButton("Earth date: \n${viewModel.earthDateStr(sol)}") {
 
-                        val ids = photos.map { it.id }
+            }
+        }
+        LazyVerticalGrid(cells = GridCells.Fixed(2), modifier = modifier) {
+            items(photos) { image ->
+                Card(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth()
+                        .clickable {
+                            viewModel.onPhotoClick(image)
 
-                        // Enable camera filter if the same camera was choose.
-                        // If all camera choosed then no need to filtering
+                            val ids = photos.map { it.id }
+
+                            // Enable camera filter if the same camera was choose.
+                            // If all camera choosed then no need to filtering
 //                        val cameraFilter = filteredCamera != null
-                        val intent = ImageActivity.createIntent(activity, image.id, ids, false)
-                        activity.startActivity(intent)
-                    },
-                shape = MaterialTheme.shapes.large
-            ) {
-                Column(verticalArrangement = Arrangement.SpaceBetween) {
-                    ImageItem(image)
-                    val title = image.name
-                    if (title != null) {
-                        Text(
-                            text = title,
-                            style = MaterialTheme.typography.caption,
-                            modifier = Modifier.padding(4.dp),
-                            textAlign = TextAlign.Center
-                        )
+                            val intent = ImageActivity.createIntent(activity, image.id, ids, false)
+                            activity.startActivity(intent)
+                        },
+                    shape = MaterialTheme.shapes.large
+                ) {
+                    Column(verticalArrangement = Arrangement.SpaceBetween) {
+                        ImageItem(image)
+                        val title = image.name
+                        if (title != null) {
+                            Text(
+                                text = title,
+                                style = MaterialTheme.typography.caption,
+                                modifier = Modifier.padding(4.dp),
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun RowScope.HeaderButton(txt: String, onClick: () -> Unit) {
+    TextButton(
+        modifier = Modifier
+        .weight(1f)
+        .animateContentSize(),
+        onClick = onClick) {
+        Text(
+            text = txt,
+            textAlign = TextAlign.Center
+        )
     }
 }
 
