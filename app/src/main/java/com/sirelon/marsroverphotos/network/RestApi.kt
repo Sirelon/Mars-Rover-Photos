@@ -4,13 +4,17 @@ import android.content.Context
 import com.readystatesoftware.chuck.ChuckInterceptor
 import com.sirelon.marsroverphotos.feature.photos.mapToUi
 import com.sirelon.marsroverphotos.feature.photos.preveranceToUI
+import com.sirelon.marsroverphotos.feature.rovers.Curiosity_ID
 import com.sirelon.marsroverphotos.feature.rovers.INSIGHT_ID
+import com.sirelon.marsroverphotos.feature.rovers.Opportunity_ID
 import com.sirelon.marsroverphotos.feature.rovers.PERSEVARANCE_ID
+import com.sirelon.marsroverphotos.feature.rovers.Spirit_ID
 import com.sirelon.marsroverphotos.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.storage.MarsImage
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.lang.IllegalArgumentException
 
 /**
  * @author romanishin
@@ -37,13 +41,17 @@ class RestApi(context: Context) {
     suspend fun getRoversPhotos(query: PhotosQueryRequest): List<MarsImage> {
         // We should call another api if rover is insight
         val sol = query.sol
-        val roverName = query.rover.name
-        val list = if (query.rover.id == PERSEVARANCE_ID) {
-            return loadPerseverance(query)
-        } else if (query.rover.id == INSIGHT_ID) {
-            nasaApi.getInsightRawImages(from = "$sol:sol", to = "$sol:sol").photos.mapToUi()
-        } else {
-            nasaApi.getRoverPhotos(roverName, sol, query.camera).photos.mapToUi()
+        val list = when (query.roverId) {
+            PERSEVARANCE_ID -> {
+                return loadPerseverance(query)
+            }
+            INSIGHT_ID -> {
+                nasaApi.getInsightRawImages(from = "$sol:sol", to = "$sol:sol").photos.mapToUi()
+            }
+            Curiosity_ID -> nasaApi.getRoverPhotos("Curiosity", sol, query.camera).photos.mapToUi()
+            Opportunity_ID -> nasaApi.getRoverPhotos("Opportunity", sol, query.camera).photos.mapToUi()
+            Spirit_ID -> nasaApi.getRoverPhotos("Spirit", sol, query.camera).photos.mapToUi()
+            else -> throw IllegalArgumentException("Unsupported id")
         }
         return list
     }

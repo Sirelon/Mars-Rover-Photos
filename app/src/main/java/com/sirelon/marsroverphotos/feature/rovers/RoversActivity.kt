@@ -44,10 +44,12 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.util.Pair
+import androidx.navigation.NavType
 import androidx.navigation.compose.KEY_ROUTE
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.navigate
 import androidx.navigation.compose.rememberNavController
 import com.sirelon.marsroverphotos.R
@@ -125,7 +127,6 @@ class RoversActivity : RxActivity() {
                                 modifier = modifier,
                                 rovers = rovers,
                                 onClick = { onModelChoose(it) })
-
                         }
                         composable(Screen.About.route) {
                             ComposeAboutAppActivity().AboutAppContent()
@@ -134,6 +135,14 @@ class RoversActivity : RxActivity() {
                         composable(Screen.Popular.route) {
                             FavoriteScreen(modifier, this@RoversActivity)
                         }
+
+                        composable(
+                            "rover/{roverId}",
+                            arguments = listOf(navArgument("userId") { type = NavType.LongType })
+                        ) {
+
+                        }
+
                     }
                 }
             }
@@ -146,6 +155,7 @@ sealed class Screen(val route: String, val icon: ImageVector) {
     object Popular : Screen("popular", Icons.Outlined.Explore)
     object About : Screen("about", Icons.Outlined.Info)
     object Rovers : Screen("rovers", Icons.Outlined.ViewCarousel)
+    class Rover(val id: Long) : Screen("rover", Icons.Outlined.ViewCarousel)
 }
 
 @Composable

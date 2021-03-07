@@ -38,5 +38,4 @@ class PhotosViewModel(app: Application) : AndroidViewModel(app) {
             queryEmmiter.emit(query)
         }
     }
-
 }

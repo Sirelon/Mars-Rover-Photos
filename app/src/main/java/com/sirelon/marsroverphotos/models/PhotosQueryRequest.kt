@@ -10,11 +10,9 @@ import kotlinx.parcelize.Parcelize
  */
 @Parcelize
 data class PhotosQueryRequest(
-    val rover: Rover,
+    val roverId: Long,
     val sol: Long,
     val camera: String?
 ) : Parcelable {
 
-    @IgnoredOnParcel
-    val dateUtil by lazy { RoverDateUtil(rover) }
 }

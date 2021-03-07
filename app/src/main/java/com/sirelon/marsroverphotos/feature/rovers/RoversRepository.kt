@@ -18,6 +18,9 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 
 
+const val Curiosity_ID = 5L
+const val Opportunity_ID = 6L
+const val Spirit_ID = 7L
 const val INSIGHT_ID = 4L
 const val PERSEVARANCE_ID = 3L
 

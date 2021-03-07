@@ -215,7 +215,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsImage> {
 
     private fun randomPhotosQueryRequest(): PhotosQueryRequest {
         val sol = Random.nextLong(0L, rover.maxSol)
-        return PhotosQueryRequest(rover, sol, null)
+        return PhotosQueryRequest(rover.id, sol, null)
     }
 
     private fun loadFreshData() {
