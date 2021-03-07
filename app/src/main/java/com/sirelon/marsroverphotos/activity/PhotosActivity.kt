@@ -60,7 +60,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsImage> {
     private val advertisingDelegate = AdvertisingObjectFactory.getAdvertisingDelegate()
 
     private val adapter = ViewTypeAdapter()
-    private lateinit var queryRequest: PhotosQueryRequest
+//    private lateinit var queryRequest: PhotosQueryRequest
 
     private lateinit var rover: Rover
     private lateinit var dateUtil: RoverDateUtil
@@ -76,7 +76,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsImage> {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelable(EXTRA_QUERY_REQUEST, queryRequest)
+//        outState.putParcelable(EXTRA_QUERY_REQUEST, queryRequest)
         outState.putParcelable(EXTRA_ROVER, rover)
     }
 
@@ -116,7 +116,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsImage> {
         if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_QUERY_REQUEST)) {
             // Activity after savedInstance
             rover = savedInstanceState.getParcelable(EXTRA_ROVER)!!
-            queryRequest = savedInstanceState.getParcelable(EXTRA_QUERY_REQUEST)!!
+//            queryRequest = savedInstanceState.getParcelable(EXTRA_QUERY_REQUEST)!!
         } else {
             val parcelableExtra = intent.getParcelableExtra<Rover>(EXTRA_ROVER)
             if (parcelableExtra == null) {
@@ -126,9 +126,11 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsImage> {
             // New Activity
             rover = parcelableExtra
 
-            queryRequest = randomPhotosQueryRequest()
+//            queryRequest = randomPhotosQueryRequest()
         }
         dateUtil = RoverDateUtil(rover)
+
+        viewModel.setRoverId(rover.id)
 
         // Set Toolbar title
         title = "${rover.name}'s photos"
@@ -178,12 +180,13 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsImage> {
 
         actionRandom.setOnClickListener {
             dataManager.trackClick("refresh")
-            queryRequest = randomPhotosQueryRequest()
+//            queryRequest = randomPhotosQueryRequest()
             updateDateSolChoose()
-            updateDateEearthChoose(dateUtil.dateFromSol(queryRequest.sol))
+            updateDateEearthChoose(dateUtil.dateFromSol(viewModel.getSol()))
 
             adapter.clearAll()
-            loadFreshData()
+//            loadFreshData()
+            viewModel.randomize()
         }
 
         viewModel.photosFlow
@@ -203,23 +206,18 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsImage> {
             }
             .launchIn(lifecycleScope)
 
-        loadFreshData()
+//        loadFreshData()
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         rover = intent.getParcelableExtra(EXTRA_ROVER)!!
 
-        queryRequest = randomPhotosQueryRequest()
-    }
-
-    private fun randomPhotosQueryRequest(): PhotosQueryRequest {
-        val sol = Random.nextLong(0L, rover.maxSol)
-        return PhotosQueryRequest(rover.id, sol, null)
+//        queryRequest = randomPhotosQueryRequest()
     }
 
     private fun loadFreshData() {
-        viewModel.setPhotosQuery(queryRequest)
+//        viewModel.setPhotosQuery(queryRequest)
     }
 
     private fun updateCameraFilter(photos: List<ViewType>) {
@@ -280,7 +278,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsImage> {
         val calender = Calendar.getInstance(TimeZone.getDefault())
         calender.clear()
 
-        val time = dateUtil.dateFromSol(queryRequest.sol)
+        val time = dateUtil.dateFromSol(viewModel.getSol())
         updateDateEearthChoose(time)
 
         calender.timeInMillis = time
@@ -306,7 +304,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsImage> {
         findViewById<View>(R.id.dateEarthChoose).setOnClickListener {
             dataManager.trackClick("choose_earth")
             // UPDATE TIME
-            val timeFromSol = dateUtil.dateFromSol(queryRequest.sol)
+            val timeFromSol = dateUtil.dateFromSol(viewModel.getSol())
 
             calender.timeInMillis = timeFromSol
 
@@ -344,8 +342,8 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsImage> {
             dataManager.trackClick("choose_sol")
             // Update views
             solSeekBar.max = rover.maxSol.toInt()
-            solSeekBar.progress = queryRequest.sol.toInt()
-            val solStr = queryRequest.sol.toString()
+            solSeekBar.progress = viewModel.getSol().toInt()
+            val solStr = viewModel.getSol().toString()
             solInput.setText(solStr)
             solInput.setSelection(solStr.length)
             // Show dialog
@@ -400,7 +398,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsImage> {
     @SuppressLint("SetTextI18n")
     private fun updateDateSolChoose() {
         val dateSolChoose = findViewById<TextView>(R.id.dateSolChoose)
-        dateSolChoose.text = "Sol date: ${queryRequest.sol}"
+        dateSolChoose.text = "Sol date: ${viewModel.getSol()}"
     }
 
     @SuppressLint("SetTextI18n")
@@ -410,12 +408,16 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsImage> {
     }
 
     private fun loadDataBySol(sol: Long) {
-        if (sol == queryRequest.sol) return
 
-        queryRequest = queryRequest.copy(sol = sol)
+        viewModel.loadBySol(sol)
+
+        // TODO:
+//        if (sol == queryRequest.sol) return
+//
+//        queryRequest = queryRequest.copy(sol = sol)
         updateDateSolChoose()
-        // Clear adapter
-        adapter.clearAll()
-        loadFreshData()
+//        // Clear adapter
+//        adapter.clearAll()
+//        loadFreshData()
     }
 }

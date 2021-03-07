@@ -136,6 +136,8 @@ class RoversRepository(context: Context, private val api: RestApi) {
 
     fun getRovers() = roverDao.getRovers()
 
+    suspend fun loadRoverById(id: Long) = roverDao.loadRoverById(id)
+
     fun updateRoversByInfo(list: List<RoverInfo>) {
 //        DataBaseProvider.dataBase.runInTransaction {
         list.forEach(this::updateRoverByInfo)
