@@ -6,7 +6,6 @@ import androidx.paging.LoadType
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
-import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.feature.firebase.FirebasePhoto
 import com.sirelon.marsroverphotos.firebase.photos.IFirebasePhotos
 import com.sirelon.marsroverphotos.storage.ImagesDao
@@ -40,11 +39,28 @@ class PopularPhotosSource(private val firebasePhotos: IFirebasePhotos) :
     }
 }
 
+// A bit hacky, I just dont want to store this field at my db.
+private var firstCreation = true
+
 @ExperimentalPagingApi
 class PopularRemoteMediator(
     private val firebasePhotos: IFirebasePhotos,
     private val dao: ImagesDao
 ) : RemoteMediator<Int, MarsImage>() {
+
+    override suspend fun initialize(): InitializeAction {
+        return if (firstCreation) {
+            firstCreation = false
+            // Need to refresh cached data from network; returning
+            // LAUNCH_INITIAL_REFRESH here will also block RemoteMediator's
+            // APPEND and PREPEND from running until REFRESH succeeds.
+            InitializeAction.LAUNCH_INITIAL_REFRESH
+        } else {
+            // Cached data is up-to-date, so there is no need to re-fetch
+            // from the network.
+            InitializeAction.SKIP_INITIAL_REFRESH
+        }
+    }
 
     override suspend fun load(
         loadType: LoadType,
