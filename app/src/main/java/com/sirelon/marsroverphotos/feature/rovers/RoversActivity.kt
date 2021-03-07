@@ -108,7 +108,6 @@ class RoversActivity : RxActivity() {
                                             // Avoid multiple copies of the same destination when
                                             // reselecting the same item
                                             launchSingleTop = true
-
                                         }
                                     }
                                 )

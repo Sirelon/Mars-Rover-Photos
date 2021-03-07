@@ -6,10 +6,12 @@ import androidx.paging.LoadType
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
+import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.feature.firebase.FirebasePhoto
 import com.sirelon.marsroverphotos.firebase.photos.IFirebasePhotos
 import com.sirelon.marsroverphotos.storage.ImagesDao
 import com.sirelon.marsroverphotos.storage.MarsImage
+import com.sirelon.marsroverphotos.storage.StatsUpdate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -44,7 +46,6 @@ class PopularRemoteMediator(
     private val dao: ImagesDao
 ) : RemoteMediator<Int, MarsImage>() {
 
-    @ExperimentalPagingApi
     override suspend fun load(
         loadType: LoadType,
         state: PagingState<Int, MarsImage>
@@ -62,16 +63,18 @@ class PopularRemoteMediator(
         try {
             val loadSize = state.config.pageSize
             val list =
-                firebasePhotos.loadPopularPhotos(loadSize, state.lastItemOrNull()?.id?.toString())
+                firebasePhotos.loadPopularPhotos(loadSize, state.lastItemOrNull()?.id)
                     .blockingFirst()
                     .mapIndexed { index, item -> item.toMarsImage(index + alreadyInDb) }
 
             dao.withTransaction {
-                if (loadType == LoadType.REFRESH) {
-                    dao.deleteAllPopular()
-                }
+                val ids = dao.insertImages(list).mapIndexed { index, rowId -> rowId to index }
+                val grouped = ids.groupBy { it.first == -1L }
+                val toUpdate = grouped[true]?.map { list[it.second] }
 
-                dao.replaceImages(list)
+                toUpdate?.forEach {
+                    dao.updateStats(StatsUpdate(it.id, it.stats))
+                }
             }
 
             val endOfPaginationReached: Boolean = list.lastOrNull() == null

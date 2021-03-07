@@ -55,3 +55,10 @@ val MarsImageDiffCallback = object : DiffUtil.ItemCallback<MarsImage>() {
     }
 
 }
+
+class StatsUpdate(
+    @PrimaryKey
+    val id: String,
+    @Embedded(prefix = "counter_")
+    val stats: MarsImage.Stats
+)

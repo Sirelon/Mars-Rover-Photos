@@ -37,11 +37,16 @@ fun FavoriteScreen(
 ) {
     val items = viewModel.popularPhotos.collectAsLazyPagingItems()
     val context = activity
-    FavoritePhotosContent(modifier, items) { image ->
-        val ids = items.snapshot().mapNotNull { it?.id }
-        val intent = ImageActivity.createIntent(context, image.id, ids, false)
-        activity.startActivity(intent)
-    }
+    FavoritePhotosContent(
+        modifier = modifier,
+        items = items,
+        onFavoriteClick = viewModel::updateFavorite,
+        onItemClick = { image ->
+            val ids = items.snapshot().mapNotNull { it?.id }
+            val intent = ImageActivity.createIntent(context, image.id, ids, false)
+            activity.startActivity(intent)
+        },
+    )
 }
 
 
@@ -50,7 +55,8 @@ fun FavoriteScreen(
 fun FavoritePhotosContent(
     modifier: Modifier,
     items: LazyPagingItems<MarsImage>,
-    onItemClick: (image: MarsImage) -> Unit
+    onItemClick: (image: MarsImage) -> Unit,
+    onFavoriteClick: (image: MarsImage) -> Unit
 ) {
     // If I dont call it, paging doesn't work.
 //    items.loadState
@@ -70,9 +76,10 @@ fun FavoritePhotosContent(
 
         items(items) { image ->
             if (image != null) {
-                MarsImageComposable(marsImage = image) {
-                    onItemClick(image)
-                }
+                MarsImageComposable(
+                    marsImage = image,
+                    onClick = { onItemClick(image) },
+                    onFavoriteClick = { onFavoriteClick(image) })
             } else
                 Image(
                     painter = painterResource(id = R.drawable.img_placeholder),

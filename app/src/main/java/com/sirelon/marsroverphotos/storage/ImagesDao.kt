@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.Flow
 interface ImagesDao {
     // Emits the number of users added to the database.
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertImages(images: List<MarsImage>)
+    suspend fun insertImages(images: List<MarsImage>): List<Long>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun replaceImages(images: List<MarsImage>)
@@ -34,6 +34,12 @@ interface ImagesDao {
     @Update
     fun update(item: MarsImage)
 
+    @Update(entity = MarsImage::class)
+    fun updateStats(stats: StatsUpdate)
+
+    @Query("SELECT * FROM images WHERE id IN (:ids)")
+    suspend fun loadImagesByIds(ids: List<String>): List<MarsImage>
+
     @Query("SELECT * FROM images WHERE favorite = 1")
     fun loadFavoritePagedSource(): PagingSource<Int, MarsImage>
 
@@ -47,7 +53,7 @@ interface ImagesDao {
     fun deleteAllPopular()
 
     @Transaction
-    fun withTransaction(action: () -> Unit) {
+    suspend fun withTransaction( action: suspend () -> Unit) {
         action.invoke()
     }
 

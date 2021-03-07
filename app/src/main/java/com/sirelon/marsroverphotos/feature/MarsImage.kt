@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeightIn
-import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
@@ -49,7 +48,7 @@ import com.skydoves.landscapist.glide.GlideImage
  * Created on 01.03.2021 22:33 for Mars-Rover-Photos.
  */
 @Composable
-fun MarsImageComposable(marsImage: MarsImage, onClick: () -> Unit) {
+fun MarsImageComposable(marsImage: MarsImage, onClick: () -> Unit, onFavoriteClick: () -> Unit) {
     val ready = remember { mutableStateOf(false) }
     Card(
         modifier = Modifier
@@ -61,14 +60,14 @@ fun MarsImageComposable(marsImage: MarsImage, onClick: () -> Unit) {
         Column {
             ImageLoader(marsImage.imageUrl) { ready.value = true }
             if (ready.value) {
-                PhotoStats(marsImage)
+                PhotoStats(marsImage, onFavoriteClick)
             }
         }
     }
 }
 
 @Composable
-fun PhotoStats(marsImage: MarsImage, favoriteImagesViewModel: FavoriteImagesViewModel = viewModel()) {
+fun PhotoStats(marsImage: MarsImage, onFavoriteClick: () -> Unit) {
     val stats = marsImage.stats
 
     Row(
@@ -98,16 +97,17 @@ fun PhotoStats(marsImage: MarsImage, favoriteImagesViewModel: FavoriteImagesView
 //        }
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-            var favorite by remember { mutableStateOf(marsImage.favorite) }
+//            var favorite by remember { mutableStateOf(marsImage.favorite) }
             IconToggleButton(
                 checked = marsImage.favorite,
                 onCheckedChange = {
-                    favorite = !favorite
-                    favoriteImagesViewModel.updateFavForImage(marsImage)
+//                    favorite = !favorite
+                    onFavoriteClick()
+//                    favoriteImagesViewModel.updateFavForImage(marsImage)
                 }) {
                 Icon(
                     tint = colorResource(id = R.color.colorAccent),
-                    imageVector = if (favorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                    imageVector = if (marsImage.favorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                     contentDescription = null // handled by click label of parent
                 )
             }
