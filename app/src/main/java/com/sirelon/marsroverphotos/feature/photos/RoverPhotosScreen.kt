@@ -24,10 +24,10 @@ import androidx.compose.material.AlertDialog
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Slider
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -35,18 +35,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bumptech.glide.request.RequestOptions
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.activity.ImageActivity
-import com.sirelon.marsroverphotos.extensions.logD
+import com.sirelon.marsroverphotos.activity.ui.accent
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.launch
@@ -67,16 +69,28 @@ fun RoverPhotosScreen(
     val photos: List<MarsImage> by viewModel.photosFlow.collectAsState(initial = emptyList())
     val sol by viewModel.solFlow.collectAsState(initial = 0)
 
-    var openDialog by remember { mutableStateOf(false) }
-    SolDialog(viewModel = viewModel, openDialog = openDialog, sol = sol) {
-        openDialog = false
+    var openSolDialog by remember { mutableStateOf(false) }
+
+    var maxSol: Long by remember(calculation = { mutableStateOf(Long.MAX_VALUE) })
+    rememberCoroutineScope().launch {
+        maxSol = viewModel.maxSol()
     }
+
+    SolDialog(
+        maxSol = maxSol,
+        openDialog = openSolDialog,
+        sol = sol,
+        onClose = { openSolDialog = false },
+        onChoose = {
+            viewModel.loadBySol(it)
+            openSolDialog = false
+        }
+    )
 
     Column {
         Row(modifier = Modifier.height(52.dp)) {
             HeaderButton("Sol date: \n$sol") {
-//                activity.setupViewsForSetSol(viewModel)
-                openDialog = true
+                openSolDialog = true
             }
             Divider(
                 modifier = Modifier
@@ -126,24 +140,26 @@ fun RoverPhotosScreen(
 
 @Composable
 private fun SolDialog(
-    viewModel: PhotosViewModel,
     openDialog: Boolean,
+    maxSol: Long,
     sol: Long,
-    onClose: () -> Unit
+    onClose: () -> Unit,
+    onChoose: (sol: Long) -> Unit
 ) {
 
-    sol.logD()
     if (openDialog) {
         var sol: Long? by remember(calculation = { mutableStateOf(sol) })
-        var maxSol: Long by remember(calculation = { mutableStateOf(Long.MAX_VALUE) })
-        rememberCoroutineScope().launch {
-            maxSol = viewModel.maxSol()
-        }
 
         AlertDialog(
             onDismissRequest = onClose,
             confirmButton = {
-                TextButton(onClick = onClose) {
+                TextButton(onClick = {
+                    if (sol != null) {
+                        onChoose(sol!!)
+                    } else {
+                        onClose()
+                    }
+                }) {
                     Text("Choose")
                 }
             },
@@ -172,13 +188,25 @@ private fun SolDialog(
     }
 }
 
+@Preview
+@Composable
+fun Test() {
+    MaterialTheme {
+        SolChanger(sol = 12, maxSol = 123, onSolChanged = { })
+    }
+}
+
 @Composable
 private fun SolChanger(sol: Long?, maxSol: Long, onSolChanged: (sol: Long?) -> Unit) {
     Column {
-        Row {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             val solStr = sol?.toString() ?: ""
-            Text(text = "Sol: $solStr", modifier = Modifier.weight(1f))
-            TextField(
+            Text(
+                text = "Sol: ",
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.h6.copy(color = accent)
+            )
+            OutlinedTextField(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 value = solStr,
                 modifier = Modifier.weight(1f),

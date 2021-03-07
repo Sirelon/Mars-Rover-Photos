@@ -46,8 +46,10 @@ class PhotosViewModel(app: Application) : AndroidViewModel(app) {
         .flowOn(Dispatchers.IO)
 
     val photosFlow = queryEmmiter
-        .filterNotNull()
-        .map { photosRepository.refreshImages(it) }
+        .map {
+            if (it != null) photosRepository.refreshImages(it)
+            else emptyList()
+        }
         .catch { it.printStackTrace() }
         .flowOn(Dispatchers.IO)
 
@@ -81,7 +83,7 @@ class PhotosViewModel(app: Application) : AndroidViewModel(app) {
 
     fun getSol() = queryEmmiter.value?.sol ?: 0
 
-    fun earthDateStr(sol: Long ): String {
+    fun earthDateStr(sol: Long): String {
         val time = earthTime(sol)
         return dateUtil?.parseTime(time) ?: ""
     }
@@ -110,13 +112,10 @@ class PhotosViewModel(app: Application) : AndroidViewModel(app) {
     fun loadBySol(sol: Long) {
         val queryRequest = queryEmmiter.value ?: return
         if (sol == queryRequest.sol) return
+        queryEmmiter.tryEmit(null)
 
         val queryUpdated = queryRequest.copy(sol = sol)
         setPhotosQuery(queryUpdated)
-
-        //        // Clear adapter
-//        adapter.clearAll()
-//        loadFreshData()
     }
 
     fun onPhotoClick(image: MarsImage) {
