@@ -55,7 +55,7 @@ fun MarsImageComposable(marsImage: MarsImage, onClick: () -> Unit, onFavoriteCli
             .padding(vertical = 8.dp)
             .fillMaxWidth()
             .clickable { onClick() },
-        shape = MaterialTheme.shapes.small
+        shape = MaterialTheme.shapes.large
     ) {
         Column {
             ImageLoader(marsImage.imageUrl) { ready.value = true }

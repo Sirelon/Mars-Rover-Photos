@@ -53,13 +53,13 @@ import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.navigate
 import androidx.navigation.compose.rememberNavController
 import com.sirelon.marsroverphotos.R
-import com.sirelon.marsroverphotos.activity.ComposeAboutAppActivity
 import com.sirelon.marsroverphotos.activity.PhotosActivity
 import com.sirelon.marsroverphotos.activity.RxActivity
 import com.sirelon.marsroverphotos.activity.ui.MarsRoverPhotosTheme
 import com.sirelon.marsroverphotos.feature.favorite.FavoriteItem
 import com.sirelon.marsroverphotos.feature.favorite.FavoritePhotosActivity
 import com.sirelon.marsroverphotos.feature.favorite.FavoriteScreen
+import com.sirelon.marsroverphotos.feature.photos.RoverPhotosScreen
 import com.sirelon.marsroverphotos.feature.popular.PopularItem
 import com.sirelon.marsroverphotos.feature.popular.PopularPhotosActivity
 import com.sirelon.marsroverphotos.models.Rover
@@ -129,7 +129,8 @@ class RoversActivity : RxActivity() {
                                 onClick = { onModelChoose(it) })
                         }
                         composable(Screen.About.route) {
-                            ComposeAboutAppActivity().AboutAppContent()
+//                            ComposeAboutAppActivity().AboutAppContent()
+                            RoverPhotosScreen(this@RoversActivity, modifier, INSIGHT_ID)
                         }
 
                         composable(Screen.Popular.route) {
@@ -138,9 +139,12 @@ class RoversActivity : RxActivity() {
 
                         composable(
                             "rover/{roverId}",
-                            arguments = listOf(navArgument("userId") { type = NavType.LongType })
+                            arguments = listOf(navArgument("roverId") { type = NavType.LongType })
                         ) {
-
+                            val roverId = it.arguments?.getLong("roverId")
+                            if (roverId != null) {
+                                RoverPhotosScreen(this@RoversActivity, modifier, roverId)
+                            }
                         }
 
                     }
@@ -222,7 +226,7 @@ fun RoverItem(rover: Rover, onClick: (rover: Rover) -> Unit) {
                 imageModel = rover.iamgeUrl ?: "",
                 modifier = height
                     .weight(1f)
-                    .clip(shape = MaterialTheme.shapes.small)
+                    .clip(shape = MaterialTheme.shapes.large)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Column(

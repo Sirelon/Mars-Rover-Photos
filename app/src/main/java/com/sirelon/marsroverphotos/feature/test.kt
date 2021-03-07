@@ -73,47 +73,4 @@ private fun shortestColumn(colHeights: IntArray): Int {
     return column
 }
 
-@Composable
-fun <T> LazyGridFor(
-    items: List<T> = listOf(),
-    rows: Int = 3,
-    hPadding: Int = 8,
-    itemContent: @Composable LazyItemScope.(T, Int) -> Unit
-) {
-    val chunkedList = items.chunked(rows)
-    LazyColumn(
-        modifier = Modifier.padding(horizontal = hPadding.dp)
-    ) {
-        itemsIndexed(chunkedList) { index, it ->
-            if (index == 0) {
-                columnSpacer(value = 8)
-            }
-
-            Row {
-                it.forEachIndexed { rowIndex, item ->
-                    Box(
-                        modifier = Modifier
-                            .weight(1F)
-                            .align(Alignment.Top)
-                            .padding(8.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        itemContent(item, index * rows + rowIndex)
-                    }
-                }
-                repeat(rows - it.size) {
-                    Box(
-                        modifier = Modifier
-                            .weight(1F)
-                            .padding(8.dp)
-                    ) {}
-                }
-            }
-        }
-    }
-}
-
-fun columnSpacer(value: Int) {
-
-}
 
