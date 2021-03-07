@@ -38,12 +38,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.util.Pair
 import androidx.navigation.compose.KEY_ROUTE
@@ -52,19 +50,16 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigate
 import androidx.navigation.compose.rememberNavController
-import androidx.paging.compose.collectAsLazyPagingItems
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.activity.ComposeAboutAppActivity
-import com.sirelon.marsroverphotos.activity.ImageActivity
 import com.sirelon.marsroverphotos.activity.PhotosActivity
 import com.sirelon.marsroverphotos.activity.RxActivity
 import com.sirelon.marsroverphotos.activity.ui.MarsRoverPhotosTheme
 import com.sirelon.marsroverphotos.feature.favorite.FavoriteItem
 import com.sirelon.marsroverphotos.feature.favorite.FavoritePhotosActivity
-import com.sirelon.marsroverphotos.feature.favorite.FavoritePhotosContent
+import com.sirelon.marsroverphotos.feature.favorite.FavoriteScreen
 import com.sirelon.marsroverphotos.feature.popular.PopularItem
 import com.sirelon.marsroverphotos.feature.popular.PopularPhotosActivity
-import com.sirelon.marsroverphotos.feature.popular.PopularPhotosViewModel
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.ViewType
 import com.skydoves.landscapist.glide.GlideImage
@@ -113,41 +108,36 @@ class RoversActivity : RxActivity() {
                                             // Avoid multiple copies of the same destination when
                                             // reselecting the same item
                                             launchSingleTop = true
+
                                         }
                                     }
                                 )
                             }
                         }
                     }
-                ) {
+                ) { paddigValues ->
                     NavHost(navController = navController, startDestination = Screen.Rovers.route) {
+                        val modifier =
+                            Modifier.padding(bottom = paddigValues.calculateBottomPadding())
                         composable(Screen.Rovers.route) {
                             val rovers by dataManager.rovers.observeAsState(emptyList())
+
                             RoversContent(
+                                modifier = modifier,
                                 rovers = rovers,
                                 onClick = { onModelChoose(it) })
+
                         }
                         composable(Screen.About.route) {
                             ComposeAboutAppActivity().AboutAppContent()
                         }
 
                         composable(Screen.Popular.route) {
-                            Favorite()
+                            FavoriteScreen(modifier, this@RoversActivity)
                         }
                     }
                 }
             }
-        }
-    }
-
-    @Composable
-    private fun Favorite(viewModel: PopularPhotosViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
-        val items = viewModel.popularPhotos.collectAsLazyPagingItems()
-        val context = LocalContext.current
-        FavoritePhotosContent(items) { image ->
-            val ids = items.snapshot().mapNotNull { it?.id }
-            val intent = ImageActivity.createIntent(context, image.id, ids, false)
-            startActivity(intent)
         }
     }
 }
@@ -159,25 +149,22 @@ sealed class Screen(val route: String, val icon: ImageVector) {
     object Rovers : Screen("rovers", Icons.Outlined.ViewCarousel)
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun RoversContent(rovers: List<Rover>, onClick: (rover: ViewType) -> Unit) {
-    MaterialTheme {
-        val popular = PopularItem()
-        val favoriteItem = FavoriteItem(null)
-        val items = rovers.toMutableList<ViewType>()
-        items.add(0, popular)
-        items.add(1, favoriteItem)
-        LazyColumn {
-            items(items) { item ->
-                when (item) {
-                    is Rover -> RoverItem(rover = item, onClick = onClick)
-                    is PopularItem -> PopularItem(item, onClick = onClick)
-                    is FavoriteItem -> FavoriteItem(item, onClick = onClick)
-                }
-
-                Divider()
+fun RoversContent(modifier: Modifier, rovers: List<Rover>, onClick: (rover: ViewType) -> Unit) {
+    val popular = PopularItem()
+    val favoriteItem = FavoriteItem(null)
+    val items = rovers.toMutableList<ViewType>()
+    items.add(0, popular)
+    items.add(1, favoriteItem)
+    LazyColumn(modifier = modifier) {
+        items(items) { item ->
+            when (item) {
+                is Rover -> RoverItem(rover = item, onClick = onClick)
+                is PopularItem -> PopularItem(item, onClick = onClick)
+                is FavoriteItem -> FavoriteItem(item, onClick = onClick)
             }
+
+            Divider()
         }
     }
 }
