@@ -3,6 +3,7 @@ package com.sirelon.marsroverphotos.feature.photos
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.feature.images.ImagesRepository
 import com.sirelon.marsroverphotos.feature.rovers.PERSEVARANCE_ID
@@ -94,6 +95,8 @@ class PhotosViewModel(app: Application) : AndroidViewModel(app) {
 
     fun maxDate() = dateUtil?.roverLastDate ?: System.currentTimeMillis()
 
+    suspend fun maxSol() = roverFlow.first().maxSol
+
     fun minDate() = dateUtil?.roverLandingDate ?: System.currentTimeMillis()
 
     fun dateFromSol() = dateUtil?.dateFromSol(getSol()) ?: System.currentTimeMillis()
@@ -122,5 +125,9 @@ class PhotosViewModel(app: Application) : AndroidViewModel(app) {
             imagesRepository.saveImages(photos)
         }
 
+    }
+
+    fun track(track: String) {
+        RoverApplication.APP.dataManger.trackClick(track)
     }
 }

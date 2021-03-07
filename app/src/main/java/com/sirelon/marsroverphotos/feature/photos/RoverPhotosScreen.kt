@@ -1,5 +1,7 @@
 package com.sirelon.marsroverphotos.feature.photos
 
+//import androidx.appcompat.app.AlertDialog
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -17,23 +19,37 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Slider
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
+import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bumptech.glide.request.RequestOptions
+import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.activity.ImageActivity
+import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.coroutines.launch
 
 /**
  * Created on 07.03.2021 12:46 for Mars-Rover-Photos.
@@ -51,10 +67,16 @@ fun RoverPhotosScreen(
     val photos: List<MarsImage> by viewModel.photosFlow.collectAsState(initial = emptyList())
     val sol by viewModel.solFlow.collectAsState(initial = 0)
 
+    var openDialog by remember { mutableStateOf(false) }
+    SolDialog(viewModel = viewModel, openDialog = openDialog, sol = sol) {
+        openDialog = false
+    }
+
     Column {
         Row(modifier = Modifier.height(52.dp)) {
             HeaderButton("Sol date: \n$sol") {
-
+//                activity.setupViewsForSetSol(viewModel)
+                openDialog = true
             }
             Divider(
                 modifier = Modifier
@@ -103,12 +125,82 @@ fun RoverPhotosScreen(
 }
 
 @Composable
+private fun SolDialog(
+    viewModel: PhotosViewModel,
+    openDialog: Boolean,
+    sol: Long,
+    onClose: () -> Unit
+) {
+
+    sol.logD()
+    if (openDialog) {
+        var sol: Long? by remember(calculation = { mutableStateOf(sol) })
+        var maxSol: Long by remember(calculation = { mutableStateOf(Long.MAX_VALUE) })
+        rememberCoroutineScope().launch {
+            maxSol = viewModel.maxSol()
+        }
+
+        AlertDialog(
+            onDismissRequest = onClose,
+            confirmButton = {
+                TextButton(onClick = onClose) {
+                    Text("Choose")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = onClose) {
+                    Text("Cancel")
+                }
+            },
+            title = { Text(text = stringResource(id = R.string.sol_description)) },
+            text = {
+                val context = LocalContext.current
+                SolChanger(sol, maxSol) {
+                    if (sol ?: 0 > maxSol) {
+                        sol = maxSol
+                        Toast.makeText(
+                            context,
+                            "The max sol for this rover is $maxSol",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        sol = it
+                    }
+                }
+            }
+        )
+    }
+}
+
+@Composable
+private fun SolChanger(sol: Long?, maxSol: Long, onSolChanged: (sol: Long?) -> Unit) {
+    Column {
+        Row {
+            val solStr = sol?.toString() ?: ""
+            Text(text = "Sol: $solStr", modifier = Modifier.weight(1f))
+            TextField(
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                value = solStr,
+                modifier = Modifier.weight(1f),
+                onValueChange = {
+                    onSolChanged(it.toLongOrNull())
+                })
+        }
+        Slider(
+            value = sol?.toFloat() ?: 0f,
+            valueRange = 0f..maxSol.toFloat(),
+            onValueChange = { onSolChanged(it.toLong()) })
+    }
+}
+
+@Composable
 private fun RowScope.HeaderButton(txt: String, onClick: () -> Unit) {
     TextButton(
         modifier = Modifier
-        .weight(1f)
-        .animateContentSize(),
-        onClick = onClick) {
+            .weight(1f)
+            .animateContentSize(),
+        onClick = onClick
+    ) {
         Text(
             text = txt,
             textAlign = TextAlign.Center
@@ -130,3 +222,75 @@ fun ImageItem(marsImage: MarsImage) {
         circularRevealedEnabled = true,
     )
 }
+
+//@OptIn(ExperimentalCoroutinesApi::class)
+//private fun AppCompatActivity.setupViewsForSetSol(viewModel: PhotosViewModel) {
+//    val dialogView = layoutInflater.inflate(R.layout.view_choose_sol, null, false)
+//
+//    val solInput = dialogView.findViewById<EditText>(R.id.solInput)
+//    val solSeekBar = dialogView.findViewById<SeekBar>(R.id.solSeekBar)
+//
+//    val dialog = AlertDialog.Builder(this)
+//        .setView(dialogView)
+//        .setNegativeButton("Cancel", null)
+//        .setPositiveButton("Ok") { _, _ ->
+//            val sol = solInput.text.toString().toLongOrNull()
+//            sol ?: return@setPositiveButton
+//            viewModel.loadBySol(sol)
+//        }.create()
+//
+//    findViewById<View>(R.id.dateSolChoose).setOnClickListener {
+//
+//        viewModel.track("choose_sol")
+//        // Update views
+////        solSeekBar.max = rover.maxSol.toInt()
+//        lifecycleScope.launch {
+//            solSeekBar.max = viewModel.maxSol().toInt()
+//        }
+//        solSeekBar.progress = viewModel.getSol().toInt()
+//        val solStr = viewModel.getSol().toString()
+//        solInput.setText(solStr)
+//        solInput.setSelection(solStr.length)
+//        // Show dialog
+//        dialog.show()
+//    }
+//
+//
+//    callbackFlow<CharSequence> {
+//        solInput.doOnTextChanged { text, _, _, _ -> offer(text ?: "") }
+//    }
+//        .mapNotNull { it.toString().toIntOrNull() }
+//        .filter {
+//            val maxSol = viewModel.maxSol()
+//            if (it > maxSol) {
+//                Toast.makeText(
+//                    this@setupViewsForSetSol,
+//                    "The max sol for this rover is $maxSol",
+//                    Toast.LENGTH_SHORT
+//                ).show()
+//                solInput.setText("$maxSol")
+//                false
+//            } else {
+//                true
+//            }
+//        }
+//        .onEach { solSeekBar.progress = it }
+//        .launchIn(lifecycleScope)
+//
+//    solSeekBar.setOnSeekBarChangeListener(object :
+//                                              SeekBar.OnSeekBarChangeListener {
+//        override fun onStartTrackingTouch(p0: SeekBar?) {
+//        }
+//
+//        override fun onStopTrackingTouch(p0: SeekBar?) {
+//        }
+//
+//        override fun onProgressChanged(p0: SeekBar?, progress: Int, p2: Boolean) {
+//            @Suppress("NAME_SHADOWING")
+//            var progress = progress
+//            if (progress < 0) progress = 1
+//            solInput.setText("$progress")
+//            solInput.setSelection(solInput.text.length)
+//        }
+//    })
+//}

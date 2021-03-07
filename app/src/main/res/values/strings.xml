@@ -19,5 +19,6 @@
     <string name="provided_api">API provided by https://api.nasa.gov/api.html#MarsPhotos</string>
     <string name="action_rate">Rate this App</string>
     <string name="label_photos_total">Total photos: </string>
+    <string name="sol_description">The term sol is used by planetary astronomers to refer to the duration of a solar day on Mars.\nA mean Martian solar day is 24 hours, 39 minutes, and 35.244 seconds.</string>
 
 </resources>
