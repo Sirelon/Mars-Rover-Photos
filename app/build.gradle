@@ -88,6 +88,11 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.0'
 
     // COMPOSEEEE
+
+    debugImplementation "androidx.compose.ui:ui-tooling:$composeVer"
+    debugImplementation "org.jetbrains.kotlin:kotlin-reflect:1.4.30"
+
+
     implementation "androidx.compose.ui:ui:$composeVer"
     // Tooling support (Previews, etc.)
     implementation "androidx.compose.ui:ui-tooling:$composeVer"
