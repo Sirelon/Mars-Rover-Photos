@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -24,6 +23,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
@@ -53,6 +53,7 @@ import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.activity.ImageActivity
 import com.sirelon.marsroverphotos.activity.ui.accent
 import com.sirelon.marsroverphotos.storage.MarsImage
+import com.sirelon.marsroverphotos.ui.CenteredColumn
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.launch
 
@@ -68,7 +69,7 @@ fun RoverPhotosScreen(
 ) {
     viewModel.setRoverId(roverId)
 
-    val photos: List<MarsImage> by viewModel.photosFlow.collectAsState(initial = emptyList())
+    val photos: List<MarsImage>? by viewModel.photosFlow.collectAsState(initial = null)
 
     val sol by viewModel.solFlow.collectAsState(initial = 0)
 
@@ -105,7 +106,12 @@ fun RoverPhotosScreen(
             }
         }
 
-        if (photos.isEmpty()) {
+        val photos = photos
+        if (photos == null) {
+            CenteredColumn {
+                CircularProgressIndicator()
+            }
+        } else if (photos.isEmpty()) {
             EmptyPhotos(title = "No data here", callback = {
                 viewModel.track("click_refresh_no_data")
                 viewModel.randomize()
@@ -251,7 +257,6 @@ private fun RowScope.HeaderButton(txt: String, onClick: () -> Unit) {
     }
 }
 
-
 @Composable
 fun ImageItem(marsImage: MarsImage) {
     GlideImage(
@@ -272,16 +277,12 @@ fun TestA() {
     EmptyPhotos(title = "No data here", callback = { /*TODO*/ })
 }
 
-
 @Composable
 fun EmptyPhotos(title: String, callback: () -> Unit) {
-    Column(
+    CenteredColumn(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .clickable(onClick = callback),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .clickable(onClick = callback)
+            .padding(horizontal = 16.dp)
     ) {
         Image(painter = painterResource(R.drawable.alien_icon), contentDescription = null)
         Text(text = title, style = MaterialTheme.typography.h4)

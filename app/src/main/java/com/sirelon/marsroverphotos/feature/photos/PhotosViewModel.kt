@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.feature.images.ImagesRepository
-import com.sirelon.marsroverphotos.feature.rovers.PERSEVARANCE_ID
 import com.sirelon.marsroverphotos.feature.rovers.RoversRepository
 import com.sirelon.marsroverphotos.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.models.RoverDateUtil
@@ -45,10 +44,11 @@ class PhotosViewModel(app: Application) : AndroidViewModel(app) {
         .catch { it.printStackTrace() }
         .flowOn(Dispatchers.IO)
 
+    // null means that we are in loading process.
     val photosFlow = queryEmmiter
         .map {
             if (it != null) photosRepository.refreshImages(it)
-            else emptyList()
+            else null
         }
         .catch { it.printStackTrace() }
         .flowOn(Dispatchers.IO)
@@ -65,6 +65,7 @@ class PhotosViewModel(app: Application) : AndroidViewModel(app) {
 
     fun setPhotosQuery(query: PhotosQueryRequest) {
         query.logD()
+        queryEmmiter.tryEmit(null)
         viewModelScope.launch {
             queryEmmiter.emit(query)
         }
@@ -105,8 +106,8 @@ class PhotosViewModel(app: Application) : AndroidViewModel(app) {
 
     private suspend fun randomPhotosQueryRequest(): PhotosQueryRequest {
         val rover = roverFlow.first()
-        val sol = Random.nextLong(0L, rover?.maxSol ?: 10)
-        return PhotosQueryRequest(rover?.id ?: PERSEVARANCE_ID, sol, null)
+        val sol = Random.nextLong(0L, rover.maxSol)
+        return PhotosQueryRequest(rover.id, sol, null)
     }
 
     fun loadBySol(sol: Long) {
@@ -120,7 +121,7 @@ class PhotosViewModel(app: Application) : AndroidViewModel(app) {
 
     fun onPhotoClick(image: MarsImage) {
         viewModelScope.launch(Dispatchers.IO) {
-            val photos = photosFlow.first()
+            val photos = photosFlow.first() ?: return@launch
             imagesRepository.saveImages(photos)
         }
 
