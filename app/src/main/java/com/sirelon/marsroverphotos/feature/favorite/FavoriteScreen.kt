@@ -10,10 +10,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.LoadState
@@ -33,12 +36,34 @@ import com.sirelon.marsroverphotos.storage.MarsImage
 fun FavoriteScreen(
     modifier: Modifier,
     activity: AppCompatActivity,
+    viewModel: FavoriteImagesViewModel = viewModel()
+) {
+    val items = viewModel.favoriteImagesFlow.collectAsLazyPagingItems()
+    val context = activity
+    FavoritePhotosContent(
+        modifier = modifier,
+        title = stringResource(id = R.string.favorite_title),
+        items = items,
+        onFavoriteClick = viewModel::updateFavForImage,
+        onItemClick = { image ->
+            val ids = items.snapshot().mapNotNull { it?.id }
+            val intent = ImageActivity.createIntent(context, image.id, ids, false)
+            activity.startActivity(intent)
+        },
+    )
+}
+
+@Composable
+fun PopularScreen(
+    modifier: Modifier,
+    activity: AppCompatActivity,
     viewModel: PopularPhotosViewModel = viewModel()
 ) {
     val items = viewModel.popularPhotos.collectAsLazyPagingItems()
     val context = activity
     FavoritePhotosContent(
         modifier = modifier,
+        title = stringResource(id = R.string.popular_title),
         items = items,
         onFavoriteClick = viewModel::updateFavorite,
         onItemClick = { image ->
@@ -54,6 +79,7 @@ fun FavoriteScreen(
 @Composable
 fun FavoritePhotosContent(
     modifier: Modifier,
+    title: String,
     items: LazyPagingItems<MarsImage>,
     onItemClick: (image: MarsImage) -> Unit,
     onFavoriteClick: (image: MarsImage) -> Unit
@@ -62,6 +88,8 @@ fun FavoritePhotosContent(
 //    items.loadState
 //    val scrollState = rememberLazyListState()
     LazyColumn(modifier = modifier, contentPadding = PaddingValues(16.dp), content = {
+        item { TopAppBar(title = { Text(text = title) }) }
+
         if (items.loadState.refresh == LoadState.Loading) {
             item {
                 Column(

@@ -151,7 +151,7 @@ private fun ImageLoader(imageUrl: String, success: () -> Unit) {
             .override(1500, 800)
             .optionalCenterCrop(),
         contentScale = ContentScale.Crop,
-        circularRevealedEnabled = true,
+//        circularRevealedEnabled = true,
     )
 }
 

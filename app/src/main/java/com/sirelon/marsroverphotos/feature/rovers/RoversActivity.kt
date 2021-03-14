@@ -19,9 +19,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
-import androidx.compose.material.DrawerValue
-import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -31,14 +30,13 @@ import androidx.compose.material.icons.outlined.Explore
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.ViewCarousel
-import androidx.compose.material.rememberDrawerState
-import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -61,9 +59,11 @@ import com.sirelon.marsroverphotos.activity.ComposeAboutAppActivity
 import com.sirelon.marsroverphotos.activity.PhotosActivity
 import com.sirelon.marsroverphotos.activity.RxActivity
 import com.sirelon.marsroverphotos.activity.ui.MarsRoverPhotosTheme
+import com.sirelon.marsroverphotos.activity.ui.accent
 import com.sirelon.marsroverphotos.feature.favorite.FavoriteItem
 import com.sirelon.marsroverphotos.feature.favorite.FavoritePhotosActivity
 import com.sirelon.marsroverphotos.feature.favorite.FavoriteScreen
+import com.sirelon.marsroverphotos.feature.favorite.PopularScreen
 import com.sirelon.marsroverphotos.feature.photos.RoverPhotosScreen
 import com.sirelon.marsroverphotos.feature.popular.PopularItem
 import com.sirelon.marsroverphotos.feature.popular.PopularPhotosActivity
@@ -101,12 +101,9 @@ class RoversActivity : RxActivity() {
                                 BottomNavigationItem(
                                     icon = { Icon(screen.icon, contentDescription = null) },
                                     selected = currentRoute == screen.route,
+                                    selectedContentColor = accent,
+                                    unselectedContentColor = Color.White.copy(alpha = ContentAlpha.medium),
                                     onClick = {
-                                        //FIXME: Until we don't have compose version of photos list open just activity
-                                        if (screen is Screen.Favorite) {
-                                            onModelChoose(FavoriteItem(null))
-                                            return@BottomNavigationItem
-                                        }
                                         navController.navigate(screen.route) {
                                             // Pop up to the start destination of the graph to
                                             // avoid building up a large stack of destinations
@@ -152,6 +149,10 @@ class RoversActivity : RxActivity() {
                         }
 
                         composable(Screen.Popular.route) {
+                            PopularScreen(modifier, this@RoversActivity)
+                        }
+
+                        composable(Screen.Favorite.route) {
                             FavoriteScreen(modifier, this@RoversActivity)
                         }
 
@@ -185,8 +186,8 @@ fun RoversContent(modifier: Modifier, rovers: List<Rover>, onClick: (rover: View
     val popular = PopularItem()
     val favoriteItem = FavoriteItem(null)
     val items = rovers.toMutableList<ViewType>()
-    items.add(0, popular)
-    items.add(1, favoriteItem)
+//    items.add(0, popular)
+//    items.add(1, favoriteItem)
     LazyColumn(modifier = modifier) {
         items(items) { item ->
             when (item) {
