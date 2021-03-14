@@ -26,10 +26,15 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Agriculture
 import androidx.compose.material.icons.outlined.Explore
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.LocalFireDepartment
+import androidx.compose.material.icons.outlined.SupervisedUserCircle
 import androidx.compose.material.icons.outlined.ViewCarousel
+import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material.icons.outlined.VolunteerActivism
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -42,6 +47,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -99,7 +105,12 @@ class RoversActivity : RxActivity() {
                             val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
                             bottomItems.forEach { screen ->
                                 BottomNavigationItem(
-                                    icon = { Icon(screen.icon, contentDescription = null) },
+                                    icon = {
+                                        Icon(
+                                            screen.iconCreator.invoke(),
+                                            contentDescription = null
+                                        )
+                                    },
                                     selected = currentRoute == screen.route,
                                     selectedContentColor = accent,
                                     unselectedContentColor = Color.White.copy(alpha = ContentAlpha.medium),
@@ -173,12 +184,16 @@ class RoversActivity : RxActivity() {
     }
 }
 
-sealed class Screen(val route: String, val icon: ImageVector) {
-    object Favorite : Screen("favorite", Icons.Outlined.Favorite)
-    object Popular : Screen("popular", Icons.Outlined.Explore)
-    object About : Screen("about", Icons.Outlined.Info)
-    object Rovers : Screen("rovers", Icons.Outlined.ViewCarousel)
-    class Rover(val id: Long) : Screen("rover", Icons.Outlined.ViewCarousel)
+sealed class Screen(val route: String, val iconCreator: @Composable () -> ImageVector) {
+    object Rovers : Screen("rovers", {
+        ImageVector.vectorResource(id = R.drawable.ic_rovers)
+    })
+
+    object Favorite : Screen("favorite", { Icons.Outlined.Favorite })
+    object Popular : Screen("popular", { Icons.Outlined.LocalFireDepartment })
+    object About : Screen("about", { Icons.Outlined.Info })
+
+    class Rover(val id: Long) : Screen("rover", { Icons.Outlined.ViewCarousel })
 }
 
 @Composable
