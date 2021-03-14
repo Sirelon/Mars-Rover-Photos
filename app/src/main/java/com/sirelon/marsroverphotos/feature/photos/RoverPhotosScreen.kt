@@ -3,16 +3,23 @@ package com.sirelon.marsroverphotos.feature.photos
 import android.app.DatePickerDialog
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -25,11 +32,15 @@ import androidx.compose.material.AlertDialog
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Slider
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Autorenew
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -61,6 +72,7 @@ import java.util.TimeZone
 /**
  * Created on 07.03.2021 12:46 for Mars-Rover-Photos.
  */
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun RoverPhotosScreen(
     activity: AppCompatActivity,
@@ -120,6 +132,38 @@ fun RoverPhotosScreen(
             })
         } else {
             PhotosList(modifier, photos, viewModel, activity)
+        }
+    }
+
+    val fabVisible = photos?.isNotEmpty() == true
+    RefreshButton(fabVisible, modifier, viewModel)
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+private fun RefreshButton(
+    fabVisible: Boolean,
+    modifier: Modifier,
+    viewModel: PhotosViewModel
+) {
+    AnimatedVisibility(visible = fabVisible, enter = fadeIn(), exit = fadeOut()) {
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            FloatingActionButton(
+                modifier = Modifier.align(Alignment.BottomEnd),
+                onClick = {
+                    viewModel.track("click_refresh")
+                    viewModel.randomize()
+                }) {
+                Icon(
+                    imageVector = Icons.Filled.Autorenew,
+                    contentDescription = "refresh"
+                )
+            }
+
         }
     }
 }
