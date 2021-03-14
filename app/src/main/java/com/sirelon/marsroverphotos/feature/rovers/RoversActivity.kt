@@ -57,6 +57,7 @@ import androidx.navigation.compose.navigate
 import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.request.RequestOptions
 import com.sirelon.marsroverphotos.R
+import com.sirelon.marsroverphotos.activity.ComposeAboutAppActivity
 import com.sirelon.marsroverphotos.activity.PhotosActivity
 import com.sirelon.marsroverphotos.activity.RxActivity
 import com.sirelon.marsroverphotos.activity.ui.MarsRoverPhotosTheme
@@ -130,11 +131,16 @@ class RoversActivity : RxActivity() {
                             RoversContent(
                                 modifier = modifier,
                                 rovers = rovers,
-                                onClick = { onModelChoose(it) })
+                                onClick = {
+                                    if (it is Rover) {
+                                        navController.navigate("rover/${it.id}")
+                                    }
+
+//                                    onModelChoose(it)
+                                })
                         }
                         composable(Screen.About.route) {
-//                            ComposeAboutAppActivity().AboutAppContent()
-                            RoverPhotosScreen(this@RoversActivity, modifier, INSIGHT_ID)
+                            ComposeAboutAppActivity().AboutAppContent()
                         }
 
                         composable(Screen.Popular.route) {

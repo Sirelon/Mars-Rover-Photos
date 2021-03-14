@@ -31,6 +31,6 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:padding="16dp"
-        android:text="Tap to retry"
+        android:text="@string/tap_to_retry"
         android:textColor="?attr/colorPrimary" />
 </LinearLayout>

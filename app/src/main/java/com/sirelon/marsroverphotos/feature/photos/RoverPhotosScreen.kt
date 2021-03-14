@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -39,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -56,7 +59,6 @@ import kotlinx.coroutines.launch
 /**
  * Created on 07.03.2021 12:46 for Mars-Rover-Photos.
  */
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun RoverPhotosScreen(
     activity: AppCompatActivity,
@@ -67,6 +69,7 @@ fun RoverPhotosScreen(
     viewModel.setRoverId(roverId)
 
     val photos: List<MarsImage> by viewModel.photosFlow.collectAsState(initial = emptyList())
+
     val sol by viewModel.solFlow.collectAsState(initial = 0)
 
     var openSolDialog by remember { mutableStateOf(false) }
@@ -101,36 +104,56 @@ fun RoverPhotosScreen(
 
             }
         }
-        LazyVerticalGrid(cells = GridCells.Fixed(2), modifier = modifier) {
-            items(photos) { image ->
-                Card(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .fillMaxWidth()
-                        .clickable {
-                            viewModel.onPhotoClick(image)
 
-                            val ids = photos.map { it.id }
+        if (photos.isEmpty()) {
+            EmptyPhotos(title = "No data here", callback = {
+                viewModel.track("click_refresh_no_data")
+                viewModel.randomize()
+            })
+        } else {
+            PhotosList(modifier, photos, viewModel, activity)
+        }
+    }
+}
 
-                            // Enable camera filter if the same camera was choose.
-                            // If all camera choosed then no need to filtering
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun PhotosList(
+    modifier: Modifier,
+    photos: List<MarsImage>,
+    viewModel: PhotosViewModel,
+    activity: AppCompatActivity
+) {
+    LazyVerticalGrid(cells = GridCells.Fixed(2), modifier = modifier) {
+        items(photos) { image ->
+            Card(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth()
+                    .clickable {
+                        viewModel.onPhotoClick(image)
+
+                        val ids = photos.map { it.id }
+
+                        // Enable camera filter if the same camera was choose.
+                        // If all camera choosed then no need to filtering
 //                        val cameraFilter = filteredCamera != null
-                            val intent = ImageActivity.createIntent(activity, image.id, ids, false)
-                            activity.startActivity(intent)
-                        },
-                    shape = MaterialTheme.shapes.large
-                ) {
-                    Column(verticalArrangement = Arrangement.SpaceBetween) {
-                        ImageItem(image)
-                        val title = image.name
-                        if (title != null) {
-                            Text(
-                                text = title,
-                                style = MaterialTheme.typography.caption,
-                                modifier = Modifier.padding(4.dp),
-                                textAlign = TextAlign.Center
-                            )
-                        }
+                        val intent =
+                            ImageActivity.createIntent(activity, image.id, ids, false)
+                        activity.startActivity(intent)
+                    },
+                shape = MaterialTheme.shapes.large
+            ) {
+                Column(verticalArrangement = Arrangement.SpaceBetween) {
+                    ImageItem(image)
+                    val title = image.name
+                    if (title != null) {
+                        Text(
+                            text = title,
+                            style = MaterialTheme.typography.caption,
+                            modifier = Modifier.padding(4.dp),
+                            textAlign = TextAlign.Center
+                        )
                     }
                 }
             }
@@ -185,14 +208,6 @@ private fun SolDialog(
                 }
             }
         )
-    }
-}
-
-@Preview
-@Composable
-fun Test() {
-    MaterialTheme {
-        SolChanger(sol = 12, maxSol = 123, onSolChanged = { })
     }
 }
 
@@ -251,74 +266,28 @@ fun ImageItem(marsImage: MarsImage) {
     )
 }
 
-//@OptIn(ExperimentalCoroutinesApi::class)
-//private fun AppCompatActivity.setupViewsForSetSol(viewModel: PhotosViewModel) {
-//    val dialogView = layoutInflater.inflate(R.layout.view_choose_sol, null, false)
-//
-//    val solInput = dialogView.findViewById<EditText>(R.id.solInput)
-//    val solSeekBar = dialogView.findViewById<SeekBar>(R.id.solSeekBar)
-//
-//    val dialog = AlertDialog.Builder(this)
-//        .setView(dialogView)
-//        .setNegativeButton("Cancel", null)
-//        .setPositiveButton("Ok") { _, _ ->
-//            val sol = solInput.text.toString().toLongOrNull()
-//            sol ?: return@setPositiveButton
-//            viewModel.loadBySol(sol)
-//        }.create()
-//
-//    findViewById<View>(R.id.dateSolChoose).setOnClickListener {
-//
-//        viewModel.track("choose_sol")
-//        // Update views
-////        solSeekBar.max = rover.maxSol.toInt()
-//        lifecycleScope.launch {
-//            solSeekBar.max = viewModel.maxSol().toInt()
-//        }
-//        solSeekBar.progress = viewModel.getSol().toInt()
-//        val solStr = viewModel.getSol().toString()
-//        solInput.setText(solStr)
-//        solInput.setSelection(solStr.length)
-//        // Show dialog
-//        dialog.show()
-//    }
-//
-//
-//    callbackFlow<CharSequence> {
-//        solInput.doOnTextChanged { text, _, _, _ -> offer(text ?: "") }
-//    }
-//        .mapNotNull { it.toString().toIntOrNull() }
-//        .filter {
-//            val maxSol = viewModel.maxSol()
-//            if (it > maxSol) {
-//                Toast.makeText(
-//                    this@setupViewsForSetSol,
-//                    "The max sol for this rover is $maxSol",
-//                    Toast.LENGTH_SHORT
-//                ).show()
-//                solInput.setText("$maxSol")
-//                false
-//            } else {
-//                true
-//            }
-//        }
-//        .onEach { solSeekBar.progress = it }
-//        .launchIn(lifecycleScope)
-//
-//    solSeekBar.setOnSeekBarChangeListener(object :
-//                                              SeekBar.OnSeekBarChangeListener {
-//        override fun onStartTrackingTouch(p0: SeekBar?) {
-//        }
-//
-//        override fun onStopTrackingTouch(p0: SeekBar?) {
-//        }
-//
-//        override fun onProgressChanged(p0: SeekBar?, progress: Int, p2: Boolean) {
-//            @Suppress("NAME_SHADOWING")
-//            var progress = progress
-//            if (progress < 0) progress = 1
-//            solInput.setText("$progress")
-//            solInput.setSelection(solInput.text.length)
-//        }
-//    })
-//}
+@Preview
+@Composable
+fun TestA() {
+    EmptyPhotos(title = "No data here", callback = { /*TODO*/ })
+}
+
+
+@Composable
+fun EmptyPhotos(title: String, callback: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .clickable(onClick = callback),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Image(painter = painterResource(R.drawable.alien_icon), contentDescription = null)
+        Text(text = title, style = MaterialTheme.typography.h4)
+        Text(
+            text = stringResource(R.string.tap_to_retry),
+            style = MaterialTheme.typography.subtitle1
+        )
+    }
+}
