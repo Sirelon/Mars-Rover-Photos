@@ -1,6 +1,6 @@
 package com.sirelon.marsroverphotos.feature.photos
 
-//import androidx.appcompat.app.AlertDialog
+import android.app.DatePickerDialog
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.animateContentSize
@@ -45,7 +45,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bumptech.glide.request.RequestOptions
@@ -56,6 +55,8 @@ import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.ui.CenteredColumn
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.launch
+import java.util.Calendar
+import java.util.TimeZone
 
 /**
  * Created on 07.03.2021 12:46 for Mars-Rover-Photos.
@@ -102,7 +103,8 @@ fun RoverPhotosScreen(
                     .fillMaxHeight()
             )
             HeaderButton("Earth date: \n${viewModel.earthDateStr(sol)}") {
-
+                viewModel.track("click_choose_earth")
+                showEarthDateeChooser(activity, viewModel)
             }
         }
 
@@ -271,12 +273,6 @@ fun ImageItem(marsImage: MarsImage) {
     )
 }
 
-@Preview
-@Composable
-fun TestA() {
-    EmptyPhotos(title = "No data here", callback = { /*TODO*/ })
-}
-
 @Composable
 fun EmptyPhotos(title: String, callback: () -> Unit) {
     CenteredColumn(
@@ -291,4 +287,56 @@ fun EmptyPhotos(title: String, callback: () -> Unit) {
             style = MaterialTheme.typography.subtitle1
         )
     }
+}
+
+private fun showEarthDateeChooser(activity: AppCompatActivity, viewModel: PhotosViewModel) {
+    val calender = Calendar.getInstance(TimeZone.getDefault())
+    calender.clear()
+
+    val time = viewModel.earthTime()
+
+    calender.timeInMillis = time
+
+    val datePicker = DatePickerDialog(
+        activity, { _, year, monthOfYear, dayOfMonth ->
+            calender.clear()
+            calender.set(year, monthOfYear, dayOfMonth)
+            viewModel.setEarthTime(calender.timeInMillis)
+        },
+        calender.get(Calendar.YEAR),
+        calender.get(Calendar.MONTH),
+        calender.get(Calendar.DAY_OF_MONTH)
+    )
+
+    datePicker.datePicker.maxDate = viewModel.maxDate()
+    datePicker.datePicker.minDate = viewModel.minDate()
+
+    val timeFromSol = viewModel.dateFromSol()
+
+    calender.timeInMillis = timeFromSol
+
+    datePicker.updateDate(
+        calender.get(Calendar.YEAR),
+        calender.get(Calendar.MONTH),
+        calender.get(Calendar.DAY_OF_MONTH)
+    )
+    datePicker.show()
+
+//    findViewById<View>(R.id.dateEarthChoose).setOnClickListener {
+//        // UPDATE TIME
+//        val timeFromSol = viewModel.dateFromSol()
+//
+//        calender.timeInMillis = timeFromSol
+//
+//        datePicker.updateDate(
+//            calender.get(Calendar.YEAR),
+//            calender.get(Calendar.MONTH),
+//            calender.get(Calendar.DAY_OF_MONTH)
+//        )
+//
+//        // Hide title. Need to set AFTER all
+//        datePicker.setTitle("")
+//        // SHOW DIALOG
+//        datePicker.show()
+//    }
 }

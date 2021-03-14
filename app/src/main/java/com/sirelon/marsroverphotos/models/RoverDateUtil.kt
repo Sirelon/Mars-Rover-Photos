@@ -52,7 +52,7 @@ class RoverDateUtil(val rover: Rover) {
 
     fun solFromDate(date: Long): Long {
         // + include end and curent days
-        val days = (date - roverLandingDate) / (1000 * 60 * 60 * 24) + 2
+        val days = (date - roverLandingDate) / (1000 * 60 * 60 * 24) + 1
 
         val sol = days / SOL_TO_DAY_OFFSET
 
