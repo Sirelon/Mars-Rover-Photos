@@ -127,9 +127,7 @@ class ImageActivity : RxActivity() {
             imagesViewModel.updateFavorite(it)
         })
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            imagePager.setPageTransformer(DepthPageTransformer())
-        }
+        imagePager.setPageTransformer(DepthPageTransformer())
 
         // TODO: //                    // Filter by cameras
         ////                    if (cameraFilterEnable) it.filter { it.camera?.id == marsPhoto.camera?.id }

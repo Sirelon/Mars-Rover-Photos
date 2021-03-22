@@ -1,13 +1,14 @@
 package com.sirelon.marsroverphotos.widget
 
 import android.graphics.Color
-import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
+import coil.load
+import coil.transform.BlurTransformation
 import com.bumptech.glide.Glide
 import com.github.chrisbanes.photoview.PhotoViewAttacher
 import com.sirelon.marsroverphotos.R
@@ -42,6 +43,22 @@ class ImagesPagerAdapter(
         val item = getItem(position)
 
         showImage(holder.imageView, item)
+        val context = holder.itemView.context
+//        val request = ImageRequest.Builder(context)
+//            .data(item.imageUrl)
+//            .transformations(BlurTransformation(context))
+//            .target {
+//                holder.blurFullscreenImage. = it
+//            }
+//            .build()
+
+//        val imageLoader = ImageLoader(context)
+//        imageLoader.enqueue(request)
+
+        holder.blurFullscreenImage.load(item.imageUrl) {
+            transformations(BlurTransformation(context, 20f, 2f))
+        }
+
         holder.iconFav.isSelected = item.favorite
         holder.iconFav.setOnClickListener {
             favoriteCallback(item)
@@ -58,9 +75,7 @@ class ImagesPagerAdapter(
         val drawable = CircularProgressDrawable(imageView.context)
         drawable.strokeWidth = 15f
         drawable.setStyle(CircularProgressDrawable.LARGE)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            drawable.applyTheme(imageView.resources.newTheme())
-        }
+        drawable.applyTheme(imageView.resources.newTheme())
         drawable.setColorSchemeColors(*colorsArr.shuffled().toIntArray())
         drawable.start()
 
@@ -74,6 +89,7 @@ class ImagesPagerAdapter(
         RecyclerView.ViewHolder(parent.inflate(R.layout.view_image)) {
 
         val imageView: ImageView = itemView.findViewById(R.id.fullscreenImage)
+        val blurFullscreenImage: ImageView = itemView.findViewById(R.id.blurFullscreenImage)
         val iconFav: View = itemView.findViewById(R.id.favBtn)
     }
 }

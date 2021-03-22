@@ -6,6 +6,14 @@
     android:layout_height="match_parent"
     android:layout_gravity="center">
 
+    <ImageView
+        android:id="@+id/blurFullscreenImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        tools:showIn="@layout/activity_image"
+        tools:src="@drawable/img_placeholder" />
+
     <com.github.chrisbanes.photoview.PhotoView
         android:id="@+id/fullscreenImage"
         android:layout_width="match_parent"
