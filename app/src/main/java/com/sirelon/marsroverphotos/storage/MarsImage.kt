@@ -50,7 +50,7 @@ val MarsImageDiffCallback = object : DiffUtil.ItemCallback<MarsImage>() {
 
     override fun areContentsTheSame(oldItem: MarsImage, newItem: MarsImage): Boolean {
         if (oldItem != newItem) {
-            return oldItem.imageUrl == newItem.imageUrl
+            return oldItem.imageUrl == newItem.imageUrl && oldItem.favorite != newItem.favorite
         } else return true
     }
 

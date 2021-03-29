@@ -42,6 +42,7 @@ import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Autorenew
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -89,9 +90,9 @@ fun RoverPhotosScreen(
     var openSolDialog by remember { mutableStateOf(false) }
 
     var maxSol: Long by remember(calculation = { mutableStateOf(Long.MAX_VALUE) })
-    rememberCoroutineScope().launch {
+    LaunchedEffect(key1 = maxSol, block = {
         maxSol = viewModel.maxSol()
-    }
+    })
 
     SolDialog(
         maxSol = maxSol,

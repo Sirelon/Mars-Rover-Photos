@@ -26,7 +26,7 @@ class ImageViewModel(app: Application) : AndroidViewModel(app) {
 
     fun updateFavorite(image: MarsImage) {
         viewModelScope.launch {
-            kotlin.runCatching { repository.updateFavForImage(image) }
+            kotlin.runCatching { repository.updateFavForImage(image) }.onFailure { it.printStackTrace() }
         }
 
         val tracker = getApplication<RoverApplication>().tracker

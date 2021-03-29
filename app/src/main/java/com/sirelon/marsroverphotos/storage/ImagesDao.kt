@@ -32,7 +32,7 @@ interface ImagesDao {
     fun getImagesByIds(ids: List<String>): LiveData<List<MarsImage>>
 
     @Update
-    fun update(item: MarsImage)
+    suspend fun update(item: MarsImage)
 
     @Update(entity = MarsImage::class)
     fun updateStats(stats: StatsUpdate)

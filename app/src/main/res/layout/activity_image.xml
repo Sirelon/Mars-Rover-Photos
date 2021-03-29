@@ -2,6 +2,7 @@
     android:id="@+id/fullscreenImageRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#0099cc"
     android:orientation="vertical">
 
     <com.sirelon.marsroverphotos.widget.VerticalDragLayout
@@ -15,10 +16,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-<!--        <com.sirelon.marsroverphotos.widget.HackyViewPager-->
-<!--            android:id="@+id/imagePager"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content" />-->
     </com.sirelon.marsroverphotos.widget.VerticalDragLayout>
 
     <include layout="@layout/view_native_adview" />
