@@ -2,14 +2,21 @@
     android:id="@+id/fullscreenImageRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0099cc"
+    android:background="#9A6123"
     android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/imageToolbar"
+        android:layout_width="match_parent"
+        android:background="@color/colorPrimaryDark"
+        android:layout_height="?actionBarSize" />
 
     <com.sirelon.marsroverphotos.widget.VerticalDragLayout
         android:id="@+id/imageDragLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/adViewBanner">
+        android:layout_above="@+id/adViewBanner"
+        android:layout_below="@+id/imageToolbar">
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/imagePager"

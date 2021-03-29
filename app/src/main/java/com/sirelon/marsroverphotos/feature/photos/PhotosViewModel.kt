@@ -14,6 +14,7 @@ import com.sirelon.marsroverphotos.storage.MarsImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
@@ -121,7 +122,9 @@ class PhotosViewModel(app: Application) : AndroidViewModel(app) {
 
     fun onPhotoClick(image: MarsImage) {
         viewModelScope.launch(Dispatchers.IO) {
-            val photos = photosFlow.first() ?: return@launch
+            val photos = photosFlow.filterNot { it.isNullOrEmpty() }.first()
+            photos.logD()
+            photos ?: return@launch
             imagesRepository.saveImages(photos)
         }
 
