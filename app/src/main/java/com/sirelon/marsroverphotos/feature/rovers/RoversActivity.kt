@@ -8,6 +8,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,18 +27,15 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Agriculture
-import androidx.compose.material.icons.outlined.Explore
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LocalFireDepartment
-import androidx.compose.material.icons.outlined.SupervisedUserCircle
 import androidx.compose.material.icons.outlined.ViewCarousel
-import androidx.compose.material.icons.outlined.Visibility
-import androidx.compose.material.icons.outlined.VolunteerActivism
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,7 +49,10 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.util.Pair
+import androidx.core.view.doOnLayout
+import androidx.core.view.size
 import androidx.navigation.NavType
 import androidx.navigation.compose.KEY_ROUTE
 import androidx.navigation.compose.NavHost
@@ -60,12 +61,17 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.navigate
 import androidx.navigation.compose.rememberNavController
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.activity.ComposeAboutAppActivity
 import com.sirelon.marsroverphotos.activity.PhotosActivity
 import com.sirelon.marsroverphotos.activity.RxActivity
 import com.sirelon.marsroverphotos.activity.ui.MarsRoverPhotosTheme
 import com.sirelon.marsroverphotos.activity.ui.accent
+import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.feature.favorite.FavoriteItem
 import com.sirelon.marsroverphotos.feature.favorite.FavoritePhotosActivity
 import com.sirelon.marsroverphotos.feature.favorite.FavoriteScreen
@@ -75,6 +81,7 @@ import com.sirelon.marsroverphotos.feature.popular.PopularItem
 import com.sirelon.marsroverphotos.feature.popular.PopularPhotosActivity
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.ViewType
+import com.sirelon.marsroverphotos.utils.screenWidth
 import com.skydoves.landscapist.glide.GlideImage
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -89,8 +96,29 @@ class RoversActivity : RxActivity() {
         }
     }
 
+    // Determine the screen width (less decorations) to use for the ad width.
+    // If the ad hasn't been laid out, default to the full screen width.
+    private val adSize: AdSize
+        get() {
+            val density = resources.configuration.densityDpi
+
+//            var adWidthPixels = ad_view_container.width.toFloat()
+//            if (adWidthPixels == 0f) {
+//                val adWidthPixels = outMetrics.widthPixels.toFloat()
+//            }
+
+            val adWidth = (screenWidth / density).toInt()
+            return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(this, adWidth)
+        }
+
+    private lateinit var adView: AdView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        adView = AdView(this)
+        adView.adSize = AdSize.BANNER
+        adView.adUnitId = "ca-app-pub-3940256099942544/6300978111"
 
         val bottomItems = listOf(Screen.Rovers, Screen.Favorite, Screen.Popular, Screen.About)
 
@@ -98,34 +126,63 @@ class RoversActivity : RxActivity() {
             MarsRoverPhotosTheme {
                 val navController = rememberNavController()
 
+                var adHeight by mutableStateOf(0)
+
                 Scaffold(
                     bottomBar = {
-                        BottomNavigation() {
-                            val navBackStackEntry by navController.currentBackStackEntryAsState()
-                            val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
-                            bottomItems.forEach { screen ->
-                                BottomNavigationItem(
-                                    icon = {
-                                        Icon(
-                                            screen.iconCreator.invoke(),
-                                            contentDescription = null
-                                        )
-                                    },
-                                    selected = currentRoute == screen.route,
-                                    selectedContentColor = accent,
-                                    unselectedContentColor = Color.White.copy(alpha = ContentAlpha.medium),
-                                    onClick = {
-                                        navController.navigate(screen.route) {
-                                            // Pop up to the start destination of the graph to
-                                            // avoid building up a large stack of destinations
-                                            // on the back stack as users select items
-                                            popUpTo = navController.graph.startDestination
-                                            // Avoid multiple copies of the same destination when
-                                            // reselecting the same item
-                                            launchSingleTop = true
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+                            AndroidView<View>(factory = {
+                                val adRequest = AdRequest
+                                    .Builder()
+                                    .addTestDevice("235F224A866C9DFBEB26755C3E0337B3")
+                                    .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                                    .build()
+
+                                // Start loading the ad in the background.
+                                adView.loadAd(adRequest)
+
+                                adView.adListener = object : AdListener(){
+                                    override fun onAdLoaded() {
+                                        super.onAdLoaded()
+                                        adView.doOnLayout {
+                                            adView.height.logD()
+                                            adHeight = adView.height
                                         }
                                     }
-                                )
+                                }
+
+                                adView
+                            })
+
+                            BottomNavigation {
+                                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                                val currentRoute =
+                                    navBackStackEntry?.arguments?.getString(KEY_ROUTE)
+                                bottomItems.forEach { screen ->
+                                    BottomNavigationItem(
+                                        icon = {
+                                            Icon(
+                                                screen.iconCreator.invoke(),
+                                                contentDescription = null
+                                            )
+                                        },
+                                        selected = currentRoute == screen.route,
+                                        selectedContentColor = accent,
+                                        unselectedContentColor = Color.White.copy(alpha = ContentAlpha.medium),
+                                        onClick = {
+                                            navController.navigate(screen.route) {
+                                                // Pop up to the start destination of the graph to
+                                                // avoid building up a large stack of destinations
+                                                // on the back stack as users select items
+                                                popUpTo = navController.graph.startDestination
+                                                // Avoid multiple copies of the same destination when
+                                                // reselecting the same item
+                                                launchSingleTop = true
+                                            }
+                                        }
+                                    )
+                                }
                             }
                         }
                     },
@@ -139,21 +196,27 @@ class RoversActivity : RxActivity() {
                     }
                 ) { paddigValues ->
                     NavHost(navController = navController, startDestination = Screen.Rovers.route) {
+                        val bottom = paddigValues.calculateBottomPadding() + adHeight.dp
+//                        val bottom = 242.dp
+                        bottom.logD()
                         val modifier =
-                            Modifier.padding(bottom = paddigValues.calculateBottomPadding())
+                            Modifier.padding(bottom = bottom)
                         composable(Screen.Rovers.route) {
                             val rovers by dataManager.rovers.observeAsState(emptyList())
 
-                            RoversContent(
-                                modifier = modifier,
-                                rovers = rovers,
-                                onClick = {
-                                    if (it is Rover) {
-                                        navController.navigate("rover/${it.id}")
-                                    }
+                            Box(modifier) {
+
+                                RoversContent(
+                                    modifier = Modifier.padding(bottom = bottom),
+                                    rovers = rovers,
+                                    onClick = {
+                                        if (it is Rover) {
+                                            navController.navigate("rover/${it.id}")
+                                        }
 
 //                                    onModelChoose(it)
-                                })
+                                    })
+                            }
                         }
                         composable(Screen.About.route) {
                             ComposeAboutAppActivity().AboutAppContent()
@@ -182,6 +245,21 @@ class RoversActivity : RxActivity() {
             }
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        adView.resume()
+    }
+
+    override fun onDestroy() {
+        adView.destroy()
+        super.onDestroy()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        adView.pause()
+    }
 }
 
 sealed class Screen(val route: String, val iconCreator: @Composable () -> ImageVector) {
@@ -198,12 +276,13 @@ sealed class Screen(val route: String, val iconCreator: @Composable () -> ImageV
 
 @Composable
 fun RoversContent(modifier: Modifier, rovers: List<Rover>, onClick: (rover: ViewType) -> Unit) {
+    "RoveerCoteent".logD()
     val popular = PopularItem()
     val favoriteItem = FavoriteItem(null)
     val items = rovers.toMutableList<ViewType>()
 //    items.add(0, popular)
 //    items.add(1, favoriteItem)
-    LazyColumn(modifier = modifier) {
+    LazyColumn() {
         items(items) { item ->
             when (item) {
                 is Rover -> RoverItem(rover = item, onClick = onClick)
