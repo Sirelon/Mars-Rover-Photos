@@ -83,7 +83,6 @@ import com.sirelon.marsroverphotos.models.ViewType
 import com.sirelon.marsroverphotos.utils.screenWidth
 import com.skydoves.landscapist.glide.GlideImage
 
-@OptIn(ExperimentalFoundationApi::class)
 class RoversActivity : RxActivity() {
 
     private fun onModelChoose(model: ViewType, vararg sharedElements: Pair<View, String>) {
@@ -117,7 +116,8 @@ class RoversActivity : RxActivity() {
 
         adView = AdView(this)
         adView.adSize = AdSize.BANNER
-        adView.adUnitId = "ca-app-pub-3940256099942544/6300978111"
+//        adView.adUnitId = "ca-app-pub-3940256099942544/6300978111"
+        adView.adUnitId = "ca-app-pub-7516059448019339/9309101894"
 
         val bottomItems = listOf(Screen.Rovers, Screen.Favorite, Screen.Popular, Screen.About)
 
