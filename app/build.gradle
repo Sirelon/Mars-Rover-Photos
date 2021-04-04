@@ -109,6 +109,7 @@ dependencies {
     implementation "androidx.navigation:navigation-compose:1.0.0-alpha09"
     // https://developer.android.com/jetpack/androidx/releases/paging
     implementation "androidx.paging:paging-compose:1.0.0-alpha08"
+    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha05"
 
     // https://github.com/skydoves/Landscapist
     implementation "com.github.skydoves:landscapist-glide:1.1.8"

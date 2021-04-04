@@ -34,8 +34,8 @@ import com.sirelon.marsroverphotos.storage.MarsImage
  */
 @Composable
 fun FavoriteScreen(
-    modifier: Modifier,
     activity: AppCompatActivity,
+    modifier: Modifier = Modifier,
     viewModel: FavoriteImagesViewModel = viewModel()
 ) {
     val items = viewModel.favoriteImagesFlow.collectAsLazyPagingItems()
@@ -55,8 +55,8 @@ fun FavoriteScreen(
 
 @Composable
 fun PopularScreen(
-    modifier: Modifier,
     activity: AppCompatActivity,
+    modifier: Modifier = Modifier,
     viewModel: PopularPhotosViewModel = viewModel()
 ) {
     val items = viewModel.popularPhotos.collectAsLazyPagingItems()

@@ -77,7 +77,7 @@ import java.util.TimeZone
 @Composable
 fun RoverPhotosScreen(
     activity: AppCompatActivity,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     roverId: Long,
     viewModel: PhotosViewModel = viewModel()
 ) {

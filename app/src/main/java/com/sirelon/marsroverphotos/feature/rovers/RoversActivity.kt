@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -34,8 +35,6 @@ import androidx.compose.material.icons.outlined.ViewCarousel
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,9 +49,10 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.core.util.Pair
-import androidx.core.view.doOnLayout
-import androidx.core.view.size
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.KEY_ROUTE
 import androidx.navigation.compose.NavHost
@@ -61,7 +61,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.navigate
 import androidx.navigation.compose.rememberNavController
-import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
@@ -125,124 +124,135 @@ class RoversActivity : RxActivity() {
         setContent {
             MarsRoverPhotosTheme {
                 val navController = rememberNavController()
-
-                var adHeight by mutableStateOf(0)
-
                 Scaffold(
                     bottomBar = {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-
-                            AndroidView<View>(factory = {
-                                val adRequest = AdRequest
-                                    .Builder()
-                                    .addTestDevice("235F224A866C9DFBEB26755C3E0337B3")
-                                    .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-                                    .build()
-
-                                // Start loading the ad in the background.
-                                adView.loadAd(adRequest)
-
-                                adView.adListener = object : AdListener(){
-                                    override fun onAdLoaded() {
-                                        super.onAdLoaded()
-                                        adView.doOnLayout {
-                                            adView.height.logD()
-                                            adHeight = adView.height
-                                        }
-                                    }
-                                }
-
-                                adView
-                            })
-
-                            BottomNavigation {
-                                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                                val currentRoute =
-                                    navBackStackEntry?.arguments?.getString(KEY_ROUTE)
-                                bottomItems.forEach { screen ->
-                                    BottomNavigationItem(
-                                        icon = {
-                                            Icon(
-                                                screen.iconCreator.invoke(),
-                                                contentDescription = null
-                                            )
-                                        },
-                                        selected = currentRoute == screen.route,
-                                        selectedContentColor = accent,
-                                        unselectedContentColor = Color.White.copy(alpha = ContentAlpha.medium),
-                                        onClick = {
-                                            navController.navigate(screen.route) {
-                                                // Pop up to the start destination of the graph to
-                                                // avoid building up a large stack of destinations
-                                                // on the back stack as users select items
-                                                popUpTo = navController.graph.startDestination
-                                                // Avoid multiple copies of the same destination when
-                                                // reselecting the same item
-                                                launchSingleTop = true
-                                            }
-                                        }
-                                    )
-                                }
-                            }
-                        }
+                        RoversBottomBar(navController, bottomItems)
                     },
-                    floatingActionButton = {
-//                        FloatingActionButton(onClick = { }) {
-//                            Icon(
-//                                painter = painterResource(id = R.drawable.ic_autorenew),
-//                                contentDescription = "refresh"
-//                            )
-//                        }
-                    }
-                ) { paddigValues ->
-                    NavHost(navController = navController, startDestination = Screen.Rovers.route) {
-                        val bottom = paddigValues.calculateBottomPadding() + adHeight.dp
-//                        val bottom = 242.dp
-                        bottom.logD()
-                        val modifier =
-                            Modifier.padding(bottom = bottom)
-                        composable(Screen.Rovers.route) {
-                            val rovers by dataManager.rovers.observeAsState(emptyList())
-
-                            Box(modifier) {
-
-                                RoversContent(
-                                    modifier = Modifier.padding(bottom = bottom),
-                                    rovers = rovers,
-                                    onClick = {
-                                        if (it is Rover) {
-                                            navController.navigate("rover/${it.id}")
-                                        }
-
-//                                    onModelChoose(it)
-                                    })
-                            }
-                        }
-                        composable(Screen.About.route) {
-                            ComposeAboutAppActivity().AboutAppContent()
-                        }
-
-                        composable(Screen.Popular.route) {
-                            PopularScreen(modifier, this@RoversActivity)
-                        }
-
-                        composable(Screen.Favorite.route) {
-                            FavoriteScreen(modifier, this@RoversActivity)
-                        }
-
-                        composable(
-                            "rover/{roverId}",
-                            arguments = listOf(navArgument("roverId") { type = NavType.LongType })
+                    content = { paddingValues ->
+                        ConstraintLayout(
+                            modifier = Modifier
+                                .padding(paddingValues)
+                                .fillMaxSize()
                         ) {
-                            val roverId = it.arguments?.getLong("roverId")
-                            if (roverId != null) {
-                                RoverPhotosScreen(this@RoversActivity, modifier, roverId)
+                            val (content, ad) = createRefs()
+
+                            val contentModifier = Modifier.constrainAs(content) {
+                                height = Dimension.fillToConstraints
+                                bottom.linkTo(ad.top)
+                                top.linkTo(parent.top)
                             }
+
+                            Box(modifier = contentModifier) {
+                                RoversNavHost(navController)
+                            }
+                            val adModifier = Modifier.constrainAs(ad) {
+                                bottom.linkTo(parent.bottom)
+                                end.linkTo(parent.end)
+                                start.linkTo(parent.start)
+                            }
+                            ComposableBannerAd(adModifier)
+                        }
+                    })
+            }
+        }
+    }
+
+    @Composable
+    private fun RoversBottomBar(
+        navController: NavHostController,
+        bottomItems: List<Screen>
+    ) {
+        BottomNavigation {
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentRoute =
+                navBackStackEntry?.arguments?.getString(KEY_ROUTE)
+            bottomItems.forEach { screen ->
+                BottomNavigationItem(
+                    icon = {
+                        Icon(
+                            screen.iconCreator.invoke(),
+                            contentDescription = null
+                        )
+                    },
+                    selected = currentRoute == screen.route,
+                    selectedContentColor = accent,
+                    unselectedContentColor = Color.White.copy(alpha = ContentAlpha.medium),
+                    onClick = {
+                        navController.navigate(screen.route) {
+                            // Pop up to the start destination of the graph to
+                            // avoid building up a large stack of destinations
+                            // on the back stack as users select items
+                            popUpTo = navController.graph.startDestination
+                            // Avoid multiple copies of the same destination when
+                            // reselecting the same item
+                            launchSingleTop = true
+                        }
+                    }
+                )
+            }
+        }
+    }
+
+    @Composable
+    private fun ComposableBannerAd(modifier: Modifier) {
+        AndroidView<View>(modifier = modifier, factory = {
+            val adRequest = AdRequest
+                .Builder()
+                .addTestDevice("235F224A866C9DFBEB26755C3E0337B3")
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                .build()
+
+            // Start loading the ad in the background.
+            adView.loadAd(adRequest)
+
+            adView
+        })
+    }
+
+    @Composable
+    private fun RoversNavHost(navController: NavHostController) {
+        NavHost(
+            navController = navController,
+            startDestination = Screen.Rovers.route
+        ) {
+
+            composable(Screen.Rovers.route) {
+                val rovers by dataManager.rovers.observeAsState(emptyList())
+
+                RoversContent(
+                    rovers = rovers,
+                    onClick = {
+                        if (it is Rover) {
+                            navController.navigate("rover/${it.id}")
                         }
 
-                    }
+                        //                                    onModelChoose(it)
+                    })
+            }
+            composable(Screen.About.route) {
+                ComposeAboutAppActivity().AboutAppContent()
+            }
+
+            composable(Screen.Popular.route) {
+                PopularScreen(this@RoversActivity)
+            }
+
+            composable(Screen.Favorite.route) {
+                FavoriteScreen(this@RoversActivity)
+            }
+
+            composable(
+                "rover/{roverId}",
+                arguments = listOf(navArgument("roverId") {
+                    type = NavType.LongType
+                })
+            ) {
+                val roverId = it.arguments?.getLong("roverId")
+                if (roverId != null) {
+                    RoverPhotosScreen(this@RoversActivity, roverId = roverId)
                 }
             }
+
         }
     }
 
@@ -275,7 +285,11 @@ sealed class Screen(val route: String, val iconCreator: @Composable () -> ImageV
 }
 
 @Composable
-fun RoversContent(modifier: Modifier, rovers: List<Rover>, onClick: (rover: ViewType) -> Unit) {
+fun RoversContent(
+    modifier: Modifier = Modifier,
+    rovers: List<Rover>,
+    onClick: (rover: ViewType) -> Unit
+) {
     "RoveerCoteent".logD()
     val popular = PopularItem()
     val favoriteItem = FavoriteItem(null)
