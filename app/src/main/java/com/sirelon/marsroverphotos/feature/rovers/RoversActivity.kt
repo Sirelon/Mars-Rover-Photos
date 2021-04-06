@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -65,6 +64,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.sirelon.marsroverphotos.R
+import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.activity.ComposeAboutAppActivity
 import com.sirelon.marsroverphotos.activity.PhotosActivity
 import com.sirelon.marsroverphotos.activity.RxActivity
@@ -178,6 +178,8 @@ class RoversActivity : RxActivity() {
                     selectedContentColor = accent,
                     unselectedContentColor = Color.White.copy(alpha = ContentAlpha.medium),
                     onClick = {
+                        track("click_bottom_${screen.route}")
+
                         navController.navigate(screen.route) {
                             // Pop up to the start destination of the graph to
                             // avoid building up a large stack of destinations
@@ -223,10 +225,9 @@ class RoversActivity : RxActivity() {
                     rovers = rovers,
                     onClick = {
                         if (it is Rover) {
+                            track("click_rover_${it.name}")
                             navController.navigate("rover/${it.id}")
                         }
-
-                        //                                    onModelChoose(it)
                     })
             }
             composable(Screen.About.route) {
@@ -238,7 +239,7 @@ class RoversActivity : RxActivity() {
             }
 
             composable(Screen.Favorite.route) {
-                FavoriteScreen(this@RoversActivity)
+                FavoriteScreen(this@RoversActivity, navController)
             }
 
             composable(
@@ -254,6 +255,10 @@ class RoversActivity : RxActivity() {
             }
 
         }
+    }
+
+    private fun track(track: String) {
+        RoverApplication.APP.dataManger.trackClick(track)
     }
 
     override fun onResume() {

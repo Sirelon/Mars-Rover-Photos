@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.logD
+import com.sirelon.marsroverphotos.extensions.recordException
 import com.sirelon.marsroverphotos.feature.images.ImagesRepository
 import com.sirelon.marsroverphotos.storage.MarsImage
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -25,7 +26,7 @@ class PopularPhotosViewModel(app: Application) : AndroidViewModel(app) {
     val popularPhotos = imagesRepository.loadPopularPagedSource()
     private val exceptionHandler =
         CoroutineExceptionHandler { _, throwable ->
-            FirebaseCrashlytics.getInstance().recordException(throwable)
+            recordException(throwable)
         }
 
     fun loadPopular() = imagesRepository.loadPopularPhotos()

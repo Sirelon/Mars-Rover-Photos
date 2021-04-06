@@ -21,5 +21,7 @@
     <string name="label_photos_total">Total photos: </string>
     <string name="sol_description">The term sol is used by planetary astronomers to refer to the duration of a solar day on Mars.\nA mean Martian solar day is 24 hours, 39 minutes, and 35.244 seconds.</string>
     <string name="tap_to_retry">Tap to retry</string>
-
+    <string name="no_photos_title">Rover didn\'t take any photos at this date.</string>
+    <string name="favorite_empty_btn">Go to rovers</string>
+    <string name="favorite_empty_title">No favourite photos yet. \nYou can save any photos which you like. \nJust mark them as "favourite".</string>
 </resources>

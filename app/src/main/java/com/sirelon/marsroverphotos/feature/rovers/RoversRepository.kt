@@ -1,8 +1,10 @@
 package com.sirelon.marsroverphotos.feature.rovers
 
 import android.content.Context
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.extensions.logD
+import com.sirelon.marsroverphotos.extensions.recordException
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.RoverDateUtil
 import com.sirelon.marsroverphotos.network.RestApi
@@ -113,9 +115,9 @@ class RoversRepository(context: Context, private val api: RestApi) {
         )
 
         GlobalScope.launch {
-            val ids = roverDao.insertRovers(perseverance, insight, curiosity, opportunity, spirit)
-
-            "Inseerted $ids".logD()
+            kotlin.runCatching {
+                roverDao.insertRovers(perseverance, insight, curiosity, opportunity, spirit)
+            }.onFailure(::recordException)
         }
     }
 

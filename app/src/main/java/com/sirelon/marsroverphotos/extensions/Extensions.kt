@@ -22,6 +22,7 @@ import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
 import java.util.Random
@@ -111,4 +112,9 @@ fun Any?.logD() {
 
 fun Throwable.logE() {
     Log.e("Sirelon", this.message, this)
+}
+
+fun recordException(e: Throwable) {
+    e.printStackTrace()
+    FirebaseCrashlytics.getInstance().recordException(e)
 }

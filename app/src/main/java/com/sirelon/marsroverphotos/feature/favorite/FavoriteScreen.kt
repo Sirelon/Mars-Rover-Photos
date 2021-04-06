@@ -1,7 +1,7 @@
 package com.sirelon.marsroverphotos.feature.favorite
 
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,6 +19,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.navigate
+import androidx.navigation.compose.rememberNavController
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -26,6 +29,7 @@ import androidx.paging.compose.items
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.activity.ImageActivity
 import com.sirelon.marsroverphotos.feature.MarsImageComposable
+import com.sirelon.marsroverphotos.feature.photos.EmptyPhotos
 import com.sirelon.marsroverphotos.feature.popular.PopularPhotosViewModel
 import com.sirelon.marsroverphotos.storage.MarsImage
 
@@ -35,6 +39,7 @@ import com.sirelon.marsroverphotos.storage.MarsImage
 @Composable
 fun FavoriteScreen(
     activity: AppCompatActivity,
+    navController: NavController,
     modifier: Modifier = Modifier,
     viewModel: FavoriteImagesViewModel = viewModel()
 ) {
@@ -50,6 +55,15 @@ fun FavoriteScreen(
             val intent = ImageActivity.createIntent(context, image.id, ids, false)
             activity.startActivity(intent)
         },
+        emptyContent = {
+            EmptyPhotos(
+                title = stringResource(id = R.string.favorite_empty_title),
+                btnTitle = stringResource(id = R.string.favorite_empty_btn)
+            ) {
+                viewModel.track("click_empty_favorite")
+                navController.navigate("rovers")
+            }
+        }
     )
 }
 
@@ -71,25 +85,23 @@ fun PopularScreen(
             val intent = ImageActivity.createIntent(context, image.id, ids, false)
             activity.startActivity(intent)
         },
+        emptyContent = {}
     )
 }
 
-
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FavoritePhotosContent(
     modifier: Modifier,
     title: String,
     items: LazyPagingItems<MarsImage>,
     onItemClick: (image: MarsImage) -> Unit,
-    onFavoriteClick: (image: MarsImage) -> Unit
+    onFavoriteClick: (image: MarsImage) -> Unit,
+    emptyContent: @Composable () -> Unit
 ) {
-    // If I dont call it, paging doesn't work.
-//    items.loadState
-//    val scrollState = rememberLazyListState()
     LazyColumn(modifier = modifier, contentPadding = PaddingValues(16.dp), content = {
         item { TopAppBar(title = { Text(text = title) }) }
 
+        Log.d("Sirelon", "FavoritePhotosContent() called ${items.loadState}");
         if (items.loadState.refresh == LoadState.Loading) {
             item {
                 Column(
@@ -99,6 +111,12 @@ fun FavoritePhotosContent(
                 ) {
                     CircularProgressIndicator()
                 }
+            }
+        }
+
+        if (items.loadState.append.endOfPaginationReached && items.itemCount == 0) {
+            item {
+                emptyContent()
             }
         }
 
