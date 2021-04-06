@@ -198,7 +198,7 @@ class ImageActivity : RxActivity() {
 
                     if (BuildConfig.DEBUG) {
                         lifecycleScope.launch(Dispatchers.IO) {
-                            FirestorePhotos().removePhoto(it)
+                            FirestorePhotos().makeItPopular(it)
                         }
                     } else {
                         dataManager.updatePhotoShareCounter(it, intent.`package`)
@@ -219,12 +219,12 @@ class ImageActivity : RxActivity() {
         val marsPhoto = marsPhoto?.toMarsPhoto() ?: return
 
         // Do some stuff with photo at debug mode
-        if (BuildConfig.DEBUG) {
-            lifecycleScope.launch(Dispatchers.IO) {
-                FirestorePhotos().removePhoto(marsPhoto)
-            }
-            return
-        }
+//        if (BuildConfig.DEBUG) {
+//            lifecycleScope.launch(Dispatchers.IO) {
+//                FirestorePhotos().removePhoto(marsPhoto)
+//            }
+//            return
+//        }
 
         val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
         val grated =

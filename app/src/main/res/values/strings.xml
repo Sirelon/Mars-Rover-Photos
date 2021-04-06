@@ -12,7 +12,7 @@
     <string name="ad_item_photo">ca-app-pub-7516059448019339/7310766580</string>
     <string name="ad_application_id">ca-app-pub-7516059448019339~6607949007</string>
     <string name="popular_title">The most popular Mars Photos</string>
-    <string name="favorite_title">Your favorite Mars Photos</string>
+    <string name="favorite_title">My favorite Mars Photos</string>
     <string name="title_activity_compose_about_app">About App</string>
     <string name="about_description">Discover Mars with exploration rovers!\nGreat amount of recent and old photos directly from the Red Planet. \nSee what discovered mars rovers during their missions. \nMaybe you will manage to find Martian life ;-)</string>
     <string name="clear_cache">Clear cache</string>
