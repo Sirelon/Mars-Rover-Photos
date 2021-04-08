@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.sirelon.marsroverphotos.RoverApplication
+import com.sirelon.marsroverphotos.extensions.exceptionHandler
 import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.feature.images.ImagesRepository
 import com.sirelon.marsroverphotos.feature.rovers.RoversRepository
@@ -12,6 +13,7 @@ import com.sirelon.marsroverphotos.models.RoverDateUtil
 import com.sirelon.marsroverphotos.network.RestApi
 import com.sirelon.marsroverphotos.storage.MarsImage
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filterNot
@@ -121,13 +123,12 @@ class PhotosViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun onPhotoClick(image: MarsImage) {
-        viewModelScope.launch(Dispatchers.IO) {
+        GlobalScope.launch(Dispatchers.IO + exceptionHandler) {
             val photos = photosFlow.filterNot { it.isNullOrEmpty() }.first()
             photos.logD()
             photos ?: return@launch
             imagesRepository.saveImages(photos)
         }
-
     }
 
     fun track(track: String) {

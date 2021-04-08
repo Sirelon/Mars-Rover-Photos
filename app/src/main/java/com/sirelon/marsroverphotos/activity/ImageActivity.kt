@@ -9,6 +9,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -29,6 +30,7 @@ import com.google.android.gms.ads.NativeExpressAdView
 import com.google.android.material.snackbar.Snackbar
 import com.sirelon.marsroverphotos.BuildConfig
 import com.sirelon.marsroverphotos.R
+import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.extensions.showAppSettings
 import com.sirelon.marsroverphotos.extensions.showSnackBar
 import com.sirelon.marsroverphotos.feature.advertising.AdvertisingObjectFactory
@@ -154,6 +156,8 @@ class ImageActivity : RxActivity() {
         val selectedId = intent.getStringExtra(EXTRA_SELECTED_ID)
         var firstLoad = true
         imagesViewModel.imagesLiveData.observe(this) { list ->
+            Log.e("Sirelon", "OBSERVEEEE")
+            list.logD()
             adapter.submitList(list) {
                 if (firstLoad) {
 

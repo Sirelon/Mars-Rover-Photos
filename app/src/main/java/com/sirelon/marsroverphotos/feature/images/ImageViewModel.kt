@@ -2,11 +2,12 @@ package com.sirelon.marsroverphotos.feature.images
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.switchMap
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.storage.MarsImage
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 
 /**
@@ -16,9 +17,11 @@ class ImageViewModel(app: Application) : AndroidViewModel(app) {
 
     private val repository = ImagesRepository(app)
 
-    private val idsEmitor = MutableLiveData<List<String>>()
+    private val idsEmitor = MutableStateFlow<List<String>>(emptyList())
 
-    val imagesLiveData = idsEmitor.switchMap { repository.loadImages(it) }
+    val imagesLiveData = idsEmitor
+        .flatMapLatest { repository.loadImages(it) }
+        .asLiveData()
 
     fun setIdsToShow(ids: List<String>) {
         idsEmitor.value = ids
@@ -26,7 +29,8 @@ class ImageViewModel(app: Application) : AndroidViewModel(app) {
 
     fun updateFavorite(image: MarsImage) {
         viewModelScope.launch {
-            kotlin.runCatching { repository.updateFavForImage(image) }.onFailure { it.printStackTrace() }
+            kotlin.runCatching { repository.updateFavForImage(image) }
+                .onFailure { it.printStackTrace() }
         }
 
         val tracker = getApplication<RoverApplication>().tracker

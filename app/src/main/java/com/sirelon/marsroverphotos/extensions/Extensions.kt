@@ -25,6 +25,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
+import kotlinx.coroutines.CoroutineExceptionHandler
 import java.util.Random
 
 /**
@@ -82,7 +83,7 @@ fun Activity.showAppSettings() {
     intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
     val uri = Uri.fromParts("package", this.packageName, null)
     intent.data = uri
-    kotlin.runCatching {  this.startActivityForResult(intent, 7898) }
+    kotlin.runCatching { this.startActivityForResult(intent, 7898) }
 }
 
 fun Activity.isConnected(): Boolean {
@@ -117,4 +118,8 @@ fun Throwable.logE() {
 fun recordException(e: Throwable) {
     e.printStackTrace()
     FirebaseCrashlytics.getInstance().recordException(e)
+}
+
+val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+    recordException(throwable)
 }
