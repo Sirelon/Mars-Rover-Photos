@@ -5,9 +5,12 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.sirelon.marsroverphotos.RoverApplication
+import com.sirelon.marsroverphotos.extensions.recordException
 import com.sirelon.marsroverphotos.storage.MarsImage
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 
 /**
@@ -21,6 +24,15 @@ class ImageViewModel(app: Application) : AndroidViewModel(app) {
 
     val imagesLiveData = idsEmitor
         .flatMapLatest { repository.loadImages(it) }
+        .flatMapLatest {
+            if (it.isEmpty()) {
+                recordException(IllegalStateException("Room is empty"))
+                delay(500)
+                repository.loadImages(idsEmitor.value)
+            } else {
+                flowOf(it)
+            }
+        }
         .asLiveData()
 
     fun setIdsToShow(ids: List<String>) {
