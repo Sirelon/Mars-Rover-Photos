@@ -1,6 +1,7 @@
 package com.sirelon.marsroverphotos.feature.rovers
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.activity.compose.setContent
@@ -63,6 +64,7 @@ import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
+import com.sirelon.marsroverphotos.BuildConfig
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.activity.ComposeAboutAppActivity
@@ -197,6 +199,8 @@ class RoversActivity : RxActivity() {
 
     @Composable
     private fun ComposableBannerAd(modifier: Modifier) {
+        if (BuildConfig.DEBUG) return
+
         AndroidView<View>(modifier = modifier, factory = {
             val adRequest = AdRequest
                 .Builder()
@@ -301,7 +305,7 @@ fun RoversContent(
     val items = rovers.toMutableList<ViewType>()
 //    items.add(0, popular)
 //    items.add(1, favoriteItem)
-    LazyColumn() {
+    LazyColumn {
         items(items) { item ->
             when (item) {
                 is Rover -> RoverItem(rover = item, onClick = onClick)

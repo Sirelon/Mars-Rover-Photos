@@ -13,6 +13,4 @@ data class PhotosQueryRequest(
     val roverId: Long,
     val sol: Long,
     val camera: String?
-) : Parcelable {
-
-}
+) : Parcelable

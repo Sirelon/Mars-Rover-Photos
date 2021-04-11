@@ -103,7 +103,7 @@ fun FavoritePhotosContent(
     LazyColumn(modifier = modifier, contentPadding = PaddingValues(16.dp), content = {
         item { TopAppBar(title = { Text(text = title) }) }
 
-        Log.d("Sirelon", "FavoritePhotosContent() called ${items.loadState}");
+        Log.d("Sirelon", "FavoritePhotosContent() called ${items.loadState}")
         if (items.loadState.refresh == LoadState.Loading) {
             item {
                 Column(
