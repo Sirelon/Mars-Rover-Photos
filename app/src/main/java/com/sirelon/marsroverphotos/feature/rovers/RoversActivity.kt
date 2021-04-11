@@ -1,10 +1,14 @@
 package com.sirelon.marsroverphotos.feature.rovers
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.os.Build
+import android.net.Uri
 import android.os.Bundle
+import android.text.format.Formatter
 import android.view.View
+import android.widget.Toast
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -51,7 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.core.util.Pair
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.KEY_ROUTE
@@ -61,40 +65,34 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.navigate
 import androidx.navigation.compose.rememberNavController
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.cache.DiskCache
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.sirelon.marsroverphotos.BuildConfig
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
-import com.sirelon.marsroverphotos.activity.ComposeAboutAppActivity
-import com.sirelon.marsroverphotos.activity.PhotosActivity
-import com.sirelon.marsroverphotos.activity.RxActivity
+import com.sirelon.marsroverphotos.activity.AboutAppContent
 import com.sirelon.marsroverphotos.activity.ui.MarsRoverPhotosTheme
 import com.sirelon.marsroverphotos.activity.ui.accent
 import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.feature.favorite.FavoriteItem
-import com.sirelon.marsroverphotos.feature.favorite.FavoritePhotosActivity
 import com.sirelon.marsroverphotos.feature.favorite.FavoriteScreen
 import com.sirelon.marsroverphotos.feature.favorite.PopularScreen
 import com.sirelon.marsroverphotos.feature.photos.RoverPhotosScreen
 import com.sirelon.marsroverphotos.feature.popular.PopularItem
-import com.sirelon.marsroverphotos.feature.popular.PopularPhotosActivity
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.ViewType
 import com.sirelon.marsroverphotos.utils.screenWidth
 import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
 
-class RoversActivity : RxActivity() {
-
-    private fun onModelChoose(model: ViewType, vararg sharedElements: Pair<View, String>) {
-        when (model) {
-            is Rover -> startActivity(PhotosActivity.createIntent(this, model))
-            is PopularItem -> startActivity(Intent(this, PopularPhotosActivity::class.java))
-            is FavoriteItem -> startActivity(Intent(this, FavoritePhotosActivity::class.java))
-//            is PopularItem -> FirebaseProvider.proideTestFirebase.deleteUnusedItems()
-        }
-    }
+class RoversActivity : AppCompatActivity() {
 
     // Determine the screen width (less decorations) to use for the ad width.
     // If the ad hasn't been laid out, default to the full screen width.
@@ -159,6 +157,50 @@ class RoversActivity : RxActivity() {
         }
     }
 
+
+    private fun clearCache() {
+        track("Clear cache")
+        val ctx = application
+        lifecycleScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, throwable -> throwable.printStackTrace() }) {
+            val cacheFile = File(cacheDir, DiskCache.Factory.DEFAULT_DISK_CACHE_DIR)
+            val size = calculateSize(cacheFile)
+
+            Glide.get(ctx).clearDiskCache()
+
+            val sizeStr = Formatter.formatFileSize(ctx, size)
+            withContext(Dispatchers.Main) {
+                Toast.makeText(ctx, "Cleared $sizeStr", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun calculateSize(dir: File?): Long {
+        if (dir == null) return 0
+        if (!dir.isDirectory) return dir.length()
+        var result: Long = 0
+        val children: Array<File>? = dir.listFiles()
+        if (children != null) for (child in children) result += calculateSize(child)
+        return result
+    }
+
+    private fun goToMarket() {
+        track("goToMarket")
+        val uri = Uri.parse("market://details?id=${this.packageName}")
+        val goToMarket = Intent(Intent.ACTION_VIEW, uri)
+        try {
+            startActivity(goToMarket)
+        } catch (e: ActivityNotFoundException) {
+            e.printStackTrace()
+            val intent = Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse("https://play.google.com/store/apps/details?id=${this.packageName}")
+            )
+            if (intent.resolveActivity(this.packageManager) != null) {
+                startActivity(intent)
+            }
+        }
+    }
+
     @Composable
     private fun RoversBottomBar(
         navController: NavHostController,
@@ -180,7 +222,7 @@ class RoversActivity : RxActivity() {
                     selectedContentColor = accent,
                     unselectedContentColor = Color.White.copy(alpha = ContentAlpha.medium),
                     onClick = {
-                        track("click_bottom_${screen.route}")
+                        track("bottom_${screen.route}")
 
                         navController.navigate(screen.route) {
                             // Pop up to the start destination of the graph to
@@ -223,7 +265,7 @@ class RoversActivity : RxActivity() {
         ) {
 
             composable(Screen.Rovers.route) {
-                val rovers by dataManager.rovers.observeAsState(emptyList())
+                val rovers by RoverApplication.APP.dataManger.rovers.observeAsState(emptyList())
 
                 RoversContent(
                     rovers = rovers,
@@ -235,7 +277,7 @@ class RoversActivity : RxActivity() {
                     })
             }
             composable(Screen.About.route) {
-                ComposeAboutAppActivity().AboutAppContent()
+                AboutAppContent(onClearCache = ::clearCache, onRateApp = ::goToMarket)
             }
 
             composable(Screen.Popular.route) {
@@ -300,8 +342,6 @@ fun RoversContent(
     onClick: (rover: ViewType) -> Unit
 ) {
     "RoveerCoteent".logD()
-    val popular = PopularItem()
-    val favoriteItem = FavoriteItem(null)
     val items = rovers.toMutableList<ViewType>()
 //    items.add(0, popular)
 //    items.add(1, favoriteItem)

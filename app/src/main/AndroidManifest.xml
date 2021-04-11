@@ -19,10 +19,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity
-            android:name=".activity.ComposeAboutAppActivity"
-            android:label="@string/title_activity_compose_about_app"
-            android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
             android:name=".feature.rovers.RoversActivity"

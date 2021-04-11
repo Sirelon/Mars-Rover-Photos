@@ -1,6 +1,5 @@
 package com.sirelon.marsroverphotos.activity
 
-import android.content.Intent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -42,11 +41,6 @@ open class RxActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
             onBackPressed()
-            return true
-        } else if (item.itemId == R.id.menu_item_about) {
-//            FirebaseProvider.proideTestFirebase.deleteUnusedItems()
-//            FirebaseProvider.proideTestFirebase.migrateToFirestore()
-            startActivity(Intent(this, ComposeAboutAppActivity::class.java))
             return true
         } else
             return super.onOptionsItemSelected(item)
