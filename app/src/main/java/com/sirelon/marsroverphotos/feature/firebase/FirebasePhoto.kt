@@ -12,7 +12,7 @@ import com.sirelon.marsroverphotos.storage.MarsImage
 data class FirebasePhoto(
     val id: String,
     val sol: Long,
-    val name: String?,
+    val name: String,
     val imageUrl: String,
     val earthDate: String,
     var seeCounter: Long,
@@ -28,22 +28,9 @@ data class FirebasePhoto(
     constructor(photo: MarsPhoto) : this(
         id = photo.id,
         sol = photo.sol,
-        name = photo.name,
+        name = photo.name ?: "",
         imageUrl = photo.imageUrl,
         earthDate = photo.earthDate,
-        seeCounter = 0,
-        scaleCounter = 0,
-        saveCounter = 0,
-        shareCounter = 0,
-        favoriteCounter = 0,
-    )
-
-    constructor() : this(
-        id = "",
-        sol = -1,
-        name = null,
-        imageUrl = "",
-        earthDate = "",
         seeCounter = 0,
         scaleCounter = 0,
         saveCounter = 0,

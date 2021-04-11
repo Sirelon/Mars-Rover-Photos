@@ -82,12 +82,19 @@ internal class FirestorePhotos : IFirebasePhotos {
             .map { it.scaleCounter }
     }
 
-    override fun updatePhotoFavoriteCounter(photo: MarsPhoto): Observable<Long> {
+    suspend fun updatePhotoFavoriteCounter(photo: MarsPhoto, increment: Boolean): Long {
         return getOrCreate(photo)
             .flatMapObservable {
-                updatePhoto(it.apply { it.favoriteCounter++ })
+                updatePhoto(it.apply {
+                    if (increment) {
+                        it.favoriteCounter++
+                    } else {
+                        it.favoriteCounter--
+                    }
+                })
             }
             .map { it.favoriteCounter }
+            .blockingFirst()
     }
 
     override fun updatePhotoSeenCounter(photo: MarsPhoto): Observable<Long> {
@@ -124,20 +131,8 @@ internal class FirestorePhotos : IFirebasePhotos {
                 if (it.isSuccessful) {
                     val documentSnapshots = it.result
 
-                    val objects = documentSnapshots?.documents?.map {
-                        FirebasePhoto(
-                            it["id"].toString(),
-                            it["sol"] as Long,
-                            it["name"] as String?,
-                            it["imageUrl"] as String,
-                            it["earthDate"] as String,
-                            it["seeCounter"] as Long,
-                            it["scaleCounter"] as Long,
-                            it["saveCounter"] as Long,
-                            it["shareCounter"] as Long,
-                            it["favoriteCounter"] as? Long ?: 0,
-                        )
-                    }
+                    val objects =
+                        documentSnapshots?.documents?.map(DocumentSnapshot::toFirebasePhoto)
                     emitter.onNext(objects ?: emptyList())
                     emitter.onComplete()
                 } else {
@@ -154,10 +149,12 @@ internal class FirestorePhotos : IFirebasePhotos {
     private fun getOrCreate(photo: MarsPhoto) =
         getDataSnapshot(photo)
             .flatMap {
-                if (it.exists())
-                    Single.just(it.toObject(FirebasePhoto::class.java))
-                else
+                if (it.exists()) {
+                    val fbPhoto = it.toFirebasePhoto()
+                    Single.just(fbPhoto)
+                } else {
                     createPhoto(photo)
+                }
             }
 
     /**
@@ -176,16 +173,29 @@ internal class FirestorePhotos : IFirebasePhotos {
 
     private fun createPhoto(photo: MarsPhoto): Single<FirebasePhoto> {
         val fireBasePhoto = photo.toFireBase()
-        return photosCollection().document(photo.id.toString())
+        return photosCollection().document(photo.id)
             .setPhoto(fireBasePhoto)
             .first(fireBasePhoto)
     }
 
     private fun getDataSnapshot(photo: MarsPhoto): Single<DocumentSnapshot> =
         Single.create { emitter ->
-            photosCollection().document(photo.id.toString())
+            photosCollection().document(photo.id)
                 .get()
                 .addOnSuccessListener { emitter.onSuccess(it) }
                 .addOnFailureListener { emitter.onError(it) }
         }
 }
+
+private fun DocumentSnapshot.toFirebasePhoto() = FirebasePhoto(
+    this["id"].toString(),
+    this["sol"] as Long,
+    this["name"] as String? ?: "",
+    this["imageUrl"] as String,
+    this["earthDate"] as String,
+    this["seeCounter"] as Long,
+    this["scaleCounter"] as Long,
+    this["saveCounter"] as Long,
+    this["shareCounter"] as Long,
+    this["favoriteCounter"] as? Long ?: 0,
+)

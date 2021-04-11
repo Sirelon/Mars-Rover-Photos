@@ -6,14 +6,17 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.sirelon.marsroverphotos.feature.photos.mapToUi
 import com.sirelon.marsroverphotos.feature.popular.PopularRemoteMediator
 import com.sirelon.marsroverphotos.firebase.photos.FirebaseProvider
-import com.sirelon.marsroverphotos.models.MarsPhoto
+import com.sirelon.marsroverphotos.firebase.photos.FirestorePhotos
 import com.sirelon.marsroverphotos.storage.DataBaseProvider
 import com.sirelon.marsroverphotos.storage.ImagesDao
 import com.sirelon.marsroverphotos.storage.MarsImage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * Created on 22.08.2020 17:48 for Mars-Rover-Photos.
@@ -21,6 +24,8 @@ import kotlinx.coroutines.flow.Flow
 class ImagesRepository(private val context: Context) {
 
     private val imagesDao: ImagesDao
+
+    private val firestorePhotos = FirestorePhotos()
 
     init {
         DataBaseProvider.init(context)
@@ -45,9 +50,18 @@ class ImagesRepository(private val context: Context) {
         ).flow
     }
 
-    suspend fun updateFavForImage(item: MarsImage) {
-        val updated = item.copy(favorite = !item.favorite)
-        imagesDao.update(updated)
+    suspend fun updateFavForImage(item: MarsImage) = coroutineScope {
+        withContext(Dispatchers.IO) {
+            val favorite = !item.favorite
+            val m = if (favorite) 1 else -1
+            val counter = item.stats.favorite + (1 * m)
+
+            imagesDao.updateFavorite(item.id, favorite, counter)
+
+            launch {
+                firestorePhotos.updatePhotoFavoriteCounter(item.toMarsPhoto(), favorite)
+            }
+        }
     }
 
     fun getFavoriteImages() = imagesDao.getFavoriteImages()

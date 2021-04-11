@@ -34,6 +34,9 @@ interface ImagesDao {
     @Update(entity = MarsImage::class)
     suspend fun update(item: MarsImage)
 
+    @Query("UPDATE images SET favorite = :favorite, counter_favorite = :counter WHERE id = :id")
+    suspend fun updateFavorite(id: String, favorite: Boolean, counter: Long)
+
     @Update(entity = MarsImage::class)
     fun updateStats(stats: StatsUpdate)
 
@@ -53,7 +56,7 @@ interface ImagesDao {
     fun deleteAllPopular()
 
     @Transaction
-    suspend fun withTransaction( action: suspend () -> Unit) {
+    suspend fun withTransaction(action: suspend () -> Unit) {
         action.invoke()
     }
 
