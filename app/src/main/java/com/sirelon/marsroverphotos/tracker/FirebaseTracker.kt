@@ -50,6 +50,6 @@ class FirebaseTracker(context: Context) : ITracker {
     }
 
     private fun MarsPhoto.arguments() =
-        bundleOf("id" to id, "name" to name, EARTH_DATE to earthDate)
+        bundleOf("id" to id, "name" to (name ?: ""), EARTH_DATE to earthDate)
 
 }

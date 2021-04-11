@@ -35,7 +35,7 @@ data class MarsImage(
 
     override fun getViewType(): Int = AdapterConstants.MARS_PHOTO
 
-    fun toMarsPhoto() = MarsPhoto(id, sol, name, imageUrl, earthDate, camera)
+    fun toMarsPhoto() = MarsPhoto(id, sol, name ?: "", imageUrl, earthDate, camera)
 
     class Stats(
         val see: Long,
