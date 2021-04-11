@@ -1,6 +1,7 @@
 package com.sirelon.marsroverphotos.feature.favorite
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.sirelon.marsroverphotos.RoverApplication
@@ -33,5 +34,10 @@ class FavoriteImagesViewModel(app: Application) : AndroidViewModel(app) {
 
     fun track(track: String) {
         RoverApplication.APP.dataManger.trackClick(track)
+    }
+
+    override fun onCleared() {
+        Log.d("Sirelonn", "Favorite on cleared.")
+        super.onCleared()
     }
 }

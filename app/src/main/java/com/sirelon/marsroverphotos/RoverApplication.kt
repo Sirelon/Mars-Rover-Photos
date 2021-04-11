@@ -1,9 +1,7 @@
 package com.sirelon.marsroverphotos
 
 import android.app.Application
-import android.os.Build
 import android.util.Log
-import androidx.multidex.MultiDex
 import com.google.android.gms.ads.MobileAds
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
@@ -11,9 +9,6 @@ import com.sirelon.marsroverphotos.tracker.FirebaseTracker
 import com.sirelon.marsroverphotos.tracker.ITracker
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.conscrypt.Conscrypt
-import java.security.Security
-
 
 /**
  * @author romanishin
@@ -28,14 +23,6 @@ class RoverApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         APP = this
-
-        if (BuildConfig.DEBUG) {
-            MultiDex.install(this)
-        }
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            Security.insertProviderAt(Conscrypt.newProvider(), 1)
-        }
 
         GlobalScope.launch {
             kotlin.runCatching {

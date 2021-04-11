@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.navigate
-import androidx.navigation.compose.rememberNavController
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -49,7 +48,10 @@ fun FavoriteScreen(
         modifier = modifier,
         title = stringResource(id = R.string.favorite_title),
         items = items,
-        onFavoriteClick = viewModel::updateFavForImage,
+        onFavoriteClick = {
+//            viewModel.updateFavForImage(it)
+                          it.favorite
+        },
         onItemClick = { image ->
             val ids = items.snapshot().mapNotNull { it?.id }
             val intent = ImageActivity.createIntent(context, image.id, ids, false)
