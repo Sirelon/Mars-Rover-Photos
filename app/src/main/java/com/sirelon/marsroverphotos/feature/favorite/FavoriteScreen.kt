@@ -49,8 +49,8 @@ fun FavoriteScreen(
         title = stringResource(id = R.string.favorite_title),
         items = items,
         onFavoriteClick = {
-//            viewModel.updateFavForImage(it)
-                          it.favorite
+            // ToDO: store favorite in another table
+            viewModel.updateFavForImage(it)
         },
         onItemClick = { image ->
             val ids = items.snapshot().mapNotNull { it?.id }

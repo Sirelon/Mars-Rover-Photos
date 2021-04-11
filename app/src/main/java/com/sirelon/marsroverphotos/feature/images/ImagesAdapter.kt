@@ -29,11 +29,7 @@ class ImagesAdapter(private val callback: ImagesAdapterClickListener) :
         }
         RoverApplication.APP.dataManger.trackClick("photo")
         holder.itemView.setOnClickListener {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                callback.openPhoto(image, it)
-            } else {
-                callback.openPhoto(image)
-            }
+            callback.openPhoto(image, it)
         }
     }
 
