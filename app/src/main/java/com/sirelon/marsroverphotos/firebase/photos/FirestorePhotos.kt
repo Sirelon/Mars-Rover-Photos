@@ -42,6 +42,7 @@ internal class FirestorePhotos : IFirebasePhotos {
             "scaleCounter" to scale,
             "saveCounter" to randomInt(0, scale),
             "shareCounter" to randomInt(0, scale),
+            "favoriteCounter" to randomInt(0, scale),
         )
 
         //                .orderBy("shareCounter", queryDirection)
@@ -49,7 +50,7 @@ internal class FirestorePhotos : IFirebasePhotos {
 //            .orderBy("seeCounter", queryDirection)
 //            .orderBy("scaleCounter", queryDirection)
         val task = photosCollection().document(photo.id).update(db)
-
+        Tasks.await(task)
     }
 
     override suspend fun countOfInsightPhotos(): Long {
@@ -79,6 +80,14 @@ internal class FirestorePhotos : IFirebasePhotos {
                 updatePhoto(it.apply { it.scaleCounter++ })
             }
             .map { it.scaleCounter }
+    }
+
+    override fun updatePhotoFavoriteCounter(photo: MarsPhoto): Observable<Long> {
+        return getOrCreate(photo)
+            .flatMapObservable {
+                updatePhoto(it.apply { it.favoriteCounter++ })
+            }
+            .map { it.favoriteCounter }
     }
 
     override fun updatePhotoSeenCounter(photo: MarsPhoto): Observable<Long> {
@@ -126,6 +135,7 @@ internal class FirestorePhotos : IFirebasePhotos {
                             it["scaleCounter"] as Long,
                             it["saveCounter"] as Long,
                             it["shareCounter"] as Long,
+                            it["favoriteCounter"] as? Long ?: 0,
                         )
                     }
                     emitter.onNext(objects ?: emptyList())

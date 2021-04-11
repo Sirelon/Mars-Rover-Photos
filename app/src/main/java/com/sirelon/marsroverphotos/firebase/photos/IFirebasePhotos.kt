@@ -14,6 +14,7 @@ interface IFirebasePhotos {
     fun updatePhotoShareCounter(photo: MarsPhoto): Observable<Long>
     fun updatePhotoSaveCounter(photo: MarsPhoto): Observable<Long>
     fun updatePhotoScaleCounter(photo: MarsPhoto): Observable<Long>
+    fun updatePhotoFavoriteCounter(photo: MarsPhoto): Observable<Long>
     fun updatePhotoSeenCounter(photo: MarsPhoto): Observable<Long>
     fun loadPopularPhotos(
         count: Int = 10,

@@ -41,7 +41,8 @@ data class MarsImage(
         val see: Long,
         val scale: Long,
         val save: Long,
-        val share: Long
+        val share: Long,
+        val favorite: Long
     )
 }
 

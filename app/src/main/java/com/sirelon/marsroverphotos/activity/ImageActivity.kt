@@ -4,8 +4,6 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.res.ColorStateList
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -202,7 +200,7 @@ class ImageActivity : RxActivity() {
 
                     if (BuildConfig.DEBUG) {
                         lifecycleScope.launch(Dispatchers.IO) {
-                            FirestorePhotos().makeItPopular(it)
+                            FirestorePhotos().removePhoto(it)
                         }
                     } else {
                         dataManager.updatePhotoShareCounter(it, intent.`package`)
@@ -223,12 +221,12 @@ class ImageActivity : RxActivity() {
         val marsPhoto = marsPhoto?.toMarsPhoto() ?: return
 
         // Do some stuff with photo at debug mode
-//        if (BuildConfig.DEBUG) {
-//            lifecycleScope.launch(Dispatchers.IO) {
-//                FirestorePhotos().removePhoto(marsPhoto)
-//            }
-//            return
-//        }
+        if (BuildConfig.DEBUG) {
+            lifecycleScope.launch(Dispatchers.IO) {
+                FirestorePhotos().makeItPopular(marsPhoto)
+            }
+            return
+        }
 
         val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
         val grated =

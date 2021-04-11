@@ -111,8 +111,8 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha05"
 
     // https://github.com/skydoves/Landscapist
-    implementation "com.github.skydoves:landscapist-glide:1.1.8"
-    implementation "com.github.skydoves:landscapist-coil:1.1.8"
+    implementation "com.github.skydoves:landscapist-glide:1.1.9"
+    implementation "com.github.skydoves:landscapist-coil:1.1.9"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.multidex:multidex:2.0.1'

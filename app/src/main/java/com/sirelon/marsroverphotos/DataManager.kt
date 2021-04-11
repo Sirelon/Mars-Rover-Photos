@@ -82,6 +82,15 @@ class DataManager(
         }
     }
 
+    fun updatePhotoFavoriteCounter(marsPhoto: MarsPhoto?) {
+        marsPhoto?.let {
+            firebasePhotos.updatePhotoScaleCounter(marsPhoto)
+                .onErrorReturn { 0 }
+                .subscribe()
+            tracker.trackScale(marsPhoto)
+        }
+    }
+
     fun updatePhotoSaveCounter(marsPhoto: MarsPhoto?) {
         marsPhoto?.let {
             firebasePhotos.updatePhotoSaveCounter(marsPhoto)

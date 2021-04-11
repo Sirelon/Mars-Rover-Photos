@@ -16,6 +16,7 @@ data class FirebasePhoto(
     val imageUrl: String,
     val earthDate: String,
     var seeCounter: Long,
+    var favoriteCounter: Long,
     var scaleCounter: Long,
     var saveCounter: Long,
     var shareCounter: Long
@@ -33,7 +34,8 @@ data class FirebasePhoto(
         seeCounter = 0,
         scaleCounter = 0,
         saveCounter = 0,
-        shareCounter = 0
+        shareCounter = 0,
+        favoriteCounter = 0,
     )
 
     constructor() : this(
@@ -45,7 +47,8 @@ data class FirebasePhoto(
         seeCounter = 0,
         scaleCounter = 0,
         saveCounter = 0,
-        shareCounter = 0
+        shareCounter = 0,
+        favoriteCounter = 0,
     )
 
     override fun getViewType() = AdapterConstants.POPULAR_PHOTO
@@ -64,7 +67,8 @@ data class FirebasePhoto(
             see = seeCounter,
             scale = scaleCounter,
             save = saveCounter,
-            share = shareCounter
+            share = shareCounter,
+            favorite = favoriteCounter,
         )
     )
 }
