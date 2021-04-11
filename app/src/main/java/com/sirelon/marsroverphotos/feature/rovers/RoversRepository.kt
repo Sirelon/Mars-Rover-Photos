@@ -1,7 +1,6 @@
 package com.sirelon.marsroverphotos.feature.rovers
 
 import android.content.Context
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.extensions.recordException
@@ -15,6 +14,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
@@ -70,7 +70,7 @@ class RoversRepository(context: Context, private val api: RestApi) {
             "active",
             126,
             "2019-04-03",
-            1072
+            5731
         )
 
         val dateUtil = RoverDateUtil(insight)
@@ -117,6 +117,14 @@ class RoversRepository(context: Context, private val api: RestApi) {
         GlobalScope.launch {
             kotlin.runCatching {
                 roverDao.insertRovers(perseverance, insight, curiosity, opportunity, spirit)
+            }.onFailure(::recordException)
+        }
+
+        GlobalScope.launch {
+            kotlin.runCatching {
+                api.perseveranceTotalImages.collectLatest {
+                    roverDao.updateRoverCountPhotos(PERSEVARANCE_ID, it)
+                }
             }.onFailure(::recordException)
         }
     }

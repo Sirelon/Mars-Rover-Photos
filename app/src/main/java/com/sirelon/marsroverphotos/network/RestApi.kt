@@ -11,10 +11,12 @@ import com.sirelon.marsroverphotos.feature.rovers.PERSEVARANCE_ID
 import com.sirelon.marsroverphotos.feature.rovers.Spirit_ID
 import com.sirelon.marsroverphotos.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.storage.MarsImage
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.lang.IllegalArgumentException
 
 /**
  * @author romanishin
@@ -23,6 +25,9 @@ import java.lang.IllegalArgumentException
 
 class RestApi(context: Context) {
     private val nasaApi: NasaApi
+
+    private val _perseveranceTotalImages = MutableStateFlow<Long?>(null)
+    val perseveranceTotalImages = _perseveranceTotalImages.filterNotNull().distinctUntilChanged()
 
     init {
         val okkClient = OkHttpClient.Builder()
@@ -49,7 +54,11 @@ class RestApi(context: Context) {
                 nasaApi.getInsightRawImages(from = "$sol:sol", to = "$sol:sol").photos.mapToUi()
             }
             Curiosity_ID -> nasaApi.getRoverPhotos("Curiosity", sol, query.camera).photos.mapToUi()
-            Opportunity_ID -> nasaApi.getRoverPhotos("Opportunity", sol, query.camera).photos.mapToUi()
+            Opportunity_ID -> nasaApi.getRoverPhotos(
+                "Opportunity",
+                sol,
+                query.camera
+            ).photos.mapToUi()
             Spirit_ID -> nasaApi.getRoverPhotos("Spirit", sol, query.camera).photos.mapToUi()
             else -> throw IllegalArgumentException("Unsupported id")
         }
@@ -65,6 +74,8 @@ class RestApi(context: Context) {
 //            to = "${dateUtil.parseTime(dateTo)}:date_taken:lt"
             sol = "${query.sol}:sol:in"
         )
+
+        _perseveranceTotalImages.value = response.totalImages
 
         return response.photos.preveranceToUI()
     }

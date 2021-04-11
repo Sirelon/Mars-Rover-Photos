@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.LiveData
 import com.sirelon.marsroverphotos.feature.images.ImagesRepository
+import com.sirelon.marsroverphotos.feature.photos.PhotosRepository
 import com.sirelon.marsroverphotos.feature.rovers.INSIGHT_ID
 import com.sirelon.marsroverphotos.feature.rovers.RoversRepository
 import com.sirelon.marsroverphotos.firebase.photos.FirebaseProvider.firebasePhotos
@@ -24,16 +25,12 @@ import kotlinx.coroutines.launch
 @SuppressLint("CheckResult")
 class DataManager(
     val context: Context, private val tracker: ITracker,
-    private val api: RestApi = RestApi(context)
+    val api: RestApi = RestApi(context)
 ) {
 
-    /**
-     * This var if you want to reuse the mainObservable without making new request on server
-     */
-    var lastPhotosRequest: Observable<List<MarsPhoto>?>? = null
-
-    private val roverRepo = RoversRepository(context, api)
-    private val imagesRepo = ImagesRepository(context)
+    val roverRepo = RoversRepository(context, api)
+    val imagesRepo = ImagesRepository(context)
+    val photosRepo = PhotosRepository(api)
 
     val rovers = roverRepo.getRovers()
 
@@ -47,23 +44,6 @@ class DataManager(
         }
     }
 
-//    fun loadFirstFavoriteItem(): LiveData<MarsImage?> = imagesRepo.loadFirstImage()
-
-//    fun loadMarsPhotos(queryRequest: PhotosQueryRequest): Observable<List<MarsImage>?> {
-//        api.getRoversPhotos(queryRequest)
-
-//        val mainObservable = Observable.fromCallable {
-//            val callResponse = api.getRoversPhotos(queryRequest)
-//            val response = callResponse.execute()
-//            if (response.isSuccessful) response.body()?.photos
-//            else throw RuntimeException(response.errorBody()?.string())
-//        }
-//
-//        lastPhotosRequest = mainObservable.cache()
-//
-//        return lastPhotosRequest!!
-//    }
-
     fun updatePhotoSeenCounter(marsPhoto: MarsPhoto?) {
         marsPhoto?.let {
             firebasePhotos.updatePhotoSeenCounter(marsPhoto)
@@ -74,15 +54,6 @@ class DataManager(
     }
 
     fun updatePhotoScaleCounter(marsPhoto: MarsPhoto?) {
-        marsPhoto?.let {
-            firebasePhotos.updatePhotoScaleCounter(marsPhoto)
-                .onErrorReturn { 0 }
-                .subscribe()
-            tracker.trackScale(marsPhoto)
-        }
-    }
-
-    fun updatePhotoFavoriteCounter(marsPhoto: MarsPhoto?) {
         marsPhoto?.let {
             firebasePhotos.updatePhotoScaleCounter(marsPhoto)
                 .onErrorReturn { 0 }

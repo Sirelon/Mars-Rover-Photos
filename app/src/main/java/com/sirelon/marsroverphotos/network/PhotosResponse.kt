@@ -17,7 +17,9 @@ data class PhotosResponse(
 @Keep
 class PerseverancePhotosResponse(
     @SerializedName("images")
-    val photos: List<PerseverancePhotoItemResponse>
+    val photos: List<PerseverancePhotoItemResponse>,
+    @SerializedName("total_images")
+    val totalImages: Long?
 )
 
 @Keep

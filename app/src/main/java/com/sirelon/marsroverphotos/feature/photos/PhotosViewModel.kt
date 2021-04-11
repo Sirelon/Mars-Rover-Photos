@@ -31,10 +31,10 @@ import kotlin.random.Random
  */
 class PhotosViewModel(app: Application) : AndroidViewModel(app) {
 
-    private val restApi = RestApi(app)
-    private val roversRepository = RoversRepository(app, restApi)
-    private val photosRepository = PhotosRepository(restApi)
-    private val imagesRepository = ImagesRepository(app)
+    val dataManger = getApplication<RoverApplication>().dataManger
+    private val roversRepository = dataManger.roverRepo
+    private val photosRepository = dataManger.photosRepo
+    private val imagesRepository = dataManger.imagesRepo
 
     private val queryEmmiter = MutableStateFlow<PhotosQueryRequest?>(null)
     private val roverIdEmmiter = MutableStateFlow<Long?>(null)
