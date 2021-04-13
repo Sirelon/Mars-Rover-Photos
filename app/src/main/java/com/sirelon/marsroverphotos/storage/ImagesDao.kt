@@ -31,6 +31,9 @@ interface ImagesDao {
     @Query("SELECT * FROM images WHERE id IN (:ids)")
     fun getImagesByIds(ids: List<String>): Flow<List<MarsImage>>
 
+    @Query("SELECT * FROM images")
+    fun getAllImages(): Flow<List<MarsImage>>
+
     @Update(entity = MarsImage::class)
     suspend fun update(item: MarsImage)
 

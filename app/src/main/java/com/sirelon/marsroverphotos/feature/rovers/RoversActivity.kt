@@ -81,6 +81,7 @@ import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.feature.favorite.FavoriteItem
 import com.sirelon.marsroverphotos.feature.favorite.FavoriteScreen
 import com.sirelon.marsroverphotos.feature.favorite.PopularScreen
+import com.sirelon.marsroverphotos.feature.images.ImagesPager
 import com.sirelon.marsroverphotos.feature.photos.RoverPhotosScreen
 import com.sirelon.marsroverphotos.feature.popular.PopularItem
 import com.sirelon.marsroverphotos.models.Rover
@@ -244,7 +245,7 @@ class RoversActivity : AppCompatActivity() {
 
     @Composable
     private fun ComposableBannerAd(modifier: Modifier) {
-//        if (BuildConfig.DEBUG) return
+        if (BuildConfig.DEBUG) return
 
         AndroidView<View>(modifier = modifier, factory = {
             val adRequest = AdRequest
@@ -268,16 +269,18 @@ class RoversActivity : AppCompatActivity() {
         ) {
 
             composable(Screen.Rovers.route) {
-                val rovers by RoverApplication.APP.dataManger.rovers.observeAsState(emptyList())
-
-                RoversContent(
-                    rovers = rovers,
-                    onClick = {
-                        if (it is Rover) {
-                            track("click_rover_${it.name}")
-                            navController.navigate("rover/${it.id}")
-                        }
-                    })
+                // TODO:
+                ImagesPager()
+//                val rovers by RoverApplication.APP.dataManger.rovers.observeAsState(emptyList())
+//
+//                RoversContent(
+//                    rovers = rovers,
+//                    onClick = {
+//                        if (it is Rover) {
+//                            track("click_rover_${it.name}")
+//                            navController.navigate("rover/${it.id}")
+//                        }
+//                    })
             }
             composable(Screen.About.route) {
                 AboutAppContent(onClearCache = ::clearCache, onRateApp = ::goToMarket)
