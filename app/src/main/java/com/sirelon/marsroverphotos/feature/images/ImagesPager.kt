@@ -2,7 +2,6 @@ package com.sirelon.marsroverphotos.feature.images
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTransformGestures
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -43,52 +42,54 @@ fun ImagesPager(viewModel: ImageViewModel = androidx.lifecycle.viewmodel.compose
     }
 
     val pagerState = rememberPagerState(pageCount = images.size)
+    var scale by remember { mutableStateOf(1f) }
 
     HorizontalPager(
         state = pagerState,
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .clip(RectangleShape)
+            .fillMaxSize()
+            .background(Color.Gray)
+            .pointerInput(Unit) {
+                detectTransformGestures(panZoomLock = false) { centroid, pan, zoom, rotation ->
+                    scale *= zoom
+                }
+            },
     ) { page ->
         // Our page content
         val marsImage = images[page]
-
 //        ImageItem(marsImage = marsImage)
+
+        if (pagerState.isScrollInProgress) {
+            scale = 1f
+        }
+
+        var toScale = maxOf(1f, minOf(5f, scale))
+
+        if (pagerState.currentPage != page) {
+            toScale = 1f
+        }
+
         CoilImage(
+            modifier = Modifier
+                .align(Alignment.Center) // keep the image centralized into the Box
+                .graphicsLayer(
+                    // adding some zoom limits (min 50%, max 200%)
+                    scaleX = toScale,
+                    scaleY = toScale
+                )
+            ,
             data = marsImage.imageUrl
         ) { imageState ->
             when (imageState) {
                 is ImageLoadState.Success -> {
-                    var scale by remember { mutableStateOf(1f) }
+                    MaterialLoadingImage(
+                        result = imageState,
+                        contentDescription = "My content description",
+                        fadeInEnabled = true,
+                        fadeInDurationMs = 600,
 
-                    Box(modifier = Modifier
-                        .clip(RectangleShape)
-                        .fillMaxSize()
-                        .background(Color.Gray)
-                        .pointerInput(Unit) {
-                            detectTransformGestures(panZoomLock = false) { centroid, pan, zoom, rotation ->
-
-
-//                                scale *= zoom
-                            }
-                        }
-                    ) {
-//                        Image(
-//                            painter = imageState.painter, contentDescription = marsImage.name)
-                        MaterialLoadingImage(
-                            result = imageState,
-                            contentDescription = "My content description",
-                            fadeInEnabled = true,
-                            fadeInDurationMs = 600,
-                            modifier = Modifier
-                                .align(Alignment.Center) // keep the image centralized into the Box
-                                .graphicsLayer(
-                                    // adding some zoom limits (min 50%, max 200%)
-                                    scaleX = maxOf(.5f, minOf(2f, scale)),
-                                    scaleY = maxOf(.5f, minOf(2f, scale))
-                                ),
                         )
-                    }
-
-
                 }
 //                is ImageLoadState.Error -> /* TODO */
 //                    ImageLoadState.Loading
