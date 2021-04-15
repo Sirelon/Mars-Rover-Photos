@@ -1,6 +1,7 @@
 package com.sirelon.marsroverphotos.feature
 
 import android.graphics.Matrix
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,9 +12,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
+import javax.security.auth.callback.Callback
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
@@ -22,17 +25,19 @@ import kotlin.math.sqrt
  */
 @Composable
 fun MultitouchDetector(
-    content: @Composable () -> Unit
+    modifier: Modifier,
+    callback: (zoom: Float, offsetX: Float, offsetY: Float) -> Unit
 ) {
     val matrix by remember { mutableStateOf(Matrix()) }
 //    var angle by remember { mutableStateOf(0f) }
-    var zoom by remember { mutableStateOf(1f) }
-    var offsetX by remember { mutableStateOf(0f) }
-    var offsetY by remember { mutableStateOf(0f) }
+//    var zoom by remember { mutableStateOf(1f) }
+//    var offsetX by remember { mutableStateOf(0f) }
+//    var offsetY by remember { mutableStateOf(0f) }
 
     Box(
-        Modifier
+        modifier
             .fillMaxSize()
+//            .background(Color.Green)
             .pointerInput(Unit) {
                 detectTransformGestures { centroid, pan, gestureZoom, gestureAngle ->
                     val anchorX = centroid.x - size.width / 2f
@@ -43,27 +48,31 @@ fun MultitouchDetector(
 
                     val v = FloatArray(9)
                     matrix.getValues(v)
-                    offsetX = v[Matrix.MTRANS_X]
-                    offsetY = v[Matrix.MTRANS_Y]
                     val scaleX = v[Matrix.MSCALE_X]
                     val skewY = v[Matrix.MSKEW_Y]
-                    zoom = sqrt(scaleX * scaleX + skewY * skewY)
+                    val offsetX = v[Matrix.MTRANS_X]
+                    val offsetY = v[Matrix.MTRANS_Y]
+                    val zoom = sqrt(scaleX * scaleX + skewY * skewY)
+                    callback(zoom, offsetX, offsetY)
+//                    offsetX = v[Matrix.MTRANS_X]
+//                    offsetY = v[Matrix.MTRANS_Y]
+//                    zoom = sqrt(scaleX * scaleX + skewY * skewY)
 //                angle = atan2(v[Matrix.MSKEW_X], v[Matrix.MSCALE_X]) * (-180 / Math.PI.toFloat())
                 }
             }
     ) {
-        Box(
-            Modifier
-                .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
-                .graphicsLayer(
-                    scaleX = zoom,
-                    scaleY = zoom,
-//                    rotationZ = angle
-                )
-                .fillMaxSize()
-        ) {
-            content()
-        }
+//        Box(
+//            Modifier
+//                .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
+//                .graphicsLayer(
+//                    scaleX = zoom,
+//                    scaleY = zoom,
+////                    rotationZ = angle
+//                )
+//                .fillMaxSize()
+//        ) {
+//            content()
+//        }
     }
 
 }
