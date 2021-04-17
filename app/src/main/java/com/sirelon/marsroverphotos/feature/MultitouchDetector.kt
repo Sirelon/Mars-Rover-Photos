@@ -113,7 +113,7 @@ fun MultitouchDetector(
     var zoomToChange by remember { mutableStateOf(1f) }
     var offsetX by remember { mutableStateOf(0f) }
     var offsetY by remember { mutableStateOf(0f) }
-//    var size by remember { mutableStateOf(IntSize(0, 0)) }
+    var childSize by remember { mutableStateOf(IntSize(0, 0)) }
     var position by remember { mutableStateOf(Offset.Zero) }
     var parentSize by remember { mutableStateOf(IntSize(0, 0)) }
 
@@ -194,9 +194,32 @@ fun MultitouchDetector(
                                         val zoomVal = sqrt(scaleX * scaleX + skewY * skewY)
 //                                            callback(zoom, offsetX, offsetY)
 
+                                        var shouldBlock = true
+                                        val offX = position.x + (size.width * zoomVal)
+                                        if (offsetXVal > 0) {
+                                            if (position.x < 0) {
+                                                offsetX += offsetXVal
+                                            } else {
+                                                shouldBlock = false
+                                            }
+                                        } else if (offX > parentSize.width) {
+                                            offsetX += offsetXVal
+                                        } else {
+                                            shouldBlock = false
+                                        }
+
                                         zoomToChange *= zoomVal
                                         offsetX += offsetXVal
                                         offsetY += offsetYVal
+
+                                        if (shouldBlock) {
+                                            event.changes.fastForEach {
+                                                if (it.positionChanged()) {
+                                                    it.consumeAllChanges()
+                                                }
+                                            }
+                                        }
+
 
 //                                            if (offsetX.absoluteValue < 7f) {
 //                                                Log.i("Sirelon1", "OFFSET ! $offsetX")
@@ -206,10 +229,11 @@ fun MultitouchDetector(
 //                                                    }
 //                                                }
 //                                            }
-                                    }
-                                    event.changes.fastForEach {
-                                        if (it.positionChanged()) {
-                                            it.consumeAllChanges()
+                                    } else {
+                                        event.changes.fastForEach {
+                                            if (it.positionChanged()) {
+                                                it.consumeAllChanges()
+                                            }
                                         }
                                     }
                                 }
@@ -220,19 +244,20 @@ fun MultitouchDetector(
             }
     ) {
         val intOffset = IntOffset(offsetX.roundToInt(), offsetY.roundToInt())
-        FullScreenImage(
+        Box(
             Modifier
                 .align(Alignment.Center)
                 .offset { intOffset }
                 .graphicsLayer(scaleX = zoomToChange, scaleY = zoomToChange)
                 .onGloballyPositioned {
-//                    size = it.size
+                    childSize = it.size
                     position = it.positionInParent()
                     parentSize = it.parentCoordinates?.size!!
                 }
                 .fillMaxSize(),
-            imageUrl = "https://redstapler.co/wp-content/uploads/2019/05/3d-photo-from-image-1.jpg"
-        )
+        ) {
+            content()
+        }
     }
 
 }
