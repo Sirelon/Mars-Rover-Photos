@@ -33,6 +33,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.sirelon.marsroverphotos.feature.MultitouchDetector
+import com.sirelon.marsroverphotos.feature.MultitouchDetectorNorm
 import com.sirelon.marsroverphotos.storage.MarsImage
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -128,10 +129,10 @@ fun ImagesPager(viewModel: ImageViewModel = androidx.lifecycle.viewmodel.compose
                     } else if (offX > parentSize.width) {
                         offsetX += x
                     } else {
-                        scope.launch {
-
-                            pagerState.scrollBy(x)
-                        }
+//                        scope.launch {
+//
+//                            pagerState.scrollBy(x)
+//                        }
                     }
                     offsetY += y
                 }
