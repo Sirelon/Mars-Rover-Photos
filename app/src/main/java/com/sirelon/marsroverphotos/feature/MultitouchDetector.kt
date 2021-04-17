@@ -13,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
@@ -30,11 +31,14 @@ fun MultitouchDetector(
     enabled: Boolean,
     callback: (zoom: Float, offsetX: Float, offsetY: Float) -> Unit
 ) {
-    val matrix by remember { mutableStateOf(Matrix()) }
+//    val matrix by remember { mutableStateOf(Matrix()) }
 //    var angle by remember { mutableStateOf(0f) }
 //    var zoom by remember { mutableStateOf(1f) }
 //    var offsetX by remember { mutableStateOf(0f) }
 //    var offsetY by remember { mutableStateOf(0f) }
+
+    val scale = remember { mutableStateOf(1f) }
+    val translate = remember { mutableStateOf(Offset(0f, 0f)) }
 
     Box(
         modifier
@@ -46,6 +50,7 @@ fun MultitouchDetector(
                         Log.i("Sirelon1", "$pan")
                         val anchorX = centroid.x - size.width / 2f
                         val anchorY = centroid.y - size.height / 2f
+                        val matrix = Matrix()
                         matrix.postRotate(gestureAngle, anchorX, anchorY)
                         matrix.postScale(gestureZoom, gestureZoom, anchorX, anchorY)
                         matrix.postTranslate(pan.x, pan.y)

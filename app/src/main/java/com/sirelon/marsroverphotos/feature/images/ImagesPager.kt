@@ -16,12 +16,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.toIntRect
 import com.google.accompanist.coil.CoilImage
 import com.google.accompanist.imageloading.ImageLoadState
 import com.google.accompanist.imageloading.MaterialLoadingImage
@@ -75,7 +76,8 @@ fun ImagesPager(viewModel: ImageViewModel = androidx.lifecycle.viewmodel.compose
             var offsetX by remember { mutableStateOf(0f) }
             var offsetY by remember { mutableStateOf(0f) }
             var size by remember { mutableStateOf(IntSize(0, 0)) }
-
+            var position by remember { mutableStateOf(Offset.Zero) }
+            var parentSize by remember { mutableStateOf(IntSize(0, 0)) }
 //            if (pagerState.isScrollInProgress) {
 //                zoom = 1f
 //                offsetX = 0f
@@ -88,7 +90,11 @@ fun ImagesPager(viewModel: ImageViewModel = androidx.lifecycle.viewmodel.compose
                     .align(Alignment.Center)
                     .offset { intOffset }
                     .graphicsLayer(scaleX = zoom, scaleY = zoom)
-                    .onGloballyPositioned { size = it.size }
+                    .onGloballyPositioned {
+                        size = it.size
+                        position = it.positionInParent()
+                        parentSize = it.parentCoordinates?.size!! ?: it.size * 2
+                    }
                     .fillMaxSize(),
                 marsImage = marsImage)
 
@@ -97,21 +103,27 @@ fun ImagesPager(viewModel: ImageViewModel = androidx.lifecycle.viewmodel.compose
                 val intSize = size * zoom.roundToInt()
                 Log.d(
                     "Sirelon",
-                    "PositionX = $offsetX and $intSize continas = " + "${
-                        intSize.toIntRect().contains(intOffset)
-                    }"
+                    "PositionX = $offsetX and position $position"
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 MultitouchDetector(
                     modifier = Modifier
                         .weight(2f)
                         .background(Color.Red.copy(alpha = 0.5F)),
-                    enabled = enabled
+                    enabled = true
 
                 ) { z, x, y ->
-                    zoom = z
-                    offsetX = x
-                    offsetY = y
+                    zoom *= z
+                    val offX = position.x + (size.width * zoom)
+                    Log.w("Sirelon1", "OFfX $offX")
+                    if (x > 0) {
+                        if (position.x < 0)
+                            offsetX += x
+
+                    } else if (offX > parentSize.width) {
+                        offsetX += x
+                    }
+                    offsetY += y
                 }
                 Spacer(modifier = Modifier.weight(1f))
             }
