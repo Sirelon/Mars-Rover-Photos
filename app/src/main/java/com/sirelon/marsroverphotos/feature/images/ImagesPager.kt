@@ -18,7 +18,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.toIntRect
 import com.google.accompanist.coil.CoilImage
 import com.google.accompanist.imageloading.ImageLoadState
 import com.google.accompanist.imageloading.MaterialLoadingImage
@@ -71,29 +74,40 @@ fun ImagesPager(viewModel: ImageViewModel = androidx.lifecycle.viewmodel.compose
             var zoom by remember { mutableStateOf(1f) }
             var offsetX by remember { mutableStateOf(0f) }
             var offsetY by remember { mutableStateOf(0f) }
+            var size by remember { mutableStateOf(IntSize(0, 0)) }
 
-            if (pagerState.isScrollInProgress) {
-                zoom = 1f
-                offsetX = 0f
-                offsetY = 0f
-            }
+//            if (pagerState.isScrollInProgress) {
+//                zoom = 1f
+//                offsetX = 0f
+//                offsetY = 0f
+//            }
 
+            val intOffset = IntOffset(offsetX.roundToInt(), offsetY.roundToInt())
             FullScreenImage(
                 modifier = Modifier
                     .align(Alignment.Center)
-                    .offset {
-                        IntOffset(offsetX.roundToInt(), offsetY.roundToInt())
-                    }
+                    .offset { intOffset }
                     .graphicsLayer(scaleX = zoom, scaleY = zoom)
+                    .onGloballyPositioned { size = it.size }
                     .fillMaxSize(),
                 marsImage = marsImage)
 
             Column {
+                val enabled = !pagerState.isScrollInProgress && offsetX >= 0f
+                val intSize = size * zoom.roundToInt()
+                Log.d(
+                    "Sirelon",
+                    "PositionX = $offsetX and $intSize continas = " + "${
+                        intSize.toIntRect().contains(intOffset)
+                    }"
+                )
                 Spacer(modifier = Modifier.weight(1f))
                 MultitouchDetector(
                     modifier = Modifier
                         .weight(2f)
-//                            .background(Color.Red)
+                        .background(Color.Red.copy(alpha = 0.5F)),
+                    enabled = enabled
+
                 ) { z, x, y ->
                     zoom = z
                     offsetX = x
