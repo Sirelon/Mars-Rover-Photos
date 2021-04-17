@@ -2,6 +2,7 @@ package com.sirelon.marsroverphotos.feature.images
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -31,6 +32,8 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.sirelon.marsroverphotos.feature.MultitouchDetector
 import com.sirelon.marsroverphotos.storage.MarsImage
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 /**
@@ -119,9 +122,10 @@ fun ImagesPager(viewModel: ImageViewModel = androidx.lifecycle.viewmodel.compose
                     if (x > 0) {
                         if (position.x < 0)
                             offsetX += x
-
                     } else if (offX > parentSize.width) {
                         offsetX += x
+                    } else {
+                        GlobalScope.launch { pagerState.scrollBy(x) }
                     }
                     offsetY += y
                 }
