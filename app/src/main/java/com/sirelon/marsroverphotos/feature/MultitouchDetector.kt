@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChangeConsumed
@@ -32,7 +33,6 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastForEach
-import com.sirelon.marsroverphotos.feature.images.FullScreenImage
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -122,124 +122,25 @@ fun MultitouchDetector(
             .fillMaxSize()
 //            .background(Color.Green)
             .pointerInput(Unit) {
-                forEachGesture {
-                    awaitPointerEventScope {
-                        var rotation = 0f
-                        var zoom = 1f
-                        var pan = Offset.Zero
-                        var pastTouchSlop = false
-                        val touchSlop = viewConfiguration.touchSlop
-                        var lockedToPanZoom = false
-
-                        awaitFirstDown(requireUnconsumed = false)
-                        do {
-                            val event = awaitPointerEvent()
-                            val canceled = event.changes.fastAny { it.positionChangeConsumed() }
-                            if (!canceled) {
-                                val zoomChange = event.calculateZoom()
-                                val rotationChange = event.calculateRotation()
-                                val panChange = event.calculatePan()
-
-                                if (!pastTouchSlop) {
-                                    zoom *= zoomChange
-                                    rotation += rotationChange
-                                    pan += panChange
-
-                                    val centroidSize =
-                                        event.calculateCentroidSize(useCurrent = false)
-                                    val zoomMotion = abs(1 - zoom) * centroidSize
-                                    val rotationMotion =
-                                        abs(rotation * PI.toFloat() * centroidSize / 180f)
-                                    val panMotion = pan.getDistance()
-
-                                    if (zoomMotion > touchSlop ||
-                                        rotationMotion > touchSlop ||
-                                        panMotion > touchSlop
-                                    ) {
-                                        pastTouchSlop = true
-                                        lockedToPanZoom = false && rotationMotion < touchSlop
-                                    }
-                                }
-
-                                if (pastTouchSlop) {
-                                    val centroid = event.calculateCentroid(useCurrent = false)
-                                    val effectiveRotation =
-                                        if (lockedToPanZoom) 0f else rotationChange
-                                    if (effectiveRotation != 0f ||
-                                        zoomChange != 1f ||
-                                        panChange != Offset.Zero
-                                    ) {
-//                                            onGesture(centroid, panChange, zoomChange, effectiveRotation, callback)
-
-                                        val anchorX = centroid.x - size.width / 2f
-                                        val anchorY = centroid.y - size.height / 2f
-                                        val matrix = Matrix()
-                                        matrix.postRotate(effectiveRotation, anchorX, anchorY)
-                                        matrix.postScale(
-                                            zoomChange,
-                                            zoomChange,
-                                            anchorX,
-                                            anchorY
-                                        )
-                                        matrix.postTranslate(pan.x, pan.y)
-
-                                        val v = FloatArray(9)
-                                        matrix.getValues(v)
-                                        val scaleX = v[Matrix.MSCALE_X]
-                                        val skewY = v[Matrix.MSKEW_Y]
-//                                            val offsetX = v[Matrix.MTRANS_X]
-//                                            val offsetY = v[Matrix.MTRANS_Y]
-                                        val offsetXVal = panChange.x
-                                        val offsetYVal = panChange.y
-                                        val zoomVal = sqrt(scaleX * scaleX + skewY * skewY)
-//                                            callback(zoom, offsetX, offsetY)
-
-                                        var shouldBlock = true
-                                        val offX = position.x + (size.width * zoomVal)
-                                        if (offsetXVal > 0) {
-                                            if (position.x < 0) {
-                                                offsetX += offsetXVal
-                                            } else {
-                                                shouldBlock = false
-                                            }
-                                        } else if (offX > parentSize.width) {
-                                            offsetX += offsetXVal
-                                        } else {
-                                            shouldBlock = false
-                                        }
-
-                                        zoomToChange *= zoomVal
-                                        offsetX += offsetXVal
-                                        offsetY += offsetYVal
-
-                                        if (shouldBlock) {
-                                            event.changes.fastForEach {
-                                                if (it.positionChanged()) {
-                                                    it.consumeAllChanges()
-                                                }
-                                            }
-                                        }
-
-
-//                                            if (offsetX.absoluteValue < 7f) {
-//                                                Log.i("Sirelon1", "OFFSET ! $offsetX")
-//                                                event.changes.fastForEach {
-//                                                    if (it.positionChanged()) {
-//                                                        it.consumeAllChanges()
-//                                                    }
-//                                                }
-//                                            }
-                                    } else {
-                                        event.changes.fastForEach {
-                                            if (it.positionChanged()) {
-                                                it.consumeAllChanges()
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        } while (!canceled && event.changes.fastAny { it.pressed })
+                gestureDetectorAnalyser { zoomVal: Float, offsetXVal: Float, offsetYVal: Float ->
+                    var shouldBlock = true
+                    val offX = position.x + (size.width * zoomVal)
+                    if (offsetXVal > 0) {
+                        if (position.x < 0) {
+                            offsetX += offsetXVal
+                        } else {
+                            shouldBlock = false
+                        }
+                    } else if (offX > parentSize.width) {
+                        offsetX += offsetXVal
+                    } else {
+                        shouldBlock = false
                     }
+
+                    zoomToChange *= zoomVal
+                    offsetX += offsetXVal
+                    offsetY += offsetYVal
+                    shouldBlock
                 }
             }
     ) {
@@ -259,5 +160,100 @@ fun MultitouchDetector(
             content()
         }
     }
+}
 
+
+suspend fun PointerInputScope.gestureDetectorAnalyser(analyse: (zoomVal: Float, offsetXVal: Float, offsetYVal: Float) -> Boolean) {
+    forEachGesture {
+        awaitPointerEventScope {
+            var rotation = 0f
+            var zoom = 1f
+            var pan = Offset.Zero
+            var pastTouchSlop = false
+            val touchSlop = viewConfiguration.touchSlop
+            var lockedToPanZoom = false
+
+            awaitFirstDown(requireUnconsumed = false)
+            do {
+                val event = awaitPointerEvent()
+                val canceled = event.changes.fastAny { it.positionChangeConsumed() }
+                if (!canceled) {
+                    val zoomChange = event.calculateZoom()
+                    val rotationChange = event.calculateRotation()
+                    val panChange = event.calculatePan()
+
+                    if (!pastTouchSlop) {
+                        zoom *= zoomChange
+                        rotation += rotationChange
+                        pan += panChange
+
+                        val centroidSize =
+                            event.calculateCentroidSize(useCurrent = false)
+                        val zoomMotion = abs(1 - zoom) * centroidSize
+                        val rotationMotion =
+                            abs(rotation * PI.toFloat() * centroidSize / 180f)
+                        val panMotion = pan.getDistance()
+
+                        if (zoomMotion > touchSlop ||
+                            rotationMotion > touchSlop ||
+                            panMotion > touchSlop
+                        ) {
+                            pastTouchSlop = true
+                            lockedToPanZoom = false && rotationMotion < touchSlop
+                        }
+                    }
+
+                    if (pastTouchSlop) {
+                        val centroid = event.calculateCentroid(useCurrent = false)
+                        val effectiveRotation =
+                            if (lockedToPanZoom) 0f else rotationChange
+                        if (effectiveRotation != 0f ||
+                            zoomChange != 1f ||
+                            panChange != Offset.Zero
+                        ) {
+//                                            onGesture(centroid, panChange, zoomChange, effectiveRotation, callback)
+
+                            val anchorX = centroid.x - size.width / 2f
+                            val anchorY = centroid.y - size.height / 2f
+                            val matrix = Matrix()
+                            matrix.postRotate(effectiveRotation, anchorX, anchorY)
+                            matrix.postScale(
+                                zoomChange,
+                                zoomChange,
+                                anchorX,
+                                anchorY
+                            )
+                            matrix.postTranslate(pan.x, pan.y)
+
+                            val v = FloatArray(9)
+                            matrix.getValues(v)
+                            val scaleX = v[Matrix.MSCALE_X]
+                            val skewY = v[Matrix.MSKEW_Y]
+//                                            val offsetX = v[Matrix.MTRANS_X]
+//                                            val offsetY = v[Matrix.MTRANS_Y]
+                            val offsetXVal = panChange.x
+                            val offsetYVal = panChange.y
+                            val zoomVal = sqrt(scaleX * scaleX + skewY * skewY)
+//                                            callback(zoom, offsetX, offsetY)
+                            val shouldBlock = analyse(zoomVal, offsetXVal, offsetYVal)
+
+                            if (shouldBlock) {
+                                event.changes.fastForEach {
+                                    if (it.positionChanged()) {
+                                        it.consumeAllChanges()
+                                    }
+                                }
+                            }
+                        } else {
+                            event.changes.fastForEach {
+                                if (it.positionChanged()) {
+                                    it.consumeAllChanges()
+                                }
+                            }
+                        }
+                    }
+                }
+            } while (!canceled && event.changes.fastAny { it.pressed })
+        }
+    }
 }
