@@ -2,13 +2,13 @@ package com.sirelon.marsroverphotos.feature
 
 import android.graphics.Matrix
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.calculateCentroid
 import androidx.compose.foundation.gestures.calculateCentroidSize
 import androidx.compose.foundation.gestures.calculatePan
 import androidx.compose.foundation.gestures.calculateRotation
 import androidx.compose.foundation.gestures.calculateZoom
-import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,9 +20,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.input.pointer.consumeAllChanges
@@ -43,67 +43,6 @@ import kotlin.math.sqrt
 /**
  * Created on 15.04.2021 21:48 for Mars-Rover-Photos.
  */
-@Composable
-fun MultitouchDetectorNorm(
-    modifier: Modifier,
-    enabled: Boolean,
-    callback: (zoom: Float, offsetX: Float, offsetY: Float) -> Unit
-) {
-//    val matrix by remember { mutableStateOf(Matrix()) }
-//    var angle by remember { mutableStateOf(0f) }
-//    var zoom by remember { mutableStateOf(1f) }
-//    var offsetX by remember { mutableStateOf(0f) }
-//    var offsetY by remember { mutableStateOf(0f) }
-
-    val scale = remember { mutableStateOf(1f) }
-    val translate = remember { mutableStateOf(Offset(0f, 0f)) }
-
-    Box(
-        modifier
-            .fillMaxSize()
-//            .background(Color.Green)
-            .pointerInput(Unit) {
-                if (enabled) {
-                    detectTransformGestures { centroid, pan, gestureZoom, gestureAngle ->
-                        Log.i("Sirelon1", "$pan")
-                        val anchorX = centroid.x - size.width / 2f
-                        val anchorY = centroid.y - size.height / 2f
-                        val matrix = Matrix()
-                        matrix.postRotate(gestureAngle, anchorX, anchorY)
-                        matrix.postScale(gestureZoom, gestureZoom, anchorX, anchorY)
-                        matrix.postTranslate(pan.x, pan.y)
-
-                        val v = FloatArray(9)
-                        matrix.getValues(v)
-                        val scaleX = v[Matrix.MSCALE_X]
-                        val skewY = v[Matrix.MSKEW_Y]
-                        val offsetX = v[Matrix.MTRANS_X]
-                        val offsetY = v[Matrix.MTRANS_Y]
-                        val zoom = sqrt(scaleX * scaleX + skewY * skewY)
-                        callback(zoom, offsetX, offsetY)
-//                    offsetX = v[Matrix.MTRANS_X]
-//                    offsetY = v[Matrix.MTRANS_Y]
-//                    zoom = sqrt(scaleX * scaleX + skewY * skewY)
-//                angle = atan2(v[Matrix.MSKEW_X], v[Matrix.MSCALE_X]) * (-180 / Math.PI.toFloat())
-                    }
-                }
-            }
-    ) {
-//        Box(
-//            Modifier
-//                .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
-//                .graphicsLayer(
-//                    scaleX = zoom,
-//                    scaleY = zoom,
-////                    rotationZ = angle
-//                )
-//                .fillMaxSize()
-//        ) {
-//            content()
-//        }
-    }
-
-}
 
 @Composable
 fun MultitouchDetector(
@@ -123,7 +62,7 @@ fun MultitouchDetector(
     Box(
         modifier
             .fillMaxSize()
-//            .background(Color.Green)
+            .background(Color.Green)
             .pointerInput(Unit) {
 
                 gestureDetectorAnalyser { zoomVal: Float, offsetXVal: Float, offsetYVal: Float ->
@@ -137,14 +76,40 @@ fun MultitouchDetector(
                         offsetY = 0f
                         offsetX = 0f
                     } else if (zoom > 1f) {
+//                        offsetY += offsetYVal
+                    }
+
+
+                    val yLimitBottom = offsetY + (childSize.height * zoom) - parentSize.height * 1.5
+
+                    if (offsetYVal < 0) {
+                        if (position.y + yLimitBottom > 0) {
+                            offsetY += offsetYVal
+                        }
+                    } else {
                         offsetY += offsetYVal
                     }
-                    val offX = position.x + (childSize.width * zoomToChange)
-                    val offY = (childSize.height * zoomToChange)
 
-                    Log.i(
-                        "Sirelon2", "${offY} vs ${parentSize.height} "
-                    )
+
+                    Log.d("Sirelon3", "offsetYVal = $yLimitBottom and offsetY = ${position.y}")
+
+//                    if (offsetYVal < 0) {
+//                        if (offsetY > 0)
+//                            offsetY += offsetYVal
+//                    } else {
+//                        offsetY += offsetYVal
+//                    }
+
+                    val offX = position.x + (childSize.width * zoomToChange)
+                    val offY = position.y + (childSize.height * zoomToChange)
+
+//                    Log.i(
+//                        "Sirelon2", "${offY} vs ${parentSize.height} "
+//                    )
+
+//                    Log.i(
+//                        "Sirelon2", "${offY} vs ${position.y}} "
+//                    )
 
                     if (offsetXVal > 0) {
                         if (position.x < 0) {
@@ -167,7 +132,7 @@ fun MultitouchDetector(
         val intOffset = IntOffset(offsetX.roundToInt(), offsetY.roundToInt())
         Box(
             Modifier
-                .align(Alignment.Center)
+//                .align(Alignment.Center)
                 .offset { intOffset }
                 .graphicsLayer(scaleX = zoomToChange, scaleY = zoomToChange)
                 .onGloballyPositioned {
