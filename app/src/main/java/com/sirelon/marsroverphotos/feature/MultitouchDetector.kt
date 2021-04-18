@@ -128,13 +128,23 @@ fun MultitouchDetector(
 
                 gestureDetectorAnalyser { zoomVal: Float, offsetXVal: Float, offsetYVal: Float ->
                     var shouldBlock = true
-                    val offX = position.x + (size.width * zoomToChange)
+
+                    val zoom = zoomToChange * zoomVal
+                    zoomToChange = zoom.coerceIn(state.minZoom, state.maxZoom)
+                    state.zoom = zoomToChange
+
+                    if (zoom == 1f) {
+                        offsetY = 0f
+                        offsetX = 0f
+                    } else if (zoom > 1f) {
+                        offsetY += offsetYVal
+                    }
+                    val offX = position.x + (childSize.width * zoomToChange)
+                    val offY = (childSize.height * zoomToChange)
 
                     Log.i(
-                        "Sirelon2",
-                        "offx $offX and position.x = ${position.x} and parentSize ${parentSize.width}"
+                        "Sirelon2", "${offY} vs ${parentSize.height} "
                     )
-                    Log.d("Sirelon2", "offsetXVal $offsetXVal")
 
                     if (offsetXVal > 0) {
                         if (position.x < 0) {
@@ -148,14 +158,9 @@ fun MultitouchDetector(
                         shouldBlock = false
                     }
 
-                    val zoom = zoomToChange * zoomVal
-                    zoomToChange = zoom.coerceIn(state.minZoom, state.maxZoom)
-                    state.zoom = zoomToChange
 
-//                    offsetX += offsetXVal
-                        offsetY += offsetYVal
-                        shouldBlock
-                    }
+                    shouldBlock
+                }
 //                }
             }
     ) {
