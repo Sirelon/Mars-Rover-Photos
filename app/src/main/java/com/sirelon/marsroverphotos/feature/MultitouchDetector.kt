@@ -2,8 +2,6 @@ package com.sirelon.marsroverphotos.feature
 
 import android.graphics.Matrix
 import android.util.Log
-import androidx.annotation.FloatRange
-import androidx.annotation.IntRange
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.calculateCentroid
 import androidx.compose.foundation.gestures.calculateCentroidSize
@@ -21,7 +19,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.listSaver
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,7 +35,6 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastForEach
-import com.google.accompanist.pager.PagerState
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -130,32 +126,31 @@ fun MultitouchDetector(
 //            .background(Color.Green)
             .pointerInput(Unit) {
 
-//                if (state.enabled) {
-                    gestureDetectorAnalyser { zoomVal: Float, offsetXVal: Float, offsetYVal: Float ->
-                        var shouldBlock = true
-                        val offX = position.x + (size.width * zoomToChange)
+                gestureDetectorAnalyser { zoomVal: Float, offsetXVal: Float, offsetYVal: Float ->
+                    var shouldBlock = true
+                    val offX = position.x + (size.width * zoomToChange)
 
-                        Log.i(
-                            "Sirelon2",
-                            "offx $offX and position.x = ${position.x} and parentSize ${parentSize.width}"
-                        )
-                        Log.d("Sirelon2", "offsetXVal $offsetXVal")
+                    Log.i(
+                        "Sirelon2",
+                        "offx $offX and position.x = ${position.x} and parentSize ${parentSize.width}"
+                    )
+                    Log.d("Sirelon2", "offsetXVal $offsetXVal")
 
-                        if (offsetXVal > 0) {
-                            if (position.x < 0) {
-                                offsetX += offsetXVal
-                            } else {
-                                shouldBlock = false
-                            }
-                        } else if (offX > parentSize.width) {
+                    if (offsetXVal > 0) {
+                        if (position.x < 0) {
                             offsetX += offsetXVal
                         } else {
                             shouldBlock = false
                         }
+                    } else if (offX > parentSize.width) {
+                        offsetX += offsetXVal
+                    } else {
+                        shouldBlock = false
+                    }
 
-                        val zoom = zoomToChange * zoomVal
-                        zoomToChange = zoom.coerceIn(state.minZoom, state.maxZoom)
-                        state.zoom = zoomToChange
+                    val zoom = zoomToChange * zoomVal
+                    zoomToChange = zoom.coerceIn(state.minZoom, state.maxZoom)
+                    state.zoom = zoomToChange
 
 //                    offsetX += offsetXVal
                         offsetY += offsetYVal
@@ -201,7 +196,7 @@ class MultitouchState(
                     zoom = it[2] as Float,
                     enabled = it[3] as Boolean,
 
-                )
+                    )
             }
         )
     }
