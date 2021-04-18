@@ -35,6 +35,7 @@ import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastForEach
 import kotlin.math.PI
 import kotlin.math.abs
+import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
@@ -124,7 +125,11 @@ fun MultitouchDetector(
             .pointerInput(Unit) {
                 gestureDetectorAnalyser { zoomVal: Float, offsetXVal: Float, offsetYVal: Float ->
                     var shouldBlock = true
-                    val offX = position.x + (size.width * zoomVal)
+                    val offX = position.x + (size.width * zoomToChange)
+
+                    Log.i("Sirelon2", "offx $offX and position.x = ${position.x} and parentSize ${parentSize.width}")
+                    Log.d("Sirelon2", "offsetXVal $offsetXVal")
+
                     if (offsetXVal > 0) {
                         if (position.x < 0) {
                             offsetX += offsetXVal
@@ -138,7 +143,7 @@ fun MultitouchDetector(
                     }
 
                     zoomToChange *= zoomVal
-                    offsetX += offsetXVal
+//                    offsetX += offsetXVal
                     offsetY += offsetYVal
                     shouldBlock
                 }
