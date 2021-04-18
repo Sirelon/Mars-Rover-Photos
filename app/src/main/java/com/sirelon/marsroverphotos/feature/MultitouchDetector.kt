@@ -2,6 +2,8 @@ package com.sirelon.marsroverphotos.feature
 
 import android.graphics.Matrix
 import android.util.Log
+import androidx.annotation.FloatRange
+import androidx.annotation.IntRange
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.calculateCentroid
 import androidx.compose.foundation.gestures.calculateCentroidSize
@@ -17,6 +19,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,9 +38,9 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastForEach
+import com.google.accompanist.pager.PagerState
 import kotlin.math.PI
 import kotlin.math.abs
-import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
@@ -107,11 +112,12 @@ fun MultitouchDetectorNorm(
 @Composable
 fun MultitouchDetector(
     modifier: Modifier,
+    state: MultitouchState,
+    e: Boolean,
     content: @Composable () -> Unit
 ) {
-//    val matrix by remember { mutableStateOf(Matrix()) }
+    var zoomToChange by remember { mutableStateOf(state.zoom) }
 
-    var zoomToChange by remember { mutableStateOf(1f) }
     var offsetX by remember { mutableStateOf(0f) }
     var offsetY by remember { mutableStateOf(0f) }
     var childSize by remember { mutableStateOf(IntSize(0, 0)) }
@@ -123,30 +129,39 @@ fun MultitouchDetector(
             .fillMaxSize()
 //            .background(Color.Green)
             .pointerInput(Unit) {
-                gestureDetectorAnalyser { zoomVal: Float, offsetXVal: Float, offsetYVal: Float ->
-                    var shouldBlock = true
-                    val offX = position.x + (size.width * zoomToChange)
 
-                    Log.i("Sirelon2", "offx $offX and position.x = ${position.x} and parentSize ${parentSize.width}")
-                    Log.d("Sirelon2", "offsetXVal $offsetXVal")
+//                if (state.enabled) {
+                    gestureDetectorAnalyser { zoomVal: Float, offsetXVal: Float, offsetYVal: Float ->
+                        var shouldBlock = true
+                        val offX = position.x + (size.width * zoomToChange)
 
-                    if (offsetXVal > 0) {
-                        if (position.x < 0) {
+                        Log.i(
+                            "Sirelon2",
+                            "offx $offX and position.x = ${position.x} and parentSize ${parentSize.width}"
+                        )
+                        Log.d("Sirelon2", "offsetXVal $offsetXVal")
+
+                        if (offsetXVal > 0) {
+                            if (position.x < 0) {
+                                offsetX += offsetXVal
+                            } else {
+                                shouldBlock = false
+                            }
+                        } else if (offX > parentSize.width) {
                             offsetX += offsetXVal
                         } else {
                             shouldBlock = false
                         }
-                    } else if (offX > parentSize.width) {
-                        offsetX += offsetXVal
-                    } else {
-                        shouldBlock = false
-                    }
 
-                    zoomToChange *= zoomVal
+                        val zoom = zoomToChange * zoomVal
+                        zoomToChange = zoom.coerceIn(state.minZoom, state.maxZoom)
+                        state.zoom = zoomToChange
+
 //                    offsetX += offsetXVal
-                    offsetY += offsetYVal
-                    shouldBlock
-                }
+                        offsetY += offsetYVal
+                        shouldBlock
+                    }
+//                }
             }
     ) {
         val intOffset = IntOffset(offsetX.roundToInt(), offsetY.roundToInt())
@@ -167,6 +182,30 @@ fun MultitouchDetector(
     }
 }
 
+class MultitouchState(
+    val maxZoom: Float,
+    val minZoom: Float,
+    var zoom: Float = 1f,
+    val enabled: Boolean = true
+) {
+    companion object {
+        /**
+         * The default [Saver] implementation for [MultitouchState].
+         */
+        val Saver: Saver<MultitouchState, *> = listSaver(
+            save = { listOf<Any>(it.maxZoom, it.minZoom, it.zoom, it.enabled) },
+            restore = {
+                MultitouchState(
+                    maxZoom = it[0] as Float,
+                    minZoom = it[1] as Float,
+                    zoom = it[2] as Float,
+                    enabled = it[3] as Boolean,
+
+                )
+            }
+        )
+    }
+}
 
 suspend fun PointerInputScope.gestureDetectorAnalyser(analyse: (zoomVal: Float, offsetXVal: Float, offsetYVal: Float) -> Boolean) {
     forEachGesture {

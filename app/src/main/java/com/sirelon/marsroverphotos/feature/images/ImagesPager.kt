@@ -7,6 +7,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.google.accompanist.coil.CoilImage
@@ -16,6 +17,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.sirelon.marsroverphotos.feature.MultitouchDetector
+import com.sirelon.marsroverphotos.feature.MultitouchState
 
 /**
  * Created on 13.04.2021 22:52 for Mars-Rover-Photos.
@@ -59,7 +61,15 @@ fun ImagesPager(viewModel: ImageViewModel = androidx.lifecycle.viewmodel.compose
 //                offsetY = 0f
 //            }
 
-            MultitouchDetector(modifier = Modifier) {
+            val state = rememberSaveable(saver = MultitouchState.Saver) {
+                MultitouchState(
+                    maxZoom = 5f,
+                    minZoom = 1f,
+                    zoom = 1f,
+                    enabled = !pagerState.isScrollInProgress
+                )
+            }
+            MultitouchDetector(modifier = Modifier, state = state, e = !pagerState.isScrollInProgress) {
                 FullScreenImage(
                     modifier = Modifier.fillMaxSize(),
                     imageUrl = marsImage.imageUrl
@@ -69,20 +79,6 @@ fun ImagesPager(viewModel: ImageViewModel = androidx.lifecycle.viewmodel.compose
     }
 }
 
-
-//zoom *= z
-//val offX = position.x + (size.width * zoom)
-//if (x > 0) {
-//    if (position.x < 0)
-//        offsetX += x
-//} else if (offX > parentSize.width) {
-//    offsetX += x
-//} else {
-////                        scope.launch {
-////
-////                            pagerState.scrollBy(x)
-////                        }
-//}
 @Composable
 fun FullScreenImage(modifier: Modifier, imageUrl: String) {
     CoilImage(
@@ -107,5 +103,3 @@ fun FullScreenImage(modifier: Modifier, imageUrl: String) {
         }
     }
 }
-
-//offsetY += y
