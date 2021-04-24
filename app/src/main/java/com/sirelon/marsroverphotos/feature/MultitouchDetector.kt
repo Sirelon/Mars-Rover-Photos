@@ -37,6 +37,7 @@ import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastForEach
 import kotlin.math.PI
 import kotlin.math.abs
+import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
@@ -81,17 +82,25 @@ fun MultitouchDetector(
 
 
                     val yLimitBottom = offsetY + (childSize.height * zoom) - parentSize.height * 1.5
-
+//                    val yLimitTop = parentSize.height / 1.5
+                    val yLimitTop = offsetY - parentSize.height * 1.5
+                    val fl = childSize.height * zoom
                     if (offsetYVal < 0) {
                         if (position.y + yLimitBottom > 0) {
                             offsetY += offsetYVal
                         }
                     } else {
-                        offsetY += offsetYVal
+
+//                        if (offsetY > 0) {
+                            offsetY += offsetYVal
+//                        }
+//                        if (fl < yLimitTop) {
+//                            offsetY += offsetYVal
+//                        }
                     }
 
 
-                    Log.d("Sirelon3", "offsetYVal = $yLimitBottom and offsetY = ${position.y}")
+                    Log.d("Sirelon3", "position.y = ${position.y} and offsetY $offsetY and fl = $fl")
 
 //                    if (offsetYVal < 0) {
 //                        if (offsetY > 0)
