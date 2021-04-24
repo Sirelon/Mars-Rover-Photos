@@ -1,7 +1,6 @@
 package com.sirelon.marsroverphotos.feature
 
 import android.graphics.Matrix
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.calculateCentroid
@@ -37,7 +36,6 @@ import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastForEach
 import kotlin.math.PI
 import kotlin.math.abs
-import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
@@ -65,71 +63,56 @@ fun MultitouchDetector(
             .fillMaxSize()
             .background(Color.Green)
             .pointerInput(Unit) {
-
                 gestureDetectorAnalyser { zoomVal: Float, offsetXVal: Float, offsetYVal: Float ->
                     var shouldBlock = true
 
                     val zoom = zoomToChange * zoomVal
                     zoomToChange = zoom.coerceIn(state.minZoom, state.maxZoom)
-                    state.zoom = zoomToChange
-
-                    if (zoom == 1f) {
-                        offsetY = 0f
-                        offsetX = 0f
-                    } else if (zoom > 1f) {
-//                        offsetY += offsetYVal
-                    }
-
 
                     val yLimitBottom = offsetY + (childSize.height * zoom) - parentSize.height * 1.5
-//                    val yLimitTop = parentSize.height / 1.5
-                    val yLimitTop = offsetY - parentSize.height * 1.5
-                    val fl = childSize.height * zoom
                     if (offsetYVal < 0) {
                         if (position.y + yLimitBottom > 0) {
                             offsetY += offsetYVal
+                        } else {
+                            // This is need to position view after zoom it to the right place
+                            if (state.zoom != zoomToChange) {
+                                offsetY = 0f
+                            }
                         }
                     } else {
-
-//                        if (offsetY > 0) {
+                        if (offsetY + position.y < 0) {
                             offsetY += offsetYVal
-//                        }
-//                        if (fl < yLimitTop) {
-//                            offsetY += offsetYVal
-//                        }
+                        } else {
+                            // This is need to position view after zoom it to the right place
+                            if (state.zoom != zoomToChange) {
+                                offsetY = 0f
+                            }
+                        }
                     }
 
-
-                    Log.d("Sirelon3", "position.y = ${position.y} and offsetY $offsetY and fl = $fl")
-
-//                    if (offsetYVal < 0) {
-//                        if (offsetY > 0)
-//                            offsetY += offsetYVal
-//                    } else {
-//                        offsetY += offsetYVal
-//                    }
-
                     val offX = position.x + (childSize.width * zoomToChange)
-                    val offY = position.y + (childSize.height * zoomToChange)
-
-//                    Log.i(
-//                        "Sirelon2", "${offY} vs ${parentSize.height} "
-//                    )
-
-//                    Log.i(
-//                        "Sirelon2", "${offY} vs ${position.y}} "
-//                    )
 
                     if (offsetXVal > 0) {
                         if (position.x < 0) {
                             offsetX += offsetXVal
                         } else {
+                            // This is need to position view after zoom it to the right place
+                            if (state.zoom != zoomToChange) {
+                                offsetX = 0f
+                            }
                             shouldBlock = false
                         }
                     } else if (offX > parentSize.width) {
                         offsetX += offsetXVal
                     } else {
                         shouldBlock = false
+                    }
+
+                    state.zoom = zoomToChange
+
+                    if (zoom == 1f) {
+                        offsetY = 0f
+                        offsetX = 0f
                     }
 
 
