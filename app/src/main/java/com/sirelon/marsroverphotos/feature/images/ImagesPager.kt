@@ -69,7 +69,7 @@ fun ImagesPager(viewModel: ImageViewModel = androidx.lifecycle.viewmodel.compose
                     enabled = !pagerState.isScrollInProgress
                 )
             }
-            MultitouchDetector(modifier = Modifier, state = state, e = !pagerState.isScrollInProgress) {
+            MultitouchDetector(modifier = Modifier, state = state) {
                 FullScreenImage(
                     modifier = Modifier.fillMaxSize(),
                     imageUrl = marsImage.imageUrl

@@ -1,7 +1,6 @@
 package com.sirelon.marsroverphotos.feature
 
 import android.graphics.Matrix
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.calculateCentroid
 import androidx.compose.foundation.gestures.calculateCentroidSize
@@ -21,7 +20,6 @@ import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.input.pointer.consumeAllChanges
@@ -47,7 +45,6 @@ import kotlin.math.sqrt
 fun MultitouchDetector(
     modifier: Modifier,
     state: MultitouchState,
-    e: Boolean,
     content: @Composable () -> Unit
 ) {
     var zoomToChange by remember { mutableStateOf(state.zoom) }
@@ -61,7 +58,7 @@ fun MultitouchDetector(
     Box(
         modifier
             .fillMaxSize()
-            .background(Color.Green)
+//            .background(Color.Green)
             .pointerInput(Unit) {
                 gestureDetectorAnalyser { zoomVal: Float, offsetXVal: Float, offsetYVal: Float ->
                     var shouldBlock = true
@@ -115,10 +112,8 @@ fun MultitouchDetector(
                         offsetX = 0f
                     }
 
-
                     shouldBlock
                 }
-//                }
             }
     ) {
         val intOffset = IntOffset(offsetX.roundToInt(), offsetY.roundToInt())
@@ -157,8 +152,7 @@ class MultitouchState(
                     minZoom = it[1] as Float,
                     zoom = it[2] as Float,
                     enabled = it[3] as Boolean,
-
-                    )
+                )
             }
         )
     }
@@ -212,8 +206,6 @@ suspend fun PointerInputScope.gestureDetectorAnalyser(analyse: (zoomVal: Float, 
                             zoomChange != 1f ||
                             panChange != Offset.Zero
                         ) {
-//                                            onGesture(centroid, panChange, zoomChange, effectiveRotation, callback)
-
                             val anchorX = centroid.x - size.width / 2f
                             val anchorY = centroid.y - size.height / 2f
                             val matrix = Matrix()
@@ -235,7 +227,6 @@ suspend fun PointerInputScope.gestureDetectorAnalyser(analyse: (zoomVal: Float, 
                             val offsetXVal = panChange.x
                             val offsetYVal = panChange.y
                             val zoomVal = sqrt(scaleX * scaleX + skewY * skewY)
-//                                            callback(zoom, offsetX, offsetY)
                             val shouldBlock = analyse(zoomVal, offsetXVal, offsetYVal)
 
                             if (shouldBlock) {

@@ -89,7 +89,7 @@ dependencies {
     implementation "androidx.compose.foundation:foundation:$composeVer"
     // Material Design
     implementation "androidx.compose.material:material:$composeVer"
-    def accompanistVer = "0.7.1"
+    def accompanistVer = '0.8.1'
     implementation "com.google.accompanist:accompanist-pager:$accompanistVer"
     implementation "com.google.accompanist:accompanist-coil:$accompanistVer"
 
