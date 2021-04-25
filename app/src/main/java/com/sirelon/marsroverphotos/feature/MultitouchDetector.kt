@@ -1,20 +1,24 @@
 package com.sirelon.marsroverphotos.feature
 
 import android.graphics.Matrix
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.calculateCentroid
 import androidx.compose.foundation.gestures.calculateCentroidSize
 import androidx.compose.foundation.gestures.calculatePan
 import androidx.compose.foundation.gestures.calculateRotation
 import androidx.compose.foundation.gestures.calculateZoom
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.setValue
@@ -32,6 +36,9 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastForEach
+import androidx.core.util.toClosedRange
+import androidx.core.util.toRange
+import kotlinx.coroutines.launch
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -54,12 +61,19 @@ fun MultitouchDetector(
     var childSize by remember { mutableStateOf(IntSize(0, 0)) }
     var position by remember { mutableStateOf(Offset.Zero) }
     var parentSize by remember { mutableStateOf(IntSize(0, 0)) }
-
+    val scope = rememberCoroutineScope()
     Box(
         modifier
             .fillMaxSize()
 //            .background(Color.Green)
             .pointerInput(Unit) {
+                scope.launch {
+                    detectTapGestures(onDoubleTap = {
+                        val toChange = if (zoomToChange != 1f)  1f else state.maxZoom
+                        zoomToChange = toChange
+                    })
+                }
+
                 gestureDetectorAnalyser { zoomVal: Float, offsetXVal: Float, offsetYVal: Float ->
                     var shouldBlock = true
 
