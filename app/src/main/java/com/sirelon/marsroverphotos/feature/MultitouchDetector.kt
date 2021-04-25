@@ -1,6 +1,7 @@
 package com.sirelon.marsroverphotos.feature
 
 import android.graphics.Matrix
+import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.calculateCentroid
@@ -69,7 +70,7 @@ fun MultitouchDetector(
             .pointerInput(Unit) {
                 scope.launch {
                     detectTapGestures(onDoubleTap = {
-                        val toChange = if (zoomToChange != 1f)  1f else state.maxZoom
+                        val toChange = if (zoomToChange != 1f) 1f else state.maxZoom
                         zoomToChange = toChange
                     })
                 }
@@ -79,6 +80,8 @@ fun MultitouchDetector(
 
                     val zoom = zoomToChange * zoomVal
                     zoomToChange = zoom.coerceIn(state.minZoom, state.maxZoom)
+
+                    if (zoomToChange == 1f) return@gestureDetectorAnalyser false
 
                     val yLimitBottom = offsetY + (childSize.height * zoom) - parentSize.height * 1.5
                     if (offsetYVal < 0) {
