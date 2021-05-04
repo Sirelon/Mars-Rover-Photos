@@ -2,7 +2,6 @@ package com.sirelon.marsroverphotos.feature
 
 import android.graphics.Matrix
 import android.util.Log
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.calculateCentroid
 import androidx.compose.foundation.gestures.calculateCentroidSize
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,8 +35,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastForEach
-import androidx.core.util.toClosedRange
-import androidx.core.util.toRange
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.PagerState
 import kotlinx.coroutines.launch
 import kotlin.math.PI
 import kotlin.math.abs
@@ -49,11 +47,13 @@ import kotlin.math.sqrt
  * Created on 15.04.2021 21:48 for Mars-Rover-Photos.
  */
 
+@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun MultitouchDetector(
     modifier: Modifier,
     state: MultitouchState,
-    content: @Composable () -> Unit
+    pagerState: PagerState,
+    content: @Composable() () -> Unit,
 ) {
     var zoomToChange by remember { mutableStateOf(state.zoom) }
 
@@ -81,7 +81,11 @@ fun MultitouchDetector(
                     val zoom = zoomToChange * zoomVal
                     zoomToChange = zoom.coerceIn(state.minZoom, state.maxZoom)
 
-                    if (zoomToChange == 1f) return@gestureDetectorAnalyser false
+                    if (zoomToChange == 1f) {
+                        val one = if (offsetXVal < 0) 1 else -1
+                        pagerState.dispatchRawDelta(offsetXVal - 10f * one)
+                        return@gestureDetectorAnalyser false
+                    }
 
                     val yLimitBottom = offsetY + (childSize.height * zoom) - parentSize.height * 1.5
                     if (offsetYVal < 0) {
@@ -128,12 +132,13 @@ fun MultitouchDetector(
                         offsetY = 0f
                         offsetX = 0f
                     }
-
                     shouldBlock
                 }
             }
     ) {
         val intOffset = IntOffset(offsetX.roundToInt(), offsetY.roundToInt())
+
+
         Box(
             Modifier
 //                .align(Alignment.Center)

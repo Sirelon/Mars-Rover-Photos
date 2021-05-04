@@ -3,14 +3,13 @@ package com.sirelon.marsroverphotos.feature.images
 import androidx.compose.animation.core.AnimationState
 import androidx.compose.animation.core.DecayAnimationSpec
 import androidx.compose.animation.core.animateDecay
-import androidx.compose.animation.core.exponentialDecay
 import androidx.compose.animation.defaultDecayAnimationSpec
-import androidx.compose.animation.splineBasedDecay
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.gestures.ScrollScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -19,7 +18,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
 import com.google.accompanist.coil.CoilImage
 import com.google.accompanist.imageloading.ImageLoadState
 import com.google.accompanist.imageloading.MaterialLoadingImage
@@ -38,9 +36,8 @@ import kotlin.math.abs
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ImagesPager(viewModel: ImageViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
-
 //    if (true) {
-//        MultitouchGestureDetector()
+//        PointerTypeInput()
 ////        MultitouchLockGestureDetector()
 //        return
 //    }
@@ -57,15 +54,11 @@ fun ImagesPager(viewModel: ImageViewModel = androidx.lifecycle.viewmodel.compose
 
     val pagerState = rememberPagerState(pageCount = images.size)
 
+    val flingBehavior = PagerDefaults.defaultPagerFlingConfig(pagerState)
+    val scr = rememberScrollState()
+
     HorizontalPager(
-        flingBehavior = PagerDefaults.defaultPagerFlingConfig(
-            pagerState,
-            decayAnimationSpec = exponentialDecay(
-                frictionMultiplier = 0f,
-                absVelocityThreshold = 1f
-            )
-//        decayAnimationSpec = splineBasedDecay(LocalDensity.current)
-        ),
+        flingBehavior = flingBehavior,
         state = pagerState,
         modifier = Modifier
             .fillMaxSize()
@@ -94,7 +87,7 @@ fun ImagesPager(viewModel: ImageViewModel = androidx.lifecycle.viewmodel.compose
 //                modifier = Modifier.fillMaxSize(),
 //                imageUrl = marsImage.imageUrl
 //            )
-            MultitouchDetector(modifier = Modifier, state = state) {
+            MultitouchDetector(modifier = Modifier, state = state, pagerState = pagerState) {
                 FullScreenImage(
                     modifier = Modifier.fillMaxSize(),
                     imageUrl = marsImage.imageUrl
