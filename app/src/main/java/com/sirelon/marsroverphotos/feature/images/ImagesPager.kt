@@ -3,7 +3,9 @@ package com.sirelon.marsroverphotos.feature.images
 import androidx.compose.animation.core.AnimationState
 import androidx.compose.animation.core.DecayAnimationSpec
 import androidx.compose.animation.core.animateDecay
+import androidx.compose.animation.core.exponentialDecay
 import androidx.compose.animation.defaultDecayAnimationSpec
+import androidx.compose.animation.splineBasedDecay
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.gestures.ScrollScope
@@ -17,11 +19,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import com.google.accompanist.coil.CoilImage
 import com.google.accompanist.imageloading.ImageLoadState
 import com.google.accompanist.imageloading.MaterialLoadingImage
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.PagerDefaults
 import com.google.accompanist.pager.rememberPagerState
 import com.sirelon.marsroverphotos.feature.MultitouchDetector
 import com.sirelon.marsroverphotos.feature.MultitouchState
@@ -54,6 +58,14 @@ fun ImagesPager(viewModel: ImageViewModel = androidx.lifecycle.viewmodel.compose
     val pagerState = rememberPagerState(pageCount = images.size)
 
     HorizontalPager(
+        flingBehavior = PagerDefaults.defaultPagerFlingConfig(
+            pagerState,
+            decayAnimationSpec = exponentialDecay(
+                frictionMultiplier = 0f,
+                absVelocityThreshold = 1f
+            )
+//        decayAnimationSpec = splineBasedDecay(LocalDensity.current)
+        ),
         state = pagerState,
         modifier = Modifier
             .fillMaxSize()
