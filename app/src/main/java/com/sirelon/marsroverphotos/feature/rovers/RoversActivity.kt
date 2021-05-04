@@ -81,6 +81,7 @@ import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.feature.favorite.FavoriteItem
 import com.sirelon.marsroverphotos.feature.favorite.FavoriteScreen
 import com.sirelon.marsroverphotos.feature.favorite.PopularScreen
+import com.sirelon.marsroverphotos.feature.images.ImageScreen
 import com.sirelon.marsroverphotos.feature.images.ImagesPager
 import com.sirelon.marsroverphotos.feature.photos.RoverPhotosScreen
 import com.sirelon.marsroverphotos.feature.popular.PopularItem
@@ -270,7 +271,7 @@ class RoversActivity : AppCompatActivity() {
 
             composable(Screen.Rovers.route) {
                 // TODO:
-                ImagesPager()
+                ImageScreen()
 //                val rovers by RoverApplication.APP.dataManger.rovers.observeAsState(emptyList())
 //
 //                RoversContent(

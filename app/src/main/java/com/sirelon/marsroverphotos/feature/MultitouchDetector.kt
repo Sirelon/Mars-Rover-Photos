@@ -1,7 +1,6 @@
 package com.sirelon.marsroverphotos.feature
 
 import android.graphics.Matrix
-import android.util.Log
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.calculateCentroid
 import androidx.compose.foundation.gestures.calculateCentroidSize
@@ -53,7 +52,7 @@ fun MultitouchDetector(
     modifier: Modifier,
     state: MultitouchState,
     pagerState: PagerState,
-    content: @Composable() () -> Unit,
+    content: @Composable () -> Unit,
 ) {
     var zoomToChange by remember { mutableStateOf(state.zoom) }
 
@@ -66,7 +65,6 @@ fun MultitouchDetector(
     Box(
         modifier
             .fillMaxSize()
-//            .background(Color.Green)
             .pointerInput(Unit) {
                 scope.launch {
                     detectTapGestures(onDoubleTap = {
@@ -141,7 +139,6 @@ fun MultitouchDetector(
 
         Box(
             Modifier
-//                .align(Alignment.Center)
                 .offset { intOffset }
                 .graphicsLayer(scaleX = zoomToChange, scaleY = zoomToChange)
                 .onGloballyPositioned {

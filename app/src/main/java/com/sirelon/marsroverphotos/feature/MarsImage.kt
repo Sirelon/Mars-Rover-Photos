@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeightIn
@@ -20,10 +21,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -31,7 +30,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -40,7 +38,6 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.sirelon.marsroverphotos.R
-import com.sirelon.marsroverphotos.feature.favorite.FavoriteImagesViewModel
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.skydoves.landscapist.glide.GlideImage
 
@@ -97,21 +94,31 @@ fun PhotoStats(marsImage: MarsImage, onFavoriteClick: () -> Unit) {
 //        }
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-//            var favorite by remember { mutableStateOf(marsImage.favorite) }
-            IconToggleButton(
+            MarsImageFavoriteToggle(
                 checked = marsImage.favorite,
-                onCheckedChange = {
-//                    favorite = !favorite
-                    onFavoriteClick()
-//                    favoriteImagesViewModel.updateFavForImage(marsImage)
-                }) {
-                Icon(
-                    tint = colorResource(id = R.color.colorAccent),
-                    imageVector = if (marsImage.favorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                    contentDescription = null // handled by click label of parent
-                )
-            }
+                onCheckedChange = { onFavoriteClick() }
+            )
         }
+    }
+}
+
+@Composable
+fun MarsImageFavoriteToggle(
+    modifier: Modifier = Modifier,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    IconToggleButton(
+        modifier = modifier,
+        checked = checked,
+        onCheckedChange = onCheckedChange
+    ) {
+        Icon(
+            modifier = Modifier.fillMaxSize(),
+            tint = colorResource(id = R.color.colorAccent),
+            imageVector = if (checked) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+            contentDescription = null // handled by click label of parent
+        )
     }
 }
 
