@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.coil.CoilImage
 import com.google.accompanist.imageloading.ImageLoadState
 import com.google.accompanist.imageloading.MaterialLoadingImage
@@ -22,15 +23,16 @@ import com.google.accompanist.pager.rememberPagerState
 import com.sirelon.marsroverphotos.feature.MarsImageFavoriteToggle
 import com.sirelon.marsroverphotos.feature.MultitouchDetector
 import com.sirelon.marsroverphotos.feature.MultitouchState
+import java.util.ArrayList
 
 /**
  * Created on 13.04.2021 22:52 for Mars-Rover-Photos.
  */
 
 @Composable
-fun ImageScreen(viewModel: ImageViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
+fun ImageScreen(viewModel: ImageViewModel = viewModel(), photoIds: ArrayList<String>?) {
+    viewModel.setIdsToShow(photoIds ?: emptyList())
     ImagesPager(viewModel = viewModel)
-
 
 //    Column {
 //        TopAppBar(
@@ -50,8 +52,6 @@ fun ImageScreen(viewModel: ImageViewModel = androidx.lifecycle.viewmodel.compose
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ImagesPager(viewModel: ImageViewModel) {
-    viewModel.setIdsToShow(emptyList())
-
     val imagesA by viewModel.imagesLiveData.observeAsState()
     val images = imagesA
     if (images == null) {
@@ -88,7 +88,9 @@ fun ImagesPager(viewModel: ImageViewModel) {
             }
 
             MarsImageFavoriteToggle(
-                modifier = Modifier.size(64.dp).align(Alignment.BottomCenter),
+                modifier = Modifier
+                    .size(64.dp)
+                    .align(Alignment.BottomCenter),
                 checked = marsImage.favorite,
                 onCheckedChange = {
                     viewModel.updateFavorite(marsImage)

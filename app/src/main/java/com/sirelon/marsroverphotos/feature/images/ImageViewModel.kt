@@ -6,6 +6,8 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.recordException
+import com.sirelon.marsroverphotos.firebase.photos.FirebaseProvider
+import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.storage.MarsImage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -49,5 +51,16 @@ class ImageViewModel(app: Application) : AndroidViewModel(app) {
 
         val tracker = getApplication<RoverApplication>().tracker
         tracker.trackFavorite(image.toMarsPhoto(), "Images", !image.favorite)
+    }
+
+
+    fun updatePhotoScaleCounter(marsPhoto: MarsPhoto?) {
+        marsPhoto?.let {
+            FirebaseProvider.firebasePhotos.updatePhotoScaleCounter(marsPhoto)
+                .onErrorReturn { 0 }
+                .subscribe()
+            val tracker = getApplication<RoverApplication>().tracker
+            tracker.trackScale(marsPhoto)
+        }
     }
 }

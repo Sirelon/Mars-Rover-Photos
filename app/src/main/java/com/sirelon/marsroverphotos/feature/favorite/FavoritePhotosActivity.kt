@@ -48,7 +48,7 @@ abstract class BasePhotosActivity : RxActivity(), ImagesAdapterClickListener {
     }
 
     override fun openPhoto(image: MarsImage, vararg sharedElements: View) {
-        val ids = adapter.snapshot().filterNotNull().map { it.id }
+        val ids = adapter.snapshot().mapNotNull { it?.id }
 
         val intent = ImageActivity.createIntent(this@BasePhotosActivity, image.id, ids, false)
         startActivity(intent)

@@ -82,7 +82,6 @@ import com.sirelon.marsroverphotos.feature.favorite.FavoriteItem
 import com.sirelon.marsroverphotos.feature.favorite.FavoriteScreen
 import com.sirelon.marsroverphotos.feature.favorite.PopularScreen
 import com.sirelon.marsroverphotos.feature.images.ImageScreen
-import com.sirelon.marsroverphotos.feature.images.ImagesPager
 import com.sirelon.marsroverphotos.feature.photos.RoverPhotosScreen
 import com.sirelon.marsroverphotos.feature.popular.PopularItem
 import com.sirelon.marsroverphotos.models.Rover
@@ -268,20 +267,17 @@ class RoversActivity : AppCompatActivity() {
             navController = navController,
             startDestination = Screen.Rovers.route
         ) {
-
             composable(Screen.Rovers.route) {
-                // TODO:
-                ImageScreen()
-//                val rovers by RoverApplication.APP.dataManger.rovers.observeAsState(emptyList())
-//
-//                RoversContent(
-//                    rovers = rovers,
-//                    onClick = {
-//                        if (it is Rover) {
-//                            track("click_rover_${it.name}")
-//                            navController.navigate("rover/${it.id}")
-//                        }
-//                    })
+                val rovers by RoverApplication.APP.dataManger.rovers.observeAsState(emptyList())
+
+                RoversContent(
+                    rovers = rovers,
+                    onClick = {
+                        if (it is Rover) {
+                            track("click_rover_${it.name}")
+                            navController.navigate("rover/${it.id}")
+                        }
+                    })
             }
             composable(Screen.About.route) {
                 AboutAppContent(onClearCache = ::clearCache, onRateApp = ::goToMarket)
@@ -307,6 +303,15 @@ class RoversActivity : AppCompatActivity() {
                 }
             }
 
+
+            composable(
+                route = "photos/{ids}",
+                arguments = listOf(navArgument("ids") { type = NavType.StringArrayType })
+            ) {
+                val ids  = it.arguments?.getStringArrayList("ids")
+
+                ImageScreen(photoIds = ids)
+            }
         }
     }
 
@@ -340,6 +345,8 @@ sealed class Screen(val route: String, val iconCreator: @Composable () -> ImageV
     object About : Screen("about", { Icons.Outlined.Info })
 
     class Rover(val id: Long) : Screen("rover", { Icons.Outlined.ViewCarousel })
+
+    class Images(val ids: List<String>) : Screen("photos", { Icons.Outlined.ViewCarousel })
 }
 
 @Composable
