@@ -89,7 +89,7 @@ dependencies {
     implementation "androidx.compose.foundation:foundation:$composeVer"
     // Material Design
     implementation "androidx.compose.material:material:$composeVer"
-    def accompanistVer = '0.8.1'
+    def accompanistVer = '0.9.0'
     implementation "com.google.accompanist:accompanist-pager:$accompanistVer"
     implementation "com.google.accompanist:accompanist-coil:$accompanistVer"
 
@@ -106,13 +106,13 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha05"
 
     // https://github.com/skydoves/Landscapist
-    implementation "com.github.skydoves:landscapist-glide:1.1.9"
-    implementation "com.github.skydoves:landscapist-coil:1.1.9"
+    implementation 'com.github.skydoves:landscapist-glide:1.2.0'
+    implementation 'com.github.skydoves:landscapist-coil:1.2.0'
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    testImplementation 'org.jetbrains.kotlin:kotlin-test-junit:1.4.31'
+    testImplementation 'org.jetbrains.kotlin:kotlin-test-junit:1.5.0'
     testImplementation 'com.nhaarman:mockito-kotlin:1.6.0'
     testImplementation 'org.amshove.kluent:kluent:1.65'
 
@@ -135,7 +135,7 @@ dependencies {
     kapt "androidx.room:room-compiler:$room_version"
 
 //    https://developer.android.com/jetpack/androidx/releases/paging
-    def paging_version = "3.0.0-rc01"
+    def paging_version = "3.0.0"
     implementation "androidx.paging:paging-runtime-ktx:$paging_version"
     // https://github.com/material-components/material-components-android/releases
     implementation 'com.google.android.material:material:1.4.0-alpha02'
