@@ -299,16 +299,22 @@ class RoversActivity : AppCompatActivity() {
             ) {
                 val roverId = it.arguments?.getLong("roverId")
                 if (roverId != null) {
-                    RoverPhotosScreen(this@RoversActivity, roverId = roverId)
+                    RoverPhotosScreen(
+                        this@RoversActivity,
+                        roverId = roverId,
+                        navHost = navController
+                    )
                 }
             }
 
 
             composable(
-                route = "photos/{ids}",
-                arguments = listOf(navArgument("ids") { type = NavType.StringArrayType })
+                route = "photos/{pid}?ids={ids}",
+                arguments = listOf(
+                    navArgument("pid") { type = NavType.StringType },
+                    navArgument("ids") { type = NavType.StringArrayType })
             ) {
-                val ids  = it.arguments?.getStringArrayList("ids")
+                val ids = it.arguments?.getStringArrayList("ids")
 
                 ImageScreen(photoIds = ids)
             }

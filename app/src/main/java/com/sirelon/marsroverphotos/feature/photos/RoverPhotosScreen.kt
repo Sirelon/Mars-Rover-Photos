@@ -55,10 +55,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.navigate
 import com.bumptech.glide.request.RequestOptions
 import com.sirelon.marsroverphotos.R
-import com.sirelon.marsroverphotos.activity.ImageActivity
 import com.sirelon.marsroverphotos.activity.ui.accent
+import com.sirelon.marsroverphotos.feature.navigateToImages
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.ui.CenteredColumn
 import com.skydoves.landscapist.glide.GlideImage
@@ -73,6 +75,7 @@ import java.util.TimeZone
 fun RoverPhotosScreen(
     activity: AppCompatActivity,
     modifier: Modifier = Modifier,
+    navHost: NavController,
     roverId: Long,
     viewModel: PhotosViewModel = viewModel()
 ) {
@@ -130,7 +133,21 @@ fun RoverPhotosScreen(
                     viewModel.randomize()
                 })
         } else {
-            PhotosList(modifier, photos, viewModel, activity)
+            PhotosList(modifier, photos) { image ->
+                viewModel.onPhotoClick(image)
+
+                val ids = photos.map { it.id }
+
+                // Enable camera filter if the same camera was choose.
+                // If all camera choosed then no need to filtering
+//                        val cameraFilter = filteredCamera != null
+
+                //                        val intent =
+//                            ImageActivity.createIntent(activity, image.id, ids, false)
+//                        activity.startActivity(intent)
+
+                navHost.navigateToImages(image, photos)
+            }
         }
     }
 
@@ -172,9 +189,9 @@ private fun RefreshButton(
 private fun PhotosList(
     modifier: Modifier,
     photos: List<MarsImage>,
-    viewModel: PhotosViewModel,
-    activity: AppCompatActivity
+    onPhotoClick: (image: MarsImage) -> Unit
 ) {
+
     LazyVerticalGrid(cells = GridCells.Fixed(2), modifier = modifier) {
         items(photos) { image ->
             Card(
@@ -182,16 +199,7 @@ private fun PhotosList(
                     .padding(8.dp)
                     .fillMaxWidth()
                     .clickable {
-                        viewModel.onPhotoClick(image)
-
-                        val ids = photos.map { it.id }
-
-                        // Enable camera filter if the same camera was choose.
-                        // If all camera choosed then no need to filtering
-//                        val cameraFilter = filteredCamera != null
-                        val intent =
-                            ImageActivity.createIntent(activity, image.id, ids, false)
-                        activity.startActivity(intent)
+                        onPhotoClick(image)
                     },
                 shape = MaterialTheme.shapes.large
             ) {
