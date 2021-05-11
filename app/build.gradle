@@ -89,7 +89,7 @@ dependencies {
     implementation "androidx.compose.foundation:foundation:$composeVer"
     // Material Design
     implementation "androidx.compose.material:material:$composeVer"
-    def accompanistVer = '0.9.0'
+    def accompanistVer = '0.9.1'
     implementation "com.google.accompanist:accompanist-pager:$accompanistVer"
     implementation "com.google.accompanist:accompanist-coil:$accompanistVer"
 
@@ -103,11 +103,11 @@ dependencies {
     implementation "androidx.navigation:navigation-compose:1.0.0-alpha10"
     // https://developer.android.com/jetpack/androidx/releases/paging
     implementation "androidx.paging:paging-compose:1.0.0-alpha08"
-    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha05"
+    implementation 'androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha06'
 
     // https://github.com/skydoves/Landscapist
-    implementation 'com.github.skydoves:landscapist-glide:1.2.0'
-    implementation 'com.github.skydoves:landscapist-coil:1.2.0'
+    implementation 'com.github.skydoves:landscapist-glide:1.2.1'
+    implementation 'com.github.skydoves:landscapist-coil:1.2.1'
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
@@ -129,7 +129,7 @@ dependencies {
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 
 //    https://developer.android.com/jetpack/androidx/releases/room
-    def room_version = '2.4.0-alpha01'
+    def room_version = '2.4.0-alpha02'
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
@@ -138,7 +138,7 @@ dependencies {
     def paging_version = "3.0.0"
     implementation "androidx.paging:paging-runtime-ktx:$paging_version"
     // https://github.com/material-components/material-components-android/releases
-    implementation 'com.google.android.material:material:1.4.0-alpha02'
+    implementation 'com.google.android.material:material:1.4.0-beta01'
 
     implementation 'com.github.bumptech.glide:glide:4.12.0'
     kapt 'com.github.bumptech.glide:compiler:4.12.0'
