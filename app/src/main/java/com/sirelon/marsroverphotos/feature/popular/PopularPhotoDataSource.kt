@@ -73,7 +73,7 @@ class PopularRemoteMediator(
         loadType: LoadType,
         state: PagingState<Int, MarsImage>
     ): MediatorResult {
-        val alreadyInDb = state.pages.map { it.data.size }.sum()
+        val alreadyInDb = state.pages.map { it.data.size }.sum() + 1
         if (loadType == LoadType.PREPEND) return MediatorResult.Success(endOfPaginationReached = true)
 
         try {
