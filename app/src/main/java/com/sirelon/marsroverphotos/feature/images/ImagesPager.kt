@@ -1,16 +1,17 @@
 package com.sirelon.marsroverphotos.feature.images
 
 import android.util.Log
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Text
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,12 +27,15 @@ import com.google.accompanist.pager.rememberPagerState
 import com.sirelon.marsroverphotos.feature.MarsImageFavoriteToggle
 import com.sirelon.marsroverphotos.feature.MultitouchDetector
 import com.sirelon.marsroverphotos.feature.MultitouchState
-import kotlinx.coroutines.launch
+import com.sirelon.marsroverphotos.storage.MarsImage
+import com.sirelon.marsroverphotos.ui.CenteredColumn
 
 /**
  * Created on 13.04.2021 22:52 for Mars-Rover-Photos.
  */
 
+@ExperimentalAnimationApi
+@ExperimentalPagerApi
 @Composable
 fun ImageScreen(
     viewModel: ImageViewModel = viewModel(),
@@ -43,7 +47,24 @@ fun ImageScreen(
     viewModel.setIdsToShow(ids)
 
     val selectedPosition = ids.indexOf(selectedId)
-    ImagesPager(viewModel = viewModel, selectedPosition = selectedPosition)
+
+    val imagesA by viewModel.imagesLiveData.observeAsState()
+    val images = imagesA
+
+    Crossfade(targetState = images) {
+        when (it) {
+            null -> {
+                CenteredColumn {
+                    CircularProgressIndicator()
+                }
+            }
+            else -> {
+                ImagesPager(images = it, selectedPosition = selectedPosition) { marsImage, _ ->
+                    viewModel.updateFavorite(marsImage)
+                }
+            }
+        }
+    }
 
 //    Column {
 //        TopAppBar(
@@ -60,16 +81,13 @@ fun ImageScreen(
 
 }
 
-@OptIn(ExperimentalPagerApi::class)
+@ExperimentalPagerApi
 @Composable
-fun ImagesPager(viewModel: ImageViewModel, selectedPosition: Int) {
-    val imagesA by viewModel.imagesLiveData.observeAsState()
-    val images = imagesA
-    if (images == null) {
-        Text(text = "Empty")
-        return
-    }
-
+fun ImagesPager(
+    images: List<MarsImage>,
+    selectedPosition: Int,
+    favoriteClick: (MarsImage, Boolean) -> Unit
+) {
     val pagerState = rememberPagerState(pageCount = images.size)
 
     if (selectedPosition > 0) {
@@ -109,7 +127,7 @@ fun ImagesPager(viewModel: ImageViewModel, selectedPosition: Int) {
                     .align(Alignment.BottomCenter),
                 checked = marsImage.favorite,
                 onCheckedChange = {
-                    viewModel.updateFavorite(marsImage)
+                    favoriteClick(marsImage, it)
                 }
             )
         }

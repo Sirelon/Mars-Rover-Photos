@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -68,6 +69,7 @@ import androidx.navigation.compose.navigate
 import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.cache.DiskCache
+import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
@@ -94,6 +96,8 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 
+@ExperimentalAnimationApi
+@ExperimentalPagerApi
 class RoversActivity : AppCompatActivity() {
 
     // Determine the screen width (less decorations) to use for the ad width.
