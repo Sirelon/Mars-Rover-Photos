@@ -1,13 +1,16 @@
 package com.sirelon.marsroverphotos.feature.images
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,16 +26,24 @@ import com.google.accompanist.pager.rememberPagerState
 import com.sirelon.marsroverphotos.feature.MarsImageFavoriteToggle
 import com.sirelon.marsroverphotos.feature.MultitouchDetector
 import com.sirelon.marsroverphotos.feature.MultitouchState
-import java.util.ArrayList
+import kotlinx.coroutines.launch
 
 /**
  * Created on 13.04.2021 22:52 for Mars-Rover-Photos.
  */
 
 @Composable
-fun ImageScreen(viewModel: ImageViewModel = viewModel(), photoIds: ArrayList<String>?) {
-    viewModel.setIdsToShow(photoIds ?: emptyList())
-    ImagesPager(viewModel = viewModel)
+fun ImageScreen(
+    viewModel: ImageViewModel = viewModel(),
+    photoIds: List<String>?,
+    selectedId: String?
+) {
+    val ids = photoIds ?: emptyList()
+    Log.d("Sirelon", "ImageScreen() called with: photoIds = $photoIds, selectedId = $selectedId");
+    viewModel.setIdsToShow(ids)
+
+    val selectedPosition = ids.indexOf(selectedId)
+    ImagesPager(viewModel = viewModel, selectedPosition = selectedPosition)
 
 //    Column {
 //        TopAppBar(
@@ -51,7 +62,7 @@ fun ImageScreen(viewModel: ImageViewModel = viewModel(), photoIds: ArrayList<Str
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun ImagesPager(viewModel: ImageViewModel) {
+fun ImagesPager(viewModel: ImageViewModel, selectedPosition: Int) {
     val imagesA by viewModel.imagesLiveData.observeAsState()
     val images = imagesA
     if (images == null) {
@@ -61,6 +72,11 @@ fun ImagesPager(viewModel: ImageViewModel) {
 
     val pagerState = rememberPagerState(pageCount = images.size)
 
+    if (selectedPosition > 0) {
+        LaunchedEffect(key1 = selectedPosition) {
+            pagerState.scrollToPage(selectedPosition)
+        }
+    }
     HorizontalPager(
         state = pagerState,
         modifier = Modifier

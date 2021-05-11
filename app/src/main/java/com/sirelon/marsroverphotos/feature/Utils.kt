@@ -1,6 +1,5 @@
 package com.sirelon.marsroverphotos.feature
 
-import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import androidx.navigation.compose.navigate
 import com.sirelon.marsroverphotos.storage.MarsImage
@@ -10,5 +9,6 @@ import com.sirelon.marsroverphotos.storage.MarsImage
  */
 fun NavController.navigateToImages(image: MarsImage, allphotos: List<MarsImage>) {
     val ids = allphotos.map { it.id }
-    navigate("photos/${image.id}?ids=$ids")
+    kotlin.runCatching { navigate("photos/${image.id}?ids=${ids.joinToString()}") }
+        .onFailure(Throwable::printStackTrace)
 }

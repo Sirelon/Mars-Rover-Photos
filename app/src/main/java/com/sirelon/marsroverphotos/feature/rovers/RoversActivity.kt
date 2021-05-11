@@ -72,7 +72,6 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.sirelon.marsroverphotos.BuildConfig
-import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.activity.AboutAppContent
 import com.sirelon.marsroverphotos.activity.ui.MarsRoverPhotosTheme
@@ -93,6 +92,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+
 
 class RoversActivity : AppCompatActivity() {
 
@@ -128,6 +128,7 @@ class RoversActivity : AppCompatActivity() {
 
             MarsRoverPhotosTheme {
                 val navController = rememberNavController()
+
                 Scaffold(
                     bottomBar = {
                         RoversBottomBar(navController, bottomItems)
@@ -284,11 +285,11 @@ class RoversActivity : AppCompatActivity() {
             }
 
             composable(Screen.Popular.route) {
-                PopularScreen(this@RoversActivity)
+                PopularScreen(navController)
             }
 
             composable(Screen.Favorite.route) {
-                FavoriteScreen(this@RoversActivity, navController)
+                FavoriteScreen(navController)
             }
 
             composable(
@@ -312,11 +313,12 @@ class RoversActivity : AppCompatActivity() {
                 route = "photos/{pid}?ids={ids}",
                 arguments = listOf(
                     navArgument("pid") { type = NavType.StringType },
-                    navArgument("ids") { type = NavType.StringArrayType })
+                    navArgument("ids") { type = NavType.StringType })
             ) {
-                val ids = it.arguments?.getStringArrayList("ids")
+                val ids = it.arguments?.getString("ids")?.split(", ")?.toList()
+                val selectedImage = it.arguments?.getString("pid")
 
-                ImageScreen(photoIds = ids)
+                ImageScreen(photoIds = ids, selectedId = selectedImage)
             }
         }
     }
@@ -343,7 +345,7 @@ class RoversActivity : AppCompatActivity() {
 
 sealed class Screen(val route: String, val iconCreator: @Composable () -> ImageVector) {
     object Rovers : Screen("rovers", {
-        ImageVector.vectorResource(id = R.drawable.ic_rovers)
+        ImageVector.vectorResource(id = com.sirelon.marsroverphotos.R.drawable.ic_rovers)
     })
 
     object Favorite : Screen("favorite", { Icons.Outlined.Favorite })
@@ -381,8 +383,8 @@ fun RoversContent(
 @Composable
 fun FavoriteItem(rover: FavoriteItem, onClick: (rover: FavoriteItem) -> Unit) {
     CommonItem(
-        title = stringResource(id = R.string.favorite_title),
-        imageAsset = painterResource(id = R.drawable.popular),
+        title = stringResource(id = com.sirelon.marsroverphotos.R.string.favorite_title),
+        imageAsset = painterResource(id = com.sirelon.marsroverphotos.R.drawable.popular),
         onClick = { onClick(rover) })
     // Not implemented yet
 //        InfoText(
@@ -394,8 +396,8 @@ fun FavoriteItem(rover: FavoriteItem, onClick: (rover: FavoriteItem) -> Unit) {
 @Composable
 fun PopularItem(rover: PopularItem, onClick: (rover: PopularItem) -> Unit) {
     CommonItem(
-        title = stringResource(id = R.string.popular_title),
-        imageAsset = painterResource(id = R.drawable.popular),
+        title = stringResource(id = com.sirelon.marsroverphotos.R.string.popular_title),
+        imageAsset = painterResource(id = com.sirelon.marsroverphotos.R.drawable.popular),
         onClick = { onClick(rover) })
     // Not implemented yet
 //        InfoText(
@@ -430,7 +432,7 @@ fun RoverItem(rover: Rover, onClick: (rover: Rover) -> Unit) {
                 verticalArrangement = Arrangement.SpaceAround
             ) {
                 InfoText(
-                    label = stringResource(id = R.string.label_photos_total),
+                    label = stringResource(id = com.sirelon.marsroverphotos.R.string.label_photos_total),
                     text = "${rover.totalPhotos}"
                 )
                 InfoText(label = "Last photo date:", text = rover.maxDate)

@@ -28,7 +28,7 @@ interface ImagesDao {
     @Query("SELECT * FROM images WHERE favorite = 1 LIMIT 1 ")
     fun getOneImage(): LiveData<MarsImage?>
 
-    @Query("SELECT * FROM images WHERE id IN (:ids)")
+    @Query("SELECT * FROM images WHERE id IN (:ids) ORDER BY `order`")
     fun getImagesByIds(ids: List<String>): Flow<List<MarsImage>>
 
     @Query("SELECT * FROM images")

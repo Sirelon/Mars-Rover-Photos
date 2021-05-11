@@ -28,6 +28,7 @@ import androidx.paging.compose.items
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.activity.ImageActivity
 import com.sirelon.marsroverphotos.feature.MarsImageComposable
+import com.sirelon.marsroverphotos.feature.navigateToImages
 import com.sirelon.marsroverphotos.feature.photos.EmptyPhotos
 import com.sirelon.marsroverphotos.feature.popular.PopularPhotosViewModel
 import com.sirelon.marsroverphotos.storage.MarsImage
@@ -37,13 +38,11 @@ import com.sirelon.marsroverphotos.storage.MarsImage
  */
 @Composable
 fun FavoriteScreen(
-    activity: AppCompatActivity,
     navController: NavController,
     modifier: Modifier = Modifier,
     viewModel: FavoriteImagesViewModel = viewModel()
 ) {
     val items = viewModel.favoriteImagesFlow.collectAsLazyPagingItems()
-    val context = activity
     FavoritePhotosContent(
         modifier = modifier,
         title = stringResource(id = R.string.favorite_title),
@@ -53,9 +52,7 @@ fun FavoriteScreen(
             viewModel.updateFavForImage(it)
         },
         onItemClick = { image ->
-            val ids = items.snapshot().mapNotNull { it?.id }
-            val intent = ImageActivity.createIntent(context, image.id, ids, false)
-            activity.startActivity(intent)
+            navController.navigateToImages(image, items.snapshot().items)
         },
         emptyContent = {
             EmptyPhotos(
@@ -71,21 +68,18 @@ fun FavoriteScreen(
 
 @Composable
 fun PopularScreen(
-    activity: AppCompatActivity,
+    navController: NavController,
     modifier: Modifier = Modifier,
     viewModel: PopularPhotosViewModel = viewModel()
 ) {
     val items = viewModel.popularPhotos.collectAsLazyPagingItems()
-    val context = activity
     FavoritePhotosContent(
         modifier = modifier,
         title = stringResource(id = R.string.popular_title),
         items = items,
         onFavoriteClick = viewModel::updateFavorite,
         onItemClick = { image ->
-            val ids = items.snapshot().mapNotNull { it?.id }
-            val intent = ImageActivity.createIntent(context, image.id, ids, false)
-            activity.startActivity(intent)
+            navController.navigateToImages(image, items.snapshot().items)
         },
         emptyContent = {}
     )

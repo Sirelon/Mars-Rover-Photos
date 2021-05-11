@@ -37,8 +37,7 @@ class ImagesRepository(private val context: Context) {
         imagesDao.insertImages(photos)
     }
 
-    // TODO: UNcomment. just for test here.
-    fun loadImages(ids: List<String>) = imagesDao.getAllImages()// imagesDao.getImagesByIds(ids)
+    fun loadImages(ids: List<String>) = imagesDao.getImagesByIds(ids)
 
     fun loadPopularPhotos() = imagesDao.loadPopularImages()
 
