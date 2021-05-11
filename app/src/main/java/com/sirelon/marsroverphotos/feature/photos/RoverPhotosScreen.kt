@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
@@ -28,7 +29,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
@@ -56,13 +56,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.navigate
 import com.bumptech.glide.request.RequestOptions
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.activity.ui.accent
 import com.sirelon.marsroverphotos.feature.navigateToImages
 import com.sirelon.marsroverphotos.storage.MarsImage
-import com.sirelon.marsroverphotos.ui.CenteredColumn
+import com.sirelon.marsroverphotos.ui.CenteredProgress
 import com.skydoves.landscapist.glide.GlideImage
 import java.util.Calendar
 import java.util.TimeZone
@@ -70,7 +69,7 @@ import java.util.TimeZone
 /**
  * Created on 07.03.2021 12:46 for Mars-Rover-Photos.
  */
-@OptIn(ExperimentalAnimationApi::class)
+@ExperimentalAnimationApi
 @Composable
 fun RoverPhotosScreen(
     activity: AppCompatActivity,
@@ -119,34 +118,25 @@ fun RoverPhotosScreen(
             }
         }
 
-        val photos = photos
-        if (photos == null) {
-            CenteredColumn {
-                CircularProgressIndicator()
-            }
-        } else if (photos.isEmpty()) {
-            EmptyPhotos(
-                title = stringResource(id = R.string.no_photos_title),
-                btnTitle = stringResource(R.string.tap_to_retry),
-                callback = {
-                    viewModel.track("click_refresh_no_data")
-                    viewModel.randomize()
-                })
-        } else {
-            PhotosList(modifier, photos) { image ->
-                viewModel.onPhotoClick(image)
+        Crossfade(targetState = photos) {
+            when {
+                it == null -> CenteredProgress()
+                it.isEmpty() -> {
+                    EmptyPhotos(
+                        title = stringResource(id = R.string.no_photos_title),
+                        btnTitle = stringResource(R.string.tap_to_retry),
+                        callback = {
+                            viewModel.track("click_refresh_no_data")
+                            viewModel.randomize()
+                        })
+                }
+                else -> {
+                    PhotosList(modifier, it) { image ->
+                        viewModel.onPhotoClick(image)
+                        navHost.navigateToImages(image, it)
+                    }
+                }
 
-                val ids = photos.map { it.id }
-
-                // Enable camera filter if the same camera was choose.
-                // If all camera choosed then no need to filtering
-//                        val cameraFilter = filteredCamera != null
-
-                //                        val intent =
-//                            ImageActivity.createIntent(activity, image.id, ids, false)
-//                        activity.startActivity(intent)
-
-                navHost.navigateToImages(image, photos)
             }
         }
     }
@@ -155,7 +145,7 @@ fun RoverPhotosScreen(
     RefreshButton(fabVisible, modifier, viewModel)
 }
 
-@OptIn(ExperimentalAnimationApi::class)
+@ExperimentalAnimationApi
 @Composable
 private fun RefreshButton(
     fabVisible: Boolean,

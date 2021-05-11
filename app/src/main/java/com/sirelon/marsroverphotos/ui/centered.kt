@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,4 +20,11 @@ fun CenteredColumn(modifier: Modifier = Modifier, content: @Composable ColumnSco
         verticalArrangement = Arrangement.Center,
         content = content
     )
+}
+
+@Composable
+fun CenteredProgress() {
+    CenteredColumn {
+        CircularProgressIndicator()
+    }
 }

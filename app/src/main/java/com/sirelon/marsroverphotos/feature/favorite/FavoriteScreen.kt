@@ -32,6 +32,7 @@ import com.sirelon.marsroverphotos.feature.navigateToImages
 import com.sirelon.marsroverphotos.feature.photos.EmptyPhotos
 import com.sirelon.marsroverphotos.feature.popular.PopularPhotosViewModel
 import com.sirelon.marsroverphotos.storage.MarsImage
+import com.sirelon.marsroverphotos.ui.CenteredColumn
 
 /**
  * Created on 01.03.2021 22:32 for Mars-Rover-Photos.
@@ -95,17 +96,14 @@ fun FavoritePhotosContent(
     emptyContent: @Composable () -> Unit
 ) {
     LazyColumn(modifier = modifier, contentPadding = PaddingValues(16.dp), content = {
+
         item { TopAppBar(title = { Text(text = title) }) }
 
         Log.d("Sirelon", "FavoritePhotosContent() called ${items.loadState}")
         if (items.loadState.refresh == LoadState.Loading) {
             item {
-                Column(
-                    modifier = Modifier.fillParentMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    CircularProgressIndicator()
+                CenteredColumn() {
+
                 }
             }
         }

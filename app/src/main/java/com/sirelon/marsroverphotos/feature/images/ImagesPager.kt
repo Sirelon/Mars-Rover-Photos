@@ -29,6 +29,7 @@ import com.sirelon.marsroverphotos.feature.MultitouchDetector
 import com.sirelon.marsroverphotos.feature.MultitouchState
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.ui.CenteredColumn
+import com.sirelon.marsroverphotos.ui.CenteredProgress
 
 /**
  * Created on 13.04.2021 22:52 for Mars-Rover-Photos.
@@ -53,11 +54,7 @@ fun ImageScreen(
 
     Crossfade(targetState = images) {
         when (it) {
-            null -> {
-                CenteredColumn {
-                    CircularProgressIndicator()
-                }
-            }
+            null -> CenteredProgress()
             else -> {
                 ImagesPager(images = it, selectedPosition = selectedPosition) { marsImage, _ ->
                     viewModel.updateFavorite(marsImage)
