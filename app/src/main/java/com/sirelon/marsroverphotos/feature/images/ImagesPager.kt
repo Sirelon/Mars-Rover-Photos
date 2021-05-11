@@ -3,11 +3,11 @@ package com.sirelon.marsroverphotos.feature.images
 import android.util.Log
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -18,17 +18,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.google.accompanist.coil.CoilImage
-import com.google.accompanist.imageloading.ImageLoadState
-import com.google.accompanist.imageloading.MaterialLoadingImage
+import com.google.accompanist.coil.rememberCoilPainter
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.feature.MarsImageFavoriteToggle
 import com.sirelon.marsroverphotos.feature.MultitouchDetector
 import com.sirelon.marsroverphotos.feature.MultitouchState
+import com.sirelon.marsroverphotos.feature.NetworkImage
 import com.sirelon.marsroverphotos.storage.MarsImage
-import com.sirelon.marsroverphotos.ui.CenteredColumn
 import com.sirelon.marsroverphotos.ui.CenteredProgress
 
 /**
@@ -112,7 +111,7 @@ fun ImagesPager(
             }
 
             MultitouchDetector(modifier = Modifier, state = state, pagerState = pagerState) {
-                FullScreenImage(
+                NetworkImage(
                     modifier = Modifier.fillMaxSize(),
                     imageUrl = marsImage.imageUrl
                 )
@@ -127,31 +126,6 @@ fun ImagesPager(
                     favoriteClick(marsImage, it)
                 }
             )
-        }
-    }
-}
-
-@Composable
-fun FullScreenImage(modifier: Modifier, imageUrl: String) {
-    CoilImage(
-        modifier = modifier,
-        data = imageUrl
-    ) { imageState ->
-        when (imageState) {
-            is ImageLoadState.Success -> {
-                MaterialLoadingImage(
-                    result = imageState,
-                    contentDescription = "My content description",
-                    fadeInEnabled = true,
-                    fadeInDurationMs = 600,
-
-                    )
-            }
-//                is ImageLoadState.Error -> /* TODO */
-//                    ImageLoadState.Loading
-//                -> /* TODO */
-//                    ImageLoadState.Empty
-//                -> /* TODO */
         }
     }
 }

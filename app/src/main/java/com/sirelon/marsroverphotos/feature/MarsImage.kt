@@ -1,7 +1,7 @@
 package com.sirelon.marsroverphotos.feature
 
-import android.graphics.Bitmap
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,20 +26,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.Target
+import coil.size.Scale
+import com.google.accompanist.coil.rememberCoilPainter
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.storage.MarsImage
-import com.skydoves.landscapist.glide.GlideImage
 
 /**
  * Created on 01.03.2021 22:33 for Mars-Rover-Photos.
@@ -56,6 +49,10 @@ fun MarsImageComposable(marsImage: MarsImage, onClick: () -> Unit, onFavoriteCli
     ) {
         Column {
             ImageLoader(marsImage.imageUrl) { ready.value = true }
+//            NetworkImage(
+//                modifier = Modifier.requiredHeightIn(200.dp, 400.dp),
+//                imageUrl = marsImage.imageUrl
+//            )
             if (ready.value) {
                 PhotoStats(marsImage, onFavoriteClick)
             }
@@ -123,42 +120,33 @@ fun MarsImageFavoriteToggle(
 }
 
 @Composable
+fun NetworkImage(modifier: Modifier = Modifier, imageUrl: String) {
+    val painter = rememberCoilPainter(
+        request = imageUrl,
+        fadeIn = true,
+        previewPlaceholder = R.drawable.img_placeholder
+    )
+    Image(modifier = modifier, painter = painter, contentDescription = imageUrl)
+}
+
+@Composable
 private fun ImageLoader(imageUrl: String, success: () -> Unit) {
 
-    val requestListener = object : RequestListener<Bitmap> {
-        override fun onLoadFailed(
-            e: GlideException?,
-            model: Any?,
-            target: Target<Bitmap>?,
-            isFirstResource: Boolean
-        ): Boolean {
-            return false
+    val painter = rememberCoilPainter(
+        request = imageUrl,
+        fadeIn = true,
+        previewPlaceholder = R.drawable.img_placeholder,
+        requestBuilder = {
+//            size(1500, 800)
+                scale(Scale.FILL)
+                .listener(onSuccess = { _, _ -> success() })
         }
-
-        override fun onResourceReady(
-            resource: Bitmap?,
-            model: Any?,
-            target: Target<Bitmap>?,
-            dataSource: DataSource?,
-            isFirstResource: Boolean
-        ): Boolean {
-            success()
-            return false
-        }
-    }
-    GlideImage(
-        modifier = Modifier.requiredHeightIn(200.dp, 400.dp),
-        imageModel = imageUrl,
-        requestBuilder = Glide
-            .with(LocalContext.current)
-            .asBitmap()
-            .addListener(requestListener)
-            .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL)),
-        requestOptions = RequestOptions()
-            .override(1500, 800)
-            .optionalCenterCrop(),
-        contentScale = ContentScale.Crop,
-//        circularRevealedEnabled = true,
+    )
+    Image(
+        modifier = Modifier.requiredHeightIn(100.dp, 300.dp).fillMaxWidth(),
+        contentScale = ContentScale.FillWidth,
+        painter = painter,
+        contentDescription = imageUrl
     )
 }
 

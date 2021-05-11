@@ -33,6 +33,7 @@ import com.sirelon.marsroverphotos.feature.photos.EmptyPhotos
 import com.sirelon.marsroverphotos.feature.popular.PopularPhotosViewModel
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.ui.CenteredColumn
+import com.sirelon.marsroverphotos.ui.CenteredProgress
 
 /**
  * Created on 01.03.2021 22:32 for Mars-Rover-Photos.
@@ -102,9 +103,7 @@ fun FavoritePhotosContent(
         Log.d("Sirelon", "FavoritePhotosContent() called ${items.loadState}")
         if (items.loadState.refresh == LoadState.Loading) {
             item {
-                CenteredColumn() {
-
-                }
+                CenteredProgress()
             }
         }
 
