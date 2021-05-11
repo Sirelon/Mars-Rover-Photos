@@ -3,11 +3,11 @@ package com.sirelon.marsroverphotos.feature.images
 import android.util.Log
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -15,14 +15,11 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.google.accompanist.coil.rememberCoilPainter
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.feature.MarsImageFavoriteToggle
 import com.sirelon.marsroverphotos.feature.MultitouchDetector
 import com.sirelon.marsroverphotos.feature.MultitouchState
@@ -95,7 +92,7 @@ fun ImagesPager(
         state = pagerState,
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Gray)
+            .background(MaterialTheme.colors.background)
     ) { page ->
         // Our page content
         val marsImage = images[page]
