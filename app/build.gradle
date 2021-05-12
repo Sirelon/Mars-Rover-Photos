@@ -106,10 +106,6 @@ dependencies {
     implementation "androidx.paging:paging-compose:1.0.0-alpha08"
     implementation 'androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha06'
 
-    // https://github.com/skydoves/Landscapist
-    implementation 'com.github.skydoves:landscapist-glide:1.2.1'
-    implementation 'com.github.skydoves:landscapist-coil:1.2.1'
-
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"

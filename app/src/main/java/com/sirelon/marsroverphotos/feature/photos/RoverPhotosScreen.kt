@@ -48,7 +48,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -56,13 +55,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.bumptech.glide.request.RequestOptions
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.activity.ui.accent
+import com.sirelon.marsroverphotos.feature.NetworkImage
 import com.sirelon.marsroverphotos.feature.navigateToImages
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.ui.CenteredProgress
-import com.skydoves.landscapist.glide.GlideImage
 import java.util.Calendar
 import java.util.TimeZone
 
@@ -194,7 +192,12 @@ private fun PhotosList(
                 shape = MaterialTheme.shapes.large
             ) {
                 Column(verticalArrangement = Arrangement.SpaceBetween) {
-                    ImageItem(image)
+                    NetworkImage(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(1F),
+                        imageUrl = image.imageUrl
+                    )
                     val title = image.name
                     if (title != null) {
                         Text(
@@ -298,20 +301,6 @@ private fun RowScope.HeaderButton(txt: String, onClick: () -> Unit) {
             textAlign = TextAlign.Center
         )
     }
-}
-
-@Composable
-fun ImageItem(marsImage: MarsImage) {
-    GlideImage(
-        modifier = Modifier
-            .fillMaxWidth()
-            .aspectRatio(1F),
-        imageModel = marsImage.imageUrl,
-        requestOptions = RequestOptions()
-            .optionalCenterCrop(),
-        contentScale = ContentScale.Crop,
-        circularRevealedEnabled = true,
-    )
 }
 
 private fun showEarthDateeChooser(activity: AppCompatActivity, viewModel: PhotosViewModel) {

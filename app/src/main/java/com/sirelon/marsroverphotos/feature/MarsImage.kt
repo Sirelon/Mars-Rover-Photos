@@ -120,13 +120,22 @@ fun MarsImageFavoriteToggle(
 }
 
 @Composable
-fun NetworkImage(modifier: Modifier = Modifier, imageUrl: String) {
+fun NetworkImage(
+    modifier: Modifier = Modifier,
+    contentScale: ContentScale = ContentScale.Crop,
+    imageUrl: String
+) {
     val painter = rememberCoilPainter(
         request = imageUrl,
         fadeIn = true,
         previewPlaceholder = R.drawable.img_placeholder
     )
-    Image(modifier = modifier, painter = painter, contentDescription = imageUrl)
+    Image(
+        modifier = modifier,
+        painter = painter,
+        contentDescription = imageUrl,
+        contentScale = contentScale
+    )
 }
 
 @Composable
@@ -138,12 +147,14 @@ private fun ImageLoader(imageUrl: String, success: () -> Unit) {
         previewPlaceholder = R.drawable.img_placeholder,
         requestBuilder = {
 //            size(1500, 800)
-                scale(Scale.FILL)
+            scale(Scale.FILL)
                 .listener(onSuccess = { _, _ -> success() })
         }
     )
     Image(
-        modifier = Modifier.requiredHeightIn(100.dp, 300.dp).fillMaxWidth(),
+        modifier = Modifier
+            .requiredHeightIn(100.dp, 300.dp)
+            .fillMaxWidth(),
         contentScale = ContentScale.FillWidth,
         painter = painter,
         contentDescription = imageUrl

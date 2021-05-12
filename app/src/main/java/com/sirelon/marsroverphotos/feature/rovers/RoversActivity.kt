@@ -79,6 +79,7 @@ import com.sirelon.marsroverphotos.activity.AboutAppContent
 import com.sirelon.marsroverphotos.activity.ui.MarsRoverPhotosTheme
 import com.sirelon.marsroverphotos.activity.ui.accent
 import com.sirelon.marsroverphotos.extensions.logD
+import com.sirelon.marsroverphotos.feature.NetworkImage
 import com.sirelon.marsroverphotos.feature.favorite.FavoriteItem
 import com.sirelon.marsroverphotos.feature.favorite.FavoriteScreen
 import com.sirelon.marsroverphotos.feature.favorite.PopularScreen
@@ -88,7 +89,6 @@ import com.sirelon.marsroverphotos.feature.popular.PopularItem
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.ViewType
 import com.sirelon.marsroverphotos.utils.screenWidth
-import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -423,9 +423,9 @@ fun RoverItem(rover: Rover, onClick: (rover: Rover) -> Unit) {
 
         val height = Modifier.height(175.dp)
         Row(modifier = Modifier.padding(8.dp)) {
-            GlideImage(
+            NetworkImage(
                 contentScale = ContentScale.FillHeight,
-                imageModel = rover.iamgeUrl ?: "",
+                imageUrl = rover.iamgeUrl ?: "",
                 modifier = height
                     .weight(1f)
                     .clip(shape = MaterialTheme.shapes.large)

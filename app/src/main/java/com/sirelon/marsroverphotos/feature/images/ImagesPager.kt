@@ -15,6 +15,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -110,6 +111,7 @@ fun ImagesPager(
             MultitouchDetector(modifier = Modifier, state = state, pagerState = pagerState) {
                 NetworkImage(
                     modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.FillWidth,
                     imageUrl = marsImage.imageUrl
                 )
             }
