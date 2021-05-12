@@ -160,6 +160,10 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging'
     implementation 'com.google.android.gms:play-services-ads:19.8.0'
 
+    def billing_version = "3.0.0"
+
+    implementation "com.android.billingclient:billing-ktx:$billing_version"
+
     debugImplementation 'com.readystatesoftware.chuck:library:1.1.0'
     releaseImplementation 'com.readystatesoftware.chuck:library-no-op:1.1.0'
 }
