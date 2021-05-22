@@ -80,6 +80,7 @@ import com.sirelon.marsroverphotos.activity.ui.MarsRoverPhotosTheme
 import com.sirelon.marsroverphotos.activity.ui.accent
 import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.feature.NetworkImage
+import com.sirelon.marsroverphotos.feature.billing.BillingHelper
 import com.sirelon.marsroverphotos.feature.favorite.FavoriteItem
 import com.sirelon.marsroverphotos.feature.favorite.FavoriteScreen
 import com.sirelon.marsroverphotos.feature.favorite.PopularScreen
@@ -119,6 +120,7 @@ class RoversActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        BillingHelper.init(this)
 
         adView = AdView(this)
         adView.adSize = AdSize.BANNER
@@ -193,6 +195,13 @@ class RoversActivity : AppCompatActivity() {
     }
 
     private fun goToMarket() {
+        // todo:
+        if (true) {
+            BillingHelper.purchase(this)
+            return
+        }
+
+
         track("goToMarket")
         val uri = Uri.parse("market://details?id=${this.packageName}")
         val goToMarket = Intent(Intent.ACTION_VIEW, uri)
