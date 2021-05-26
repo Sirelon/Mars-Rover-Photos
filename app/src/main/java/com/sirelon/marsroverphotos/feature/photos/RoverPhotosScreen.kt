@@ -160,7 +160,7 @@ private fun RefreshButton(
                 modifier = Modifier.align(Alignment.BottomEnd),
                 onClick = {
                     viewModel.track("click_refresh")
-                    viewModel.randomize()
+                    viewModel.goToLatest()
                 }) {
                 Icon(
                     imageVector = Icons.Filled.Autorenew,

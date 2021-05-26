@@ -50,9 +50,9 @@ class RoversRepository(context: Context, private val api: RestApi) {
             "2021-02-18",
             "2020-07-30",
             "active",
-            3,
-            "2021-02-18",
-            3
+            95,
+            "2021-07-30",
+            74525
         )
 
         val dateUtilP = RoverDateUtil(perseverance)
@@ -69,7 +69,7 @@ class RoversRepository(context: Context, private val api: RestApi) {
             "2018-05-05",
             "active",
             126,
-            "2019-04-03",
+            "2021-05-26",
             5731
         )
 
