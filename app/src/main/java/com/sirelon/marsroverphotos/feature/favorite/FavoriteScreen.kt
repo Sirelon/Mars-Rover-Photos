@@ -1,10 +1,7 @@
 package com.sirelon.marsroverphotos.feature.favorite
 
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -20,19 +17,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.navigate
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.sirelon.marsroverphotos.R
-import com.sirelon.marsroverphotos.activity.ImageActivity
 import com.sirelon.marsroverphotos.feature.MarsImageComposable
 import com.sirelon.marsroverphotos.feature.navigateToImages
 import com.sirelon.marsroverphotos.feature.photos.EmptyPhotos
 import com.sirelon.marsroverphotos.feature.popular.PopularPhotosViewModel
 import com.sirelon.marsroverphotos.storage.MarsImage
-import com.sirelon.marsroverphotos.ui.CenteredColumn
 import com.sirelon.marsroverphotos.ui.CenteredProgress
 
 /**

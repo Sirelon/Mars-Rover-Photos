@@ -1,7 +1,6 @@
 package com.sirelon.marsroverphotos.feature
 
 import androidx.navigation.NavController
-import androidx.navigation.compose.navigate
 import com.sirelon.marsroverphotos.storage.MarsImage
 
 /**

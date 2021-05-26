@@ -60,12 +60,10 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
-import androidx.navigation.compose.KEY_ROUTE
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navArgument
-import androidx.navigation.compose.navigate
 import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.cache.DiskCache
@@ -217,8 +215,7 @@ class RoversActivity : AppCompatActivity() {
     ) {
         BottomNavigation {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
-            val currentRoute =
-                navBackStackEntry?.arguments?.getString(KEY_ROUTE)
+            val currentRoute = navBackStackEntry?.destination?.route
             bottomItems.forEach { screen ->
                 BottomNavigationItem(
                     icon = {
@@ -237,7 +234,9 @@ class RoversActivity : AppCompatActivity() {
                             // Pop up to the start destination of the graph to
                             // avoid building up a large stack of destinations
                             // on the back stack as users select items
-                            popUpTo = navController.graph.startDestination
+                            popUpTo(navController.graph.startDestinationId) {
+
+                            }
                             // Avoid multiple copies of the same destination when
                             // reselecting the same item
                             launchSingleTop = true
