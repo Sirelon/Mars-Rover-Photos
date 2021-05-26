@@ -21,6 +21,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import com.sirelon.marsroverphotos.extensions.recordException
 import com.sirelon.marsroverphotos.feature.MarsImageFavoriteToggle
 import com.sirelon.marsroverphotos.feature.MultitouchDetector
 import com.sirelon.marsroverphotos.feature.MultitouchState
@@ -84,10 +85,12 @@ fun ImagesPager(
 ) {
     val pagerState = rememberPagerState(pageCount = images.size)
 
-    if (selectedPosition > 0) {
+    if (selectedPosition >= 0 && selectedPosition < images.size) {
         LaunchedEffect(key1 = selectedPosition) {
             pagerState.scrollToPage(selectedPosition)
         }
+    } else {
+        recordException(IllegalArgumentException("Try to open $images with $selectedPosition"))
     }
     HorizontalPager(
         state = pagerState,

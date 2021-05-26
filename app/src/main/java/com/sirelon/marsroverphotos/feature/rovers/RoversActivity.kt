@@ -77,6 +77,7 @@ import com.sirelon.marsroverphotos.activity.AboutAppContent
 import com.sirelon.marsroverphotos.activity.ui.MarsRoverPhotosTheme
 import com.sirelon.marsroverphotos.activity.ui.accent
 import com.sirelon.marsroverphotos.extensions.logD
+import com.sirelon.marsroverphotos.extensions.recordException
 import com.sirelon.marsroverphotos.feature.NetworkImage
 import com.sirelon.marsroverphotos.feature.favorite.FavoriteItem
 import com.sirelon.marsroverphotos.feature.favorite.FavoriteScreen
@@ -321,7 +322,11 @@ class RoversActivity : AppCompatActivity() {
                 val ids = it.arguments?.getString("ids")?.split(", ")?.toList()
                 val selectedImage = it.arguments?.getString("pid")
 
-                ImageScreen(photoIds = ids, selectedId = selectedImage)
+                if (ids.isNullOrEmpty()) {
+                    recordException(IllegalArgumentException("Try to open ${it.id} with $ids and $selectedImage"))
+                } else {
+                    ImageScreen(photoIds = ids, selectedId = selectedImage)
+                }
             }
         }
     }
