@@ -250,8 +250,6 @@ class RoversActivity : AppCompatActivity() {
 
     @Composable
     private fun ComposableBannerAd(modifier: Modifier) {
-        if (BuildConfig.DEBUG) return
-
         AndroidView<View>(modifier = modifier, factory = {
             val adRequest = AdRequest
                 .Builder()
