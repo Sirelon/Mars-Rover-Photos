@@ -22,11 +22,9 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
-import com.sirelon.marsroverphotos.adapter.AdsDelegateAdapter
 import com.sirelon.marsroverphotos.adapter.MarsPhotosDelegateAdapter
 import com.sirelon.marsroverphotos.adapter.ViewTypeAdapter
 import com.sirelon.marsroverphotos.extensions.logD
-import com.sirelon.marsroverphotos.feature.advertising.AdvertisingObjectFactory
 import com.sirelon.marsroverphotos.feature.photos.PhotosViewModel
 import com.sirelon.marsroverphotos.models.OnModelChooseListener
 import com.sirelon.marsroverphotos.models.Rover
@@ -52,8 +50,6 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsImage> {
             return intent
         }
     }
-
-    private val advertisingDelegate = AdvertisingObjectFactory.getAdvertisingDelegate()
 
     private val adapter = ViewTypeAdapter()
 //    private lateinit var queryRequest: PhotosQueryRequest
@@ -145,7 +141,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsImage> {
 
         adapter.addDelegateAdapter(AdapterConstants.MARS_PHOTO, MarsPhotosDelegateAdapter(this))
 
-        adapter.addDelegateAdapter(AdapterConstants.ADVERTIZING, AdsDelegateAdapter())
+//        adapter.addDelegateAdapter(AdapterConstants.ADVERTIZING, AdsDelegateAdapter())
 
         photos_list = findViewById<RecyclerView>(R.id.photos_list)
         photos_list.apply {
@@ -193,7 +189,7 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsImage> {
                 } else {
                     no_data_view.visibility = View.GONE
                     photos_list.visibility = View.VISIBLE
-                    advertisingDelegate.integregrateAdToList(it)
+//                    advertisingDelegate.integregrateAdToList(it)
 //                    adapter.addData(it)
                     adapter.replaceData(it)
                     updateCameraFilter(it)
@@ -257,9 +253,9 @@ class PhotosActivity : RxActivity(), OnModelChooseListener<MarsImage> {
             .filter { filteredCamera == it.camera?.fullName }
 
         // Add ad data to list
-        val dataList1 = advertisingDelegate.integregrateAdToList(filteredData)
+//        val dataList1 = advertisingDelegate.integregrateAdToList(filteredData)
 
-        adapter.applyFilteredData(dataList1)
+        adapter.applyFilteredData(filteredData)
         photosCamera.text = filteredCamera
     }
 

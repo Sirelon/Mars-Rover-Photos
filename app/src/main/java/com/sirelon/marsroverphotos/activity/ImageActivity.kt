@@ -24,14 +24,12 @@ import androidx.core.view.MenuItemCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
-import com.google.android.gms.ads.NativeExpressAdView
 import com.google.android.material.snackbar.Snackbar
 import com.sirelon.marsroverphotos.BuildConfig
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.extensions.showAppSettings
 import com.sirelon.marsroverphotos.extensions.showSnackBar
-import com.sirelon.marsroverphotos.feature.advertising.AdvertisingObjectFactory
 import com.sirelon.marsroverphotos.feature.images.ImageViewModel
 import com.sirelon.marsroverphotos.firebase.photos.FirestorePhotos
 import com.sirelon.marsroverphotos.models.MarsPhoto
@@ -118,10 +116,6 @@ class ImageActivity : RxActivity() {
 
         imagesViewModel.setIdsToShow(ids)
 
-        val adViewBanner = findViewById<NativeExpressAdView>(R.id.adViewBanner)
-        // Configure Ad
-        AdvertisingObjectFactory.getAdvertisingDelegate()
-            .loadAd(adViewBanner)
         val imagePager = findViewById<ViewPager2>(R.id.imagePager)
         val cameraFilterEnable = intent.getBooleanExtra(EXTRA_FILTER_BY_CAMERA, false)
         title = "Mars photo"

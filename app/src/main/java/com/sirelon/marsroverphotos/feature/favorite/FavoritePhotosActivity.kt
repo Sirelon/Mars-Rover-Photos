@@ -7,11 +7,9 @@ import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.google.android.gms.ads.NativeExpressAdView
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.activity.ImageActivity
 import com.sirelon.marsroverphotos.activity.RxActivity
-import com.sirelon.marsroverphotos.feature.advertising.AdvertisingObjectFactory
 import com.sirelon.marsroverphotos.feature.images.ImagesAdapter
 import com.sirelon.marsroverphotos.feature.images.ImagesAdapterClickListener
 import com.sirelon.marsroverphotos.feature.images.LoadAdapter
@@ -33,9 +31,6 @@ abstract class BasePhotosActivity : RxActivity(), ImagesAdapterClickListener {
         supportActionBar?.setDisplayShowHomeEnabled(true)
 
         toolbar.title = title()
-
-        val adViewBanner = findViewById<NativeExpressAdView>(R.id.adViewBanner)
-        AdvertisingObjectFactory.getAdvertisingDelegate().loadAd(adViewBanner)
 
         val popularPhotosList = findViewById<RecyclerView>(R.id.popularPhotosList)
         popularPhotosList.setItemViewCacheSize(30)

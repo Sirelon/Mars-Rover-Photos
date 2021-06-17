@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.text.format.Formatter
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.compose.setContent
@@ -13,26 +14,10 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Info
@@ -60,18 +45,11 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.navArgument
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.*
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.cache.DiskCache
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdSize
-import com.google.android.gms.ads.AdView
-import com.sirelon.marsroverphotos.BuildConfig
+import com.google.android.gms.ads.*
 import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.activity.AboutAppContent
 import com.sirelon.marsroverphotos.activity.ui.MarsRoverPhotosTheme
@@ -93,6 +71,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.util.*
 
 
 @ExperimentalAnimationApi
@@ -118,11 +97,6 @@ class RoversActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        adView = AdView(this)
-        adView.adSize = AdSize.BANNER
-//        adView.adUnitId = "ca-app-pub-3940256099942544/6300978111"
-        adView.adUnitId = "ca-app-pub-7516059448019339/9309101894"
 
         val bottomItems = listOf(Screen.Rovers, Screen.Favorite, Screen.Popular, Screen.About)
 
@@ -161,13 +135,26 @@ class RoversActivity : AppCompatActivity() {
                                 end.linkTo(parent.end)
                                 start.linkTo(parent.start)
                             }
-                            // Unvomment it when migrated to ads 20
-//                            ComposableBannerAd(adModifier)
-                            Text(text = "ASdAsDas", modifier = adModifier)
+                            ComposableBannerAd(adModifier)
                         }
                     })
             }
         }
+
+            // Configurate ads
+        MobileAds.initialize(this@RoversActivity) {
+            Log.d("RoverApplication", "On Add Init status $it")
+        }
+        val testDeviceIds =
+            listOf("235F224A866C9DFBEB26755C3E0337B3", AdRequest.DEVICE_ID_EMULATOR)
+        val configuration =
+            RequestConfiguration.Builder().setTestDeviceIds(testDeviceIds).build()
+        MobileAds.setRequestConfiguration(configuration)
+
+        adView = AdView(this)
+        adView.adSize = AdSize.BANNER
+//        adView.adUnitId = "ca-app-pub-3940256099942544/6300978111"
+        adView.adUnitId = "ca-app-pub-7516059448019339/9309101894"
     }
 
 
@@ -258,8 +245,6 @@ class RoversActivity : AppCompatActivity() {
         AndroidView<View>(modifier = modifier, factory = {
             val adRequest = AdRequest
                 .Builder()
-                .addTestDevice("235F224A866C9DFBEB26755C3E0337B3")
-                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
                 .build()
 
             // Start loading the ad in the background.

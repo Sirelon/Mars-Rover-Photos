@@ -24,16 +24,6 @@ class RoverApplication : Application() {
         super.onCreate()
         APP = this
 
-        GlobalScope.launch {
-            kotlin.runCatching {
-                // Configurate ads
-                MobileAds.initialize(this@RoverApplication) {
-                    Log.d("RoverApplication", "On Add Init status $it")
-                }
-            }
-        }
-
-
         val settings = FirebaseFirestoreSettings.Builder()
             .setPersistenceEnabled(true)
             .build()
