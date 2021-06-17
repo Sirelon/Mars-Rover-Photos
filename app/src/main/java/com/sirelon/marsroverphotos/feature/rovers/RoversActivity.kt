@@ -66,7 +66,6 @@ import com.sirelon.marsroverphotos.feature.photos.RoverPhotosScreen
 import com.sirelon.marsroverphotos.feature.popular.PopularItem
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.ViewType
-import com.sirelon.marsroverphotos.utils.screenWidth
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -83,11 +82,15 @@ class RoversActivity : AppCompatActivity() {
     // If the ad hasn't been laid out, default to the full screen width.
     private val adSize: AdSize
         get() {
+            val display = windowManager.defaultDisplay
             val outMetrics = DisplayMetrics()
+            display.getMetrics(outMetrics)
 
             val density = outMetrics.density
 
-            val adWidth = (screenWidth / density).toInt()
+            val adWidthPixels = outMetrics.widthPixels.toFloat()
+
+            val adWidth = (adWidthPixels / density).toInt()
             return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(this, adWidth)
         }
 
