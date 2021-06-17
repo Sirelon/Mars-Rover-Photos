@@ -153,8 +153,10 @@ class RoversActivity : AppCompatActivity() {
 
         adView = AdView(this)
         adView.adSize = AdSize.BANNER
+        // Test
 //        adView.adUnitId = "ca-app-pub-3940256099942544/6300978111"
         adView.adUnitId = "ca-app-pub-7516059448019339/9309101894"
+//        adView.adUnitId = "ca-app-pub-7516059448019339/2257199658"
     }
 
 
