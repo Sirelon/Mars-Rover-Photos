@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.text.format.Formatter
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -82,12 +83,9 @@ class RoversActivity : AppCompatActivity() {
     // If the ad hasn't been laid out, default to the full screen width.
     private val adSize: AdSize
         get() {
-            val density = resources.configuration.densityDpi
+            val outMetrics = DisplayMetrics()
 
-//            var adWidthPixels = ad_view_container.width.toFloat()
-//            if (adWidthPixels == 0f) {
-//                val adWidthPixels = outMetrics.widthPixels.toFloat()
-//            }
+            val density = outMetrics.density
 
             val adWidth = (screenWidth / density).toInt()
             return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(this, adWidth)
@@ -141,7 +139,7 @@ class RoversActivity : AppCompatActivity() {
             }
         }
 
-            // Configurate ads
+        // Configurate ads
         MobileAds.initialize(this@RoversActivity) {
             Log.d("RoverApplication", "On Add Init status $it")
         }
@@ -152,7 +150,7 @@ class RoversActivity : AppCompatActivity() {
         MobileAds.setRequestConfiguration(configuration)
 
         adView = AdView(this)
-        adView.adSize = AdSize.BANNER
+        adView.adSize = adSize
         // Test
 //        adView.adUnitId = "ca-app-pub-3940256099942544/6300978111"
         adView.adUnitId = "ca-app-pub-7516059448019339/9309101894"
