@@ -32,6 +32,6 @@ task clean(type: Delete) {
 
 buildscript {
     ext {
-        composeVer = '1.0.0-beta08'
+        composeVer = '1.0.0-beta09'
     }
 }

@@ -137,6 +137,8 @@ class RoversActivity : AppCompatActivity() {
                         RoversBottomBar(navController, bottomItems)
                     },
                     content = { paddingValues ->
+//                        // uncomment it i beta09 compose ready
+//                        RoversNavHost(navController)
                         ConstraintLayout(
                             modifier = Modifier
                                 .padding(paddingValues)
@@ -146,6 +148,7 @@ class RoversActivity : AppCompatActivity() {
 
                             val contentModifier = Modifier.constrainAs(content) {
                                 height = Dimension.fillToConstraints
+//                                bottom.linkTo(ad.top)
                                 bottom.linkTo(ad.top)
                                 top.linkTo(parent.top)
                             }
@@ -158,7 +161,9 @@ class RoversActivity : AppCompatActivity() {
                                 end.linkTo(parent.end)
                                 start.linkTo(parent.start)
                             }
-                            ComposableBannerAd(adModifier)
+                            // Unvomment it when migrated to ads 20
+//                            ComposableBannerAd(adModifier)
+                            Text(text = "ASdAsDas", modifier = adModifier)
                         }
                     })
             }
