@@ -31,6 +31,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.size.Scale
 import com.google.accompanist.coil.rememberCoilPainter
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.placeholder
+import com.google.accompanist.placeholder.material.shimmer
+import com.google.accompanist.placeholder.placeholder
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.storage.MarsImage
 
@@ -44,7 +48,8 @@ fun MarsImageComposable(marsImage: MarsImage, onClick: () -> Unit, onFavoriteCli
         modifier = Modifier
             .padding(vertical = 8.dp)
             .fillMaxWidth()
-            .clickable { onClick() },
+            .clickable { onClick() }
+            .placeholder(visible = !ready.value, highlight = PlaceholderHighlight.shimmer()),
         shape = MaterialTheme.shapes.large
     ) {
         Column {
@@ -143,8 +148,8 @@ private fun ImageLoader(imageUrl: String, success: () -> Unit) {
 
     val painter = rememberCoilPainter(
         request = imageUrl,
-        fadeIn = true,
-        previewPlaceholder = R.drawable.img_placeholder,
+//        fadeIn = true,
+//        previewPlaceholder = R.drawable.img_placeholder,
         requestBuilder = {
 //            size(1500, 800)
             scale(Scale.FILL)
