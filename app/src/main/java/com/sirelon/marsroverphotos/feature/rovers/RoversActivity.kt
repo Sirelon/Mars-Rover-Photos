@@ -143,10 +143,12 @@ class RoversActivity : AppCompatActivity() {
         MobileAds.initialize(this@RoversActivity) {
             Log.d("RoverApplication", "On Add Init status $it")
         }
-        val testDeviceIds =
-            listOf("235F224A866C9DFBEB26755C3E0337B3", AdRequest.DEVICE_ID_EMULATOR)
+//        val testDeviceIds =
+//            listOf("235F224A866C9DFBEB26755C3E0337B3", AdRequest.DEVICE_ID_EMULATOR)
         val configuration =
-            RequestConfiguration.Builder().setTestDeviceIds(testDeviceIds).build()
+            RequestConfiguration.Builder()
+//                .setTestDeviceIds(testDeviceIds)
+                .build()
         MobileAds.setRequestConfiguration(configuration)
 
         adView = AdView(this)
