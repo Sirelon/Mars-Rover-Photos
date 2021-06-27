@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
 import com.sirelon.marsroverphotos.extensions.recordException
 import com.sirelon.marsroverphotos.feature.MarsImageFavoriteToggle
@@ -47,6 +48,16 @@ fun ImageScreen(
 
     val selectedPosition = ids.indexOf(selectedId)
 
+    val pagerState = rememberPagerState(pageCount = ids.size)
+
+    if (selectedPosition >= 0 && selectedPosition < ids.size) {
+        LaunchedEffect(key1 = selectedPosition) {
+            pagerState.scrollToPage(selectedPosition)
+        }
+    } else {
+        recordException(IllegalArgumentException("Try to open $ids with $selectedPosition"))
+    }
+
     val imagesA by viewModel.imagesLiveData.observeAsState()
     val images = imagesA
 
@@ -54,7 +65,7 @@ fun ImageScreen(
         when (it) {
             null -> CenteredProgress()
             else -> {
-                ImagesPager(images = it, selectedPosition = selectedPosition) { marsImage, _ ->
+                ImagesPager(pagerState = pagerState, images = it) { marsImage, _ ->
                     viewModel.updateFavorite(marsImage)
                 }
             }
@@ -79,19 +90,10 @@ fun ImageScreen(
 @ExperimentalPagerApi
 @Composable
 fun ImagesPager(
+    pagerState: PagerState,
     images: List<MarsImage>,
-    selectedPosition: Int,
     favoriteClick: (MarsImage, Boolean) -> Unit
 ) {
-    val pagerState = rememberPagerState(pageCount = images.size)
-
-    if (selectedPosition >= 0 && selectedPosition < images.size) {
-        LaunchedEffect(key1 = selectedPosition) {
-            pagerState.scrollToPage(selectedPosition)
-        }
-    } else {
-        recordException(IllegalArgumentException("Try to open $images with $selectedPosition"))
-    }
     HorizontalPager(
         state = pagerState,
         modifier = Modifier
