@@ -2,18 +2,15 @@ package com.sirelon.marsroverphotos
 
 import android.annotation.SuppressLint
 import android.content.Context
-import androidx.lifecycle.LiveData
 import com.sirelon.marsroverphotos.feature.images.ImagesRepository
 import com.sirelon.marsroverphotos.feature.photos.PhotosRepository
 import com.sirelon.marsroverphotos.feature.rovers.INSIGHT_ID
 import com.sirelon.marsroverphotos.feature.rovers.RoversRepository
 import com.sirelon.marsroverphotos.firebase.photos.FirebaseProvider.firebasePhotos
 import com.sirelon.marsroverphotos.models.MarsPhoto
-import com.sirelon.marsroverphotos.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.network.RestApi
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.tracker.ITracker
-import io.reactivex.Observable
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -62,13 +59,13 @@ class DataManager(
         }
     }
 
-    fun updatePhotoSaveCounter(marsPhoto: MarsPhoto?) {
-        marsPhoto?.let {
+    fun updatePhotoSaveCounter(image: MarsImage) {
+        val marsPhoto = image.toMarsPhoto()
             firebasePhotos.updatePhotoSaveCounter(marsPhoto)
                 .onErrorReturn { 0 }
                 .subscribe()
             tracker.trackSave(marsPhoto)
-        }
+
     }
 
     fun updatePhotoShareCounter(marsPhoto: MarsPhoto?, packageName: String?) {

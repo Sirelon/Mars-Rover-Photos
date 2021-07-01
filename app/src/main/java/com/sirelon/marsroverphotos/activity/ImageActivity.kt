@@ -130,7 +130,7 @@ class ImageActivity : RxActivity() {
             imagesViewModel.updateFavorite(it)
         })
 
-        imagePager.setPageTransformer(DepthPageTransformer())
+//        imagePager.setPageTransformer(DepthPageTransformer())
 
         // TODO: //                    // Filter by cameras
         ////                    if (cameraFilterEnable) it.filter { it.camera?.id == marsPhoto.camera?.id }
@@ -244,7 +244,7 @@ class ImageActivity : RxActivity() {
                     "Photo saved from $appUrl"
                 )
                 sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse(localUrl)))
-                dataManager.updatePhotoSaveCounter(photo)
+//                dataManager.updatePhotoSaveCounter(photo)
                 // Update counter for save
                 localUrl
             }.onSuccess {

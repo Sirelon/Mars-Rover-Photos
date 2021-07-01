@@ -315,7 +315,7 @@ class RoversActivity : AppCompatActivity() {
                 if (ids.isNullOrEmpty()) {
                     recordException(IllegalArgumentException("Try to open ${it.id} with $ids and $selectedImage"))
                 } else {
-                    ImageScreen(photoIds = ids, selectedId = selectedImage)
+                    ImageScreen(activity = this@RoversActivity, photoIds = ids, selectedId = selectedImage)
                 }
             }
         }

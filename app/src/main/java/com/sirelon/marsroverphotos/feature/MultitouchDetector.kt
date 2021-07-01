@@ -85,7 +85,7 @@ fun MultitouchDetector(
                         return@gestureDetectorAnalyser false
                     }
 
-                    val yLimitBottom = offsetY + (childSize.height * zoom) - parentSize.height * 1.5
+                    val yLimitBottom = offsetY + (childSize.height * zoom) - parentSize.height * 1.7
                     if (offsetYVal < 0) {
                         if (position.y + yLimitBottom > 0) {
                             offsetY += offsetYVal
