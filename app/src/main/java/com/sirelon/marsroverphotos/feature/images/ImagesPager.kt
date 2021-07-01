@@ -106,7 +106,7 @@ private fun ImagesPagerContent(
                 viewModel.updateFavorite(marsImage)
             }
 
-            val uiEvent = viewModel.uiEvent.distinctUntilChanged().observeAsState()
+            val uiEvent = viewModel.uiEvent.observeAsState()
             val value = uiEvent.value
 
             onEvent(value, activity)
@@ -117,7 +117,6 @@ private fun ImagesPagerContent(
 @Composable
 private fun BoxScope.onEvent(uiEvent: UiEvent?, activity: FragmentActivity) {
     Log.d("Sirelon", "onEvent() called with: uiEvent = $uiEvent, activity = $activity");
-
 
     when (uiEvent) {
         is UiEvent.PhotoSaved -> {

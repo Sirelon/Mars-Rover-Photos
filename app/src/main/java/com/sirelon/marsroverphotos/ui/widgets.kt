@@ -1,9 +1,10 @@
 package com.sirelon.marsroverphotos.ui
 
-import androidx.compose.material.Button
-import androidx.compose.material.Snackbar
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 
 /**
@@ -16,14 +17,27 @@ fun MarsSnackbar(
     actionText: String? = null,
     actionClick: (() -> Unit)? = null
 ) {
-    Snackbar(
-        action = {
-            if (actionText != null && actionClick != null)
-                Button(onClick = actionClick) {
-                    Text(text = actionText)
-                }
-        },
-        content = { Text(text = text) },
+    val snackbarHostState = remember { mutableStateOf(SnackbarHostState()) }
+
+    LaunchedEffect(key1 = text, block = {
+        snackbarHostState.value.showSnackbar(message = text, actionLabel = actionText)
+    })
+
+    SnackbarHost(
         modifier = modifier,
-    )
+        hostState = snackbarHostState.value,
+        snackbar = {
+            Snackbar(
+                action = {
+                    if (actionText != null && actionClick != null)
+                        Button(onClick = {
+                            snackbarHostState.value.currentSnackbarData?.dismiss()
+                            actionClick()
+                        }) {
+                            Text(text = actionText)
+                        }
+                },
+                content = { Text(text = text) },
+            )
+        })
 }
