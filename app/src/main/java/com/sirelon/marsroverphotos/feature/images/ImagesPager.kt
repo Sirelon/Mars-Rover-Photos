@@ -2,16 +2,15 @@ package com.sirelon.marsroverphotos.feature.images
 
 import android.content.Intent
 import android.net.Uri
-import android.provider.MediaStore
 import android.util.Log
-import android.view.View
-import android.widget.Toast
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -20,9 +19,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.bumptech.glide.Glide
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
@@ -31,18 +29,15 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.rememberPermissionState
 import com.sirelon.marsroverphotos.R
-import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.recordException
-import com.sirelon.marsroverphotos.extensions.showSnackBar
+import com.sirelon.marsroverphotos.extensions.showAppSettings
 import com.sirelon.marsroverphotos.feature.MarsImageFavoriteToggle
 import com.sirelon.marsroverphotos.feature.MultitouchDetector
 import com.sirelon.marsroverphotos.feature.MultitouchState
 import com.sirelon.marsroverphotos.feature.NetworkImage
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.ui.CenteredProgress
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.sirelon.marsroverphotos.ui.MarsSnackbar
 
 /**
  * Created on 13.04.2021 22:52 for Mars-Rover-Photos.
@@ -80,51 +75,90 @@ fun ImageScreen(
         when {
             it.isNullOrEmpty() -> CenteredProgress()
             else -> {
-                Column {
-                    TopAppBar(
-                        title = {
-                            Text(text = "Mars rover photos")
-                        },
-                        actions = {
-                            saveIcon(activity) {
-                                it.get(pagerState.currentPage)
-                            }
-                        },
-                    )
-                    Spacer(modifier = Modifier.height(30.dp))
-                    ImagesPager(pagerState = pagerState, images = it) { marsImage, _ ->
-                        viewModel.updateFavorite(marsImage)
-                    }
-                }
+                ImagesPagerContent(activity, viewModel, it, pagerState)
             }
         }
     }
+}
 
-//    Column {
-//        TopAppBar(
-//            title = {
-//                Text(text = "Mars rover photos")
-//            },
-//            actions = {
-//                IconButton(onClick = { /*TODO*/ }) {
-////                    Icon(painter = , contentDescription = )
-//                }
-//            })
-//        ImagesPager(viewModel = viewModel)
-//    }
+@ExperimentalPagerApi
+@Composable
+private fun ImagesPagerContent(
+    activity: FragmentActivity,
+    viewModel: ImageViewModel,
+    it: List<MarsImage>,
+    pagerState: PagerState
+) {
+    Column {
+        TopAppBar(
+            title = { Text(text = "Mars rover photos") },
+            actions = {
+                saveIcon(
+                    activity,
+                    viewModel,
+                    image = { it[pagerState.currentPage] },
+                )
+            },
+        )
+        Spacer(modifier = Modifier.height(30.dp))
+        Box {
+            ImagesPager(pagerState = pagerState, images = it) { marsImage, _ ->
+                viewModel.updateFavorite(marsImage)
+            }
 
+            val uiEvent = viewModel.uiEvent.distinctUntilChanged().observeAsState()
+            val value = uiEvent.value
+
+            onEvent(value, activity)
+        }
+    }
+}
+
+@Composable
+private fun BoxScope.onEvent(uiEvent: UiEvent?, activity: FragmentActivity) {
+    Log.d("Sirelon", "onEvent() called with: uiEvent = $uiEvent, activity = $activity");
+
+
+    when (uiEvent) {
+        is UiEvent.PhotoSaved -> {
+            val imagePath = uiEvent.imagePath
+            MarsSnackbar(
+                text = "File was saved on path $imagePath",
+                modifier = Modifier.align(Alignment.BottomCenter),
+                actionText = "View",
+                actionClick = {
+                    val openIntent = Intent(Intent.ACTION_VIEW, Uri.parse(imagePath))
+                    activity.startActivity(openIntent)
+                }
+            )
+        }
+        is UiEvent.CameraPermissionDenied -> {
+            MarsSnackbar(
+                modifier = Modifier.align(Alignment.BottomCenter),
+                text = "Without this permission I cannot save this nice photo to your gallery. If you want to save image please give permission in settings",
+                actionText = "Open setting",
+                actionClick = { activity.showAppSettings() },
+            )
+        }
+    }
 }
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-private fun saveIcon(activity: FragmentActivity, image: () -> MarsImage) {
+private fun saveIcon(
+    activity: FragmentActivity,
+    viewModel: ImageViewModel,
+    image: () -> MarsImage
+) {
     // permission state
     val cameraPermissionState =
         rememberPermissionState(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
 
-    checkPermissionState(cameraPermissionState) {
-        savePhotoToLocal(activity = activity, photo = image())
-    }
+    checkPermissionState(
+        cameraPermissionState = cameraPermissionState,
+        permissionGranted = { viewModel.saveImage(activity, image()) },
+        permissionDenied = viewModel::onPermissionDenied,
+    )
 
     IconButton(onClick = {
         cameraPermissionState.launchPermissionRequest()
@@ -136,82 +170,24 @@ private fun saveIcon(activity: FragmentActivity, image: () -> MarsImage) {
     }
 }
 
-private fun savePhotoToLocal(activity: FragmentActivity, photo: MarsImage) {
-    val appUrl = "https://play.google.com/store/apps/details?id=${activity.packageName}"
-    activity.lifecycleScope.launch(Dispatchers.IO) {
-        kotlin.runCatching {
-            val bitmap =
-                Glide.with(activity).asBitmap().load(photo.imageUrl).submit().get()
-            val localUrl = MediaStore.Images.Media.insertImage(
-                activity.contentResolver, bitmap,
-                "mars_photo_${photo.id}",
-                "Photo saved from $appUrl"
-            )
-            activity.sendBroadcast(
-                Intent(
-                    Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
-                    Uri.parse(localUrl)
-                )
-            )
-            val dataManager = RoverApplication.APP.dataManger
-            dataManager.updatePhotoSaveCounter(photo)
-            // Update counter for save
-            localUrl
-        }.onSuccess {
-            withContext(Dispatchers.Main) {
-                showSnackBarOnSaved(activity, it)
-            }
-        }.onFailure {
-            withContext(Dispatchers.Main) {
-                it.printStackTrace()
-                Toast.makeText(activity, "Error occured ${it.message}", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-}
-
-private fun showSnackBarOnSaved(activity: FragmentActivity, imagePath: String?) {
-    val fullscreenImageRoot = activity.findViewById<View>(android.R.id.content)
-    fullscreenImageRoot.showSnackBar(
-        msg = "File was saved on path $imagePath",
-        actionTxt = "View", actionCallback = View.OnClickListener {
-            val openIntent = Intent(Intent.ACTION_VIEW, Uri.parse(imagePath))
-            activity.startActivity(openIntent)
-        }, duration = com.google.android.material.snackbar.Snackbar.LENGTH_SHORT
-    )
-}
-
-
 @OptIn(ExperimentalPermissionsApi::class)
-@Composable
 private fun checkPermissionState(
     cameraPermissionState: PermissionState,
-    permissionGranted: () -> Unit
+    permissionGranted: () -> Unit,
+    permissionDenied: (rationale: Boolean) -> Unit
 ) {
-
-    val snackBarSettings = remember { mutableStateOf(false) }
-
     when {
         cameraPermissionState.hasPermission -> {
             permissionGranted()
         }
         cameraPermissionState.shouldShowRationale -> {
-            Text("Feature not available")
+            permissionDenied(true)
         }
         !cameraPermissionState.permissionRequested -> {
 //            launchPermissionRequest = true
         }
         else -> {
-            snackBarSettings.value = true
-        }
-    }
-
-    if (snackBarSettings.value) {
-        com.sirelon.marsroverphotos.ui.Snackbar(
-            text = "Without this permission I cannot save this nice photo to your gallery. If you want to save image please give permission in settings",
-            "Open setting"
-        ) {
-            // TODO:
+            permissionDenied(false)
         }
     }
 }
