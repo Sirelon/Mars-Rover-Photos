@@ -153,13 +153,14 @@ private fun saveIcon(
     val cameraPermissionState =
         rememberPermissionState(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
 
-    checkPermissionState(
-        cameraPermissionState = cameraPermissionState,
-        permissionGranted = { viewModel.saveImage(activity, image()) },
-        permissionDenied = viewModel::onPermissionDenied,
-    )
-
     IconButton(onClick = {
+
+        checkPermissionState(
+            cameraPermissionState = cameraPermissionState,
+            permissionGranted = { viewModel.saveImage(activity, image()) },
+            permissionDenied = viewModel::onPermissionDenied,
+        )
+
         cameraPermissionState.launchPermissionRequest()
     }) {
         Icon(
