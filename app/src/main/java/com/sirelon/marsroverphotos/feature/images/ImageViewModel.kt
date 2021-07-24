@@ -107,7 +107,8 @@ class ImageViewModel(app: Application) : AndroidViewModel(app) {
 
     fun onPermissionDenied(rationale: Boolean) {
 //        uiEvent.value = null
-        uiEvent.value = UiEvent.CameraPermissionDenied(rationale)
+        if (!rationale)
+            uiEvent.value = UiEvent.CameraPermissionDenied(rationale)
     }
 }
 
