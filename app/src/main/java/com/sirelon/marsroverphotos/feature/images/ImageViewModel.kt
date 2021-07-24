@@ -30,7 +30,7 @@ class ImageViewModel(app: Application) : AndroidViewModel(app) {
 
     private val idsEmitor = MutableStateFlow<List<String>>(emptyList())
 
-    val uiEvent = MutableLiveData<UiEvent>()
+    val uiEvent = MutableLiveData<UiEvent?>()
 
     val imagesLiveData = idsEmitor
         .flatMapLatest { repository.loadImages(it) }
@@ -106,11 +106,12 @@ class ImageViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun onPermissionDenied(rationale: Boolean) {
+//        uiEvent.value = null
         uiEvent.value = UiEvent.CameraPermissionDenied(rationale)
     }
 }
 
 sealed class UiEvent {
-    data class PhotoSaved(val imagePath: String?) : UiEvent()
-    data class CameraPermissionDenied(val rationale: Boolean) : UiEvent()
+    class PhotoSaved(val imagePath: String?) : UiEvent()
+    class CameraPermissionDenied(val rationale: Boolean) : UiEvent()
 }

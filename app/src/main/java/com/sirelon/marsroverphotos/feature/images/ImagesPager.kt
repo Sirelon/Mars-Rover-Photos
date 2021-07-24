@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,7 +20,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -38,6 +38,7 @@ import com.sirelon.marsroverphotos.feature.NetworkImage
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.ui.CenteredProgress
 import com.sirelon.marsroverphotos.ui.MarsSnackbar
+import kotlinx.coroutines.launch
 
 /**
  * Created on 13.04.2021 22:52 for Mars-Rover-Photos.
@@ -118,26 +119,42 @@ private fun ImagesPagerContent(
 private fun BoxScope.onEvent(uiEvent: UiEvent?, activity: FragmentActivity) {
     Log.d("Sirelon", "onEvent() called with: uiEvent = $uiEvent, activity = $activity");
 
+    val snackbarHostState = remember { SnackbarHostState() }
+
     when (uiEvent) {
         is UiEvent.PhotoSaved -> {
             val imagePath = uiEvent.imagePath
             MarsSnackbar(
-                text = "File was saved on path $imagePath",
+                snackbarHostState = snackbarHostState,
                 modifier = Modifier.align(Alignment.BottomCenter),
-                actionText = "View",
                 actionClick = {
                     val openIntent = Intent(Intent.ACTION_VIEW, Uri.parse(imagePath))
                     activity.startActivity(openIntent)
                 }
             )
+            LaunchedEffect(key1 = uiEvent, block = {
+                launch {
+                    snackbarHostState.showSnackbar(
+                        message = "File was saved on path $imagePath",
+                        actionLabel = "View"
+                    )
+                }
+            })
         }
         is UiEvent.CameraPermissionDenied -> {
             MarsSnackbar(
                 modifier = Modifier.align(Alignment.BottomCenter),
-                text = "Without this permission I cannot save this nice photo to your gallery. If you want to save image please give permission in settings",
-                actionText = "Open setting",
+                snackbarHostState = snackbarHostState,
                 actionClick = { activity.showAppSettings() },
             )
+            LaunchedEffect(key1 = uiEvent, block = {
+                launch {
+                    snackbarHostState.showSnackbar(
+                        message = "Without this permission I cannot save this nice photo to your gallery. If you want to save image please give permission in settings",
+                        actionLabel = "Open setting"
+                    )
+                }
+            })
         }
     }
 }
@@ -155,8 +172,10 @@ private fun saveIcon(
 
     IconButton(onClick = {
 
+
         checkPermissionState(
             cameraPermissionState = cameraPermissionState,
+            launchAgain = { cameraPermissionState.launchPermissionRequest() },
             permissionGranted = { viewModel.saveImage(activity, image()) },
             permissionDenied = viewModel::onPermissionDenied,
         )
@@ -173,6 +192,7 @@ private fun saveIcon(
 @OptIn(ExperimentalPermissionsApi::class)
 private fun checkPermissionState(
     cameraPermissionState: PermissionState,
+    launchAgain: () -> Unit,
     permissionGranted: () -> Unit,
     permissionDenied: (rationale: Boolean) -> Unit
 ) {
@@ -184,6 +204,7 @@ private fun checkPermissionState(
             permissionDenied(true)
         }
         !cameraPermissionState.permissionRequested -> {
+            launchAgain()
 //            launchPermissionRequest = true
         }
         else -> {

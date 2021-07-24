@@ -2,9 +2,6 @@ package com.sirelon.marsroverphotos.ui
 
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 
 /**
@@ -13,31 +10,25 @@ import androidx.compose.ui.Modifier
 @Composable
 fun MarsSnackbar(
     modifier: Modifier = Modifier,
-    text: String,
-    actionText: String? = null,
+    snackbarHostState: SnackbarHostState,
     actionClick: (() -> Unit)? = null
 ) {
-    val snackbarHostState = remember { mutableStateOf(SnackbarHostState()) }
-
-    LaunchedEffect(key1 = text, block = {
-        snackbarHostState.value.showSnackbar(message = text, actionLabel = actionText)
-    })
-
+    val actionText = snackbarHostState.currentSnackbarData?.actionLabel
     SnackbarHost(
         modifier = modifier,
-        hostState = snackbarHostState.value,
+        hostState = snackbarHostState,
         snackbar = {
             Snackbar(
                 action = {
                     if (actionText != null && actionClick != null)
                         Button(onClick = {
-                            snackbarHostState.value.currentSnackbarData?.dismiss()
+                            snackbarHostState.currentSnackbarData?.dismiss()
                             actionClick()
                         }) {
                             Text(text = actionText)
                         }
                 },
-                content = { Text(text = text) },
+                content = { Text(text = snackbarHostState.currentSnackbarData?.message ?: "") },
             )
         })
 }
