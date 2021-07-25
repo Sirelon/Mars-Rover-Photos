@@ -22,7 +22,7 @@ class FullscreenImageTracker : MultitouchDetectorCallback {
         first ?: return@DataFlowCollector
         val distance = first + last
         dataManager.trackEvent(
-            "scroll", mapOf(
+            "gesture_scroll", mapOf(
                 "from" to first,
                 "to" to last,
                 "direction" to if (last > 0f) "forward" else "backward",
@@ -34,6 +34,21 @@ class FullscreenImageTracker : MultitouchDetectorCallback {
     private val zoomChangeCollector =
         DataFlowCollector<Triple<Float, Float, Float>>(callback = { first, last ->
             last ?: return@DataFlowCollector
+            first ?: return@DataFlowCollector
+
+            dataManager.trackEvent(
+                "gesture_zoom", mapOf(
+                    "fromZoom" to first.first,
+                    "toZoom" to last.first,
+
+                    "fromY" to first.second,
+                    "toY" to last.second,
+
+                    "fromX" to first.third,
+                    "toX" to last.third,
+                )
+            )
+
             trackScale()
         })
 
