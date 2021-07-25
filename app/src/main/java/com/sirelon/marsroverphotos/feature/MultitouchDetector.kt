@@ -1,6 +1,7 @@
 package com.sirelon.marsroverphotos.feature
 
 import android.graphics.Matrix
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.calculateCentroid
 import androidx.compose.foundation.gestures.calculateCentroidSize
@@ -69,6 +70,8 @@ fun MultitouchDetector(
                 scope.launch {
                     detectTapGestures(onDoubleTap = {
                         val toChange = if (zoomToChange != 1f) 1f else state.maxZoom
+                        offsetX = 0f
+                        offsetY = 0f
                         zoomToChange = toChange
                     })
                 }
@@ -135,7 +138,6 @@ fun MultitouchDetector(
             }
     ) {
         val intOffset = IntOffset(offsetX.roundToInt(), offsetY.roundToInt())
-
 
         Box(
             Modifier
