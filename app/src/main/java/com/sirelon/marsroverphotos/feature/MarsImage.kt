@@ -3,20 +3,8 @@ package com.sirelon.marsroverphotos.feature
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeightIn
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.IconToggleButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -29,12 +17,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import coil.annotation.ExperimentalCoilApi
+import coil.compose.rememberImagePainter
 import coil.size.Scale
-import com.google.accompanist.coil.rememberCoilPainter
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
-import com.google.accompanist.placeholder.placeholder
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.storage.MarsImage
 
@@ -124,16 +112,19 @@ fun MarsImageFavoriteToggle(
     }
 }
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun NetworkImage(
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Crop,
     imageUrl: String
 ) {
-    val painter = rememberCoilPainter(
-        request = imageUrl,
-        fadeIn = true,
-        previewPlaceholder = R.drawable.img_placeholder
+    val painter = rememberImagePainter(
+        data = imageUrl,
+        builder = {
+            crossfade(true)
+            placeholder(R.drawable.img_placeholder)
+        },
     )
     Image(
         modifier = modifier,
@@ -143,18 +134,17 @@ fun NetworkImage(
     )
 }
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 private fun ImageLoader(imageUrl: String, success: () -> Unit) {
-
-    val painter = rememberCoilPainter(
-        request = imageUrl,
-//        fadeIn = true,
-//        previewPlaceholder = R.drawable.img_placeholder,
-        requestBuilder = {
-//            size(1500, 800)
+    val painter = rememberImagePainter(
+        data = imageUrl,
+        builder = {
+            crossfade(true)
+            placeholder(R.drawable.img_placeholder)
             scale(Scale.FILL)
-                .listener(onSuccess = { _, _ -> success() })
-        }
+            listener { _, _ -> success() }
+        },
     )
     Image(
         modifier = Modifier

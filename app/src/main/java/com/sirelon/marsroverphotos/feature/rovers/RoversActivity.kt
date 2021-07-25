@@ -47,6 +47,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
+import coil.util.CoilUtils
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.cache.DiskCache
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -71,7 +72,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.util.*
 
 
 @ExperimentalAnimationApi
@@ -164,12 +164,18 @@ class RoversActivity : AppCompatActivity() {
         track("Clear cache")
         val ctx = application
         lifecycleScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, throwable -> throwable.printStackTrace() }) {
-            val cacheFile = File(cacheDir, DiskCache.Factory.DEFAULT_DISK_CACHE_DIR)
-            val size = calculateSize(cacheFile)
+            val glideCacheFile = File(cacheDir, DiskCache.Factory.DEFAULT_DISK_CACHE_DIR)
+            val glideSize = calculateSize(glideCacheFile)
+
+            val coilCache = CoilUtils.createDefaultCache(ctx)
+            val coilSize = kotlin.runCatching { coilCache.size() }
+                .onFailure(::recordException).getOrDefault(0)
+
+            coilCache.directory().deleteRecursively()
 
             Glide.get(ctx).clearDiskCache()
 
-            val sizeStr = Formatter.formatFileSize(ctx, size)
+            val sizeStr = Formatter.formatFileSize(ctx, glideSize + coilSize)
             withContext(Dispatchers.Main) {
                 Toast.makeText(ctx, "Cleared $sizeStr", Toast.LENGTH_SHORT).show()
             }
@@ -315,7 +321,11 @@ class RoversActivity : AppCompatActivity() {
                 if (ids.isNullOrEmpty()) {
                     recordException(IllegalArgumentException("Try to open ${it.id} with $ids and $selectedImage"))
                 } else {
-                    ImageScreen(activity = this@RoversActivity, photoIds = ids, selectedId = selectedImage)
+                    ImageScreen(
+                        activity = this@RoversActivity,
+                        photoIds = ids,
+                        selectedId = selectedImage
+                    )
                 }
             }
         }
