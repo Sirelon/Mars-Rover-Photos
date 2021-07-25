@@ -234,6 +234,8 @@ fun ImagesPager(
         // Our page content
         val marsImage = images[page]
 
+        callback.currentImage = marsImage
+
         Box {
             val state = rememberSaveable(saver = MultitouchState.Saver) {
                 MultitouchState(

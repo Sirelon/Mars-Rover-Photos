@@ -20,6 +20,7 @@ import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastForEach
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
+import com.sirelon.marsroverphotos.storage.MarsImage
 import kotlinx.coroutines.launch
 import kotlin.math.*
 
@@ -28,6 +29,8 @@ import kotlin.math.*
  */
 
 interface MultitouchDetectorCallback {
+
+    var currentImage: MarsImage?
 
     fun onDoubleTap(zoomToChange: Float)
 

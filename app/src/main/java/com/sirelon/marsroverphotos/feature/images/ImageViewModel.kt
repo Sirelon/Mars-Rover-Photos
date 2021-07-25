@@ -6,7 +6,10 @@ import android.net.Uri
 import android.provider.MediaStore
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.bumptech.glide.Glide
 import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.recordException
@@ -14,6 +17,7 @@ import com.sirelon.marsroverphotos.feature.MultitouchDetectorCallback
 import com.sirelon.marsroverphotos.firebase.photos.FirebaseProvider
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.storage.MarsImage
+import com.sirelon.marsroverphotos.tracker.FullscreenImageTracker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,12 +25,12 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 
 /**
  * Created on 22.08.2020 18:59 for Mars-Rover-Photos.
  */
-class ImageViewModel(app: Application) : AndroidViewModel(app), MultitouchDetectorCallback {
+class ImageViewModel(app: Application) : AndroidViewModel(app),
+    MultitouchDetectorCallback by FullscreenImageTracker() {
 
     private val repository = ImagesRepository(app)
 
@@ -61,17 +65,6 @@ class ImageViewModel(app: Application) : AndroidViewModel(app), MultitouchDetect
 
         val tracker = getApplication<RoverApplication>().tracker
         tracker.trackFavorite(image.toMarsPhoto(), "Images", !image.favorite)
-    }
-
-
-    fun updatePhotoScaleCounter(marsPhoto: MarsPhoto?) {
-        marsPhoto?.let {
-            FirebaseProvider.firebasePhotos.updatePhotoScaleCounter(marsPhoto)
-                .onErrorReturn { 0 }
-                .subscribe()
-            val tracker = getApplication<RoverApplication>().tracker
-            tracker.trackScale(marsPhoto)
-        }
     }
 
     fun saveImage(activity: FragmentActivity, photo: MarsImage) {
@@ -111,23 +104,6 @@ class ImageViewModel(app: Application) : AndroidViewModel(app), MultitouchDetect
 //        uiEvent.value = null
         if (!rationale)
             uiEvent.value = UiEvent.CameraPermissionDenied(rationale)
-    }
-
-    override fun onDoubleTap(zoomToChange: Float) {
-        Timber.d("onDoubleTap() called with: zoomToChange = $zoomToChange");
-    }
-
-    override fun onZoomGesture(
-        zoomToChange: Float,
-        offsetY: Float,
-        offsetX: Float,
-        shouldBlock: Boolean
-    ) {
-        Timber.d("onZoomGesture() called with: zoomToChange = $zoomToChange, offsetY = $offsetY, offsetX = $offsetX, shouldBlock = $shouldBlock");
-    }
-
-    override fun scrollGesture(scrollDelta: Float) {
-        Timber.d("scrollGesture() called with: scrollDelta = $scrollDelta");
     }
 }
 
