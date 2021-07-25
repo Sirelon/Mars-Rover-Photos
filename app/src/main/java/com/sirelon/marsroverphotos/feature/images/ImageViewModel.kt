@@ -105,7 +105,10 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
     }
 
     fun onShown(marsPhoto: MarsImage, page: Int) {
-        RoverApplication.APP.dataManger.updatePhotoSeenCounter(marsPhoto.toMarsPhoto())
+        val dataManger = RoverApplication.APP.dataManger
+        dataManger.trackEvent("photo_show", mapOf("page" to page))
+
+        dataManger.updatePhotoSeenCounter(marsPhoto.toMarsPhoto())
     }
 }
 
