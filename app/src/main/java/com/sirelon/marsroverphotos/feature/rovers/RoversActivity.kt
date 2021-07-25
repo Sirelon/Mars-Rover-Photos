@@ -366,9 +366,8 @@ fun RoversContent(
     rovers: List<Rover>,
     onClick: (rover: ViewType) -> Unit
 ) {
-    val items = rovers.toMutableList<Rover>()
     LazyColumn {
-        items(items) { item ->
+        items(rovers) { item ->
             RoverItem(rover = item, onClick = onClick)
             Divider()
         }
