@@ -15,8 +15,6 @@ class FullscreenImageTracker : MultitouchDetectorCallback {
     private val tracker = RoverApplication.APP.tracker
     private val dataManager = RoverApplication.APP.dataManger
 
-    // TODO: Seen Counter
-
     private val scrollChangeCollector = DataFlowCollector<Float>(callback = { first, last ->
         last ?: return@DataFlowCollector
         first ?: return@DataFlowCollector

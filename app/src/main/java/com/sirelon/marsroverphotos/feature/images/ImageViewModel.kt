@@ -14,8 +14,6 @@ import com.bumptech.glide.Glide
 import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.recordException
 import com.sirelon.marsroverphotos.feature.MultitouchDetectorCallback
-import com.sirelon.marsroverphotos.firebase.photos.FirebaseProvider
-import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.tracker.FullscreenImageTracker
 import kotlinx.coroutines.Dispatchers
@@ -104,6 +102,10 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
 //        uiEvent.value = null
         if (!rationale)
             uiEvent.value = UiEvent.CameraPermissionDenied(rationale)
+    }
+
+    fun onShown(marsPhoto: MarsImage, page: Int) {
+        RoverApplication.APP.dataManger.updatePhotoSeenCounter(marsPhoto.toMarsPhoto())
     }
 }
 

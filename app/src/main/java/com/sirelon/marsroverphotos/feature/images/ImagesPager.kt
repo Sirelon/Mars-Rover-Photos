@@ -103,7 +103,8 @@ private fun ImagesPagerContent(
             ImagesPager(
                 pagerState = pagerState,
                 images = it,
-                callback = viewModel
+                callback = viewModel,
+                onShownPage = viewModel::onShown
             ) { marsImage, _ ->
                 viewModel.updateFavorite(marsImage)
             }
@@ -223,6 +224,7 @@ fun ImagesPager(
     pagerState: PagerState,
     images: List<MarsImage>,
     callback: MultitouchDetectorCallback,
+    onShownPage: (marsPhoto: MarsImage, page: Int) -> Unit,
     favoriteClick: (MarsImage, Boolean) -> Unit
 ) {
     HorizontalPager(
@@ -233,6 +235,8 @@ fun ImagesPager(
     ) { page ->
         // Our page content
         val marsImage = images[page]
+
+        onShownPage(marsImage, page)
 
         callback.currentImage = marsImage
 
