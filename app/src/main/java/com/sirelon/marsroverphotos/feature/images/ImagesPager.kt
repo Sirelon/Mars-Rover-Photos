@@ -119,6 +119,9 @@ private fun ImagesPagerContent(
 private fun BoxScope.onEvent(uiEvent: UiEvent?, activity: FragmentActivity) {
     Log.d("Sirelon", "onEvent() called with: uiEvent = $uiEvent, activity = $activity");
 
+    if (uiEvent?.handled == true) return
+
+    uiEvent?.handled = true
     val snackbarHostState = remember { SnackbarHostState() }
 
     when (uiEvent) {

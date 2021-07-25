@@ -113,6 +113,8 @@ class ImageViewModel(app: Application) : AndroidViewModel(app) {
 }
 
 sealed class UiEvent {
+    var handled = false
+
     class PhotoSaved(val imagePath: String?) : UiEvent()
     class CameraPermissionDenied(val rationale: Boolean) : UiEvent()
 }
