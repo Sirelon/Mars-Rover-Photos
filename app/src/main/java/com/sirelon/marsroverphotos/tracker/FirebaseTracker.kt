@@ -1,6 +1,7 @@
 package com.sirelon.marsroverphotos.tracker
 
 import android.content.Context
+import android.os.Bundle
 import androidx.core.os.bundleOf
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.sirelon.marsroverphotos.models.MarsPhoto
@@ -39,6 +40,10 @@ class FirebaseTracker(context: Context) : ITracker {
     }
 
     override fun trackClick(event: String) {
+        fb.logEvent(event, null)
+    }
+
+    override fun trackEvent(event: String, params: Bundle) {
         fb.logEvent(event, null)
     }
 

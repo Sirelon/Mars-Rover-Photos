@@ -2,6 +2,7 @@ package com.sirelon.marsroverphotos
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Bundle
 import com.sirelon.marsroverphotos.feature.images.ImagesRepository
 import com.sirelon.marsroverphotos.feature.photos.PhotosRepository
 import com.sirelon.marsroverphotos.feature.rovers.INSIGHT_ID
@@ -14,6 +15,7 @@ import com.sirelon.marsroverphotos.tracker.ITracker
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 /**
  * @author romanishin
@@ -79,6 +81,15 @@ class DataManager(
 
     fun trackClick(event: String) {
         tracker.trackClick("click_$event")
+    }
+
+    fun trackEvent(event: String, params: Map<String, Any?>) {
+        Timber.d("trackEvent() called with: event = $event, params = $params");
+        val bundle = Bundle()
+
+        params.forEach { bundle.putString(it.key, it.value.toString()) }
+
+        tracker.trackEvent(event, bundle)
     }
 
     suspend fun cacheImages(photos: List<MarsImage>) {

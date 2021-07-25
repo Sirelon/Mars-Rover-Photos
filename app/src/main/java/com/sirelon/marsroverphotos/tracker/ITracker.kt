@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos.tracker
 
+import android.os.Bundle
 import com.sirelon.marsroverphotos.models.MarsPhoto
 
 /**
@@ -18,4 +19,5 @@ interface ITracker {
     fun trackClick(event: String)
 
     fun trackFavorite(photo: MarsPhoto, from: String, fav: Boolean)
+    fun trackEvent(event: String, params: Bundle)
 }
