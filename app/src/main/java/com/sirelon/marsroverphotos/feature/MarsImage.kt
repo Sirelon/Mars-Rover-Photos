@@ -42,10 +42,6 @@ fun MarsImageComposable(marsImage: MarsImage, onClick: () -> Unit, onFavoriteCli
     ) {
         Column {
             ImageLoader(marsImage.imageUrl) { ready.value = true }
-//            NetworkImage(
-//                modifier = Modifier.requiredHeightIn(200.dp, 400.dp),
-//                imageUrl = marsImage.imageUrl
-//            )
             if (ready.value) {
                 PhotoStats(marsImage, onFavoriteClick)
             }
@@ -58,7 +54,6 @@ fun PhotoStats(marsImage: MarsImage, onFavoriteClick: () -> Unit) {
     val stats = marsImage.stats
 
     Row(
-//        horizontalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .fillMaxWidth()
@@ -72,16 +67,6 @@ fun PhotoStats(marsImage: MarsImage, onFavoriteClick: () -> Unit) {
             StatsInfoText(stats.save, R.drawable.ic_save_counter, "counterSave")
             StatsInfoText(stats.share, R.drawable.ic_share_counter, "counterShare")
         }
-//        val name = marsImage.name
-//        if (name == null) {
-//            Spacer(modifier = Modifier.width(8.dp))
-//        } else {
-//            Text(
-//                modifier = Modifier.padding(horizontal = 8.dp),
-//                textAlign = TextAlign.Center,
-//                text = name
-//            )
-//        }
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
             MarsImageFavoriteToggle(
@@ -140,8 +125,8 @@ private fun ImageLoader(imageUrl: String, success: () -> Unit) {
     val painter = rememberImagePainter(
         data = imageUrl,
         builder = {
-            crossfade(true)
-            placeholder(R.drawable.img_placeholder)
+//            crossfade(true)
+//            placeholder(R.drawable.img_placeholder)
             scale(Scale.FILL)
             listener { _, _ -> success() }
         },
