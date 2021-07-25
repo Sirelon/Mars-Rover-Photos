@@ -11,6 +11,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.bumptech.glide.Glide
+import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.exceptionHandler
 import com.sirelon.marsroverphotos.extensions.recordException
@@ -113,6 +114,32 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
     fun trackSaveClick() {
         getApplication<RoverApplication>().tracker.trackClick("save")
     }
+
+    fun shareMarsImage(activity: FragmentActivity, marsImage: MarsImage) {
+        getApplication<RoverApplication>().tracker.trackClick("share")
+        RoverApplication.APP.dataManger.updatePhotoShareCounter(marsImage.toMarsPhoto(), null)
+        val shareIntent = shareIntent(marsImage)
+        activity.startActivity(
+            Intent.createChooser(
+                shareIntent,
+                activity.resources.getText(R.string.share)
+            )
+        )
+    }
+
+    private val appUrl by lazy {
+        "https://play.google.com/store/apps/details?id=${getApplication<Application>().packageName}"
+    }
+
+    private fun shareIntent(marsImage: MarsImage): Intent {
+        val shareIntent = Intent(Intent.ACTION_SEND)
+        val shareText =
+            "Take a look what I found on Mars ${marsImage.imageUrl} with this app \n\n$appUrl"
+        shareIntent.type = "text/plain"
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shareText)
+        return shareIntent
+    }
+
 }
 
 sealed class UiEvent {

@@ -8,17 +8,19 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.viewpager2.widget.ViewPager2
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
@@ -26,14 +28,12 @@ import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.rememberPermissionState
-import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.extensions.recordException
 import com.sirelon.marsroverphotos.extensions.showAppSettings
 import com.sirelon.marsroverphotos.feature.*
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.ui.CenteredProgress
 import com.sirelon.marsroverphotos.ui.MarsSnackbar
-import kotlinx.coroutines.launch
 
 /**
  * Created on 13.04.2021 22:52 for Mars-Rover-Photos.
@@ -91,11 +91,12 @@ private fun ImagesPagerContent(
         TopAppBar(
             title = { Text(text = titleState) },
             actions = {
-                saveIcon(
+                SaveIcon(
                     activity,
                     viewModel,
                     image = { list[pagerState.currentPage] },
                 )
+                ShareIcon(activity, viewModel, image = { list[pagerState.currentPage] })
             },
         )
         Spacer(modifier = Modifier.height(30.dp))
@@ -139,12 +140,10 @@ private fun BoxScope.onEvent(uiEvent: UiEvent?, activity: FragmentActivity) {
                 }
             )
             LaunchedEffect(key1 = uiEvent, block = {
-                launch {
-                    snackbarHostState.showSnackbar(
-                        message = "File was saved on path $imagePath",
-                        actionLabel = "View"
-                    )
-                }
+                snackbarHostState.showSnackbar(
+                    message = "File was saved on path $imagePath",
+                    actionLabel = "View"
+                )
             })
         }
         is UiEvent.CameraPermissionDenied -> {
@@ -154,12 +153,10 @@ private fun BoxScope.onEvent(uiEvent: UiEvent?, activity: FragmentActivity) {
                 actionClick = { activity.showAppSettings() },
             )
             LaunchedEffect(key1 = uiEvent, block = {
-                launch {
-                    snackbarHostState.showSnackbar(
-                        message = "Without this permission I cannot save this nice photo to your gallery. If you want to save image please give permission in settings",
-                        actionLabel = "Open setting"
-                    )
-                }
+                snackbarHostState.showSnackbar(
+                    message = "Without this permission I cannot save this nice photo to your gallery. If you want to save image please give permission in settings",
+                    actionLabel = "Open setting"
+                )
             })
         }
     }
@@ -167,7 +164,7 @@ private fun BoxScope.onEvent(uiEvent: UiEvent?, activity: FragmentActivity) {
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-private fun saveIcon(
+private fun SaveIcon(
     activity: FragmentActivity,
     viewModel: ImageViewModel,
     image: () -> MarsImage
@@ -188,8 +185,20 @@ private fun saveIcon(
         cameraPermissionState.launchPermissionRequest()
     }) {
         Icon(
-            painter = painterResource(R.drawable.ic_save),
-            contentDescription = null
+            painter = rememberVectorPainter(image = Icons.Filled.Save),
+            contentDescription = "Save"
+        )
+    }
+}
+
+@Composable
+fun ShareIcon(activity: FragmentActivity, viewModel: ImageViewModel, image: () -> MarsImage) {
+    IconButton(onClick = {
+        viewModel.shareMarsImage(activity = activity, marsImage = image())
+    }) {
+        Icon(
+            painter = rememberVectorPainter(image = Icons.Filled.Share),
+            contentDescription = "Share"
         )
     }
 }

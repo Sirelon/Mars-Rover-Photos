@@ -52,6 +52,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.cache.DiskCache
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.android.gms.ads.*
+import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.activity.AboutAppContent
 import com.sirelon.marsroverphotos.activity.ui.MarsRoverPhotosTheme
@@ -67,6 +68,7 @@ import com.sirelon.marsroverphotos.feature.photos.RoverPhotosScreen
 import com.sirelon.marsroverphotos.feature.popular.PopularItem
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.ViewType
+import com.sirelon.marsroverphotos.storage.MarsImage
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
