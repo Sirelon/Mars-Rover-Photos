@@ -12,6 +12,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.bumptech.glide.Glide
 import com.sirelon.marsroverphotos.RoverApplication
+import com.sirelon.marsroverphotos.extensions.exceptionHandler
 import com.sirelon.marsroverphotos.extensions.recordException
 import com.sirelon.marsroverphotos.feature.MultitouchDetectorCallback
 import com.sirelon.marsroverphotos.storage.MarsImage
@@ -54,11 +55,8 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
     }
 
     fun updateFavorite(image: MarsImage) {
-        viewModelScope.launch {
-            kotlin.runCatching { repository.updateFavForImage(image) }
-                .onFailure {
-                    it.printStackTrace()
-                }
+        viewModelScope.launch(exceptionHandler) {
+            repository.updateFavForImage(image)
         }
 
         val tracker = getApplication<RoverApplication>().tracker
@@ -89,6 +87,7 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
             }
                 .onSuccess { uiEvent.postValue(UiEvent.PhotoSaved(it)) }
                 .onFailure {
+                    recordException(it)
                     withContext(Dispatchers.Main) {
                         it.printStackTrace()
                         Toast.makeText(activity, "Error occured ${it.message}", Toast.LENGTH_SHORT)
@@ -109,6 +108,10 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
         dataManger.trackEvent("photo_show", mapOf("page" to page))
 
         dataManger.updatePhotoSeenCounter(marsPhoto.toMarsPhoto())
+    }
+
+    fun trackSaveClick() {
+        getApplication<RoverApplication>().tracker.trackClick("save")
     }
 }
 

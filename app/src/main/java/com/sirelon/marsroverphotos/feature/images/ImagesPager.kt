@@ -8,11 +8,8 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,6 +18,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.viewpager2.widget.ViewPager2
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
@@ -84,17 +82,19 @@ fun ImageScreen(
 private fun ImagesPagerContent(
     activity: FragmentActivity,
     viewModel: ImageViewModel,
-    it: List<MarsImage>,
+    list: List<MarsImage>,
     pagerState: PagerState
 ) {
+    var titleState by remember { mutableStateOf("Mars rover photos") }
+
     Column {
         TopAppBar(
-            title = { Text(text = "Mars rover photos") },
+            title = { Text(text = titleState) },
             actions = {
                 saveIcon(
                     activity,
                     viewModel,
-                    image = { it[pagerState.currentPage] },
+                    image = { list[pagerState.currentPage] },
                 )
             },
         )
@@ -102,9 +102,12 @@ private fun ImagesPagerContent(
         Box {
             ImagesPager(
                 pagerState = pagerState,
-                images = it,
+                images = list,
                 callback = viewModel,
-                onShownPage = viewModel::onShown
+                onShownPage = { marsPhoto, page ->
+                    viewModel.onShown(marsPhoto, page)
+                    titleState = "Mars image id: ${marsPhoto.id}"
+                }
             ) { marsImage, _ ->
                 viewModel.updateFavorite(marsImage)
             }
@@ -119,8 +122,6 @@ private fun ImagesPagerContent(
 
 @Composable
 private fun BoxScope.onEvent(uiEvent: UiEvent?, activity: FragmentActivity) {
-    Log.d("Sirelon", "onEvent() called with: uiEvent = $uiEvent, activity = $activity");
-
     if (uiEvent?.handled == true) return
 
     uiEvent?.handled = true
@@ -176,8 +177,7 @@ private fun saveIcon(
         rememberPermissionState(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
 
     IconButton(onClick = {
-
-
+        viewModel.trackSaveClick()
         checkPermissionState(
             cameraPermissionState = cameraPermissionState,
             launchAgain = { cameraPermissionState.launchPermissionRequest() },
@@ -236,7 +236,11 @@ fun ImagesPager(
         // Our page content
         val marsImage = images[page]
 
-        onShownPage(marsImage, page)
+        LaunchedEffect(key1 = page, block = {
+            if (!pagerState.isScrollInProgress) {
+                onShownPage(marsImage, page)
+            }
+        })
 
         callback.currentImage = marsImage
 
