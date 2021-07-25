@@ -1,4 +1,4 @@
-package com.sirelon.marsroverphotos.activity.ui
+package com.sirelon.marsroverphotos.ui
 
 import androidx.compose.ui.graphics.Color
 

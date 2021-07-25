@@ -32,7 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sirelon.marsroverphotos.BuildConfig
 import com.sirelon.marsroverphotos.R
-import com.sirelon.marsroverphotos.activity.ui.MarsRoverPhotosTheme
+import com.sirelon.marsroverphotos.ui.MarsRoverPhotosTheme
 import java.util.Calendar
 
 @Preview(showBackground = true)
