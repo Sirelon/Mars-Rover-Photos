@@ -1,21 +1,20 @@
 package com.sirelon.marsroverphotos.feature
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
@@ -59,13 +58,13 @@ fun PhotoStats(marsImage: MarsImage, onFavoriteClick: () -> Unit) {
             .fillMaxWidth()
     ) {
         Column {
-            StatsInfoText(stats.see, R.drawable.ic_see_counter, "counterSee")
-            StatsInfoText(stats.scale, R.drawable.ic_scale_counter, "counterScale")
+            StatsInfoText(stats.see, Icons.Filled.Visibility, "counterSee")
+            StatsInfoText(stats.scale, Icons.Filled.ZoomIn, "counterScale")
         }
         Spacer(modifier = Modifier.width(16.dp))
         Column {
-            StatsInfoText(stats.save, R.drawable.ic_save_counter, "counterSave")
-            StatsInfoText(stats.share, R.drawable.ic_share_counter, "counterShare")
+            StatsInfoText(stats.save, Icons.Filled.Save, "counterSave")
+            StatsInfoText(stats.share, Icons.Filled.Share, "counterShare")
         }
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
@@ -142,10 +141,10 @@ private fun ImageLoader(imageUrl: String, success: () -> Unit) {
 }
 
 @Composable
-private fun StatsInfoText(counter: Long, @DrawableRes drawable: Int, desc: String) {
+private fun StatsInfoText(counter: Long, image: ImageVector, desc: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
-            painter = painterResource(id = drawable),
+            painter = rememberVectorPainter(image = image),
             contentDescription = desc,
             tint = colorResource(id = R.color.colorAccent)
         )

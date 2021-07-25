@@ -42,48 +42,6 @@
                 <!-- android:scheme="sirelon" /> -->
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activity.PhotosActivity"
-            android:launchMode="singleTop"
-            android:parentActivityName=".feature.rovers.RoversActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            tools:ignore="UnusedAttribute">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".feature.rovers.RoversActivity" />
-        </activity>
-        <activity
-            android:name=".feature.popular.PopularPhotosActivity"
-            android:launchMode="singleTop"
-            android:parentActivityName=".feature.rovers.RoversActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            tools:ignore="UnusedAttribute">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".feature.rovers.RoversActivity" />
-        </activity>
-        <activity
-            android:name=".activity.ImageActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_image"
-            android:launchMode="singleTop"
-            android:parentActivityName=".activity.PhotosActivity"
-            android:theme="@style/FullscreenTheme"
-            tools:ignore="UnusedAttribute">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.PhotosActivity" />
-        </activity>
-        <activity
-            android:name=".feature.favorite.FavoritePhotosActivity"
-            android:launchMode="singleTop"
-            android:parentActivityName=".feature.rovers.RoversActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            tools:ignore="UnusedAttribute">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".feature.rovers.RoversActivity" />
-        </activity>
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"

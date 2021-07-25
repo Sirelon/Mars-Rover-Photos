@@ -34,7 +34,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
@@ -57,18 +56,14 @@ import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.activity.AboutAppContent
 import com.sirelon.marsroverphotos.activity.ui.MarsRoverPhotosTheme
 import com.sirelon.marsroverphotos.activity.ui.accent
-import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.extensions.recordException
 import com.sirelon.marsroverphotos.feature.NetworkImage
-import com.sirelon.marsroverphotos.feature.favorite.FavoriteItem
 import com.sirelon.marsroverphotos.feature.favorite.FavoriteScreen
 import com.sirelon.marsroverphotos.feature.favorite.PopularScreen
 import com.sirelon.marsroverphotos.feature.images.ImageScreen
 import com.sirelon.marsroverphotos.feature.photos.RoverPhotosScreen
-import com.sirelon.marsroverphotos.feature.popular.PopularItem
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.ViewType
-import com.sirelon.marsroverphotos.storage.MarsImage
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -355,7 +350,7 @@ class RoversActivity : AppCompatActivity() {
 
 sealed class Screen(val route: String, val iconCreator: @Composable () -> ImageVector) {
     object Rovers : Screen("rovers", {
-        ImageVector.vectorResource(id = com.sirelon.marsroverphotos.R.drawable.ic_rovers)
+        ImageVector.vectorResource(id = R.drawable.ic_rovers)
     })
 
     object Favorite : Screen("favorite", { Icons.Outlined.Favorite })
@@ -369,51 +364,16 @@ sealed class Screen(val route: String, val iconCreator: @Composable () -> ImageV
 
 @Composable
 fun RoversContent(
-    modifier: Modifier = Modifier,
     rovers: List<Rover>,
     onClick: (rover: ViewType) -> Unit
 ) {
-    "RoveerCoteent".logD()
-    val items = rovers.toMutableList<ViewType>()
-//    items.add(0, popular)
-//    items.add(1, favoriteItem)
+    val items = rovers.toMutableList<Rover>()
     LazyColumn {
         items(items) { item ->
-            when (item) {
-                is Rover -> RoverItem(rover = item, onClick = onClick)
-                is PopularItem -> PopularItem(item, onClick = onClick)
-                is FavoriteItem -> FavoriteItem(item, onClick = onClick)
-            }
-
+            RoverItem(rover = item, onClick = onClick)
             Divider()
         }
     }
-}
-
-@Composable
-fun FavoriteItem(rover: FavoriteItem, onClick: (rover: FavoriteItem) -> Unit) {
-    CommonItem(
-        title = stringResource(id = com.sirelon.marsroverphotos.R.string.favorite_title),
-        imageAsset = painterResource(id = com.sirelon.marsroverphotos.R.drawable.popular),
-        onClick = { onClick(rover) })
-    // Not implemented yet
-//        InfoText(
-//            label = stringResource(id = R.string.label_photos_total),
-//            text = "${rover.totalPhotos}"
-//        )
-}
-
-@Composable
-fun PopularItem(rover: PopularItem, onClick: (rover: PopularItem) -> Unit) {
-    CommonItem(
-        title = stringResource(id = com.sirelon.marsroverphotos.R.string.popular_title),
-        imageAsset = painterResource(id = com.sirelon.marsroverphotos.R.drawable.popular),
-        onClick = { onClick(rover) })
-    // Not implemented yet
-//        InfoText(
-//            label = stringResource(id = R.string.label_photos_total),
-//            text = "${rover.totalPhotos}"
-//        )
 }
 
 @Composable
