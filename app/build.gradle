@@ -163,6 +163,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging'
     implementation 'com.google.android.gms:play-services-ads:20.2.0'
 
+    implementation 'com.jakewharton.timber:timber:4.7.1'
+
     debugImplementation 'com.readystatesoftware.chuck:library:1.1.0'
     releaseImplementation 'com.readystatesoftware.chuck:library-no-op:1.1.0'
 }

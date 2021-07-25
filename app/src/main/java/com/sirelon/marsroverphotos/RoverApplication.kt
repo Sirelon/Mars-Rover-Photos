@@ -9,6 +9,7 @@ import com.sirelon.marsroverphotos.tracker.FirebaseTracker
 import com.sirelon.marsroverphotos.tracker.ITracker
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 /**
  * @author romanishin
@@ -23,6 +24,10 @@ class RoverApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         APP = this
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        }
 
         val settings = FirebaseFirestoreSettings.Builder()
             .setPersistenceEnabled(true)

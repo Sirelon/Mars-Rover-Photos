@@ -31,10 +31,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.extensions.recordException
 import com.sirelon.marsroverphotos.extensions.showAppSettings
-import com.sirelon.marsroverphotos.feature.MarsImageFavoriteToggle
-import com.sirelon.marsroverphotos.feature.MultitouchDetector
-import com.sirelon.marsroverphotos.feature.MultitouchState
-import com.sirelon.marsroverphotos.feature.NetworkImage
+import com.sirelon.marsroverphotos.feature.*
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.ui.CenteredProgress
 import com.sirelon.marsroverphotos.ui.MarsSnackbar
@@ -103,7 +100,11 @@ private fun ImagesPagerContent(
         )
         Spacer(modifier = Modifier.height(30.dp))
         Box {
-            ImagesPager(pagerState = pagerState, images = it) { marsImage, _ ->
+            ImagesPager(
+                pagerState = pagerState,
+                images = it,
+                callback = viewModel
+            ) { marsImage, _ ->
                 viewModel.updateFavorite(marsImage)
             }
 
@@ -221,6 +222,7 @@ private fun checkPermissionState(
 fun ImagesPager(
     pagerState: PagerState,
     images: List<MarsImage>,
+    callback: MultitouchDetectorCallback,
     favoriteClick: (MarsImage, Boolean) -> Unit
 ) {
     HorizontalPager(
@@ -242,7 +244,12 @@ fun ImagesPager(
                 )
             }
 
-            MultitouchDetector(modifier = Modifier, state = state, pagerState = pagerState) {
+            MultitouchDetector(
+                modifier = Modifier,
+                state = state,
+                pagerState = pagerState,
+                callback = callback
+            ) {
                 NetworkImage(
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.FillWidth,
