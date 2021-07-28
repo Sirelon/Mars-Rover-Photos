@@ -92,7 +92,7 @@ dependencies {
     // Material Design
     implementation "androidx.compose.material:material:$composeVer"
 //    https://github.com/google/accompanist
-    def accompanistVer = '0.14.0'
+    def accompanistVer = '0.15.0'
     implementation "com.google.accompanist:accompanist-pager:$accompanistVer"
     implementation "com.google.accompanist:accompanist-coil:$accompanistVer"
     implementation "com.google.accompanist:accompanist-placeholder-material:$accompanistVer"
@@ -119,7 +119,7 @@ dependencies {
     testImplementation 'org.amshove.kluent:kluent:1.68'
 
     // https://developer.android.com/jetpack/androidx/releases/
-    implementation 'androidx.activity:activity-compose:1.3.0-rc02'
+    implementation 'androidx.activity:activity-compose:1.3.0'
     implementation "androidx.annotation:annotation:1.3.0-alpha01"
 //    https://developer.android.com/jetpack/androidx/releases/appcompat
     implementation 'androidx.appcompat:appcompat:1.4.0-alpha03'
@@ -139,7 +139,7 @@ dependencies {
     kapt "androidx.room:room-compiler:$room_version"
 
 //    https://developer.android.com/jetpack/androidx/releases/paging
-    def paging_version = "3.0.0"
+    def paging_version = "3.1.0-alpha03"
     implementation "androidx.paging:paging-runtime-ktx:$paging_version"
     // https://github.com/material-components/material-components-android/releases
     implementation 'com.google.android.material:material:1.5.0-alpha01'
