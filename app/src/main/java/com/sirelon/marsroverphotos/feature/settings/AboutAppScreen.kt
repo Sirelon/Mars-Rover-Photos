@@ -2,7 +2,6 @@ package com.sirelon.marsroverphotos.feature.settings
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -11,6 +10,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -28,20 +29,29 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sirelon.marsroverphotos.BuildConfig
 import com.sirelon.marsroverphotos.R
+import com.sirelon.marsroverphotos.storage.Prefs
+import com.sirelon.marsroverphotos.storage.Theme
 import com.sirelon.marsroverphotos.ui.MarsRoverPhotosTheme
 import com.sirelon.marsroverphotos.ui.RadioButtonText
+import timber.log.Timber
 import java.util.*
 
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
     MarsRoverPhotosTheme {
-        AboutAppContent({}, {})
+        AboutAppContent({}, {}, {})
     }
 }
 
 @Composable
-fun AboutAppContent(onClearCache: () -> Unit, onRateApp: () -> Unit) {
+fun AboutAppContent(
+    onClearCache: () -> Unit,
+    onRateApp: () -> Unit,
+    changeColor: (theme: Theme) -> Unit
+) {
+    val currentTheme by Prefs.themeLiveData.observeAsState(initial = Prefs.theme)
+    Timber.d("AboutAppContent() called with currentTheme = $currentTheme");
     val typography = MaterialTheme.typography
     val colors = MaterialTheme.colors
     Column(
@@ -84,15 +94,15 @@ fun AboutAppContent(onClearCache: () -> Unit, onRateApp: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
 
-            RadioButtonText(text = "White", selected = isSystemInDarkTheme()) {
-
+            RadioButtonText(text = "White", selected = currentTheme == Theme.WHITE) {
+                changeColor(Theme.WHITE)
             }
-            RadioButtonText(text = "Dark", selected = isSystemInDarkTheme()) {
-
+            RadioButtonText(text = "Dark", selected = currentTheme == Theme.DARK) {
+                changeColor(Theme.DARK)
             }
 
-            RadioButtonText(text = "System", selected = isSystemInDarkTheme()) {
-
+            RadioButtonText(text = "System", selected = currentTheme == Theme.SYSTEM) {
+                changeColor(Theme.SYSTEM)
             }
         }
 
@@ -114,6 +124,7 @@ fun AboutAppContent(onClearCache: () -> Unit, onRateApp: () -> Unit) {
         )
 
     }
+
 }
 
 @Composable

@@ -66,7 +66,7 @@ class DataManager(
         tracker.trackClick("click_$event")
     }
 
-    fun trackEvent(event: String, params: Map<String, Any?>) {
+    fun trackEvent(event: String, params: Map<String, Any?> = emptyMap()) {
         Timber.d("trackEvent() called with: event = $event, params = $params");
         val bundle = Bundle()
 

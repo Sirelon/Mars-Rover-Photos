@@ -24,8 +24,7 @@ import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material.icons.outlined.ViewCarousel
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,14 +50,16 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.android.gms.ads.*
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
-import com.sirelon.marsroverphotos.feature.settings.AboutAppContent
 import com.sirelon.marsroverphotos.extensions.recordException
 import com.sirelon.marsroverphotos.feature.NetworkImage
 import com.sirelon.marsroverphotos.feature.favorite.FavoriteScreen
 import com.sirelon.marsroverphotos.feature.favorite.PopularScreen
 import com.sirelon.marsroverphotos.feature.images.ImageScreen
 import com.sirelon.marsroverphotos.feature.photos.RoverPhotosScreen
+import com.sirelon.marsroverphotos.feature.settings.AboutAppContent
 import com.sirelon.marsroverphotos.models.Rover
+import com.sirelon.marsroverphotos.storage.Prefs
+import com.sirelon.marsroverphotos.storage.Theme
 import com.sirelon.marsroverphotos.ui.MarsRoverPhotosTheme
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -94,9 +95,11 @@ class RoversActivity : AppCompatActivity() {
         val bottomItems = listOf(Screen.Rovers, Screen.Favorite, Screen.Popular, Screen.About)
 
         setContent {
-            track("is_dark_${isSystemInDarkTheme()}")
-
-            MarsRoverPhotosTheme {
+            val theme by Prefs.themeLiveData.observeAsState(initial = Prefs.theme)
+            track("theme_$theme")
+            val isDark: Boolean =
+                if (theme == Theme.SYSTEM) isSystemInDarkTheme() else theme == Theme.DARK
+            MarsRoverPhotosTheme(isDark) {
                 val navController = rememberNavController()
 
                 Scaffold(
@@ -118,7 +121,10 @@ class RoversActivity : AppCompatActivity() {
                             }
 
                             Box(modifier = contentModifier) {
-                                RoversNavHost(navController)
+                                RoversNavHost(navController) {
+                                    Prefs.theme = it
+                                    RoverApplication.APP.dataManger.trackEvent("change_theme_$theme")
+                                }
                             }
                             val adModifier = Modifier.constrainAs(ad) {
                                 bottom.linkTo(parent.bottom)
@@ -163,6 +169,7 @@ class RoversActivity : AppCompatActivity() {
             coilCache.directory().deleteRecursively()
 
             val sizeStr = Formatter.formatFileSize(ctx, coilSize)
+            RoverApplication.APP.dataManger.trackEvent("cache_cleared", mapOf("Size" to sizeStr))
             withContext(Dispatchers.Main) {
                 Toast.makeText(ctx, "Cleared $sizeStr", Toast.LENGTH_SHORT).show()
             }
@@ -241,7 +248,10 @@ class RoversActivity : AppCompatActivity() {
     }
 
     @Composable
-    private fun RoversNavHost(navController: NavHostController) {
+    private fun RoversNavHost(
+        navController: NavHostController,
+        changeColor: (theme: Theme) -> Unit
+    ) {
         NavHost(
             navController = navController,
             startDestination = Screen.Rovers.route
@@ -254,11 +264,14 @@ class RoversActivity : AppCompatActivity() {
                     onClick = {
                         track("click_rover_${it.name}")
                         navController.navigate("rover/${it.id}")
-
                     })
             }
             composable(Screen.About.route) {
-                AboutAppContent(onClearCache = ::clearCache, onRateApp = ::goToMarket)
+                AboutAppContent(
+                    onClearCache = ::clearCache,
+                    onRateApp = ::goToMarket,
+                    changeColor = changeColor
+                )
             }
 
             composable(Screen.Popular.route) {
