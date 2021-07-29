@@ -144,7 +144,8 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:$retrofitVer"
     implementation "com.squareup.retrofit2:converter-gson:$retrofitVer"
 
-    implementation platform('com.google.firebase:firebase-bom:28.1.0')
+//    https://firebase.google.com/support/release-notes/android
+    implementation platform('com.google.firebase:firebase-bom:28.3.0')
 
     implementation 'com.google.firebase:firebase-core'
     implementation 'com.google.firebase:firebase-analytics'
