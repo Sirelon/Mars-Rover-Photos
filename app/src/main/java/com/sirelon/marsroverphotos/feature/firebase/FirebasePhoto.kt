@@ -38,6 +38,19 @@ data class FirebasePhoto(
         favoriteCounter = 0,
     )
 
+    constructor(photo: MarsImage) : this(
+        id = photo.id,
+        sol = photo.sol,
+        name = photo.name ?: "",
+        imageUrl = photo.imageUrl,
+        earthDate = photo.earthDate,
+        seeCounter = 0,
+        scaleCounter = 0,
+        saveCounter = 0,
+        shareCounter = 0,
+        favoriteCounter = 0,
+    )
+
     override fun getViewType() = AdapterConstants.POPULAR_PHOTO
 
     fun toMarsImage(order: Int) = MarsImage(

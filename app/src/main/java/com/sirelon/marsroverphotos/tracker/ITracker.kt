@@ -2,22 +2,23 @@ package com.sirelon.marsroverphotos.tracker
 
 import android.os.Bundle
 import com.sirelon.marsroverphotos.models.MarsPhoto
+import com.sirelon.marsroverphotos.storage.MarsImage
 
 /**
  * Created on 19/04/2017 15:32.
  */
 interface ITracker {
 
-    fun trackSeen(photo: MarsPhoto)
+    fun trackSeen(photo: MarsImage)
 
-    fun trackScale(photo: MarsPhoto)
+    fun trackScale(photo: MarsImage)
 
-    fun trackShare(photo: MarsPhoto, packageName: String)
+    fun trackShare(photo: MarsImage, packageName: String)
 
-    fun trackSave(photo: MarsPhoto)
+    fun trackSave(photo: MarsImage)
 
     fun trackClick(event: String)
 
-    fun trackFavorite(photo: MarsPhoto, from: String, fav: Boolean)
+    fun trackFavorite(photo: MarsImage, from: String, fav: Boolean)
     fun trackEvent(event: String, params: Bundle)
 }

@@ -23,6 +23,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -31,6 +32,8 @@ import kotlinx.coroutines.withContext
  */
 class ImageViewModel(app: Application) : AndroidViewModel(app),
     MultitouchDetectorCallback by FullscreenImageTracker() {
+
+    private val IO = Dispatchers.IO + exceptionHandler
 
     private val repository = ImagesRepository(app)
 
@@ -49,6 +52,7 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
                 flowOf(it)
             }
         }
+        .flowOn(IO)
         .asLiveData()
 
     fun setIdsToShow(ids: List<String>) {
@@ -56,17 +60,17 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
     }
 
     fun updateFavorite(image: MarsImage) {
-        viewModelScope.launch(exceptionHandler) {
+        viewModelScope.launch(IO) {
             repository.updateFavForImage(image)
         }
 
         val tracker = getApplication<RoverApplication>().tracker
-        tracker.trackFavorite(image.toMarsPhoto(), "Images", !image.favorite)
+        tracker.trackFavorite(image, "Images", !image.favorite)
     }
 
     fun saveImage(activity: FragmentActivity, photo: MarsImage) {
         val appUrl = "https://play.google.com/store/apps/details?id=${activity.packageName}"
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(IO) {
             kotlin.runCatching {
                 val bitmap =
                     Glide.with(activity).asBitmap().load(photo.imageUrl).submit().get()
@@ -108,7 +112,9 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
         val dataManger = RoverApplication.APP.dataManger
         dataManger.trackEvent("photo_show", mapOf("page" to page))
 
-        dataManger.updatePhotoSeenCounter(marsPhoto.toMarsPhoto())
+        viewModelScope.launch(IO) {
+            dataManger.updatePhotoSeenCounter(marsPhoto)
+        }
     }
 
     fun trackSaveClick() {
@@ -117,13 +123,14 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
 
     fun shareMarsImage(activity: FragmentActivity, marsImage: MarsImage) {
         getApplication<RoverApplication>().tracker.trackClick("share")
-        RoverApplication.APP.dataManger.updatePhotoShareCounter(marsImage.toMarsPhoto(), null)
+
+        viewModelScope.launch(IO) {
+            RoverApplication.APP.dataManger.updatePhotoShareCounter(marsImage, null)
+        }
+
         val shareIntent = shareIntent(marsImage)
         activity.startActivity(
-            Intent.createChooser(
-                shareIntent,
-                activity.resources.getText(R.string.share)
-            )
+            Intent.createChooser(shareIntent, activity.resources.getText(R.string.share))
         )
     }
 

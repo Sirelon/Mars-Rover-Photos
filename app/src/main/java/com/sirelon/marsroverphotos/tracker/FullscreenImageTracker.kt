@@ -1,9 +1,12 @@
 package com.sirelon.marsroverphotos.tracker
 
 import com.sirelon.marsroverphotos.RoverApplication
+import com.sirelon.marsroverphotos.extensions.exceptionHandler
 import com.sirelon.marsroverphotos.feature.MultitouchDetectorCallback
 import com.sirelon.marsroverphotos.firebase.photos.FirebaseProvider
 import com.sirelon.marsroverphotos.storage.MarsImage
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import kotlin.math.absoluteValue
 
@@ -73,12 +76,11 @@ class FullscreenImageTracker : MultitouchDetectorCallback {
     }
 
     private fun trackScale() {
-        val marsPhoto = currentImage?.toMarsPhoto()
-        marsPhoto?.let {
-            FirebaseProvider.firebasePhotos.updatePhotoScaleCounter(marsPhoto)
-                .onErrorReturn { 0 }
-                .subscribe()
-            tracker.trackScale(marsPhoto)
+        currentImage?.let { marsPhoto ->
+            GlobalScope.launch(exceptionHandler) {
+                FirebaseProvider.firebasePhotos.updatePhotoScaleCounter(marsPhoto)
+                tracker.trackScale(marsPhoto)
+            }
         }
     }
 }

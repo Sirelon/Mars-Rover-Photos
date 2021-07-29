@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.core.os.bundleOf
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.sirelon.marsroverphotos.models.MarsPhoto
+import com.sirelon.marsroverphotos.storage.MarsImage
 
 /**
  * Created on 19/04/2017 15:33.
@@ -23,19 +24,19 @@ class FirebaseTracker(context: Context) : ITracker {
         private const val EVENT_MARS_PHOTO_UNFAVORITE: String = "UnFavoritePhoto"
     }
 
-    override fun trackSeen(photo: MarsPhoto) {
+    override fun trackSeen(photo: MarsImage) {
         fb.logEvent("PhotoSeen", photo.arguments())
     }
 
-    override fun trackScale(photo: MarsPhoto) {
+    override fun trackScale(photo: MarsImage) {
         fb.logEvent(EVENT_MARS_PHOTO_SCALE, photo.arguments())
     }
 
-    override fun trackShare(photo: MarsPhoto, packageName: String) {
+    override fun trackShare(photo: MarsImage, packageName: String) {
         fb.logEvent(EVENT_MARS_PHOTO_SHARE, photo.arguments())
     }
 
-    override fun trackSave(photo: MarsPhoto) {
+    override fun trackSave(photo: MarsImage) {
         fb.logEvent(EVENT_MARS_PHOTO_SAVE, photo.arguments())
     }
 
@@ -47,14 +48,14 @@ class FirebaseTracker(context: Context) : ITracker {
         fb.logEvent(event, null)
     }
 
-    override fun trackFavorite(photo: MarsPhoto, from: String, fav: Boolean) {
+    override fun trackFavorite(photo: MarsImage, from: String, fav: Boolean) {
         val event = if (fav) EVENT_MARS_PHOTO_FAVORITE else EVENT_MARS_PHOTO_UNFAVORITE
         val arguments = photo.arguments()
         arguments.putString(SCREEN_NAME, from)
         fb.logEvent(event, arguments)
     }
 
-    private fun MarsPhoto.arguments() =
+    private fun MarsImage.arguments() =
         bundleOf("id" to id, "name" to (name ?: ""), EARTH_DATE to earthDate)
 
 }

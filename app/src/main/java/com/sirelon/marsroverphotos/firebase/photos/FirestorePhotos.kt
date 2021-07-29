@@ -1,20 +1,17 @@
 package com.sirelon.marsroverphotos.firebase.photos
 
 import androidx.annotation.WorkerThread
+import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.*
 import com.sirelon.marsroverphotos.feature.firebase.FirebaseConstants
 import com.sirelon.marsroverphotos.feature.firebase.FirebasePhoto
 import com.sirelon.marsroverphotos.feature.firebase.toFireBase
 import com.sirelon.marsroverphotos.models.MarsPhoto
+import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.utils.randomInt
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
-import io.reactivex.Single
 
 /**
  * Created on 11/25/17 17:56 for Mars-Rover-Photos.
@@ -58,51 +55,53 @@ internal class FirestorePhotos : IFirebasePhotos {
         return Tasks.await(task).getLong("total_photos") ?: 0L
     }
 
-    override fun updatePhotoShareCounter(photo: MarsPhoto): Observable<Long> {
+    override suspend fun updatePhotoShareCounter(photo: MarsImage): Long {
         return getOrCreate(photo)
-            .flatMapObservable {
-                updatePhoto(it.apply { it.shareCounter++ })
+            .let {
+                it.shareCounter++
+                updatePhoto(it)
+                it.shareCounter
             }
-            .map { it.shareCounter }
     }
 
-    override fun updatePhotoSaveCounter(photo: MarsPhoto): Observable<Long> {
+    override suspend fun updatePhotoSaveCounter(photo: MarsImage): Long {
         return getOrCreate(photo)
-            .flatMapObservable {
-                updatePhoto(it.apply { it.saveCounter++ })
+            .let {
+                it.saveCounter++
+                updatePhoto(it)
+                it.saveCounter
             }
-            .map { it.saveCounter }
     }
 
-    override fun updatePhotoScaleCounter(photo: MarsPhoto): Observable<Long> {
+    override suspend fun updatePhotoScaleCounter(photo: MarsImage): Long {
         return getOrCreate(photo)
-            .flatMapObservable {
-                updatePhoto(it.apply { it.scaleCounter++ })
+            .let {
+                it.scaleCounter++
+                updatePhoto(it)
+                it.scaleCounter
             }
-            .map { it.scaleCounter }
     }
 
-    suspend fun updatePhotoFavoriteCounter(photo: MarsPhoto, increment: Boolean): Long {
+    suspend fun updatePhotoFavoriteCounter(photo: MarsImage, increment: Boolean): Long {
         return getOrCreate(photo)
-            .flatMapObservable {
-                updatePhoto(it.apply {
-                    if (increment) {
-                        it.favoriteCounter++
-                    } else {
-                        it.favoriteCounter--
-                    }
-                })
+            .let {
+                if (increment) {
+                    it.favoriteCounter++
+                } else {
+                    it.favoriteCounter--
+                }
+                updatePhoto(it)
+                it.favoriteCounter
             }
-            .map { it.favoriteCounter }
-            .blockingFirst()
     }
 
-    override fun updatePhotoSeenCounter(photo: MarsPhoto): Observable<Long> {
+    override suspend fun updatePhotoSeenCounter(photo: MarsImage): Long {
         return getOrCreate(photo)
-            .flatMapObservable {
-                updatePhoto(it.apply { it.seeCounter++ })
+            .let {
+                it.seeCounter++
+                updatePhoto(it)
+                it.seeCounter
             }
-            .map { it.seeCounter }
     }
 
     override fun loadPopularPhotos(
@@ -142,50 +141,39 @@ internal class FirestorePhotos : IFirebasePhotos {
         }
     }
 
-    private fun updatePhoto(photo: FirebasePhoto): Observable<FirebasePhoto> {
+    private suspend fun updatePhoto(photo: FirebasePhoto): FirebasePhoto {
         return photosCollection().document(photo.id).setPhoto(photo)
     }
 
-    private fun getOrCreate(photo: MarsPhoto) =
-        getDataSnapshot(photo)
-            .flatMap {
-                if (it.exists()) {
-                    val fbPhoto = it.toFirebasePhoto()
-                    Single.just(fbPhoto)
-                } else {
-                    createPhoto(photo)
-                }
+    private suspend fun getOrCreate(image: MarsImage): FirebasePhoto {
+        val task = photosCollection().document(image.id).get()
+        return Tasks.await(task).let {
+            if (it.exists()) {
+                val fbPhoto = it.toFirebasePhoto()
+                fbPhoto
+            } else {
+                createPhoto(image)
             }
+        }
+    }
 
     /**
      * If the document does not exist, it will be created.
      * If the document does exist, the data should be merged into the existing document
      */
-    private fun DocumentReference.setPhoto(photo: FirebasePhoto): Observable<FirebasePhoto> =
-        Observable.create { emitter ->
-            this.set(photo, SetOptions.merge())
-                .addOnSuccessListener {
-                    emitter.onNext(photo)
-                    emitter.onComplete()
-                }
-                .addOnFailureListener { emitter.onError(it) }
-        }
+    private suspend fun DocumentReference.setPhoto(photo: FirebasePhoto): FirebasePhoto {
+        this.set(photo, SetOptions.merge()).await()
+        return photo
+    }
 
-    private fun createPhoto(photo: MarsPhoto): Single<FirebasePhoto> {
+    private suspend fun createPhoto(photo: MarsImage): FirebasePhoto {
         val fireBasePhoto = photo.toFireBase()
         return photosCollection().document(photo.id)
             .setPhoto(fireBasePhoto)
-            .first(fireBasePhoto)
     }
-
-    private fun getDataSnapshot(photo: MarsPhoto): Single<DocumentSnapshot> =
-        Single.create { emitter ->
-            photosCollection().document(photo.id)
-                .get()
-                .addOnSuccessListener { emitter.onSuccess(it) }
-                .addOnFailureListener { emitter.onError(it) }
-        }
 }
+
+private suspend fun <TResult> Task<TResult>.await(): TResult = Tasks.await(this)
 
 private fun DocumentSnapshot.toFirebasePhoto() = FirebasePhoto(
     this["id"].toString(),
