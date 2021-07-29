@@ -61,7 +61,6 @@ import com.sirelon.marsroverphotos.feature.favorite.PopularScreen
 import com.sirelon.marsroverphotos.feature.images.ImageScreen
 import com.sirelon.marsroverphotos.feature.photos.RoverPhotosScreen
 import com.sirelon.marsroverphotos.models.Rover
-import com.sirelon.marsroverphotos.models.ViewType
 import com.sirelon.marsroverphotos.ui.MarsRoverPhotosTheme
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -270,10 +269,9 @@ class RoversActivity : AppCompatActivity() {
                 RoversContent(
                     rovers = rovers,
                     onClick = {
-                        if (it is Rover) {
-                            track("click_rover_${it.name}")
-                            navController.navigate("rover/${it.id}")
-                        }
+                        track("click_rover_${it.name}")
+                        navController.navigate("rover/${it.id}")
+
                     })
             }
             composable(Screen.About.route) {
@@ -364,7 +362,7 @@ sealed class Screen(val route: String, val iconCreator: @Composable () -> ImageV
 @Composable
 fun RoversContent(
     rovers: List<Rover>,
-    onClick: (rover: ViewType) -> Unit
+    onClick: (rover: Rover) -> Unit
 ) {
     LazyColumn {
         items(rovers) { item ->

@@ -7,7 +7,6 @@ import com.google.firebase.firestore.*
 import com.sirelon.marsroverphotos.feature.firebase.FirebaseConstants
 import com.sirelon.marsroverphotos.feature.firebase.FirebasePhoto
 import com.sirelon.marsroverphotos.feature.firebase.toFireBase
-import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.utils.randomInt
 
@@ -23,13 +22,13 @@ internal class FirestorePhotos : IFirebasePhotos {
         FirebaseFirestore.getInstance().collection(FirebaseConstants.COLECTION_PHOTOS)
 
     @WorkerThread
-    suspend fun removePhoto(photo: MarsPhoto) {
+    suspend fun removePhoto(photo: MarsImage) {
         val task = photosCollection().document(photo.id).delete()
         Tasks.await(task)
     }
 
     @WorkerThread
-    suspend fun makeItPopular(photo: MarsPhoto) {
+    suspend fun makeItPopular(photo: MarsImage) {
         val see = randomInt(50, 500)
         val scale = randomInt(10, see)
         val db = mapOf(

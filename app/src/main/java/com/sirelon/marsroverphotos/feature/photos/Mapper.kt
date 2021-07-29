@@ -15,7 +15,7 @@ fun List<MarsPhoto>.mapToUi(): List<MarsImage> {
     return mapIndexed { index, it ->
         // It's okay to use not correct data for favorite and popular with Stats, 'cause if these images already in database, we'll ignore replacing them.
         MarsImage(
-            id = it.id.toString(),
+            id = it.id,
             sol = it.sol,
             name = it.name,
             imageUrl = it.imageUrl,

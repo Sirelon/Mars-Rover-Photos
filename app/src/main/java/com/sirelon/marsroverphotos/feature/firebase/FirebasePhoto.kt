@@ -2,7 +2,6 @@ package com.sirelon.marsroverphotos.feature.firebase
 
 import com.google.firebase.firestore.Exclude
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
-import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.models.ViewType
 import com.sirelon.marsroverphotos.storage.MarsImage
 
@@ -24,19 +23,6 @@ data class FirebasePhoto(
 
     @Exclude
     override fun getViewId() = id
-
-    constructor(photo: MarsPhoto) : this(
-        id = photo.id,
-        sol = photo.sol,
-        name = photo.name ?: "",
-        imageUrl = photo.imageUrl,
-        earthDate = photo.earthDate,
-        seeCounter = 0,
-        scaleCounter = 0,
-        saveCounter = 0,
-        shareCounter = 0,
-        favoriteCounter = 0,
-    )
 
     constructor(photo: MarsImage) : this(
         id = photo.id,
