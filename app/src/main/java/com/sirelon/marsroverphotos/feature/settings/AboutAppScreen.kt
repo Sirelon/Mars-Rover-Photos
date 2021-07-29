@@ -5,10 +5,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -29,29 +26,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sirelon.marsroverphotos.BuildConfig
 import com.sirelon.marsroverphotos.R
+import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.storage.Prefs
 import com.sirelon.marsroverphotos.storage.Theme
 import com.sirelon.marsroverphotos.ui.MarsRoverPhotosTheme
 import com.sirelon.marsroverphotos.ui.RadioButtonText
-import timber.log.Timber
 import java.util.*
 
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
     MarsRoverPhotosTheme {
-        AboutAppContent({}, {}, {})
+        AboutAppContent({}, {})
     }
 }
 
 @Composable
-fun AboutAppContent(
-    onClearCache: () -> Unit,
-    onRateApp: () -> Unit,
-    changeColor: (theme: Theme) -> Unit
-) {
-    val currentTheme by Prefs.themeLiveData.observeAsState(initial = Prefs.theme)
-    Timber.d("AboutAppContent() called with currentTheme = $currentTheme");
+fun AboutAppContent(onClearCache: () -> Unit, onRateApp: () -> Unit) {
     val typography = MaterialTheme.typography
     val colors = MaterialTheme.colors
     Column(
@@ -78,7 +69,7 @@ fun AboutAppContent(
 
         Column(
             modifier = Modifier
-                .padding(vertical = 16.dp)
+                .padding(vertical = 8.dp)
                 .fillMaxWidth()
         ) {
             LinkifyText(text = "API provided by ", link = "https://api.nasa.gov/")
@@ -89,22 +80,7 @@ fun AboutAppContent(
             )
         }
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-
-            RadioButtonText(text = "White", selected = currentTheme == Theme.WHITE) {
-                changeColor(Theme.WHITE)
-            }
-            RadioButtonText(text = "Dark", selected = currentTheme == Theme.DARK) {
-                changeColor(Theme.DARK)
-            }
-
-            RadioButtonText(text = "System", selected = currentTheme == Theme.SYSTEM) {
-                changeColor(Theme.SYSTEM)
-            }
-        }
+        ThemeChanger()
 
         OutlinedButton(onClick = onClearCache) {
             Text(text = stringResource(id = R.string.clear_cache))
@@ -125,6 +101,48 @@ fun AboutAppContent(
 
     }
 
+}
+
+@Composable
+private fun ThemeChanger() {
+    val currentTheme by Prefs.themeLiveData.observeAsState(initial = Prefs.theme)
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp)
+        ) {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = "Change theme of application",
+                style = MaterialTheme.typography.h6.copy(textAlign = TextAlign.Center)
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                RadioButtonText(text = "White", selected = currentTheme == Theme.WHITE) {
+                    changeColor(Theme.WHITE)
+                }
+                RadioButtonText(text = "Dark", selected = currentTheme == Theme.DARK) {
+                    changeColor(Theme.DARK)
+                }
+
+                RadioButtonText(text = "System", selected = currentTheme == Theme.SYSTEM) {
+                    changeColor(Theme.SYSTEM)
+                }
+            }
+        }
+    }
+}
+
+private fun changeColor(theme: Theme) {
+    Prefs.theme = theme
+    RoverApplication.APP.dataManger.trackEvent("change_theme_$theme")
 }
 
 @Composable

@@ -121,10 +121,7 @@ class RoversActivity : AppCompatActivity() {
                             }
 
                             Box(modifier = contentModifier) {
-                                RoversNavHost(navController) {
-                                    Prefs.theme = it
-                                    RoverApplication.APP.dataManger.trackEvent("change_theme_$theme")
-                                }
+                                RoversNavHost(navController)
                             }
                             val adModifier = Modifier.constrainAs(ad) {
                                 bottom.linkTo(parent.bottom)
@@ -248,10 +245,7 @@ class RoversActivity : AppCompatActivity() {
     }
 
     @Composable
-    private fun RoversNavHost(
-        navController: NavHostController,
-        changeColor: (theme: Theme) -> Unit
-    ) {
+    private fun RoversNavHost(navController: NavHostController) {
         NavHost(
             navController = navController,
             startDestination = Screen.Rovers.route
@@ -269,8 +263,7 @@ class RoversActivity : AppCompatActivity() {
             composable(Screen.About.route) {
                 AboutAppContent(
                     onClearCache = ::clearCache,
-                    onRateApp = ::goToMarket,
-                    changeColor = changeColor
+                    onRateApp = ::goToMarket
                 )
             }
 

@@ -2,10 +2,11 @@ package com.sirelon.marsroverphotos.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
@@ -45,13 +46,17 @@ fun RadioButtonText(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    Row(
+    Column(
         modifier = modifier
             .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+            .padding(all = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        RadioButton(selected = selected, onClick = null)
+        RadioButton(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            selected = selected,
+            onClick = null
+        )
         Text(text = text)
     }
 }
