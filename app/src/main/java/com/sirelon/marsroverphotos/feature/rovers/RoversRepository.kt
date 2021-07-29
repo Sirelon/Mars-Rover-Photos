@@ -41,12 +41,10 @@ class RoversRepository(context: Context, private val api: RestApi) {
         // Current date
         val currentTimeMillis = System.currentTimeMillis()
 
-        val resourcePrefix = "android.resource://com.sirelon.marsroverphotos/"
-
         val perseverance = Rover(
             PERSEVARANCE_ID,
             "Perseverance",
-            resourcePrefix + R.drawable.img_perseverance,
+            R.drawable.img_perseverance,
             "2021-02-18",
             "2020-07-30",
             "active",
@@ -64,7 +62,7 @@ class RoversRepository(context: Context, private val api: RestApi) {
         val insight = Rover(
             INSIGHT_ID,
             "Insight",
-            resourcePrefix + R.drawable.img_insight,
+            R.drawable.img_insight,
             "2018-11-26",
             "2018-05-05",
             "active",
@@ -81,7 +79,7 @@ class RoversRepository(context: Context, private val api: RestApi) {
         val curiosity = Rover(
             5,
             "Curiosity",
-            resourcePrefix + R.drawable.img_curiosity,
+            R.drawable.img_curiosity,
             "2012-08-06",
             "2011-11-26",
             "active",
@@ -93,7 +91,7 @@ class RoversRepository(context: Context, private val api: RestApi) {
         val opportunity = Rover(
             6,
             "Opportunity",
-            resourcePrefix + R.drawable.img_opportunity,
+            R.drawable.img_opportunity,
             "2004-01-25",
             "2003-07-07",
             "complete",
@@ -105,7 +103,7 @@ class RoversRepository(context: Context, private val api: RestApi) {
         val spirit = Rover(
             7,
             "Spirit",
-            resourcePrefix + R.drawable.img_spirit,
+            R.drawable.img_spirit,
             "2004-01-04",
             "2003-06-10",
             "complete",

@@ -24,7 +24,8 @@ import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material.icons.outlined.ViewCarousel
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,6 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
@@ -51,7 +53,6 @@ import com.google.android.gms.ads.*
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.recordException
-import com.sirelon.marsroverphotos.feature.NetworkImage
 import com.sirelon.marsroverphotos.feature.favorite.FavoriteScreen
 import com.sirelon.marsroverphotos.feature.favorite.PopularScreen
 import com.sirelon.marsroverphotos.feature.images.ImageScreen
@@ -374,12 +375,13 @@ fun RoverItem(rover: Rover, onClick: (rover: Rover) -> Unit) {
 
         val height = Modifier.height(175.dp)
         Row(modifier = Modifier.padding(8.dp)) {
-            NetworkImage(
+            Image(
                 contentScale = ContentScale.FillHeight,
-                imageUrl = rover.iamgeUrl ?: "",
+                painter = painterResource(id = rover.drawableRes),
                 modifier = height
                     .weight(1f)
-                    .clip(shape = MaterialTheme.shapes.large)
+                    .clip(shape = MaterialTheme.shapes.large),
+                contentDescription = rover.name
             )
             Spacer(modifier = Modifier.width(8.dp))
             Column(

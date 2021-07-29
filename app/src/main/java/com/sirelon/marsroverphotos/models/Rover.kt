@@ -1,13 +1,12 @@
 package com.sirelon.marsroverphotos.models
 
-import android.os.Parcel
-import android.os.Parcelable
+import androidx.annotation.DrawableRes
 import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
-import com.sirelon.marsroverphotos.extensions.createParcel
+import kotlinx.parcelize.Parcelize
 
 /**
  * @author romanishin
@@ -23,7 +22,8 @@ data class Rover(
         @SerializedName(value = "name")
         val name: String,
 
-        val iamgeUrl: String?,
+        @DrawableRes
+        val drawableRes: Int,
 
         @SerializedName(value = "landing_date")
         val landingDate: String,
@@ -41,54 +41,6 @@ data class Rover(
         var maxDate: String,
 
         @SerializedName(value = "total_photos")
-        val totalPhotos: Int) : ViewType, Parcelable {
-
-    override fun getViewId() = id
-
-    override fun getViewType(): Int = AdapterConstants.ROVER
-
-    override fun writeToParcel(dest: Parcel, p1: Int) {
-        dest.writeLong(id)
-        dest.writeString(name)
-        dest.writeString(iamgeUrl)
-        dest.writeString(landingDate)
-        dest.writeString(launchDate)
-        dest.writeString(status)
-        dest.writeLong(maxSol)
-        dest.writeString(maxDate)
-        dest.writeInt(totalPhotos)
-    }
-
-    override fun describeContents(): Int = 0
-
-    companion object {
-        @JvmField @Suppress("unused")
-        val CREATOR = createParcel(::Rover)
-    }
-
-    protected constructor(parcel: Parcel) : this(
-            parcel.readLong(),
-            parcel.readString()!!,
-            parcel.readString(),
-            parcel.readString()!!,
-            parcel.readString()!!,
-            parcel.readString()!!,
-            parcel.readLong(),
-            parcel.readString()!!,
-            parcel.readInt()
-    )
-
-//    override fun hashCode(): Int {
-//        return id.hashCode();
-//    }
-//
-//    override fun equals(other: Any?): Boolean {
-//        if (other is Rover)
-//            if (other.id == this.id)
-//                return true
-//
-//        return false
-//    }
-}
+        val totalPhotos: Int)
 
 
