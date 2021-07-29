@@ -47,8 +47,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import coil.util.CoilUtils
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.cache.DiskCache
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.android.gms.ads.*
 import com.sirelon.marsroverphotos.R
@@ -159,31 +157,17 @@ class RoversActivity : AppCompatActivity() {
         track("Clear cache")
         val ctx = application
         lifecycleScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, throwable -> throwable.printStackTrace() }) {
-            val glideCacheFile = File(cacheDir, DiskCache.Factory.DEFAULT_DISK_CACHE_DIR)
-            val glideSize = calculateSize(glideCacheFile)
-
             val coilCache = CoilUtils.createDefaultCache(ctx)
             val coilSize = kotlin.runCatching { coilCache.size() }
                 .onFailure(::recordException).getOrDefault(0)
 
             coilCache.directory().deleteRecursively()
 
-            Glide.get(ctx).clearDiskCache()
-
-            val sizeStr = Formatter.formatFileSize(ctx, glideSize + coilSize)
+            val sizeStr = Formatter.formatFileSize(ctx, coilSize)
             withContext(Dispatchers.Main) {
                 Toast.makeText(ctx, "Cleared $sizeStr", Toast.LENGTH_SHORT).show()
             }
         }
-    }
-
-    private fun calculateSize(dir: File?): Long {
-        if (dir == null) return 0
-        if (!dir.isDirectory) return dir.length()
-        var result: Long = 0
-        val children: Array<File>? = dir.listFiles()
-        if (children != null) for (child in children) result += calculateSize(child)
-        return result
     }
 
     private fun goToMarket() {

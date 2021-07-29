@@ -135,7 +135,6 @@
 -keep class * implements com.google.gson.TypeAdapterFactory
 -keep class * implements com.google.gson.JsonSerializer
 -keep class * implements com.google.gson.JsonDeserializer
--keep class android.support.v7.widget.ShareActionProvider { *; }
 
 # Platform calls Class.forName on types which do not exist on Android to determine platform.
 -dontnote retrofit2.Platform
@@ -154,10 +153,3 @@
 -dontwarn javax.annotation.**
 -dontwarn com.sirelon.marsroverphotos.feature.rovers.**
 -dontwarn com.sirelon.marsroverphotos.feature.popular.**
-
--keep public class * implements com.bumptech.glide.module.GlideModule
--keep public class * extends com.bumptech.glide.module.AppGlideModule
--keep public enum com.bumptech.glide.load.ImageHeaderParser$** {
-  **[] $VALUES;
-  public *;
-}

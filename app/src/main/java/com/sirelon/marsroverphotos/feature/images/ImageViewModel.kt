@@ -2,6 +2,7 @@ package com.sirelon.marsroverphotos.feature.images
 
 import android.app.Application
 import android.content.Intent
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.provider.MediaStore
 import android.widget.Toast
@@ -10,7 +11,9 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.bumptech.glide.Glide
+import coil.ImageLoader
+import coil.request.ImageRequest
+import coil.request.SuccessResult
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.exceptionHandler
@@ -72,8 +75,15 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
         val appUrl = "https://play.google.com/store/apps/details?id=${activity.packageName}"
         viewModelScope.launch(IO) {
             kotlin.runCatching {
-                val bitmap =
-                    Glide.with(activity).asBitmap().load(photo.imageUrl).submit().get()
+                val loader = ImageLoader(activity)
+                val request = ImageRequest.Builder(activity)
+                    .data(photo.imageUrl)
+                    .allowHardware(false) // Disable hardware bitmaps.
+                    .build()
+
+                val result = (loader.execute(request) as SuccessResult).drawable
+                val bitmap = (result as BitmapDrawable).bitmap
+
                 val localUrl = MediaStore.Images.Media.insertImage(
                     activity.contentResolver, bitmap,
                     "mars_photo_${photo.id}",
@@ -85,8 +95,10 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
                         Uri.parse(localUrl)
                     )
                 )
-                val dataManager = RoverApplication.APP.dataManger
-                dataManager.updatePhotoSaveCounter(photo)
+                launch(exceptionHandler) {
+                    val dataManager = RoverApplication.APP.dataManger
+                    dataManager.updatePhotoSaveCounter(photo)
+                }
                 // Update counter for save
                 localUrl
             }
