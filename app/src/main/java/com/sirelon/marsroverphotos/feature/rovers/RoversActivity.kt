@@ -51,7 +51,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.android.gms.ads.*
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
-import com.sirelon.marsroverphotos.activity.AboutAppContent
+import com.sirelon.marsroverphotos.feature.settings.AboutAppContent
 import com.sirelon.marsroverphotos.extensions.recordException
 import com.sirelon.marsroverphotos.feature.NetworkImage
 import com.sirelon.marsroverphotos.feature.favorite.FavoriteScreen
@@ -64,7 +64,6 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
 
 
 @ExperimentalAnimationApi

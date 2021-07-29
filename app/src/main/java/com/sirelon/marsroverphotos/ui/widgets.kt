@@ -1,8 +1,13 @@
 package com.sirelon.marsroverphotos.ui
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 
 /**
  * Created on 27.06.2021 13:04 for Mars-Rover-Photos.
@@ -31,4 +36,22 @@ fun MarsSnackbar(
                 content = { Text(text = snackbarHostState.currentSnackbarData?.message ?: "") },
             )
         })
+}
+
+@Composable
+fun RadioButtonText(
+    text: String,
+    selected: Boolean,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = modifier
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        RadioButton(selected = selected, onClick = null)
+        Text(text = text)
+    }
 }
