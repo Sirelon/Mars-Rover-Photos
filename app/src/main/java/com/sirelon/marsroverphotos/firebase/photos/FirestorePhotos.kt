@@ -10,8 +10,6 @@ import com.sirelon.marsroverphotos.feature.firebase.toFireBase
 import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.utils.randomInt
-import io.reactivex.Observable
-import io.reactivex.ObservableEmitter
 
 /**
  * Created on 11/25/17 17:56 for Mars-Rover-Photos.
@@ -104,41 +102,30 @@ internal class FirestorePhotos : IFirebasePhotos {
             }
     }
 
-    override fun loadPopularPhotos(
+    override suspend fun loadPopularPhotos(
         count: Int,
         lastPhotoId: String?
-    ): Observable<List<FirebasePhoto>> {
-        return Observable.create<List<FirebasePhoto>> { emitter: ObservableEmitter<List<FirebasePhoto>> ->
-            val queryDirection = Query.Direction.DESCENDING
-            var first = photosCollection()
-                .orderBy("shareCounter", queryDirection)
-                .orderBy("saveCounter", queryDirection)
-                .orderBy("scaleCounter", queryDirection)
-                .orderBy("seeCounter", queryDirection)
-                .limit(count.toLong())
+    ): List<FirebasePhoto> {
+
+        val queryDirection = Query.Direction.DESCENDING
+        var first = photosCollection()
+            .orderBy("shareCounter", queryDirection)
+            .orderBy("saveCounter", queryDirection)
+            .orderBy("scaleCounter", queryDirection)
+            .orderBy("seeCounter", queryDirection)
+            .limit(count.toLong())
 
 //                .orderBy("seeCounter", queryDirection)
 //                .orderBy("scaleCounter", queryDirection)
 
-            if (lastPhotoId != null) {
-                val documentSnapshot =
-                    Tasks.await(photosCollection().document(lastPhotoId).get())
-                first = first.startAfter(documentSnapshot)
-            }
-
-            first.get().addOnCompleteListener {
-                if (it.isSuccessful) {
-                    val documentSnapshots = it.result
-
-                    val objects =
-                        documentSnapshots?.documents?.map(DocumentSnapshot::toFirebasePhoto)
-                    emitter.onNext(objects ?: emptyList())
-                    emitter.onComplete()
-                } else {
-                    emitter.onError(it.exception!!)
-                }
-            }
+        if (lastPhotoId != null) {
+            val documentSnapshot =
+                Tasks.await(photosCollection().document(lastPhotoId).get())
+            first = first.startAfter(documentSnapshot)
         }
+
+        val documentSnapshots = first.get().await()
+        return documentSnapshots?.documents?.map(DocumentSnapshot::toFirebasePhoto) ?: emptyList()
     }
 
     private suspend fun updatePhoto(photo: FirebasePhoto): FirebasePhoto {

@@ -1,7 +1,6 @@
 package com.sirelon.marsroverphotos.tracker
 
 import android.os.Bundle
-import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.storage.MarsImage
 
 /**
