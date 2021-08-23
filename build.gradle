@@ -5,11 +5,10 @@ buildscript {
     repositories {
         jcenter()
         maven { url "https://maven.google.com" }
-        maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.1.0-alpha05'
+        classpath 'com.android.tools.build:gradle:7.1.0-alpha08'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.google.firebase:perf-plugin:1.4.0'
         classpath 'com.google.gms:google-services:4.3.8'
@@ -22,7 +21,6 @@ allprojects {
         jcenter()
         maven { url "https://jitpack.io" }
         google()
-        maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
     }
 }
 
