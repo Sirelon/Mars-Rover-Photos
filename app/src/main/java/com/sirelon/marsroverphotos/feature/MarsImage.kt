@@ -142,6 +142,9 @@ private fun ImageLoader(imageUrl: String, success: () -> Unit) {
 
 @Composable
 private fun StatsInfoText(counter: Long, image: ImageVector, desc: String) {
+
+    if (counter <= 0) return
+
     Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
             painter = rememberVectorPainter(image = image),

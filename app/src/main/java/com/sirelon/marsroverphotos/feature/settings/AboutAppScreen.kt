@@ -55,22 +55,7 @@ fun AboutAppContent(onClearCache: () -> Unit, onRateApp: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.img_insight),
-            contentDescription = null
-        )
-        Image(
-            painter = painterResource(id = R.drawable.img_curiosity),
-            contentDescription = null
-        )
-        Image(
-            painter = painterResource(id = R.drawable.img_opportunity),
-            contentDescription = null
-        )
-        Image(
-            painter = painterResource(id = R.drawable.img_perseverance),
-            contentDescription = null
-        )
+        Image(painter = painterResource(id = R.drawable.alien_icon), contentDescription = "logo")
         Text(text = "Mars rover photos", style = typography.h5)
         Text(
             text = stringResource(id = R.string.about_description),

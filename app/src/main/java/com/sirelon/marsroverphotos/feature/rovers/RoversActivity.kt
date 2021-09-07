@@ -25,6 +25,7 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material.icons.outlined.ViewCarousel
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -51,6 +52,7 @@ import androidx.navigation.compose.*
 import coil.util.CoilUtils
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.android.gms.ads.*
+import com.sirelon.marsroverphotos.BuildConfig
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.recordException
@@ -100,7 +102,10 @@ class RoversActivity : AppCompatActivity() {
 
         setContent {
             val theme by Prefs.themeLiveData.observeAsState(initial = Prefs.theme)
-            track("theme_$theme")
+            LaunchedEffect(key1 = theme){
+                track("theme_$theme")
+            }
+
             val isDark: Boolean =
                 if (theme == Theme.SYSTEM) isSystemInDarkTheme() else theme == Theme.DARK
             MarsRoverPhotosTheme(isDark) {
