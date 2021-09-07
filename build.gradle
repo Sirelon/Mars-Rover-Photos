@@ -1,17 +1,17 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.5.10'
+    ext.kotlin_version = '1.5.30'
     repositories {
         jcenter()
         maven { url "https://maven.google.com" }
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.1.0-alpha08'
+        classpath 'com.android.tools.build:gradle:7.1.0-alpha11'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.google.firebase:perf-plugin:1.4.0'
-        classpath 'com.google.gms:google-services:4.3.8'
+        classpath 'com.google.gms:google-services:4.3.10'
         // Add the Crashlytics Gradle plugin.
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.7.1'
     }
@@ -30,6 +30,6 @@ task clean(type: Delete) {
 
 buildscript {
     ext {
-        composeVer = '1.0.0'
+        composeVer = '1.1.0-alpha03'
     }
 }

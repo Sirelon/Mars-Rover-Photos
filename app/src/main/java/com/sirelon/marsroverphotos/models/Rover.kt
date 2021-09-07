@@ -1,12 +1,11 @@
 package com.sirelon.marsroverphotos.models
 
+import android.content.Context
 import androidx.annotation.DrawableRes
 import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
-import com.sirelon.marsroverphotos.adapter.AdapterConstants
-import kotlinx.parcelize.Parcelize
 
 /**
  * @author romanishin
@@ -22,8 +21,7 @@ data class Rover(
         @SerializedName(value = "name")
         val name: String,
 
-        @DrawableRes
-        val drawableRes: Int,
+        val drawableName: String,
 
         @SerializedName(value = "landing_date")
         val landingDate: String,
@@ -41,6 +39,14 @@ data class Rover(
         var maxDate: String,
 
         @SerializedName(value = "total_photos")
-        val totalPhotos: Int)
+        val totalPhotos: Int
+)
+
+
+@DrawableRes
+fun Rover.drawableRes(context: Context): Int {
+        return context.resources
+                .getIdentifier(drawableName, "drawable", context.packageName)
+}
 
 

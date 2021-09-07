@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -59,6 +60,7 @@ import com.sirelon.marsroverphotos.feature.images.ImageScreen
 import com.sirelon.marsroverphotos.feature.photos.RoverPhotosScreen
 import com.sirelon.marsroverphotos.feature.settings.AboutAppContent
 import com.sirelon.marsroverphotos.models.Rover
+import com.sirelon.marsroverphotos.models.drawableRes
 import com.sirelon.marsroverphotos.storage.Prefs
 import com.sirelon.marsroverphotos.storage.Theme
 import com.sirelon.marsroverphotos.ui.MarsRoverPhotosTheme
@@ -66,6 +68,7 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 
 @ExperimentalAnimationApi
@@ -364,6 +367,7 @@ fun RoversContent(
 
 @Composable
 fun RoverItem(rover: Rover, onClick: (rover: Rover) -> Unit) {
+    Timber.d("RoverItem() called with: rover = $rover");
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -375,9 +379,10 @@ fun RoverItem(rover: Rover, onClick: (rover: Rover) -> Unit) {
 
         val height = Modifier.height(175.dp)
         Row(modifier = Modifier.padding(8.dp)) {
+            val drawableRes = rover.drawableRes(LocalContext.current)
             Image(
                 contentScale = ContentScale.FillHeight,
-                painter = painterResource(id = rover.drawableRes),
+                painter = painterResource(id = drawableRes),
                 modifier = height
                     .weight(1f)
                     .clip(shape = MaterialTheme.shapes.large),

@@ -56,7 +56,19 @@ fun AboutAppContent(onClearCache: () -> Unit, onRateApp: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(id = R.drawable.alien_icon),
+            painter = painterResource(id = R.drawable.img_insight),
+            contentDescription = null
+        )
+        Image(
+            painter = painterResource(id = R.drawable.img_curiosity),
+            contentDescription = null
+        )
+        Image(
+            painter = painterResource(id = R.drawable.img_opportunity),
+            contentDescription = null
+        )
+        Image(
+            painter = painterResource(id = R.drawable.img_perseverance),
             contentDescription = null
         )
         Text(text = "Mars rover photos", style = typography.h5)
