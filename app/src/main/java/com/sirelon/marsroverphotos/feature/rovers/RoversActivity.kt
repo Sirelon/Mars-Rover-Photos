@@ -26,6 +26,7 @@ import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material.icons.outlined.ViewCarousel
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -51,8 +52,8 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import coil.util.CoilUtils
 import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.ads.mediation.admob.AdMobAdapter
 import com.google.android.gms.ads.*
-import com.sirelon.marsroverphotos.BuildConfig
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.recordException
@@ -78,6 +79,8 @@ import timber.log.Timber
 @ExperimentalPagerApi
 class RoversActivity : AppCompatActivity() {
 
+    private val gdprHelper = GdprHelper(this)
+
     // Determine the screen width (less decorations) to use for the ad width.
     // If the ad hasn't been laid out, default to the full screen width.
     private val adSize: AdSize
@@ -101,12 +104,11 @@ class RoversActivity : AppCompatActivity() {
 
         val bottomItems = listOf(Screen.Rovers, Screen.Favorite, Screen.Popular, Screen.About)
 
-        val gdprHelper = GdprHelper(this)
         gdprHelper.init()
 
         setContent {
             val theme by Prefs.themeLiveData.observeAsState(initial = Prefs.theme)
-            LaunchedEffect(key1 = theme){
+            LaunchedEffect(key1 = theme) {
                 track("theme_$theme")
             }
 
@@ -245,16 +247,25 @@ class RoversActivity : AppCompatActivity() {
 
     @Composable
     private fun ComposableBannerAd(modifier: Modifier) {
-        AndroidView<View>(modifier = modifier, factory = {
+        val personalized by gdprHelper.acceptGdpr.collectAsState(initial = false)
+
+        AndroidView<View>(modifier = modifier, factory = { adView }) {
             val adRequest = AdRequest
                 .Builder()
+//                .let {
+//                    if (!personalized) {
+//                        val extras = Bundle()
+//                        extras.putString("npa", "1")
+//
+//                        it.addNetworkExtrasBundle(AdMobAdapter::class.java, extras)
+//                    } else it
+//                }
                 .build()
-
+            Timber.d("ComposableBannerAd called $personalized");
             // Start loading the ad in the background.
             adView.loadAd(adRequest)
 
-            adView
-        })
+        }
     }
 
     @Composable

@@ -3,6 +3,7 @@ package com.sirelon.marsroverphotos.feature.gdpr
 import androidx.core.app.ComponentActivity
 import com.google.android.ump.*
 import com.sirelon.marsroverphotos.extensions.recordException
+import kotlinx.coroutines.flow.MutableStateFlow
 import timber.log.Timber
 
 
@@ -11,13 +12,14 @@ import timber.log.Timber
  */
 class GdprHelper(private val activity: ComponentActivity) {
 
-    private val consentInformation = UserMessagingPlatform.getConsentInformation(activity)
+    private val consentInformation by lazy { UserMessagingPlatform.getConsentInformation(activity) }
+
+    val acceptGdpr = MutableStateFlow(false)
 
     fun init() {
-
         val debugSettings = ConsentDebugSettings.Builder(activity)
             .setDebugGeography(ConsentDebugSettings.DebugGeography.DEBUG_GEOGRAPHY_EEA)
-            .addTestDeviceHashedId("62FB47CDEF3CE930EF49BB808381622F")
+//            .addTestDeviceHashedId("62FB47CDEF3CE930EF49BB808381622F")
             .build()
 
         // Set tag for underage of consent. false means users are not underage.
@@ -32,9 +34,11 @@ class GdprHelper(private val activity: ComponentActivity) {
                 Timber.d("init() called $consentInformation");
                 // The consent information state was updated.
                 // You are now ready to check if a form is available.
-//                if (consentInformation.isConsentFormAvailable) {
-                    loadForm();
-//                }
+                if (consentInformation.isConsentFormAvailable) {
+                    loadForm()
+                } else {
+                    acceptGdpr.value = true
+                }
             },
             this::onError
         )
@@ -53,11 +57,13 @@ class GdprHelper(private val activity: ComponentActivity) {
     }
 
     private fun showConsentForm(consentForm: ConsentForm) {
-        Timber.d("loadForm() called with: consentForm = $consentForm");
+        Timber.d("loadForm() called with: consentForm = $consentForm annd consentInformation.consentStatus ${consentInformation.consentStatus}");
         if (consentInformation.consentStatus == ConsentInformation.ConsentStatus.REQUIRED) {
             consentForm.show(activity) { // Handle dismissal by reloading form.
                 loadForm()
             }
+        } else {
+            acceptGdpr.value = true
         }
     }
 
