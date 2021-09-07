@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 /**
  * Created on 22.08.2020 18:59 for Mars-Rover-Photos.
@@ -121,6 +122,7 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
     }
 
     fun onShown(marsPhoto: MarsImage, page: Int) {
+        Timber.d("onShown() called with: marsPhoto = $marsPhoto, page = $page");
         val dataManger = RoverApplication.APP.dataManger
         dataManger.trackEvent("photo_show", mapOf("page" to page))
 

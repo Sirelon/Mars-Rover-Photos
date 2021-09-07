@@ -34,6 +34,7 @@ import com.sirelon.marsroverphotos.feature.*
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.ui.CenteredProgress
 import com.sirelon.marsroverphotos.ui.MarsSnackbar
+import kotlinx.coroutines.flow.collect
 
 /**
  * Created on 13.04.2021 22:52 for Mars-Rover-Photos.
@@ -49,7 +50,6 @@ fun ImageScreen(
     selectedId: String?
 ) {
     val ids = photoIds ?: emptyList()
-    Log.d("Sirelon", "ImageScreen() called with: photoIds = $photoIds, selectedId = $selectedId");
     viewModel.setIdsToShow(ids)
 
     val selectedPosition = ids.indexOf(selectedId)
@@ -87,6 +87,15 @@ private fun ImagesPagerContent(
 ) {
     var titleState by remember { mutableStateOf("Mars rover photos") }
 
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.currentPage }.collect { page ->
+            val marsPhoto = list[page]
+
+            viewModel.onShown(marsPhoto, page)
+            titleState = "Mars image id: ${marsPhoto.id}"
+        }
+    }
+
     Column {
         TopAppBar(
             title = { Text(text = titleState) },
@@ -105,10 +114,6 @@ private fun ImagesPagerContent(
                 pagerState = pagerState,
                 images = list,
                 callback = viewModel,
-                onShownPage = { marsPhoto, page ->
-                    viewModel.onShown(marsPhoto, page)
-                    titleState = "Mars image id: ${marsPhoto.id}"
-                }
             ) { marsImage, _ ->
                 viewModel.updateFavorite(marsImage)
             }
@@ -219,7 +224,6 @@ private fun checkPermissionState(
         }
         !cameraPermissionState.permissionRequested -> {
             launchAgain()
-//            launchPermissionRequest = true
         }
         else -> {
             permissionDenied(false)
@@ -233,7 +237,6 @@ fun ImagesPager(
     pagerState: PagerState,
     images: List<MarsImage>,
     callback: MultitouchDetectorCallback,
-    onShownPage: (marsPhoto: MarsImage, page: Int) -> Unit,
     favoriteClick: (MarsImage, Boolean) -> Unit
 ) {
     HorizontalPager(
@@ -245,13 +248,9 @@ fun ImagesPager(
         // Our page content
         val marsImage = images[page]
 
-        LaunchedEffect(key1 = page, block = {
-            if (!pagerState.isScrollInProgress) {
-                onShownPage(marsImage, page)
-            }
-        })
-
-        callback.currentImage = marsImage
+        LaunchedEffect(key1 = marsImage) {
+            callback.currentImage = marsImage
+        }
 
         Box {
             val state = rememberSaveable(saver = MultitouchState.Saver) {

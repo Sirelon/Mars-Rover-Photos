@@ -10,10 +10,10 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:7.1.0-alpha11'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.7.1'
         classpath 'com.google.firebase:perf-plugin:1.4.0'
         classpath 'com.google.gms:google-services:4.3.10'
         // Add the Crashlytics Gradle plugin.
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.7.1'
     }
 }
 allprojects {
