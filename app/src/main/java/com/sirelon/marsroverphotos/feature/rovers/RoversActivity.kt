@@ -58,6 +58,7 @@ import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.recordException
 import com.sirelon.marsroverphotos.feature.favorite.FavoriteScreen
 import com.sirelon.marsroverphotos.feature.favorite.PopularScreen
+import com.sirelon.marsroverphotos.feature.gdpr.GdprHelper
 import com.sirelon.marsroverphotos.feature.images.ImageScreen
 import com.sirelon.marsroverphotos.feature.photos.RoverPhotosScreen
 import com.sirelon.marsroverphotos.feature.settings.AboutAppContent
@@ -99,6 +100,9 @@ class RoversActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val bottomItems = listOf(Screen.Rovers, Screen.Favorite, Screen.Popular, Screen.About)
+
+        val gdprHelper = GdprHelper(this)
+        gdprHelper.init()
 
         setContent {
             val theme by Prefs.themeLiveData.observeAsState(initial = Prefs.theme)

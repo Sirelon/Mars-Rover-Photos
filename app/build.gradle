@@ -156,6 +156,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore'
     implementation 'com.google.firebase:firebase-messaging'
     implementation 'com.google.android.gms:play-services-ads:20.3.0'
+    implementation 'com.google.android.ump:user-messaging-platform:2.0.0'
 
     // https://github.com/mocklets/pluto
 
