@@ -17,9 +17,10 @@ class GdprHelper(private val activity: ComponentActivity) {
     val acceptGdpr = MutableStateFlow(false)
 
     fun init() {
+//        consentInformation.reset()
         val debugSettings = ConsentDebugSettings.Builder(activity)
             .setDebugGeography(ConsentDebugSettings.DebugGeography.DEBUG_GEOGRAPHY_EEA)
-//            .addTestDeviceHashedId("62FB47CDEF3CE930EF49BB808381622F")
+            .addTestDeviceHashedId("62FB47CDEF3CE930EF49BB808381622F")
             .build()
 
         // Set tag for underage of consent. false means users are not underage.
