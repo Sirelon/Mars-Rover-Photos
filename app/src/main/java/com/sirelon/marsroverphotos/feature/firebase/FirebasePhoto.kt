@@ -2,7 +2,6 @@ package com.sirelon.marsroverphotos.feature.firebase
 
 import com.google.firebase.firestore.Exclude
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
-import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.models.ViewType
 import com.sirelon.marsroverphotos.storage.MarsImage
 
@@ -12,10 +11,11 @@ import com.sirelon.marsroverphotos.storage.MarsImage
 data class FirebasePhoto(
     val id: String,
     val sol: Long,
-    val name: String?,
+    val name: String,
     val imageUrl: String,
     val earthDate: String,
     var seeCounter: Long,
+    var favoriteCounter: Long,
     var scaleCounter: Long,
     var saveCounter: Long,
     var shareCounter: Long
@@ -24,28 +24,17 @@ data class FirebasePhoto(
     @Exclude
     override fun getViewId() = id
 
-    constructor(photo: MarsPhoto) : this(
+    constructor(photo: MarsImage) : this(
         id = photo.id,
         sol = photo.sol,
-        name = photo.name,
+        name = photo.name ?: "",
         imageUrl = photo.imageUrl,
         earthDate = photo.earthDate,
         seeCounter = 0,
         scaleCounter = 0,
         saveCounter = 0,
-        shareCounter = 0
-    )
-
-    constructor() : this(
-        id = "",
-        sol = -1,
-        name = null,
-        imageUrl = "",
-        earthDate = "",
-        seeCounter = 0,
-        scaleCounter = 0,
-        saveCounter = 0,
-        shareCounter = 0
+        shareCounter = 0,
+        favoriteCounter = 0,
     )
 
     override fun getViewType() = AdapterConstants.POPULAR_PHOTO
@@ -64,7 +53,8 @@ data class FirebasePhoto(
             see = seeCounter,
             scale = scaleCounter,
             save = saveCounter,
-            share = shareCounter
+            share = shareCounter,
+            favorite = favoriteCounter,
         )
     )
 }

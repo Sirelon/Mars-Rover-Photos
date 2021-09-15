@@ -15,7 +15,7 @@ fun List<MarsPhoto>.mapToUi(): List<MarsImage> {
     return mapIndexed { index, it ->
         // It's okay to use not correct data for favorite and popular with Stats, 'cause if these images already in database, we'll ignore replacing them.
         MarsImage(
-            id = it.id.toString(),
+            id = it.id,
             sol = it.sol,
             name = it.name,
             imageUrl = it.imageUrl,
@@ -24,7 +24,7 @@ fun List<MarsPhoto>.mapToUi(): List<MarsImage> {
             favorite = false,
             popular = false,
             order = index,
-            stats = MarsImage.Stats(0, 0, 0, 0)
+            stats = defaultStats()
         )
     }
 }
@@ -43,10 +43,12 @@ fun List<PerseverancePhotoItemResponse>.preveranceToUI(): List<MarsImage> {
             favorite = false,
             popular = false,
             order = index,
-            stats = MarsImage.Stats(0, 0, 0, 0)
+            stats = defaultStats()
         )
     }
 }
+
+private fun defaultStats() = MarsImage.Stats(0, 0, 0, 0, 0)
 
 fun ImageSourceResponse.image(): String {
     return medium ?: small ?: full_res ?: large ?: ""

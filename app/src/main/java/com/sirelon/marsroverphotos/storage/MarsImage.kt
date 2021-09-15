@@ -1,11 +1,9 @@
 package com.sirelon.marsroverphotos.storage
 
-import androidx.recyclerview.widget.DiffUtil
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.sirelon.marsroverphotos.adapter.AdapterConstants
-import com.sirelon.marsroverphotos.models.MarsPhoto
 import com.sirelon.marsroverphotos.models.RoverCamera
 import com.sirelon.marsroverphotos.models.ViewType
 
@@ -35,23 +33,18 @@ data class MarsImage(
 
     override fun getViewType(): Int = AdapterConstants.MARS_PHOTO
 
-    fun toMarsPhoto() = MarsPhoto(id, sol, name, imageUrl, earthDate, camera)
-
     class Stats(
         val see: Long,
         val scale: Long,
         val save: Long,
-        val share: Long
+        val share: Long,
+        val favorite: Long
     )
 }
 
-val MarsImageDiffCallback = object : DiffUtil.ItemCallback<MarsImage>() {
-    override fun areItemsTheSame(oldItem: MarsImage, newItem: MarsImage) = oldItem.id == newItem.id
-
-    override fun areContentsTheSame(oldItem: MarsImage, newItem: MarsImage): Boolean {
-        if (oldItem != newItem) {
-            return oldItem.imageUrl == newItem.imageUrl
-        } else return true
-    }
-
-}
+class StatsUpdate(
+    @PrimaryKey
+    val id: String,
+    @Embedded(prefix = "counter_")
+    val stats: MarsImage.Stats
+)

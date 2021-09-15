@@ -3,13 +3,12 @@ package com.sirelon.marsroverphotos.feature.popular
 import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
-import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
-import com.sirelon.marsroverphotos.feature.firebase.FirebasePhoto
 import com.sirelon.marsroverphotos.firebase.photos.IFirebasePhotos
 import com.sirelon.marsroverphotos.storage.ImagesDao
 import com.sirelon.marsroverphotos.storage.MarsImage
+import com.sirelon.marsroverphotos.storage.StatsUpdate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -17,26 +16,8 @@ import kotlinx.coroutines.withContext
 /**
  * Created on 2/5/18 00:48 for Mars-Rover-Photos.
  */
-
-// Leave it just as example for load directly from net
-class PopularPhotosSource(private val firebasePhotos: IFirebasePhotos) :
-    PagingSource<FirebasePhoto, FirebasePhoto>() {
-
-    override suspend fun load(params: LoadParams<FirebasePhoto>): LoadResult<FirebasePhoto, FirebasePhoto> =
-        withContext(Dispatchers.IO) {
-            try {
-                val list = firebasePhotos.loadPopularPhotos(params.loadSize, null).blockingFirst()
-                LoadResult.Page(list, null, list.lastOrNull())
-            } catch (e: Exception) {
-                e.printStackTrace()
-                LoadResult.Error(e)
-            }
-        }
-
-    override fun getRefreshKey(state: PagingState<FirebasePhoto, FirebasePhoto>): FirebasePhoto? {
-        TODO("Not yet implemented")
-    }
-}
+// A bit hacky, I just dont want to store this field at my db.
+private var firstCreation = true
 
 @ExperimentalPagingApi
 class PopularRemoteMediator(
@@ -44,7 +25,20 @@ class PopularRemoteMediator(
     private val dao: ImagesDao
 ) : RemoteMediator<Int, MarsImage>() {
 
-    @ExperimentalPagingApi
+    override suspend fun initialize(): InitializeAction {
+        return if (firstCreation) {
+            firstCreation = false
+            // Need to refresh cached data from network; returning
+            // LAUNCH_INITIAL_REFRESH here will also block RemoteMediator's
+            // APPEND and PREPEND from running until REFRESH succeeds.
+            InitializeAction.LAUNCH_INITIAL_REFRESH
+        } else {
+            // Cached data is up-to-date, so there is no need to re-fetch
+            // from the network.
+            InitializeAction.SKIP_INITIAL_REFRESH
+        }
+    }
+
     override suspend fun load(
         loadType: LoadType,
         state: PagingState<Int, MarsImage>
@@ -56,22 +50,23 @@ class PopularRemoteMediator(
         loadType: LoadType,
         state: PagingState<Int, MarsImage>
     ): MediatorResult {
-        val alreadyInDb = state.pages.map { it.data.size }.sum()
+        val alreadyInDb = state.pages.sumOf { it.data.size } + 1
         if (loadType == LoadType.PREPEND) return MediatorResult.Success(endOfPaginationReached = true)
 
         try {
             val loadSize = state.config.pageSize
             val list =
-                firebasePhotos.loadPopularPhotos(loadSize, state.lastItemOrNull()?.id?.toString())
-                    .blockingFirst()
+                firebasePhotos.loadPopularPhotos(loadSize, state.lastItemOrNull()?.id)
                     .mapIndexed { index, item -> item.toMarsImage(index + alreadyInDb) }
 
             dao.withTransaction {
-                if (loadType == LoadType.REFRESH) {
-                    dao.deleteAllPopular()
-                }
+                val ids = dao.insertImages(list).mapIndexed { index, rowId -> rowId to index }
+                val grouped = ids.groupBy { it.first == -1L }
+                val toUpdate = grouped[true]?.map { list[it.second] }
 
-                dao.replaceImages(list)
+                toUpdate?.forEach {
+                    dao.updateStats(StatsUpdate(it.id, it.stats))
+                }
             }
 
             val endOfPaginationReached: Boolean = list.lastOrNull() == null

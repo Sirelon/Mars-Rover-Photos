@@ -1,6 +1,7 @@
 package com.sirelon.marsroverphotos.feature.favorite
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.sirelon.marsroverphotos.RoverApplication
@@ -28,6 +29,10 @@ class FavoriteImagesViewModel(app: Application) : AndroidViewModel(app) {
         }
 
         val tracker = getApplication<RoverApplication>().tracker
-        tracker.trackFavorite(image.toMarsPhoto(), "FavoriteList", !image.favorite)
+        tracker.trackFavorite(image, "FavoriteList", !image.favorite)
+    }
+
+    fun track(track: String) {
+        RoverApplication.APP.dataManger.trackClick(track)
     }
 }
