@@ -3,19 +3,7 @@ package com.sirelon.marsroverphotos.feature.billing
 import android.util.Log
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
-import com.android.billingclient.api.AcknowledgePurchaseParams
-import com.android.billingclient.api.BillingClient
-import com.android.billingclient.api.BillingClientStateListener
-import com.android.billingclient.api.BillingFlowParams
-import com.android.billingclient.api.BillingResult
-import com.android.billingclient.api.ConsumeParams
-import com.android.billingclient.api.Purchase
-import com.android.billingclient.api.PurchasesUpdatedListener
-import com.android.billingclient.api.SkuDetails
-import com.android.billingclient.api.SkuDetailsParams
-import com.android.billingclient.api.acknowledgePurchase
-import com.android.billingclient.api.queryPurchaseHistory
-import com.android.billingclient.api.querySkuDetails
+import com.android.billingclient.api.*
 import com.sirelon.marsroverphotos.extensions.logD
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -71,7 +59,7 @@ object BillingHelper {
     }
 
     private fun handlePurchase(activity: FragmentActivity, purchase: Purchase?) {
-        Log.i("Sirelo", "handlePurchase() called with: activity = $activity, purchase = $purchase");
+        Log.i("Sirelon", "handlePurchase() called with: activity = $activity, purchase = $purchase");
         val purchase = purchase ?: return
         val client = billingClient ?: return
         activity.lifecycleScope.launch {
@@ -93,7 +81,7 @@ object BillingHelper {
     suspend fun querySkuDetails() {
         val billingClient = billingClient ?: return
         val skuList = ArrayList<String>()
-        val sku = "ad_remover"
+        val sku = "array_ist"
         skuList.add(sku)
         val params = SkuDetailsParams.newBuilder()
         params.setSkusList(skuList).setType(BillingClient.SkuType.INAPP)
@@ -106,18 +94,47 @@ object BillingHelper {
         adRemover = skuDetailsResult.skuDetailsList?.find { it.sku == sku }
 
         "querySkuDetails".logD()
+        adRemover.logD()
         skuDetailsResult.billingResult.responseCode.logD()
         skuDetailsResult.billingResult.debugMessage.logD()
 
         // TODO:
 
-        val queryPurchaseHistory = BillingHelper.billingClient?.queryPurchaseHistory(sku)
-        queryPurchaseHistory.logD()
-        queryPurchaseHistory?.billingResult?.run {
-            Log.i("Sirelon", "HISTORY")
-            this.debugMessage?.logD()
-            this.responseCode?.logD()
+        val queryPurchaseHistory = BillingHelper.billingClient?.queryPurchasesAsync(BillingClient.SkuType.INAPP)
+
+        val r = queryPurchaseHistory?.billingResult
+        val l = queryPurchaseHistory?.purchasesList
+        "queryPurchasesAsync ${r?.responseCode} and $l".logD()
+        l?.forEach {
+            "State ${it.purchaseState}".logD()
         }
+
+//            if (l.first().purchaseState == Purchase.PurchaseState.PURCHASED) {
+//                // remove Ad
+//            }
+//        val queryPurchaseHistory = BillingHelper.billingClient?.queryPurchasesAsync(sku) { r, l ->
+//
+//            "queryPurchasesAsync ${r.responseCode} ".logD()
+//            l.forEach {
+//                "State ${it.purchaseState}".logD()
+//            }
+//
+////            if (l.first().purchaseState == Purchase.PurchaseState.PURCHASED) {
+////                // remove Ad
+////            }
+//        }
+//        queryPurchaseHistory.logD()
+//        queryPurchaseHistory?.purchaseHistoryRecordList?.find {
+//            it.skus.contains(sku)
+//        }?.let {
+//
+//            it.
+//        }
+//        queryPurchaseHistory?.billingResult?.run {
+//            Log.i("Sirelon", "HISTORY")
+//            this.debugMessage?.logD()
+//            this.responseCode?.logD()
+//        }
 
         // Process the result.
     }
