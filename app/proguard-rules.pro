@@ -61,6 +61,8 @@
     public static *** v(...);
 }
 
+-keep class com.google.android.gms.internal.consent_sdk.** { <fields>; }
+
 # Preserve all native method names and the names of their classes.
 -keepclasseswithmembernames class * {
     native <methods>;
@@ -101,14 +103,6 @@
    long consumerIndex;
 }
 
--keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueProducerNodeRef {
-    rx.internal.util.atomic.LinkedQueueNode producerNode;
-}
-
--keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueConsumerNodeRef {
-    rx.internal.util.atomic.LinkedQueueNode consumerNode;
-}
-
 -dontnote rx.internal.util.PlatformDependent
 
 # Retrofit 2.X
@@ -135,7 +129,6 @@
 -keep class * implements com.google.gson.TypeAdapterFactory
 -keep class * implements com.google.gson.JsonSerializer
 -keep class * implements com.google.gson.JsonDeserializer
--keep class android.support.v7.widget.ShareActionProvider { *; }
 
 # Platform calls Class.forName on types which do not exist on Android to determine platform.
 -dontnote retrofit2.Platform
@@ -154,10 +147,3 @@
 -dontwarn javax.annotation.**
 -dontwarn com.sirelon.marsroverphotos.feature.rovers.**
 -dontwarn com.sirelon.marsroverphotos.feature.popular.**
-
--keep public class * implements com.bumptech.glide.module.GlideModule
--keep public class * extends com.bumptech.glide.module.AppGlideModule
--keep public enum com.bumptech.glide.load.ImageHeaderParser$** {
-  **[] $VALUES;
-  public *;
-}

@@ -1,33 +1,17 @@
 package com.sirelon.marsroverphotos.feature
 
 import android.graphics.Matrix
-import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.calculateCentroid
-import androidx.compose.foundation.gestures.calculateCentroidSize
-import androidx.compose.foundation.gestures.calculatePan
-import androidx.compose.foundation.gestures.calculateRotation
-import androidx.compose.foundation.gestures.calculateZoom
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.gestures.forEachGesture
+import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.listSaver
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.PointerInputScope
-import androidx.compose.ui.input.pointer.consumeAllChanges
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.input.pointer.positionChangeConsumed
-import androidx.compose.ui.input.pointer.positionChanged
+import androidx.compose.ui.input.pointer.*
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.unit.IntOffset
@@ -36,15 +20,24 @@ import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastForEach
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
+import com.sirelon.marsroverphotos.storage.MarsImage
 import kotlinx.coroutines.launch
-import kotlin.math.PI
-import kotlin.math.abs
-import kotlin.math.roundToInt
-import kotlin.math.sqrt
+import kotlin.math.*
 
 /**
  * Created on 15.04.2021 21:48 for Mars-Rover-Photos.
  */
+
+interface MultitouchDetectorCallback {
+
+    var currentImage: MarsImage?
+
+    fun onDoubleTap(zoomToChange: Float)
+
+    fun onZoomGesture(zoomToChange: Float, offsetY: Float, offsetX: Float, shouldBlock: Boolean)
+
+    fun scrollGesture(scrollDelta: Float)
+}
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
@@ -52,6 +45,7 @@ fun MultitouchDetector(
     modifier: Modifier,
     state: MultitouchState,
     pagerState: PagerState,
+    callback: MultitouchDetectorCallback? = null,
     content: @Composable () -> Unit,
 ) {
     var zoomToChange by remember { mutableStateOf(state.zoom) }
@@ -69,7 +63,10 @@ fun MultitouchDetector(
                 scope.launch {
                     detectTapGestures(onDoubleTap = {
                         val toChange = if (zoomToChange != 1f) 1f else state.maxZoom
+                        offsetX = 0f
+                        offsetY = 0f
                         zoomToChange = toChange
+                        callback?.onDoubleTap(toChange)
                     })
                 }
 
@@ -79,13 +76,16 @@ fun MultitouchDetector(
                     val zoom = zoomToChange * zoomVal
                     zoomToChange = zoom.coerceIn(state.minZoom, state.maxZoom)
 
+
                     if (zoomToChange == 1f) {
                         val one = if (offsetXVal < 0) 1 else -1
-                        pagerState.dispatchRawDelta(offsetXVal - 10f * one)
+                        val delta = offsetXVal - 10f * one
+                        pagerState.dispatchRawDelta(delta)
+                        callback?.scrollGesture(delta)
                         return@gestureDetectorAnalyser false
                     }
 
-                    val yLimitBottom = offsetY + (childSize.height * zoom) - parentSize.height * 1.5
+                    val yLimitBottom = offsetY + (childSize.height * zoom) - parentSize.height * 1.7
                     if (offsetYVal < 0) {
                         if (position.y + yLimitBottom > 0) {
                             offsetY += offsetYVal
@@ -130,12 +130,14 @@ fun MultitouchDetector(
                         offsetY = 0f
                         offsetX = 0f
                     }
+
+                    callback?.onZoomGesture(zoomToChange, offsetY, offsetX, shouldBlock)
+
                     shouldBlock
                 }
             }
     ) {
         val intOffset = IntOffset(offsetX.roundToInt(), offsetY.roundToInt())
-
 
         Box(
             Modifier

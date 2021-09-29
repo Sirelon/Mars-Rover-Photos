@@ -9,7 +9,7 @@ import com.sirelon.marsroverphotos.models.Rover
 /**
  * Created on 2019-03-14 12:54 for Mars-Rover-Photos.
  */
-@Database(entities = [Rover::class, MarsImage::class], version = 5)
+@Database(entities = [Rover::class, MarsImage::class], version = 7)
 abstract class AppDataBase : RoomDatabase() {
 
     abstract fun roversDao(): RoverDao

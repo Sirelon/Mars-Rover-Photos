@@ -3,49 +3,18 @@ package com.sirelon.marsroverphotos.feature.photos
 import android.app.DatePickerDialog
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.animation.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Card
-import androidx.compose.material.Divider
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Slider
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Autorenew
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -56,13 +25,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sirelon.marsroverphotos.R
-import com.sirelon.marsroverphotos.activity.ui.accent
 import com.sirelon.marsroverphotos.feature.NetworkImage
 import com.sirelon.marsroverphotos.feature.navigateToImages
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.ui.CenteredProgress
-import java.util.Calendar
-import java.util.TimeZone
+import java.util.*
 
 /**
  * Created on 07.03.2021 12:46 for Mars-Rover-Photos.
@@ -160,7 +127,7 @@ private fun RefreshButton(
                 modifier = Modifier.align(Alignment.BottomEnd),
                 onClick = {
                     viewModel.track("click_refresh")
-                    viewModel.randomize()
+                    viewModel.goToLatest()
                 }) {
                 Icon(
                     imageVector = Icons.Filled.Autorenew,
@@ -271,7 +238,7 @@ private fun SolChanger(sol: Long?, maxSol: Long, onSolChanged: (sol: Long?) -> U
             Text(
                 text = "Sol: ",
                 modifier = Modifier.weight(1f),
-                style = MaterialTheme.typography.h6.copy(color = accent)
+                style = MaterialTheme.typography.h6.copy(color = MaterialTheme.colors.secondary)
             )
             OutlinedTextField(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),

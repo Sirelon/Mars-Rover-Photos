@@ -5,10 +5,12 @@ import android.util.Log
 import com.google.android.gms.ads.MobileAds
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
+import com.sirelon.marsroverphotos.storage.Prefs
 import com.sirelon.marsroverphotos.tracker.FirebaseTracker
 import com.sirelon.marsroverphotos.tracker.ITracker
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 /**
  * @author romanishin
@@ -20,19 +22,17 @@ class RoverApplication : Application() {
         lateinit var APP: RoverApplication
     }
 
+    val adEnabled = false
+
     override fun onCreate() {
         super.onCreate()
         APP = this
 
-        GlobalScope.launch {
-            kotlin.runCatching {
-                // Configurate ads
-                MobileAds.initialize(this@RoverApplication) {
-                    Log.d("RoverApplication", "On Add Init status $it")
-                }
-            }
-        }
+        Prefs.init(this)
 
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        }
 
         val settings = FirebaseFirestoreSettings.Builder()
             .setPersistenceEnabled(true)

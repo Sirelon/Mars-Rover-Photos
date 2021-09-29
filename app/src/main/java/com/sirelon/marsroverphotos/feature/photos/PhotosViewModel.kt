@@ -12,6 +12,7 @@ import com.sirelon.marsroverphotos.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.models.RoverDateUtil
 import com.sirelon.marsroverphotos.network.RestApi
 import com.sirelon.marsroverphotos.storage.MarsImage
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -65,7 +66,6 @@ class PhotosViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-
     fun setPhotosQuery(query: PhotosQueryRequest) {
         query.logD()
         queryEmmiter.tryEmit(null)
@@ -81,6 +81,20 @@ class PhotosViewModel(app: Application) : AndroidViewModel(app) {
     fun randomize() {
         viewModelScope.launch(Dispatchers.IO) {
             val query = randomPhotosQueryRequest()
+            setPhotosQuery(query)
+        }
+    }
+
+    fun goToLatest() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val rover = roverFlow.first()
+            val maxSol = rover.maxSol - 1
+            val query = if (queryEmmiter.value?.sol == maxSol) {
+                randomPhotosQueryRequest()
+            } else {
+                PhotosQueryRequest(rover.id, maxSol, null)
+            }
+
             setPhotosQuery(query)
         }
     }

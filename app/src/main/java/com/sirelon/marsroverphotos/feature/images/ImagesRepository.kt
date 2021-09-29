@@ -59,7 +59,7 @@ class ImagesRepository(private val context: Context) {
             imagesDao.updateFavorite(item.id, favorite, counter)
 
             launch {
-                firestorePhotos.updatePhotoFavoriteCounter(item.toMarsPhoto(), favorite)
+                firestorePhotos.updatePhotoFavoriteCounter(item, favorite)
             }
         }
     }

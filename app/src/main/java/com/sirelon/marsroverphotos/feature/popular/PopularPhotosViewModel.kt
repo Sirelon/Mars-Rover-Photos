@@ -34,6 +34,6 @@ class PopularPhotosViewModel(app: Application) : AndroidViewModel(app) {
         }
 
         val tracker = getApplication<RoverApplication>().tracker
-        tracker.trackFavorite(image.toMarsPhoto(), "PopularList", !image.favorite)
+        tracker.trackFavorite(image, "PopularList", !image.favorite)
     }
 }

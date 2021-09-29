@@ -1,7 +1,6 @@
 package com.sirelon.marsroverphotos.network
 
 import android.content.Context
-import com.readystatesoftware.chuck.ChuckInterceptor
 import com.sirelon.marsroverphotos.feature.photos.mapToUi
 import com.sirelon.marsroverphotos.feature.photos.preveranceToUI
 import com.sirelon.marsroverphotos.feature.rovers.Curiosity_ID
@@ -31,7 +30,6 @@ class RestApi(context: Context) {
 
     init {
         val okkClient = OkHttpClient.Builder()
-            .addInterceptor(ChuckInterceptor(context))
             .build()
 
         val retrofit = Retrofit.Builder()

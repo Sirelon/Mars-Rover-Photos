@@ -5,6 +5,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.text.format.Formatter
+import android.util.DisplayMetrics
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.compose.setContent
@@ -13,32 +15,18 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material.icons.outlined.ViewCarousel
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -48,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -60,59 +49,54 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
-import androidx.navigation.compose.KEY_ROUTE
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.navArgument
-import androidx.navigation.compose.navigate
-import androidx.navigation.compose.rememberNavController
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.cache.DiskCache
+import androidx.navigation.compose.*
+import androidx.navigation.navArgument
+import coil.util.CoilUtils
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdSize
-import com.google.android.gms.ads.AdView
-import com.sirelon.marsroverphotos.BuildConfig
+import com.google.ads.mediation.admob.AdMobAdapter
+import com.google.android.gms.ads.*
+import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
-import com.sirelon.marsroverphotos.activity.AboutAppContent
-import com.sirelon.marsroverphotos.activity.ui.MarsRoverPhotosTheme
-import com.sirelon.marsroverphotos.activity.ui.accent
-import com.sirelon.marsroverphotos.extensions.logD
-import com.sirelon.marsroverphotos.feature.NetworkImage
 import com.sirelon.marsroverphotos.feature.billing.BillingHelper
-import com.sirelon.marsroverphotos.feature.favorite.FavoriteItem
+
+import com.sirelon.marsroverphotos.extensions.recordException
 import com.sirelon.marsroverphotos.feature.favorite.FavoriteScreen
 import com.sirelon.marsroverphotos.feature.favorite.PopularScreen
+import com.sirelon.marsroverphotos.feature.gdpr.GdprHelper
 import com.sirelon.marsroverphotos.feature.images.ImageScreen
 import com.sirelon.marsroverphotos.feature.photos.RoverPhotosScreen
-import com.sirelon.marsroverphotos.feature.popular.PopularItem
+import com.sirelon.marsroverphotos.feature.settings.AboutAppContent
 import com.sirelon.marsroverphotos.models.Rover
-import com.sirelon.marsroverphotos.models.ViewType
-import com.sirelon.marsroverphotos.utils.screenWidth
+import com.sirelon.marsroverphotos.models.drawableRes
+import com.sirelon.marsroverphotos.storage.Prefs
+import com.sirelon.marsroverphotos.storage.Theme
+import com.sirelon.marsroverphotos.ui.MarsRoverPhotosTheme
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
+import timber.log.Timber
 
 
 @ExperimentalAnimationApi
 @ExperimentalPagerApi
 class RoversActivity : AppCompatActivity() {
 
+    private val gdprHelper = GdprHelper(this)
+
     // Determine the screen width (less decorations) to use for the ad width.
     // If the ad hasn't been laid out, default to the full screen width.
     private val adSize: AdSize
         get() {
-            val density = resources.configuration.densityDpi
+            val display = windowManager.defaultDisplay
+            val outMetrics = DisplayMetrics()
+            display.getMetrics(outMetrics)
 
-//            var adWidthPixels = ad_view_container.width.toFloat()
-//            if (adWidthPixels == 0f) {
-//                val adWidthPixels = outMetrics.widthPixels.toFloat()
-//            }
+            val density = outMetrics.density
 
-            val adWidth = (screenWidth / density).toInt()
+            val adWidthPixels = outMetrics.widthPixels.toFloat()
+
+            val adWidth = (adWidthPixels / density).toInt()
             return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(this, adWidth)
         }
 
@@ -122,17 +106,21 @@ class RoversActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         BillingHelper.init(this)
 
-        adView = AdView(this)
-        adView.adSize = AdSize.BANNER
-//        adView.adUnitId = "ca-app-pub-3940256099942544/6300978111"
-        adView.adUnitId = "ca-app-pub-7516059448019339/9309101894"
-
         val bottomItems = listOf(Screen.Rovers, Screen.Favorite, Screen.Popular, Screen.About)
 
-        setContent {
-            track("is_dark_${isSystemInDarkTheme()}")
+        if (RoverApplication.APP.adEnabled) {
+            gdprHelper.init()
+        }
 
-            MarsRoverPhotosTheme {
+        setContent {
+            val theme by Prefs.themeLiveData.observeAsState(initial = Prefs.theme)
+            LaunchedEffect(key1 = theme) {
+                track("theme_$theme")
+            }
+
+            val isDark: Boolean =
+                if (theme == Theme.SYSTEM) isSystemInDarkTheme() else theme == Theme.DARK
+            MarsRoverPhotosTheme(isDark) {
                 val navController = rememberNavController()
 
                 Scaffold(
@@ -166,6 +154,25 @@ class RoversActivity : AppCompatActivity() {
                     })
             }
         }
+
+        // Configurate ads
+        MobileAds.initialize(this@RoversActivity) {
+            Log.d("RoverApplication", "On Add Init status $it")
+        }
+//        val testDeviceIds =
+//            listOf("235F224A866C9DFBEB26755C3E0337B3", AdRequest.DEVICE_ID_EMULATOR)
+        val configuration =
+            RequestConfiguration.Builder()
+//                .setTestDeviceIds(testDeviceIds)
+                .build()
+        MobileAds.setRequestConfiguration(configuration)
+
+        adView = AdView(this)
+        adView.adSize = adSize
+        // Test
+//        adView.adUnitId = "ca-app-pub-3940256099942544/6300978111"
+        adView.adUnitId = "ca-app-pub-7516059448019339/9309101894"
+//        adView.adUnitId = "ca-app-pub-7516059448019339/2257199658"
     }
 
 
@@ -173,25 +180,18 @@ class RoversActivity : AppCompatActivity() {
         track("Clear cache")
         val ctx = application
         lifecycleScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, throwable -> throwable.printStackTrace() }) {
-            val cacheFile = File(cacheDir, DiskCache.Factory.DEFAULT_DISK_CACHE_DIR)
-            val size = calculateSize(cacheFile)
+            val coilCache = CoilUtils.createDefaultCache(ctx)
+            val coilSize = kotlin.runCatching { coilCache.size() }
+                .onFailure(::recordException).getOrDefault(0)
 
-            Glide.get(ctx).clearDiskCache()
+            coilCache.directory().deleteRecursively()
 
-            val sizeStr = Formatter.formatFileSize(ctx, size)
+            val sizeStr = Formatter.formatFileSize(ctx, coilSize)
+            RoverApplication.APP.dataManger.trackEvent("cache_cleared", mapOf("Size" to sizeStr))
             withContext(Dispatchers.Main) {
                 Toast.makeText(ctx, "Cleared $sizeStr", Toast.LENGTH_SHORT).show()
             }
         }
-    }
-
-    private fun calculateSize(dir: File?): Long {
-        if (dir == null) return 0
-        if (!dir.isDirectory) return dir.length()
-        var result: Long = 0
-        val children: Array<File>? = dir.listFiles()
-        if (children != null) for (child in children) result += calculateSize(child)
-        return result
     }
 
     private fun goToMarket() {
@@ -226,8 +226,7 @@ class RoversActivity : AppCompatActivity() {
     ) {
         BottomNavigation {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
-            val currentRoute =
-                navBackStackEntry?.arguments?.getString(KEY_ROUTE)
+            val currentRoute = navBackStackEntry?.destination?.route
             bottomItems.forEach { screen ->
                 BottomNavigationItem(
                     icon = {
@@ -237,7 +236,7 @@ class RoversActivity : AppCompatActivity() {
                         )
                     },
                     selected = currentRoute == screen.route,
-                    selectedContentColor = accent,
+                    selectedContentColor = MaterialTheme.colors.secondary,
                     unselectedContentColor = Color.White.copy(alpha = ContentAlpha.medium),
                     onClick = {
                         track("bottom_${screen.route}")
@@ -246,7 +245,9 @@ class RoversActivity : AppCompatActivity() {
                             // Pop up to the start destination of the graph to
                             // avoid building up a large stack of destinations
                             // on the back stack as users select items
-                            popUpTo = navController.graph.startDestination
+                            popUpTo(navController.graph.startDestinationId) {
+
+                            }
                             // Avoid multiple copies of the same destination when
                             // reselecting the same item
                             launchSingleTop = true
@@ -259,20 +260,30 @@ class RoversActivity : AppCompatActivity() {
 
     @Composable
     private fun ComposableBannerAd(modifier: Modifier) {
-//        if (BuildConfig.DEBUG) return
+        if (!RoverApplication.APP.adEnabled) {
+            Box(modifier)
+            return
+        }
 
-        AndroidView<View>(modifier = modifier, factory = {
+        val personalized by gdprHelper.acceptGdpr.collectAsState(initial = false)
+
+        AndroidView<View>(modifier = modifier, factory = { adView }) {
             val adRequest = AdRequest
                 .Builder()
-                .addTestDevice("235F224A866C9DFBEB26755C3E0337B3")
-                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+//                .let {
+//                    if (!personalized) {
+//                        val extras = Bundle()
+//                        extras.putString("npa", "1")
+//
+//                        it.addNetworkExtrasBundle(AdMobAdapter::class.java, extras)
+//                    } else it
+//                }
                 .build()
-
+            Timber.d("ComposableBannerAd called $personalized");
             // Start loading the ad in the background.
             adView.loadAd(adRequest)
 
-            adView
-        })
+        }
     }
 
     @Composable
@@ -287,14 +298,15 @@ class RoversActivity : AppCompatActivity() {
                 RoversContent(
                     rovers = rovers,
                     onClick = {
-                        if (it is Rover) {
-                            track("click_rover_${it.name}")
-                            navController.navigate("rover/${it.id}")
-                        }
+                        track("click_rover_${it.name}")
+                        navController.navigate("rover/${it.id}")
                     })
             }
             composable(Screen.About.route) {
-                AboutAppContent(onClearCache = ::clearCache, onRateApp = ::goToMarket)
+                AboutAppContent(
+                    onClearCache = ::clearCache,
+                    onRateApp = ::goToMarket
+                )
             }
 
             composable(Screen.Popular.route) {
@@ -331,7 +343,15 @@ class RoversActivity : AppCompatActivity() {
                 val ids = it.arguments?.getString("ids")?.split(", ")?.toList()
                 val selectedImage = it.arguments?.getString("pid")
 
-                ImageScreen(photoIds = ids, selectedId = selectedImage)
+                if (ids.isNullOrEmpty()) {
+                    recordException(IllegalArgumentException("Try to open ${it.id} with $ids and $selectedImage"))
+                } else {
+                    ImageScreen(
+                        activity = this@RoversActivity,
+                        photoIds = ids,
+                        selectedId = selectedImage
+                    )
+                }
             }
         }
     }
@@ -358,7 +378,7 @@ class RoversActivity : AppCompatActivity() {
 
 sealed class Screen(val route: String, val iconCreator: @Composable () -> ImageVector) {
     object Rovers : Screen("rovers", {
-        ImageVector.vectorResource(id = com.sirelon.marsroverphotos.R.drawable.ic_rovers)
+        ImageVector.vectorResource(id = R.drawable.ic_rovers)
     })
 
     object Favorite : Screen("favorite", { Icons.Outlined.Favorite })
@@ -372,55 +392,20 @@ sealed class Screen(val route: String, val iconCreator: @Composable () -> ImageV
 
 @Composable
 fun RoversContent(
-    modifier: Modifier = Modifier,
     rovers: List<Rover>,
-    onClick: (rover: ViewType) -> Unit
+    onClick: (rover: Rover) -> Unit
 ) {
-    "RoveerCoteent".logD()
-    val items = rovers.toMutableList<ViewType>()
-//    items.add(0, popular)
-//    items.add(1, favoriteItem)
     LazyColumn {
-        items(items) { item ->
-            when (item) {
-                is Rover -> RoverItem(rover = item, onClick = onClick)
-                is PopularItem -> PopularItem(item, onClick = onClick)
-                is FavoriteItem -> FavoriteItem(item, onClick = onClick)
-            }
-
+        items(rovers) { item ->
+            RoverItem(rover = item, onClick = onClick)
             Divider()
         }
     }
 }
 
 @Composable
-fun FavoriteItem(rover: FavoriteItem, onClick: (rover: FavoriteItem) -> Unit) {
-    CommonItem(
-        title = stringResource(id = com.sirelon.marsroverphotos.R.string.favorite_title),
-        imageAsset = painterResource(id = com.sirelon.marsroverphotos.R.drawable.popular),
-        onClick = { onClick(rover) })
-    // Not implemented yet
-//        InfoText(
-//            label = stringResource(id = R.string.label_photos_total),
-//            text = "${rover.totalPhotos}"
-//        )
-}
-
-@Composable
-fun PopularItem(rover: PopularItem, onClick: (rover: PopularItem) -> Unit) {
-    CommonItem(
-        title = stringResource(id = com.sirelon.marsroverphotos.R.string.popular_title),
-        imageAsset = painterResource(id = com.sirelon.marsroverphotos.R.drawable.popular),
-        onClick = { onClick(rover) })
-    // Not implemented yet
-//        InfoText(
-//            label = stringResource(id = R.string.label_photos_total),
-//            text = "${rover.totalPhotos}"
-//        )
-}
-
-@Composable
 fun RoverItem(rover: Rover, onClick: (rover: Rover) -> Unit) {
+    Timber.d("RoverItem() called with: rover = $rover");
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -432,12 +417,14 @@ fun RoverItem(rover: Rover, onClick: (rover: Rover) -> Unit) {
 
         val height = Modifier.height(175.dp)
         Row(modifier = Modifier.padding(8.dp)) {
-            NetworkImage(
+            val drawableRes = rover.drawableRes(LocalContext.current)
+            Image(
                 contentScale = ContentScale.FillHeight,
-                imageUrl = rover.iamgeUrl ?: "",
+                painter = painterResource(id = drawableRes),
                 modifier = height
                     .weight(1f)
-                    .clip(shape = MaterialTheme.shapes.large)
+                    .clip(shape = MaterialTheme.shapes.large),
+                contentDescription = rover.name
             )
             Spacer(modifier = Modifier.width(8.dp))
             Column(
