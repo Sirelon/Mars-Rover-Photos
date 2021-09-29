@@ -250,7 +250,10 @@ class RoversActivity : AppCompatActivity() {
 
     @Composable
     private fun ComposableBannerAd(modifier: Modifier) {
-        if (!RoverApplication.APP.adEnabled) return
+        if (!RoverApplication.APP.adEnabled) {
+            Box(modifier)
+            return
+        }
 
         val personalized by gdprHelper.acceptGdpr.collectAsState(initial = false)
 
