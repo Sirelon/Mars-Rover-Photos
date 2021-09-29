@@ -50,6 +50,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
+import androidx.navigation.navArgument
 import coil.util.CoilUtils
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.ads.mediation.admob.AdMobAdapter
@@ -104,7 +105,9 @@ class RoversActivity : AppCompatActivity() {
 
         val bottomItems = listOf(Screen.Rovers, Screen.Favorite, Screen.Popular, Screen.About)
 
-        gdprHelper.init()
+        if (RoverApplication.APP.adEnabled) {
+            gdprHelper.init()
+        }
 
         setContent {
             val theme by Prefs.themeLiveData.observeAsState(initial = Prefs.theme)
@@ -247,6 +250,8 @@ class RoversActivity : AppCompatActivity() {
 
     @Composable
     private fun ComposableBannerAd(modifier: Modifier) {
+        if (RoverApplication.APP.adEnabled) return
+
         val personalized by gdprHelper.acceptGdpr.collectAsState(initial = false)
 
         AndroidView<View>(modifier = modifier, factory = { adView }) {

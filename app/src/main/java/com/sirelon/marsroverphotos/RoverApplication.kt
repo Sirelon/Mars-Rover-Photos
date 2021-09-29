@@ -22,6 +22,8 @@ class RoverApplication : Application() {
         lateinit var APP: RoverApplication
     }
 
+    val adEnabled = false
+
     override fun onCreate() {
         super.onCreate()
         APP = this
