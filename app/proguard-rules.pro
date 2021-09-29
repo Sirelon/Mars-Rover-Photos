@@ -61,6 +61,8 @@
     public static *** v(...);
 }
 
+-keep class com.google.android.gms.internal.consent_sdk.** { <fields>; }
+
 # Preserve all native method names and the names of their classes.
 -keepclasseswithmembernames class * {
     native <methods>;
@@ -99,14 +101,6 @@
 -keepclassmembers class rx.internal.util.unsafe.*ArrayQueue*Field* {
    long producerIndex;
    long consumerIndex;
-}
-
--keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueProducerNodeRef {
-    rx.internal.util.atomic.LinkedQueueNode producerNode;
-}
-
--keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueConsumerNodeRef {
-    rx.internal.util.atomic.LinkedQueueNode consumerNode;
 }
 
 -dontnote rx.internal.util.PlatformDependent

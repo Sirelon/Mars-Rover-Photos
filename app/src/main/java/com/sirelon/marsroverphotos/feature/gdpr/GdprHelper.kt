@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos.feature.gdpr
 
+import androidx.annotation.Keep
 import androidx.core.app.ComponentActivity
 import com.google.android.ump.*
 import com.sirelon.marsroverphotos.extensions.recordException
