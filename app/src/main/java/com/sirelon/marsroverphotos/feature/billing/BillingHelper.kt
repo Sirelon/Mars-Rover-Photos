@@ -51,7 +51,9 @@ object BillingHelper {
 
         billingClient?.startConnection(object : BillingClientStateListener {
             override fun onBillingSetupFinished(billingResult: BillingResult) {
+                "onBillingSetupFinished".logD()
                 billingResult.logD()
+                billingResult.responseCode.logD()
                 if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                     // The BillingClient is ready. You can query purchases here.
                     activity.lifecycleScope.launch {
@@ -103,6 +105,9 @@ object BillingHelper {
 
         adRemover = skuDetailsResult.skuDetailsList?.find { it.sku == sku }
 
+        "querySkuDetails".logD()
+        skuDetailsResult.billingResult.responseCode.logD()
+        skuDetailsResult.billingResult.debugMessage.logD()
 
         // TODO:
 
