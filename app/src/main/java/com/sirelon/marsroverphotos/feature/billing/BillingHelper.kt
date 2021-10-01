@@ -19,7 +19,7 @@ import timber.log.Timber
  * Created on 12.05.2021 22:38 for Mars-Rover-Photos.
  */
 class BillingHelper(private val activity: FragmentActivity) {
-    private val adRemoverSku = "array_ist"
+    private val adRemoverSku = "ad_remover2"
 //    private val adRemoverSku = "ad_remover"
 
     private var billingClient: BillingClient? = null
