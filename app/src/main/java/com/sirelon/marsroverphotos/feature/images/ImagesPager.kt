@@ -2,7 +2,6 @@ package com.sirelon.marsroverphotos.feature.images
 
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
@@ -28,7 +27,6 @@ import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.rememberPermissionState
-import com.sirelon.marsroverphotos.extensions.recordException
 import com.sirelon.marsroverphotos.extensions.showAppSettings
 import com.sirelon.marsroverphotos.feature.*
 import com.sirelon.marsroverphotos.storage.MarsImage
@@ -54,15 +52,7 @@ fun ImageScreen(
 
     val selectedPosition = ids.indexOf(selectedId)
 
-    val pagerState = rememberPagerState(pageCount = ids.size)
-
-    if (selectedPosition >= 0 && selectedPosition < ids.size) {
-        LaunchedEffect(key1 = selectedPosition) {
-            pagerState.scrollToPage(selectedPosition)
-        }
-    } else {
-        recordException(IllegalArgumentException("Try to open $ids with $selectedPosition"))
-    }
+    val pagerState = rememberPagerState(selectedPosition)
 
     val imagesA by viewModel.imagesLiveData.observeAsState()
     val images = imagesA
@@ -240,6 +230,7 @@ fun ImagesPager(
     favoriteClick: (MarsImage, Boolean) -> Unit
 ) {
     HorizontalPager(
+        count = images.size,
         state = pagerState,
         modifier = Modifier
             .fillMaxSize()
