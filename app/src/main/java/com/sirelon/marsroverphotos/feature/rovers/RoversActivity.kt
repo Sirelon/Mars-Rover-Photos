@@ -117,30 +117,31 @@ class RoversActivity : FragmentActivity() {
                 Timber.d("FLOW COLLECT called with: adEnabled = $adEnabled, adRemoved = $adRemoved");
                 adEnabled && !adRemoved
             }
-            .filter { it }
             .onEach {
-                Timber.i("AD Should be shown")
-                gdprHelper.init()
+                if (it) {
+                    Timber.i("AD Should be shown")
+                    gdprHelper.init()
 
-                // Configurate ads
-                MobileAds.initialize(this@RoversActivity) {
-                    Log.d("RoverApplication", "On Add Init status $it")
-                }
-                //        val testDeviceIds =
-                //            listOf("235F224A866C9DFBEB26755C3E0337B3", AdRequest.DEVICE_ID_EMULATOR)
-                val configuration =
-                    RequestConfiguration.Builder()
-                        //                .setTestDeviceIds(testDeviceIds)
-                        .build()
-                MobileAds.setRequestConfiguration(configuration)
+                    // Configurate ads
+                    MobileAds.initialize(this@RoversActivity) {
+                        Log.d("RoverApplication", "On Add Init status $it")
+                    }
+                    //        val testDeviceIds =
+                    //            listOf("235F224A866C9DFBEB26755C3E0337B3", AdRequest.DEVICE_ID_EMULATOR)
+                    val configuration =
+                        RequestConfiguration.Builder()
+                            //                .setTestDeviceIds(testDeviceIds)
+                            .build()
+                    MobileAds.setRequestConfiguration(configuration)
 
-                adView = AdView(this).apply {
-                    adSize = appAdSize
-                    // Test
+                    adView = AdView(this).apply {
+                        adSize = appAdSize
+                        // Test
 //                    adUnitId = "ca-app-pub-3940256099942544/6300978111"
-                    adUnitId = "ca-app-pub-7516059448019339/9309101894"
+                        adUnitId = "ca-app-pub-7516059448019339/9309101894"
 
-                    // adUnitId = "ca-app-pub-7516059448019339/2257199658"
+                        // adUnitId = "ca-app-pub-7516059448019339/2257199658"
+                    }
                 }
             }
 
