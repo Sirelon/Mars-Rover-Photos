@@ -10,7 +10,6 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -50,17 +49,19 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
-import androidx.navigation.compose.*
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import coil.util.CoilUtils
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.ads.mediation.admob.AdMobAdapter
 import com.google.android.gms.ads.*
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
-import com.sirelon.marsroverphotos.feature.billing.BillingHelper
-
 import com.sirelon.marsroverphotos.extensions.recordException
+import com.sirelon.marsroverphotos.feature.billing.AdvertisementConfigurator
+import com.sirelon.marsroverphotos.feature.billing.BillingHelper
 import com.sirelon.marsroverphotos.feature.favorite.FavoriteScreen
 import com.sirelon.marsroverphotos.feature.favorite.PopularScreen
 import com.sirelon.marsroverphotos.feature.gdpr.GdprHelper
@@ -74,6 +75,7 @@ import com.sirelon.marsroverphotos.storage.Theme
 import com.sirelon.marsroverphotos.ui.MarsRoverPhotosTheme
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -84,10 +86,11 @@ import timber.log.Timber
 class RoversActivity : FragmentActivity() {
 
     private val gdprHelper = GdprHelper(this)
+    private val advertisementConfigurator = AdvertisementConfigurator(this)
 
     // Determine the screen width (less decorations) to use for the ad width.
     // If the ad hasn't been laid out, default to the full screen width.
-    private val adSize: AdSize
+    private val appAdSize: AdSize
         get() {
             val display = windowManager.defaultDisplay
             val outMetrics = DisplayMetrics()
@@ -101,17 +104,46 @@ class RoversActivity : FragmentActivity() {
             return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(this, adWidth)
         }
 
-    private lateinit var adView: AdView
+    private var adView: AdView? = null
+
+    private val adEnabledFlow: Flow<Boolean>
+
+    init {
+        adEnabledFlow = advertisementConfigurator
+            .adEnabledFlow
+            .filter { it }
+            .onEach {
+                gdprHelper.init()
+
+                // Configurate ads
+                MobileAds.initialize(this@RoversActivity) {
+                    Log.d("RoverApplication", "On Add Init status $it")
+                }
+                //        val testDeviceIds =
+                //            listOf("235F224A866C9DFBEB26755C3E0337B3", AdRequest.DEVICE_ID_EMULATOR)
+                val configuration =
+                    RequestConfiguration.Builder()
+                        //                .setTestDeviceIds(testDeviceIds)
+                        .build()
+                MobileAds.setRequestConfiguration(configuration)
+
+                adView = AdView(this).apply {
+                    adSize = appAdSize
+                    // Test
+//                    adUnitId = "ca-app-pub-3940256099942544/6300978111"
+                    adUnitId = "ca-app-pub-7516059448019339/9309101894"
+
+                    // adUnitId = "ca-app-pub-7516059448019339/2257199658"
+                }
+            }
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         BillingHelper.init(this)
 
         val bottomItems = listOf(Screen.Rovers, Screen.Favorite, Screen.Popular, Screen.About)
-
-        if (RoverApplication.APP.adEnabled) {
-            gdprHelper.init()
-        }
 
         setContent {
             val theme by Prefs.themeLiveData.observeAsState(initial = Prefs.theme)
@@ -155,27 +187,7 @@ class RoversActivity : FragmentActivity() {
                     })
             }
         }
-
-        // Configurate ads
-        MobileAds.initialize(this@RoversActivity) {
-            Log.d("RoverApplication", "On Add Init status $it")
-        }
-//        val testDeviceIds =
-//            listOf("235F224A866C9DFBEB26755C3E0337B3", AdRequest.DEVICE_ID_EMULATOR)
-        val configuration =
-            RequestConfiguration.Builder()
-//                .setTestDeviceIds(testDeviceIds)
-                .build()
-        MobileAds.setRequestConfiguration(configuration)
-
-        adView = AdView(this)
-        adView.adSize = adSize
-        // Test
-//        adView.adUnitId = "ca-app-pub-3940256099942544/6300978111"
-        adView.adUnitId = "ca-app-pub-7516059448019339/9309101894"
-//        adView.adUnitId = "ca-app-pub-7516059448019339/2257199658"
     }
-
 
     private fun clearCache() {
         track("Clear cache")
@@ -261,7 +273,12 @@ class RoversActivity : FragmentActivity() {
 
     @Composable
     private fun ComposableBannerAd(modifier: Modifier) {
-        if (!RoverApplication.APP.adEnabled) {
+
+        val adEnabled by adEnabledFlow.collectAsState(initial = false)
+
+        val adView = adView
+
+        if (!adEnabled || adView == null) {
             Box(modifier)
             return
         }
@@ -363,17 +380,17 @@ class RoversActivity : FragmentActivity() {
 
     override fun onResume() {
         super.onResume()
-        adView.resume()
+        adView?.resume()
     }
 
     override fun onDestroy() {
-        adView.destroy()
+        adView?.destroy()
         super.onDestroy()
     }
 
     override fun onPause() {
         super.onPause()
-        adView.pause()
+        adView?.pause()
     }
 }
 
