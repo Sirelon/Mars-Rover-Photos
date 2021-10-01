@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -78,7 +79,7 @@ import timber.log.Timber
 
 @ExperimentalAnimationApi
 @ExperimentalPagerApi
-class RoversActivity : AppCompatActivity() {
+class RoversActivity : FragmentActivity() {
 
     private val gdprHelper = GdprHelper(this)
 

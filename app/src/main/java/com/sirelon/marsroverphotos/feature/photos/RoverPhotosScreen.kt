@@ -22,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sirelon.marsroverphotos.R
@@ -37,7 +38,7 @@ import java.util.*
 @ExperimentalAnimationApi
 @Composable
 fun RoverPhotosScreen(
-    activity: AppCompatActivity,
+    activity: FragmentActivity,
     modifier: Modifier = Modifier,
     navHost: NavController,
     roverId: Long,
@@ -270,7 +271,7 @@ private fun RowScope.HeaderButton(txt: String, onClick: () -> Unit) {
     }
 }
 
-private fun showEarthDateeChooser(activity: AppCompatActivity, viewModel: PhotosViewModel) {
+private fun showEarthDateeChooser(activity: FragmentActivity, viewModel: PhotosViewModel) {
     val calender = Calendar.getInstance(TimeZone.getDefault())
     calender.clear()
 
