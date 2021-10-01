@@ -8,7 +8,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.1.0-alpha12'
+        classpath 'com.android.tools.build:gradle:7.1.0-alpha13'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.7.1'
         classpath 'com.google.firebase:perf-plugin:1.4.0'
