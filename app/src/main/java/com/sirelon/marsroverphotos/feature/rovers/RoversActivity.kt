@@ -110,6 +110,13 @@ class RoversActivity : FragmentActivity() {
     private val adEnabledFlow: Flow<Boolean>
 
     init {
+        lifecycleScope.launchWhenResumed {
+            billingHelper.adRemovedFlow.collect {
+                Timber.d("AD $it called");
+            }
+        }
+
+
         adEnabledFlow = advertisementConfigurator
             .adEnabledFlow
             .filter { it }

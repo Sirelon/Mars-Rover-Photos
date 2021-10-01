@@ -9,6 +9,8 @@ import androidx.lifecycle.whenCreated
 import com.android.billingclient.api.*
 import com.sirelon.marsroverphotos.extensions.logD
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -17,9 +19,14 @@ import timber.log.Timber
  * Created on 12.05.2021 22:38 for Mars-Rover-Photos.
  */
 class BillingHelper(private val activity: FragmentActivity) {
+//    private val adRemoverSku = "array_ist"
+    private val adRemoverSku = "ad_remover"
 
     private var billingClient: BillingClient? = null
     private var adRemover: SkuDetails? = null
+
+    private val adRemovedMutableFlow = MutableStateFlow<Boolean?>(null)
+    val adRemovedFlow = adRemovedMutableFlow.filterNotNull()
 
     init {
         activity.lifecycleScope.launch {
@@ -63,6 +70,8 @@ class BillingHelper(private val activity: FragmentActivity) {
                     activity.lifecycleScope.launch {
                         querySkuDetails()
                     }
+                } else {
+                    adRemovedMutableFlow.value = false
                 }
             }
 
@@ -70,6 +79,7 @@ class BillingHelper(private val activity: FragmentActivity) {
                 "onBillingServiceDisconnected".logD()
                 // Try to restart the connection on the next request to
                 // Google Play by calling the startConnection() method.
+                adRemovedMutableFlow.value = false
             }
         })
     }
@@ -94,11 +104,10 @@ class BillingHelper(private val activity: FragmentActivity) {
         }
     }
 
-    suspend fun querySkuDetails() {
+    private suspend fun querySkuDetails() {
         val billingClient = billingClient ?: return
         val skuList = ArrayList<String>()
-        val sku = "array_ist"
-        skuList.add(sku)
+        skuList.add(adRemoverSku)
         val params = SkuDetailsParams.newBuilder()
         params.setSkusList(skuList).setType(BillingClient.SkuType.INAPP)
 
@@ -107,7 +116,7 @@ class BillingHelper(private val activity: FragmentActivity) {
             billingClient.querySkuDetails(params.build())
         }
 
-        adRemover = skuDetailsResult.skuDetailsList?.find { it.sku == sku }
+        adRemover = skuDetailsResult.skuDetailsList?.find { it.sku == adRemoverSku }
 
         "querySkuDetails".logD()
         adRemover.logD()
@@ -154,6 +163,12 @@ class BillingHelper(private val activity: FragmentActivity) {
         val r = queryPurchaseHistory.billingResult
         val l = queryPurchaseHistory.purchasesList
         "queryPurchasesAsync ${r.responseCode} and $l".logD()
+        val adRemoverPurchase = l.find { it.skus.contains(adRemoverSku) }
+        if (adRemoverPurchase?.purchaseState == Purchase.PurchaseState.PURCHASED) {
+            adRemovedMutableFlow.value = true
+        } else {
+            adRemovedMutableFlow.value = false
+        }
         l?.forEach {
             "State ${it.purchaseState}".logD()
         }
