@@ -19,8 +19,8 @@ import timber.log.Timber
  * Created on 12.05.2021 22:38 for Mars-Rover-Photos.
  */
 class BillingHelper(private val activity: FragmentActivity) {
-//    private val adRemoverSku = "array_ist"
-    private val adRemoverSku = "ad_remover"
+    private val adRemoverSku = "array_ist"
+//    private val adRemoverSku = "ad_remover"
 
     private var billingClient: BillingClient? = null
     private var adRemover: SkuDetails? = null
@@ -158,6 +158,7 @@ class BillingHelper(private val activity: FragmentActivity) {
     private suspend fun checkPurchased() {
         Timber.d("checkPurchased() called");
         val billingClient = billingClient ?: return
+        val adRemover = adRemover ?: return
         val queryPurchaseHistory = billingClient.queryPurchasesAsync(BillingClient.SkuType.INAPP)
 
         val r = queryPurchaseHistory.billingResult

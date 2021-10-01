@@ -13,7 +13,6 @@ class AdvertisementConfigurator(private val activity: FragmentActivity) {
     val adEnabledFlow = adEnabledMutableFlow.filterNotNull()
 
     init {
-
         adEnabledMutableFlow.value = true
     }
 

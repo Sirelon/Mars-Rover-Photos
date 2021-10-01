@@ -110,17 +110,16 @@ class RoversActivity : FragmentActivity() {
     private val adEnabledFlow: Flow<Boolean>
 
     init {
-        lifecycleScope.launchWhenResumed {
-            billingHelper.adRemovedFlow.collect {
-                Timber.d("AD $it called");
-            }
-        }
-
 
         adEnabledFlow = advertisementConfigurator
             .adEnabledFlow
+            .combine(billingHelper.adRemovedFlow) { adEnabled, adRemoved ->
+                Timber.d("FLOW COLLECT called with: adEnabled = $adEnabled, adRemoved = $adRemoved");
+                adEnabled && !adRemoved
+            }
             .filter { it }
             .onEach {
+                Timber.i("AD Should be shown")
                 gdprHelper.init()
 
                 // Configurate ads
