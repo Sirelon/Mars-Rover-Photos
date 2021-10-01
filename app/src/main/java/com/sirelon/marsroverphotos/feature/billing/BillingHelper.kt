@@ -2,22 +2,38 @@ package com.sirelon.marsroverphotos.feature.billing
 
 import android.util.Log
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.whenCreated
 import com.android.billingclient.api.*
 import com.sirelon.marsroverphotos.extensions.logD
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 /**
  * Created on 12.05.2021 22:38 for Mars-Rover-Photos.
  */
-object BillingHelper {
+class BillingHelper(private val activity: FragmentActivity) {
 
     private var billingClient: BillingClient? = null
     private var adRemover: SkuDetails? = null
 
-    fun init(activity: FragmentActivity) {
+    init {
+        activity.lifecycleScope.launch {
+            activity.lifecycle.whenCreated {
+                init()
+            }
+
+            activity.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                checkPurchased()
+            }
+        }
+    }
+
+    fun init() {
         val purchasesUpdatedListener =
             PurchasesUpdatedListener { billingResult, purchases ->
                 // To be implemented in a later section.
@@ -98,16 +114,7 @@ object BillingHelper {
         skuDetailsResult.billingResult.responseCode.logD()
         skuDetailsResult.billingResult.debugMessage.logD()
 
-        // TODO:
-
-        val queryPurchaseHistory = BillingHelper.billingClient?.queryPurchasesAsync(BillingClient.SkuType.INAPP)
-
-        val r = queryPurchaseHistory?.billingResult
-        val l = queryPurchaseHistory?.purchasesList
-        "queryPurchasesAsync ${r?.responseCode} and $l".logD()
-        l?.forEach {
-            "State ${it.purchaseState}".logD()
-        }
+        checkPurchased()
 
 //            if (l.first().purchaseState == Purchase.PurchaseState.PURCHASED) {
 //                // remove Ad
@@ -139,7 +146,20 @@ object BillingHelper {
         // Process the result.
     }
 
-    fun purchase(activity: FragmentActivity) {
+    private suspend fun checkPurchased() {
+        Timber.d("checkPurchased() called");
+        val billingClient = billingClient ?: return
+        val queryPurchaseHistory = billingClient.queryPurchasesAsync(BillingClient.SkuType.INAPP)
+
+        val r = queryPurchaseHistory.billingResult
+        val l = queryPurchaseHistory.purchasesList
+        "queryPurchasesAsync ${r.responseCode} and $l".logD()
+        l?.forEach {
+            "State ${it.purchaseState}".logD()
+        }
+    }
+
+    fun purchase() {
         val skuDetails = adRemover ?: return
         val billingClient = billingClient ?: return
 

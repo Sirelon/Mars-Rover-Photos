@@ -86,6 +86,7 @@ import timber.log.Timber
 class RoversActivity : FragmentActivity() {
 
     private val gdprHelper = GdprHelper(this)
+    private val billingHelper = BillingHelper(this)
     private val advertisementConfigurator = AdvertisementConfigurator(this)
 
     // Determine the screen width (less decorations) to use for the ad width.
@@ -141,7 +142,6 @@ class RoversActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        BillingHelper.init(this)
 
         val bottomItems = listOf(Screen.Rovers, Screen.Favorite, Screen.Popular, Screen.About)
 
@@ -210,7 +210,7 @@ class RoversActivity : FragmentActivity() {
     private fun goToMarket() {
         // todo:
         if (true) {
-            BillingHelper.purchase(this)
+            billingHelper.purchase()
             return
         }
 
