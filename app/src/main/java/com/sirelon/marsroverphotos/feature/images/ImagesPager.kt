@@ -32,6 +32,7 @@ import com.sirelon.marsroverphotos.feature.*
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.ui.CenteredProgress
 import com.sirelon.marsroverphotos.ui.MarsSnackbar
+import com.sirelon.marsroverphotos.ui.NoScrollEffect
 import kotlinx.coroutines.flow.collect
 
 /**
@@ -229,52 +230,56 @@ fun ImagesPager(
     callback: MultitouchDetectorCallback,
     favoriteClick: (MarsImage, Boolean) -> Unit
 ) {
-    HorizontalPager(
-        count = images.size,
-        state = pagerState,
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colors.background)
-    ) { page ->
-        // Our page content
-        val marsImage = images[page]
 
-        LaunchedEffect(key1 = marsImage) {
-            callback.currentImage = marsImage
-        }
+    NoScrollEffect {
 
-        Box {
-            val state = rememberSaveable(saver = MultitouchState.Saver) {
-                MultitouchState(
-                    maxZoom = 5f,
-                    minZoom = 1f,
-                    zoom = 1f,
-                    enabled = !pagerState.isScrollInProgress
-                )
+        HorizontalPager(
+            count = images.size,
+            state = pagerState,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colors.background)
+        ) { page ->
+            // Our page content
+            val marsImage = images[page]
+
+            LaunchedEffect(key1 = marsImage) {
+                callback.currentImage = marsImage
             }
 
-            MultitouchDetector(
-                modifier = Modifier,
-                state = state,
-                pagerState = pagerState,
-                callback = callback
-            ) {
-                NetworkImage(
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.FillWidth,
-                    imageUrl = marsImage.imageUrl
-                )
-            }
-
-            MarsImageFavoriteToggle(
-                modifier = Modifier
-                    .size(64.dp)
-                    .align(Alignment.BottomCenter),
-                checked = marsImage.favorite,
-                onCheckedChange = {
-                    favoriteClick(marsImage, it)
+            Box {
+                val state = rememberSaveable(saver = MultitouchState.Saver) {
+                    MultitouchState(
+                        maxZoom = 5f,
+                        minZoom = 1f,
+                        zoom = 1f,
+                        enabled = !pagerState.isScrollInProgress
+                    )
                 }
-            )
+
+                MultitouchDetector(
+                    modifier = Modifier,
+                    state = state,
+                    pagerState = pagerState,
+                    callback = callback
+                ) {
+                    NetworkImage(
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.FillWidth,
+                        imageUrl = marsImage.imageUrl
+                    )
+                }
+
+                MarsImageFavoriteToggle(
+                    modifier = Modifier
+                        .size(64.dp)
+                        .align(Alignment.BottomCenter),
+                    checked = marsImage.favorite,
+                    onCheckedChange = {
+                        favoriteClick(marsImage, it)
+                    }
+                )
+            }
         }
     }
 }

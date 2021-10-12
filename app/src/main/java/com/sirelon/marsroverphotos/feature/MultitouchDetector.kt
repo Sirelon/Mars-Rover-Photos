@@ -80,7 +80,7 @@ fun MultitouchDetector(
                     if (zoomToChange == 1f) {
                         val one = if (offsetXVal < 0) 1 else -1
                         val delta = offsetXVal - 10f * one
-                        pagerState.dispatchRawDelta(delta)
+//                        pagerState.dispatchRawDelta(delta)
                         callback?.scrollGesture(delta)
                         return@gestureDetectorAnalyser false
                     }
