@@ -70,7 +70,9 @@ fun AboutAppContent(onClearCache: () -> Unit, onRateApp: () -> Unit) {
 
         ThemeChanger()
 
+        Divider()
         BundleSection()
+        Divider()
 
         OutlinedButton(onClick = onClearCache) {
             Text(text = stringResource(id = R.string.clear_cache))
@@ -105,39 +107,50 @@ data class BundleUi(
 
 @Composable
 fun BundleSection() {
-    Row(
-        modifier = Modifier
-            .padding(8.dp)
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        val bundles = listOf(
-            BundleUi("🔥", "All life!", "Buy once, use all life!", false),
-            BundleUi("✨", "For a month", "Remove ad for a month!", false),
+    Column {
+        Title(title = "Remove ads and support me")
+
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = "Make a purchase and have fun without any ads!\nThis is not a subscription, you pay only once!\nPurchases secured with Google Play.",
+            style = MaterialTheme.typography.body2,
+            textAlign = TextAlign.Center,
         )
 
-        bundles.forEachIndexed { index, bundle ->
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth((index + 1f) / bundles.size)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .clickable { }
-                        .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(text = bundle.emoji, fontSize = 24.sp)
-                    Text(text = bundle.title, style = MaterialTheme.typography.subtitle1)
-                    Text(
-                        text = bundle.description,
-                        style = MaterialTheme.typography.caption,
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
+        Row(
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            val bundles = listOf(
+                BundleUi("🔥", "All life!", "Buy once, use all life!", false),
+                BundleUi("✨", "For a month", "Remove ad for a month!", false),
+            )
 
+            bundles.forEachIndexed { index, bundle ->
+                Card(
+                    modifier = Modifier
+//                        .wrapContentHeight(align = Alignment.CenterVertically)
+                        .fillMaxWidth((index + 1f) / bundles.size)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .clickable { }
+                            .padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(text = bundle.emoji, fontSize = 24.sp)
+                        Text(
+                            text = bundle.title,
+                            style = MaterialTheme.typography.subtitle1,
+                            color = MaterialTheme.colors.primaryVariant
+                        )
+                    }
+                }
+
+            }
         }
     }
 }
@@ -171,11 +184,7 @@ private fun ThemeChanger() {
                 .fillMaxWidth()
                 .padding(top = 16.dp)
         ) {
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = "Change theme of application",
-                style = MaterialTheme.typography.h6.copy(textAlign = TextAlign.Center)
-            )
+            Title("Change theme of application")
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -193,6 +202,18 @@ private fun ThemeChanger() {
             }
         }
     }
+}
+
+@Composable
+private fun Title(title: String) {
+    Text(
+        modifier = Modifier.fillMaxWidth(),
+        text = title,
+        style = MaterialTheme.typography.h6.copy(
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colors.primaryVariant
+        ),
+    )
 }
 
 private fun changeColor(theme: Theme) {
