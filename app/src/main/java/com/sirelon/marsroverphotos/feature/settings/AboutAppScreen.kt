@@ -24,6 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.sirelon.marsroverphotos.BuildConfig
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
@@ -37,7 +38,9 @@ import java.util.*
 @Composable
 fun DefaultPreview() {
     MarsRoverPhotosTheme {
-        AboutAppContent({}, {})
+        Scaffold() {
+            AboutAppContent({}, {})
+        }
     }
 }
 
@@ -64,20 +67,9 @@ fun AboutAppContent(onClearCache: () -> Unit, onRateApp: () -> Unit) {
             color = colors.secondaryVariant
         )
 
-        Column(
-            modifier = Modifier
-                .padding(vertical = 8.dp)
-                .fillMaxWidth()
-        ) {
-            LinkifyText(text = "API provided by ", link = "https://api.nasa.gov/")
-            LinkifyText(text = "Email: ", link = "mailto:sasha.sirelon@gmail.com")
-            Text(
-                text = "Version: ${BuildConfig.VERSION_NAME}",
-                modifier = Modifier.padding(4.dp)
-            )
-        }
-
         ThemeChanger()
+
+        BundleSection()
 
         OutlinedButton(onClick = onClearCache) {
             Text(text = stringResource(id = R.string.clear_cache))
@@ -86,6 +78,9 @@ fun AboutAppContent(onClearCache: () -> Unit, onRateApp: () -> Unit) {
         Button(onClick = onRateApp) {
             Text(text = stringResource(id = R.string.action_rate))
         }
+
+        InfoSection()
+
         val copyrightText = stringResource(
             R.string.all_rights_reserved_fmt,
             Calendar.getInstance().get(Calendar.YEAR)
@@ -98,6 +93,63 @@ fun AboutAppContent(onClearCache: () -> Unit, onRateApp: () -> Unit) {
 
     }
 
+}
+
+data class BundleUi(
+    val emoji: String,
+    val title: String,
+    val description: String,
+    val selected: Boolean
+)
+
+@Composable
+fun BundleSection() {
+    Row(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        val bundles = listOf(
+            BundleUi("🔥", "All life!", "Buy once, use all life!", false),
+            BundleUi("✨", "For a month", "Remove ad for a month!", false),
+        )
+
+        bundles.forEachIndexed { index, bundle ->
+            Card() {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(text = bundle.emoji, fontSize = 24.sp)
+                    Text(text = bundle.title, style = MaterialTheme.typography.subtitle1)
+                    Text(
+                        text = bundle.description,
+                        style = MaterialTheme.typography.caption,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+
+        }
+    }
+}
+
+@Composable
+private fun InfoSection() {
+    Column(
+        modifier = Modifier
+            .padding(vertical = 8.dp)
+            .fillMaxWidth()
+    ) {
+        LinkifyText(text = "API provided by ", link = "https://api.nasa.gov/")
+        LinkifyText(text = "Email: ", link = "mailto:sasha.sirelon@gmail.com")
+        Text(
+            text = "Version: ${BuildConfig.VERSION_NAME}",
+            modifier = Modifier.padding(4.dp)
+        )
+    }
 }
 
 @Composable
