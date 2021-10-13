@@ -1,6 +1,7 @@
 package com.sirelon.marsroverphotos.feature.settings
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -116,9 +117,14 @@ fun BundleSection() {
         )
 
         bundles.forEachIndexed { index, bundle ->
-            Card() {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth((index + 1f) / bundles.size)
+            ) {
                 Column(
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier
+                        .clickable { }
+                        .padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
