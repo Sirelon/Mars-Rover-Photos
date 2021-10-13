@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos.feature.settings
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -7,11 +8,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
@@ -26,6 +25,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.os.bundleOf
 import com.sirelon.marsroverphotos.BuildConfig
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
@@ -59,14 +59,39 @@ fun AboutAppContent(onClearCache: () -> Unit, onRateApp: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(painter = painterResource(id = R.drawable.alien_icon), contentDescription = "logo")
-        Text(text = "Mars rover photos", style = typography.h5)
-        Text(
-            text = stringResource(id = R.string.about_description),
-            style = typography.body1,
-            textAlign = TextAlign.Center,
-            color = colors.secondaryVariant
-        )
+        var descriptionVisible by rememberSaveable {
+            mutableStateOf(false)
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .animateContentSize()
+                .clickable {
+                    descriptionVisible = !descriptionVisible
+                    RoverApplication.APP.tracker.trackEvent(
+                        "about_descriptionn_click",
+                        bundleOf("visible" to descriptionVisible)
+                    )
+                },
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.alien_icon),
+                contentDescription = "logo"
+            )
+            Text(text = "Mars rover photos", style = typography.h5)
+            if (descriptionVisible)
+                Text(
+                    text = stringResource(id = R.string.about_description),
+                    style = typography.body1,
+                    textAlign = TextAlign.Center,
+                    color = colors.secondaryVariant
+                )
+        }
+
+        Divider()
 
         ThemeChanger()
 
