@@ -52,7 +52,7 @@ fun FavoriteScreen(
             viewModel.updateFavForImage(it)
         },
         onItemClick = { image ->
-            navController.navigateToImages(image, items.snapshot().items)
+            navController.navigateToImages(image, items.itemSnapshotList.items)
         },
         emptyContent = {
             EmptyPhotos(
@@ -79,7 +79,7 @@ fun PopularScreen(
         items = items,
         onFavoriteClick = viewModel::updateFavorite,
         onItemClick = { image ->
-            navController.navigateToImages(image, items.snapshot().items)
+            navController.navigateToImages(image, items.itemSnapshotList.items)
         },
         emptyContent = {}
     )

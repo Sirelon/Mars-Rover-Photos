@@ -22,6 +22,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
 import com.sirelon.marsroverphotos.storage.MarsImage
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import kotlin.math.*
 
 /**
@@ -80,7 +81,23 @@ fun MultitouchDetector(
                     if (zoomToChange == 1f) {
                         val one = if (offsetXVal < 0) 1 else -1
                         val delta = offsetXVal - 10f * one
-                        pagerState.dispatchRawDelta(delta)
+                        Timber.d("MultitouchDetector() called with: offsetXVal = $offsetXVal");
+//                        pagerState.dispatchRawDelta(delta)
+
+//                        scope.launch {
+//                            val toScroll =
+//                                if (offsetXVal >= 1f) 1f else if (offsetXVal < 0f) 0f else offsetXVal
+//                            val page =
+//                                if (one == 1) pagerState.currentPage + 1 else pagerState.currentPage - 1
+//                            Timber.d("MultitouchDetector() called $offsetXVal");
+////                            if (!pagerState.isScrollInProgress)
+//                            pagerState.animateScrollToPage(
+//                                page = page
+//                                    .coerceAtMost(pagerState.pageCount - 1)
+//                                    .coerceAtLeast(1),
+//                                pageOffset = toScroll.absoluteValue
+//                            )
+//                        }
                         callback?.scrollGesture(delta)
                         return@gestureDetectorAnalyser false
                     }
