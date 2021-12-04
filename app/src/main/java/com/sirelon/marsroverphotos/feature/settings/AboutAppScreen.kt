@@ -22,7 +22,6 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.os.bundleOf
@@ -31,22 +30,16 @@ import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.storage.Prefs
 import com.sirelon.marsroverphotos.storage.Theme
-import com.sirelon.marsroverphotos.ui.MarsRoverPhotosTheme
 import com.sirelon.marsroverphotos.ui.RadioButtonText
 import java.util.*
 
-@Preview(showBackground = true)
 @Composable
-fun DefaultPreview() {
-    MarsRoverPhotosTheme {
-        Scaffold() {
-            AboutAppContent({}, {})
-        }
-    }
-}
-
-@Composable
-fun AboutAppContent(onClearCache: () -> Unit, onRateApp: () -> Unit) {
+fun AboutAppContent(
+    bundles: List<BundleUi>,
+    onBundleClick: (BundleUi) -> Unit,
+    onClearCache: () -> Unit,
+    onRateApp: () -> Unit
+) {
     val typography = MaterialTheme.typography
     val colors = MaterialTheme.colors
     Column(
@@ -96,8 +89,10 @@ fun AboutAppContent(onClearCache: () -> Unit, onRateApp: () -> Unit) {
         ThemeChanger()
 
         Divider()
-        BundleSection()
-        Divider()
+        if (bundles.isNotEmpty()) {
+            BundleSection(bundles, onBundleClick)
+            Divider()
+        }
 
         OutlinedButton(onClick = onClearCache) {
             Text(text = stringResource(id = R.string.clear_cache))
@@ -127,18 +122,19 @@ data class BundleUi(
     val emoji: String,
     val title: String,
     val description: String,
+    val sku: String,
     val selected: Boolean
 )
 
 @Composable
-fun BundleSection() {
+fun BundleSection(bundles: List<BundleUi>, onBundleClick: (BundleUi) -> Unit) {
     Column {
         Title(title = "Remove ads and support me")
 
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = "Make a purchase and have fun without any ads!\nThis is not a subscription, you pay only once!\nPurchases secured with Google Play.",
-            style = MaterialTheme.typography.body2,
+            text = "Just make a purchase and have fun without any ads!\nThis is not a subscription, you pay only once!",
+            style = MaterialTheme.typography.body1,
             textAlign = TextAlign.Center,
         )
 
@@ -148,11 +144,6 @@ fun BundleSection() {
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            val bundles = listOf(
-                BundleUi("🔥", "All life!", "Buy once, use all life!", false),
-                BundleUi("✨", "For a month", "Remove ad for a month!", false),
-            )
-
             bundles.forEachIndexed { index, bundle ->
                 Card(
                     modifier = Modifier
@@ -161,7 +152,7 @@ fun BundleSection() {
                 ) {
                     Column(
                         modifier = Modifier
-                            .clickable { }
+                            .clickable { onBundleClick(bundle) }
                             .padding(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -177,6 +168,13 @@ fun BundleSection() {
 
             }
         }
+
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = "Purchases secured with Google Play.",
+            style = MaterialTheme.typography.body2,
+            textAlign = TextAlign.Center,
+        )
     }
 }
 

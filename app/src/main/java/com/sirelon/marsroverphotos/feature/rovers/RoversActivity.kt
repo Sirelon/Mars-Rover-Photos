@@ -68,6 +68,7 @@ import com.sirelon.marsroverphotos.feature.gdpr.GdprHelper
 import com.sirelon.marsroverphotos.feature.images.ImageScreen
 import com.sirelon.marsroverphotos.feature.photos.RoverPhotosScreen
 import com.sirelon.marsroverphotos.feature.settings.AboutAppContent
+import com.sirelon.marsroverphotos.feature.settings.BundleUi
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.drawableRes
 import com.sirelon.marsroverphotos.storage.Prefs
@@ -75,7 +76,9 @@ import com.sirelon.marsroverphotos.storage.Theme
 import com.sirelon.marsroverphotos.ui.MarsRoverPhotosTheme
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -215,13 +218,6 @@ class RoversActivity : FragmentActivity() {
     }
 
     private fun goToMarket() {
-        // todo:
-        if (true) {
-            billingHelper.purchase()
-            return
-        }
-
-
         track("goToMarket")
         val uri = Uri.parse("market://details?id=${this.packageName}")
         val goToMarket = Intent(Intent.ACTION_VIEW, uri)
@@ -328,7 +324,11 @@ class RoversActivity : FragmentActivity() {
                     })
             }
             composable(Screen.About.route) {
+                val list by billingHelper.bundlesFlow.collectAsState()
+
                 AboutAppContent(
+                    bundles = list,
+                    onBundleClick = billingHelper::purchase,
                     onClearCache = ::clearCache,
                     onRateApp = ::goToMarket
                 )
