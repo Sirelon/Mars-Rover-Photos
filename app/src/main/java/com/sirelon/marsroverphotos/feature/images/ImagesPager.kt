@@ -24,9 +24,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.PermissionState
-import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.*
 import com.sirelon.marsroverphotos.extensions.showAppSettings
 import com.sirelon.marsroverphotos.feature.*
 import com.sirelon.marsroverphotos.storage.MarsImage
@@ -173,7 +171,6 @@ private fun SaveIcon(
         viewModel.trackSaveClick()
         checkPermissionState(
             cameraPermissionState = cameraPermissionState,
-            launchAgain = { cameraPermissionState.launchPermissionRequest() },
             permissionGranted = { viewModel.saveImage(activity, image()) },
             permissionDenied = viewModel::onPermissionDenied,
         )
@@ -202,23 +199,14 @@ fun ShareIcon(activity: FragmentActivity, viewModel: ImageViewModel, image: () -
 @OptIn(ExperimentalPermissionsApi::class)
 private fun checkPermissionState(
     cameraPermissionState: PermissionState,
-    launchAgain: () -> Unit,
     permissionGranted: () -> Unit,
     permissionDenied: (rationale: Boolean) -> Unit
 ) {
-    when {
-        cameraPermissionState.hasPermission -> {
-            permissionGranted()
-        }
-        cameraPermissionState.shouldShowRationale -> {
-            permissionDenied(true)
-        }
-        !cameraPermissionState.permissionRequested -> {
-            launchAgain()
-        }
-        else -> {
-            permissionDenied(false)
-        }
+    val status = cameraPermissionState.status
+    if (status is PermissionStatus.Denied) {
+        permissionDenied(status.shouldShowRationale)
+    } else if (status.isGranted) {
+        permissionGranted()
     }
 }
 
