@@ -185,7 +185,7 @@ class RoversActivity : FragmentActivity() {
         lifecycleScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, throwable -> throwable.printStackTrace() }) {
             val diskCache = ImageLoader(ctx).diskCache ?: return@launch
 
-            val coilSize = diskCache.maxSize
+            val coilSize = diskCache.size
             diskCache.clear()
 
             val sizeStr = Formatter.formatFileSize(ctx, coilSize)
