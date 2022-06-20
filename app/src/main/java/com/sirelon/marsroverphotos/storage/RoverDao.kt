@@ -15,7 +15,7 @@ interface RoverDao {
 
     // Emits the number of users added to the database.
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insertRovers(vararg rovers: Rover): List<Long>
+    fun insertRovers(vararg rovers: Rover)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertRoversList(rovers: List<Rover>)

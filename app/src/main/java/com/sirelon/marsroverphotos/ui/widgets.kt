@@ -1,8 +1,9 @@
 package com.sirelon.marsroverphotos.ui
 
+import androidx.annotation.OptIn
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.LocalOverScrollConfiguration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -64,10 +65,10 @@ fun RadioButtonText(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@kotlin.OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NoScrollEffect(content: @Composable () -> Unit) {
-    CompositionLocalProvider(LocalOverScrollConfiguration provides null) {
+    CompositionLocalProvider(LocalOverscrollConfiguration provides null) {
         content()
     }
 }

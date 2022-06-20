@@ -52,10 +52,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.navigation.navArgument
+import coil.ImageLoader
 import coil.util.CoilUtils
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.ads.mediation.admob.AdMobAdapter
 import com.google.android.gms.ads.*
+import com.google.android.gms.common.util.CollectionUtils.listOf
+import com.google.android.gms.common.util.CollectionUtils.mapOf
+import com.google.common.io.Files.append
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.recordException
@@ -75,6 +79,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.util.Collections.emptyList
 
 
 @ExperimentalAnimationApi
@@ -166,7 +171,7 @@ class RoversActivity : FragmentActivity() {
         MobileAds.setRequestConfiguration(configuration)
 
         adView = AdView(this)
-        adView.adSize = adSize
+        adView.setAdSize(adSize)
         // Test
 //        adView.adUnitId = "ca-app-pub-3940256099942544/6300978111"
         adView.adUnitId = "ca-app-pub-7516059448019339/9309101894"
@@ -178,11 +183,10 @@ class RoversActivity : FragmentActivity() {
         track("Clear cache")
         val ctx = application
         lifecycleScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, throwable -> throwable.printStackTrace() }) {
-            val coilCache = CoilUtils.createDefaultCache(ctx)
-            val coilSize = kotlin.runCatching { coilCache.size() }
-                .onFailure(::recordException).getOrDefault(0)
+            val diskCache = ImageLoader(ctx).diskCache ?: return@launch
 
-            coilCache.directory().deleteRecursively()
+            val coilSize = diskCache.maxSize
+            diskCache.clear()
 
             val sizeStr = Formatter.formatFileSize(ctx, coilSize)
             RoverApplication.APP.dataManger.trackEvent("cache_cleared", mapOf("Size" to sizeStr))

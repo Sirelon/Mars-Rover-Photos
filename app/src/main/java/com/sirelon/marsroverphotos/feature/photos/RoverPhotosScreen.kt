@@ -2,13 +2,14 @@ package com.sirelon.marsroverphotos.feature.photos
 
 import android.app.DatePickerDialog
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.annotation.OptIn
 import androidx.compose.animation.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.GridCells
-import androidx.compose.foundation.lazy.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -140,7 +141,6 @@ private fun RefreshButton(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PhotosList(
     modifier: Modifier,
@@ -148,7 +148,7 @@ private fun PhotosList(
     onPhotoClick: (image: MarsImage) -> Unit
 ) {
 
-    LazyVerticalGrid(cells = GridCells.Fixed(2), modifier = modifier) {
+    LazyVerticalGrid(columns = GridCells.Fixed(2), modifier = modifier) {
         items(photos) { image ->
             Card(
                 modifier = Modifier

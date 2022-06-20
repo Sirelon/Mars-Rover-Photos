@@ -1,15 +1,13 @@
 package com.sirelon.marsroverphotos.feature.favorite
 
 import android.util.Log
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyVerticalGrid
-import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
@@ -85,7 +83,6 @@ fun PopularScreen(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FavoritePhotosContent(
     modifier: Modifier,
@@ -96,9 +93,9 @@ fun FavoritePhotosContent(
     emptyContent: @Composable () -> Unit
 ) {
     if (false) {
-        LazyVerticalGrid(cells = GridCells.Fixed(2), content = {
+        LazyVerticalGrid(columns = GridCells.Fixed(2), content = {
             items(items.itemCount) {
-                val image = items.get(it)
+                val image = items[it]
                 if (image != null) {
                     MarsImageComposable(
                         marsImage = image,
