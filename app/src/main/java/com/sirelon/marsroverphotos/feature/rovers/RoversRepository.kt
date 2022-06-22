@@ -125,6 +125,12 @@ class RoversRepository(context: Context, private val api: RestApi) {
                 }
             }.onFailure(::recordException)
         }
+
+        GlobalScope.launch {
+            kotlin.runCatching {
+                loadFromServer()
+            }.onFailure(::recordException)
+        }
     }
 
     // Keep it for updating inforamttion via some time.
@@ -134,6 +140,7 @@ class RoversRepository(context: Context, private val api: RestApi) {
             .map { async { api.getRoverInfo(it) } }
             .map { it.await() }
             .toList()
+        updateRoversByInfo(rovers)
 //        roverDao.insertRoversList(rovers)
     }
 
