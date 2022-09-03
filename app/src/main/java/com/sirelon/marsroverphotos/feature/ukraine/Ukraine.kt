@@ -29,57 +29,58 @@ import androidx.compose.ui.unit.dp
 @Composable
 @Preview
 fun UkraineInfoScreen() {
-    CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.subtitle1) {
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(
-                text = "Hello, my name is Alex. I am Ukrainian, and I'm proud of it.",
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.subtitle2,
-            )
-            Text(text = "As you probably know, we have war in the Ukraine.. The very terrible and merciless war.")
-            Text(text = "Many victims, many misfortunes, many broken lives are in this war. Everyday, during more than six month, our civilian cities is under attack of missile strikes, some territory are occupied and no one knows how many deaths are there.")
-            Text(text = "In the world, where Elon Musk has plans to colonize the Mars, where NASA wants to resume mission to the Moon, where scientists from around the World united to take picture of Black Hole, in this world we have the country and people which start and support the biggest war after WW2 in Europe.")
-            Text(text = "Russia, which doesn't want to invest money to science but invest to war. Russia, which is killing people everyday. Russia invest money to weapons, to propaganda, to hatred of you, if you are not a russian. ")
-            TextButton(
-                onClick = {
-                    // TODO: 
+    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+        CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.subtitle1) {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(
+                    text = "Hello, my name is Alex. I am Ukrainian, and I'm proud of it.",
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.subtitle2,
+                )
+                Text(text = "As you probably know, we have war in the Ukraine.. The very terrible and merciless war.")
+                Text(text = "Many victims, many misfortunes, many broken lives are in this war. Everyday, during more than six month, our civilian cities is under attack of missile strikes, some territory are occupied and no one knows how many deaths are there.")
+                Text(text = "In the world, where Elon Musk has plans to colonize the Mars, where NASA wants to resume mission to the Moon, where scientists from around the World united to take picture of Black Hole, in this world we have the country and people which start and support the biggest war after WW2 in Europe.")
+                Text(text = "Russia, which doesn't want to invest money to science but invest to war. Russia, which is killing people everyday. Russia invest money to weapons, to propaganda, to hatred of you, if you are not a russian. ")
+                TextButton(
+                    onClick = {
+                        // TODO:
 //                    val openIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://en.wikipedia.org/wiki/Rashism"))
 //                    activity.startActivity(openIntent)
-                }) {
-                Text(text = "Russia introduced new form of fascism: rashism. ")
+                    }) {
+                    Text(text = "Russia introduced new form of fascism: rashism. ")
+                }
+                Text(text = "It's terrible, and I don't understand how this could even happen in XXI century. ")
+                Text(text = "But Ukraine are fighting with this evil. It's very hard, we don't have such resources as Russia has. But we stand. Event more, we are trying to liberate our territory and people. ")
+                Text(text = "To be honest, it's fantastic. But without help from almost all world it couldn't be true. And I'm thank you all, who help us with our battle for life. ")
+                Text(
+                    text = "Thank you!",
+                    color = Color.Red,
+                    style = MaterialTheme.typography.subtitle2
+                )
+                Text(text = "But also I have to ask you something. Please, do not forget us. We need your support. The war hasn't ended. Remember that we are fighting with evil for democracy for our life for better future for all of us and you. ")
+                Text(text = "For more information and for incredible stories about ukrainian heroes you can read here:")
+                TextButton(onClick = { /*TODO*/ }) {
+                    Text(text = "https://war.ukraine.ua/")
+                }
+                Text(text = "If you have any question, reach me via email ")
+                TextButton(onClick = { }) {
+                    Text(text = "sasha.sirelon@gmail.com")
+                }
+                Text(
+                    text = "Thank you!",
+                    color = Color.Red,
+                    style = MaterialTheme.typography.subtitle2
+                )
             }
-            Text(text = "It's terrible, and I don't understand how this could even happen in XXI century. ")
-            Text(text = "But Ukraine are fighting with this evil. It's very hard, we don't have such resources as Russia has. But we stand. Event more, we are trying to liberate our territory and people. ")
-            Text(text = "To be honest, it's fantastic. But without help from almost all world it couldn't be true. And I'm thank you all, who help us with our battle for life. ")
-            Text(
-                text = "Thank you!",
-                color = Color.Red,
-                style = MaterialTheme.typography.subtitle2
-            )
-            Text(text = "But also I have to ask you something. Please, do not forget us. We need your support. The war hasn't ended. Remember that we are fighting with evil for democracy for our life for better future for all of us and you. ")
-            Text(text = "For more information and for incredible stories about ukrainian heroes you can read here:")
-            TextButton(onClick = { /*TODO*/ }) {
-                Text(text = "https://war.ukraine.ua/")
-            }
-            Text(text = "If you have any question, reach me via email ")
-            TextButton(onClick = { }) {
-                Text(text = "sasha.sirelon@gmail.com")
-            }
-            Text(
-                text = "Thank you!",
-                color = Color.Red,
-                style = MaterialTheme.typography.subtitle2
-            )
+        }
 
-            UkraineBanner {
-                // Open twitter
-            }
+        UkraineBanner(title = "Glory to Ukraine") {
+            // Open twitter
         }
     }
 }
