@@ -119,7 +119,10 @@ private fun ImagesPagerContent(
 private fun BoxScope.onEvent(uiEvent: UiEvent?, activity: FragmentActivity) {
     if (uiEvent?.handled == true) return
 
-    uiEvent?.handled = true
+    SideEffect {
+        uiEvent?.handled = true
+    }
+
     val snackbarHostState = remember { SnackbarHostState() }
 
     when (uiEvent) {
@@ -152,6 +155,9 @@ private fun BoxScope.onEvent(uiEvent: UiEvent?, activity: FragmentActivity) {
                     actionLabel = "Open setting"
                 )
             })
+        }
+        null -> {
+
         }
     }
 }
