@@ -32,7 +32,11 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -42,6 +46,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -127,6 +132,47 @@ class RoversActivity : FragmentActivity() {
                 val navController = rememberNavController()
 
                 Scaffold(
+                    topBar = {
+
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    // TODO:
+                                }
+                                .drawBehind {
+                                    val halfHeight = size.height / 2
+                                    drawRect(
+                                        color = Color.Blue,
+                                        size = size.copy(height = halfHeight)
+                                    )
+                                    drawRect(
+                                        color = Color.Yellow,
+                                        size = size.copy(height = halfHeight),
+                                        topLeft = Offset(x = 0f, y = halfHeight)
+                                    )
+                                }
+                                .shadow(elevation = 2.dp)
+                        ) {
+                            Text(
+                                text = "#Stand with Ukraine",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp),
+                                textAlign = TextAlign.Center,
+                                color = Color.Red,
+                                style = MaterialTheme.typography.h6.copy(
+                                    shadow = Shadow(
+                                        color = Color.Black,
+                                        offset = Offset(2f, 2f),
+                                        blurRadius = 2f
+                                    )
+                                )
+                            )
+                        }
+
+
+                    },
                     bottomBar = {
                         RoversBottomBar(navController, bottomItems)
                     },
