@@ -70,12 +70,13 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion composeVer
     }
+    namespace 'com.sirelon.marsroverphotos'
 }
 
 dependencies {
-    implementation 'com.google.devtools.ksp:symbol-processing-api:1.6.21-1.0.6'
+    implementation 'com.google.devtools.ksp:symbol-processing-api:1.7.0-1.0.6'
 
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.0-rc02'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.0-alpha01'
 
     // COMPOSEEEE
 
