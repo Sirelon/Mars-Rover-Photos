@@ -74,6 +74,8 @@ import com.sirelon.marsroverphotos.feature.gdpr.GdprHelper
 import com.sirelon.marsroverphotos.feature.images.ImageScreen
 import com.sirelon.marsroverphotos.feature.photos.RoverPhotosScreen
 import com.sirelon.marsroverphotos.feature.settings.AboutAppContent
+import com.sirelon.marsroverphotos.feature.ukraine.UkraineBanner
+import com.sirelon.marsroverphotos.feature.ukraine.UkraineInfoScreen
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.drawableRes
 import com.sirelon.marsroverphotos.storage.Prefs
@@ -133,45 +135,11 @@ class RoversActivity : FragmentActivity() {
 
                 Scaffold(
                     topBar = {
-
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    // TODO:
-                                }
-                                .drawBehind {
-                                    val halfHeight = size.height / 2
-                                    drawRect(
-                                        color = Color.Blue,
-                                        size = size.copy(height = halfHeight)
-                                    )
-                                    drawRect(
-                                        color = Color.Yellow,
-                                        size = size.copy(height = halfHeight),
-                                        topLeft = Offset(x = 0f, y = halfHeight)
-                                    )
-                                }
-                                .shadow(elevation = 2.dp)
-                        ) {
-                            Text(
-                                text = "#Stand with Ukraine",
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(8.dp),
-                                textAlign = TextAlign.Center,
-                                color = Color.Red,
-                                style = MaterialTheme.typography.h6.copy(
-                                    shadow = Shadow(
-                                        color = Color.Black,
-                                        offset = Offset(2f, 2f),
-                                        blurRadius = 2f
-                                    )
-                                )
-                            )
+                        UkraineBanner {
+                            navController.navigate(Screen.Ukraine.route) {
+                                this.launchSingleTop = true
+                            }
                         }
-
-
                     },
                     bottomBar = {
                         RoversBottomBar(navController, bottomItems)
@@ -358,6 +326,10 @@ class RoversActivity : FragmentActivity() {
                 FavoriteScreen(navController)
             }
 
+            composable(Screen.Ukraine.route) {
+                UkraineInfoScreen()
+            }
+
             composable(
                 "rover/{roverId}",
                 arguments = listOf(navArgument("roverId") {
@@ -429,6 +401,8 @@ sealed class Screen(val route: String, val iconCreator: @Composable () -> ImageV
     class Rover(val id: Long) : Screen("rover", { Icons.Outlined.ViewCarousel })
 
     class Images(val ids: List<String>) : Screen("photos", { Icons.Outlined.ViewCarousel })
+
+    object Ukraine : Screen("ukraine", { Icons.Outlined.Info })
 }
 
 @Composable
