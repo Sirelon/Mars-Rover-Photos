@@ -1,7 +1,5 @@
 package com.sirelon.marsroverphotos.feature.ukraine
 
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,15 +20,23 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.sirelon.marsroverphotos.RoverApplication
 
 @Composable
 @Preview
 fun UkraineInfoScreen() {
+    val uriHandler = LocalUriHandler.current
+
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-        CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.subtitle1) {
+        CompositionLocalProvider(
+            LocalTextStyle provides MaterialTheme.typography.subtitle1.copy(
+                textAlign = TextAlign.Center
+            )
+        ) {
             Column(
                 modifier = Modifier
                     .padding(16.dp),
@@ -48,9 +54,8 @@ fun UkraineInfoScreen() {
                 Text(text = "Russia, which doesn't want to invest money to science but invest to war. Russia, which is killing people everyday. Russia invest money to weapons, to propaganda, to hatred of you, if you are not a russian. ")
                 TextButton(
                     onClick = {
-                        // TODO:
-//                    val openIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://en.wikipedia.org/wiki/Rashism"))
-//                    activity.startActivity(openIntent)
+                        RoverApplication.APP.tracker.trackClick("Ukraine_wiki")
+                        uriHandler.openUri("https://en.wikipedia.org/wiki/Rashism")
                     }) {
                     Text(text = "Russia introduced new form of fascism: rashism. ")
                 }
@@ -64,11 +69,18 @@ fun UkraineInfoScreen() {
                 )
                 Text(text = "But also I have to ask you something. Please, do not forget us. We need your support. The war hasn't ended. Remember that we are fighting with evil for democracy for our life for better future for all of us and you. ")
                 Text(text = "For more information and for incredible stories about ukrainian heroes you can read here:")
-                TextButton(onClick = { /*TODO*/ }) {
+                TextButton(onClick = {
+                    RoverApplication.APP.tracker.trackClick("Ukraine_site")
+                    uriHandler.openUri("https://war.ukraine.ua/")
+                }) {
                     Text(text = "https://war.ukraine.ua/")
                 }
                 Text(text = "If you have any question, reach me via email ")
-                TextButton(onClick = { }) {
+
+                TextButton(onClick = {
+                    RoverApplication.APP.tracker.trackClick("Ukraine_mail")
+                    uriHandler.openUri("mailto:sasha.sirelon@gmail.com")
+                }) {
                     Text(text = "sasha.sirelon@gmail.com")
                 }
                 Text(
@@ -80,7 +92,9 @@ fun UkraineInfoScreen() {
         }
 
         UkraineBanner(title = "Glory to Ukraine") {
+            RoverApplication.APP.tracker.trackClick("UkraineBanner_Bottom")
             // Open twitter
+            uriHandler.openUri("twitter://search?query=%23StandWithUkraine")
         }
     }
 }

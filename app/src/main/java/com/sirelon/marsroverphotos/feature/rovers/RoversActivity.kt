@@ -58,6 +58,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.navigation.navArgument
 import coil.ImageLoader
+import coil.annotation.ExperimentalCoilApi
 import coil.util.CoilUtils
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.ads.mediation.admob.AdMobAdapter
@@ -136,6 +137,8 @@ class RoversActivity : FragmentActivity() {
                 Scaffold(
                     topBar = {
                         UkraineBanner {
+                            RoverApplication.APP.tracker.trackClick("UkraineBanner_Top")
+
                             navController.navigate(Screen.Ukraine.route) {
                                 this.launchSingleTop = true
                             }
@@ -193,6 +196,7 @@ class RoversActivity : FragmentActivity() {
     }
 
 
+    @OptIn(ExperimentalCoilApi::class)
     private fun clearCache() {
         track("Clear cache")
         val ctx = application
