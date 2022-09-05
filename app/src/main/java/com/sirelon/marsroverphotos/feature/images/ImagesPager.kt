@@ -24,19 +24,15 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
-import com.google.accompanist.permissions.*
-import com.sirelon.marsroverphotos.extensions.showAppSettings
 import com.sirelon.marsroverphotos.feature.*
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.ui.CenteredProgress
 import com.sirelon.marsroverphotos.ui.MarsSnackbar
 import com.sirelon.marsroverphotos.ui.NoScrollEffect
-import kotlinx.coroutines.flow.collect
 
 /**
  * Created on 13.04.2021 22:52 for Mars-Rover-Photos.
  */
-
 @ExperimentalAnimationApi
 @ExperimentalPagerApi
 @Composable
@@ -143,45 +139,21 @@ private fun BoxScope.onEvent(uiEvent: UiEvent?, activity: FragmentActivity) {
                 )
             })
         }
-        is UiEvent.CameraPermissionDenied -> {
-            MarsSnackbar(
-                modifier = Modifier.align(Alignment.BottomCenter),
-                snackbarHostState = snackbarHostState,
-                actionClick = { activity.showAppSettings() },
-            )
-            LaunchedEffect(key1 = uiEvent, block = {
-                snackbarHostState.showSnackbar(
-                    message = "Without this permission I cannot save this nice photo to your gallery. If you want to save image please give permission in settings",
-                    actionLabel = "Open setting"
-                )
-            })
-        }
         null -> {
 
         }
     }
 }
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 private fun SaveIcon(
     activity: FragmentActivity,
     viewModel: ImageViewModel,
     image: () -> MarsImage
 ) {
-    // permission state
-    val cameraPermissionState =
-        rememberPermissionState(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-
     IconButton(onClick = {
         viewModel.trackSaveClick()
-        checkPermissionState(
-            cameraPermissionState = cameraPermissionState,
-            permissionGranted = { viewModel.saveImage(activity, image()) },
-            permissionDenied = viewModel::onPermissionDenied,
-        )
-
-        cameraPermissionState.launchPermissionRequest()
+        viewModel.saveImage(activity, image())
     }) {
         Icon(
             painter = rememberVectorPainter(image = Icons.Filled.Save),
@@ -199,20 +171,6 @@ fun ShareIcon(activity: FragmentActivity, viewModel: ImageViewModel, image: () -
             painter = rememberVectorPainter(image = Icons.Filled.Share),
             contentDescription = "Share"
         )
-    }
-}
-
-@OptIn(ExperimentalPermissionsApi::class)
-private fun checkPermissionState(
-    cameraPermissionState: PermissionState,
-    permissionGranted: () -> Unit,
-    permissionDenied: (rationale: Boolean) -> Unit
-) {
-    val status = cameraPermissionState.status
-    if (status is PermissionStatus.Denied) {
-        permissionDenied(status.shouldShowRationale)
-    } else if (status.isGranted) {
-        permissionGranted()
     }
 }
 

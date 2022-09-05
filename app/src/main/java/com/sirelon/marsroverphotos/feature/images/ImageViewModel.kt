@@ -1,9 +1,14 @@
 package com.sirelon.marsroverphotos.feature.images
 
 import android.app.Application
+import android.content.ContentResolver
+import android.content.ContentValues
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
+import android.os.Build
+import android.os.Environment
 import android.provider.MediaStore
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
@@ -30,6 +35,9 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.io.File
+import java.io.OutputStream
+
 
 /**
  * Created on 22.08.2020 18:59 for Mars-Rover-Photos.
@@ -72,6 +80,7 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
         tracker.trackFavorite(image, "Images", !image.favorite)
     }
 
+    @Suppress("DEPRECATION")
     fun saveImage(activity: FragmentActivity, photo: MarsImage) {
         val appUrl = "https://play.google.com/store/apps/details?id=${activity.packageName}"
         viewModelScope.launch(IO) {
@@ -85,17 +94,39 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
                 val result = (loader.execute(request) as SuccessResult).drawable
                 val bitmap = (result as BitmapDrawable).bitmap
 
-                val localUrl = MediaStore.Images.Media.insertImage(
-                    activity.contentResolver, bitmap,
-                    "mars_photo_${photo.id}",
-                    "Photo saved from $appUrl"
-                )
-                activity.sendBroadcast(
-                    Intent(
-                        Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
-                        Uri.parse(localUrl)
+
+                val localUrl: String?
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+
+                    val contentValues = ContentValues()
+                    contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, "Image_" + ".jpg")
+                    contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+                    contentValues.put(
+                        MediaStore.MediaColumns.RELATIVE_PATH,
+                        (Environment.DIRECTORY_PICTURES + File.separator) + "TestFolder"
                     )
-                )
+                    val imageUri = activity.contentResolver.insert(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        contentValues
+                    )
+                    activity.contentResolver.openOutputStream(imageUri!!).use {
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
+                    }
+                    localUrl = imageUri.toString()
+                } else {
+                    localUrl = MediaStore.Images.Media.insertImage(
+                        activity.contentResolver, bitmap,
+                        "mars_photo_${photo.id}",
+                        "Photo saved from $appUrl"
+                    )
+                    activity.sendBroadcast(
+                        Intent(
+                            Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
+                            Uri.parse(localUrl)
+                        )
+                    )
+                }
+
                 launch(exceptionHandler) {
                     val dataManager = RoverApplication.APP.dataManger
                     dataManager.updatePhotoSaveCounter(photo)
@@ -108,17 +139,11 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
                     recordException(it)
                     withContext(Dispatchers.Main) {
                         it.printStackTrace()
-                        Toast.makeText(activity, "Error occured ${it.message}", Toast.LENGTH_SHORT)
+                        Toast.makeText(activity, "Error occurred ${it.message}", Toast.LENGTH_SHORT)
                             .show()
                     }
                 }
         }
-    }
-
-    fun onPermissionDenied(rationale: Boolean) {
-//        uiEvent.value = null
-        if (!rationale)
-            uiEvent.value = UiEvent.CameraPermissionDenied(rationale)
     }
 
     fun onShown(marsPhoto: MarsImage, page: Int) {
@@ -167,5 +192,4 @@ sealed class UiEvent {
     var handled = false
 
     class PhotoSaved(val imagePath: String?) : UiEvent()
-    class CameraPermissionDenied(val rationale: Boolean) : UiEvent()
 }

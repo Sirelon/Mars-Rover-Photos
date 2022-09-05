@@ -24,7 +24,10 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.firebase.FirebaseApp
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sirelon.marsroverphotos.RoverApplication
+import com.sirelon.marsroverphotos.extensions.recordException
 
 @Composable
 @Preview
@@ -94,7 +97,12 @@ fun UkraineInfoScreen() {
         UkraineBanner(title = "Glory to Ukraine") {
             RoverApplication.APP.tracker.trackClick("UkraineBanner_Bottom")
             // Open twitter
-            uriHandler.openUri("twitter://search?query=%23StandWithUkraine")
+            try {
+                uriHandler.openUri("twitter://search?query=%23StandWithUkraine")
+            } catch (e: Throwable) {
+                recordException(e)
+            }
+
         }
     }
 }
