@@ -33,7 +33,7 @@ class GdprHelper(private val activity: ComponentActivity) {
 
         consentInformation.requestConsentInfoUpdate(
             activity, params, {
-                Timber.d("init() called $consentInformation");
+                Timber.d("init() called $consentInformation")
                 // The consent information state was updated.
                 // You are now ready to check if a form is available.
                 if (consentInformation.isConsentFormAvailable) {
@@ -59,7 +59,7 @@ class GdprHelper(private val activity: ComponentActivity) {
     }
 
     private fun showConsentForm(consentForm: ConsentForm) {
-        Timber.d("loadForm() called with: consentForm = $consentForm annd consentInformation.consentStatus ${consentInformation.consentStatus}");
+        Timber.d("loadForm() called with: consentForm = $consentForm annd consentInformation.consentStatus ${consentInformation.consentStatus}")
         if (consentInformation.consentStatus == ConsentInformation.ConsentStatus.REQUIRED) {
             consentForm.show(activity) { // Handle dismissal by reloading form.
                 loadForm()

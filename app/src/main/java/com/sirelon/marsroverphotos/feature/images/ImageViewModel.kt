@@ -96,36 +96,23 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
 
 
                 val localUrl: String?
+                val contentValues = ContentValues()
+                contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, "Image_" + ".jpg")
+                contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-
-                    val contentValues = ContentValues()
-                    contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, "Image_" + ".jpg")
-                    contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
                     contentValues.put(
                         MediaStore.MediaColumns.RELATIVE_PATH,
-                        (Environment.DIRECTORY_PICTURES + File.separator) + "TestFolder"
-                    )
-                    val imageUri = activity.contentResolver.insert(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                        contentValues
-                    )
-                    activity.contentResolver.openOutputStream(imageUri!!).use {
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
-                    }
-                    localUrl = imageUri.toString()
-                } else {
-                    localUrl = MediaStore.Images.Media.insertImage(
-                        activity.contentResolver, bitmap,
-                        "mars_photo_${photo.id}",
-                        "Photo saved from $appUrl"
-                    )
-                    activity.sendBroadcast(
-                        Intent(
-                            Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
-                            Uri.parse(localUrl)
-                        )
+                        (Environment.DIRECTORY_PICTURES + File.separator) + "MarsRoverPhotos"
                     )
                 }
+                val imageUri = activity.contentResolver.insert(
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    contentValues
+                )
+                activity.contentResolver.openOutputStream(imageUri!!).use {
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
+                }
+                localUrl = imageUri.toString()
 
                 launch(exceptionHandler) {
                     val dataManager = RoverApplication.APP.dataManger
@@ -147,7 +134,7 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
     }
 
     fun onShown(marsPhoto: MarsImage, page: Int) {
-        Timber.d("onShown() called with: marsPhoto = $marsPhoto, page = $page");
+        Timber.d("onShown() called with: marsPhoto = $marsPhoto, page = $page")
         val dataManger = RoverApplication.APP.dataManger
         dataManger.trackEvent("photo_show", mapOf("page" to page))
 

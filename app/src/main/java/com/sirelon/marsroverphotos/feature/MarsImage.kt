@@ -14,10 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import coil.size.Scale
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
@@ -103,12 +105,11 @@ fun NetworkImage(
     contentScale: ContentScale = ContentScale.Crop,
     imageUrl: String
 ) {
-    val painter = rememberImagePainter(
-        data = imageUrl,
-        builder = {
+    val painter = rememberAsyncImagePainter(
+        ImageRequest.Builder(LocalContext.current).data(data = imageUrl).apply(block = fun ImageRequest.Builder.() {
             crossfade(true)
             placeholder(R.drawable.img_placeholder)
-        },
+        }).build()
     )
     Image(
         modifier = modifier,
@@ -121,15 +122,16 @@ fun NetworkImage(
 @OptIn(ExperimentalCoilApi::class)
 @Composable
 private fun ImageLoader(imageUrl: String, success: () -> Unit) {
-    val painter = rememberImagePainter(
-        data = imageUrl,
-        builder = {
-//            crossfade(true)
+    val painter = //            crossfade(true)
 //            placeholder(R.drawable.img_placeholder)
-            scale(Scale.FILL)
-            listener { _, _ -> success() }
-        },
-    )
+        rememberAsyncImagePainter(
+            ImageRequest.Builder(LocalContext.current).data(data = imageUrl).apply(block = fun ImageRequest.Builder.() {
+                //            crossfade(true)
+                //            placeholder(R.drawable.img_placeholder)
+                scale(Scale.FILL)
+                listener { _, _ -> success() }
+            }).build()
+        )
     Image(
         modifier = Modifier
             .requiredHeightIn(100.dp, 300.dp)

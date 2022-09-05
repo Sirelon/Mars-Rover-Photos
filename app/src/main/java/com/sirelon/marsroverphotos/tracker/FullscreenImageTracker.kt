@@ -56,7 +56,7 @@ class FullscreenImageTracker : MultitouchDetectorCallback {
     override var currentImage: MarsImage? = null
 
     override fun onDoubleTap(zoomToChange: Float) {
-        Timber.d("onDoubleTap() called with: zoomToChange = $zoomToChange, $currentImage");
+        Timber.d("onDoubleTap() called with: zoomToChange = $zoomToChange, $currentImage")
         trackScale()
     }
 
@@ -66,12 +66,12 @@ class FullscreenImageTracker : MultitouchDetectorCallback {
         offsetX: Float,
         shouldBlock: Boolean
     ) {
-        Timber.d("onZoomGesture() called with: zoomToChange = $zoomToChange, offsetY = $offsetY, offsetX = $offsetX, shouldBlock = $shouldBlock");
+        Timber.d("onZoomGesture() called with: zoomToChange = $zoomToChange, offsetY = $offsetY, offsetX = $offsetX, shouldBlock = $shouldBlock")
         zoomChangeCollector.onEvent(Triple(zoomToChange, offsetY, offsetX))
     }
 
     override fun scrollGesture(scrollDelta: Float) {
-        Timber.d("scrollGesture() called with: scrollDelta = $scrollDelta");
+        Timber.d("scrollGesture() called with: scrollDelta = $scrollDelta")
         scrollChangeCollector.onEvent(scrollDelta)
     }
 

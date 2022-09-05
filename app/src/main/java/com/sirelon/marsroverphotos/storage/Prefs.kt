@@ -20,7 +20,7 @@ object Prefs {
 
     init {
         themeLiveData.observeForever {
-            Timber.d("$it called");
+            Timber.d("$it called")
         }
     }
 
@@ -30,7 +30,7 @@ object Prefs {
             return Theme.values()[ordinal]
         }
         set(value) {
-            Timber.d("$value in SET called");
+            Timber.d("$value in SET called")
             themeLiveData.postValue(value)
             sharedPreferences.edit().putInt("theme", value.ordinal).apply()
         }

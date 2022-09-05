@@ -81,7 +81,7 @@ fun MultitouchDetector(
                     if (zoomToChange == 1f) {
                         val one = if (offsetXVal < 0) 1 else -1
                         val delta = offsetXVal - 10f * one
-                        Timber.d("MultitouchDetector() called with: offsetXVal = $offsetXVal");
+                        Timber.d("MultitouchDetector() called with: offsetXVal = $offsetXVal")
 //                        pagerState.dispatchRawDelta(delta)
 
 //                        scope.launch {
@@ -209,7 +209,7 @@ suspend fun PointerInputScope.gestureDetectorAnalyser(analyse: (zoomVal: Float, 
             awaitFirstDown(requireUnconsumed = false)
             do {
                 val event = awaitPointerEvent()
-                val canceled = event.changes.fastAny { it.positionChangeConsumed() }
+                val canceled = event.changes.fastAny { it.isConsumed }
                 if (!canceled) {
                     val zoomChange = event.calculateZoom()
                     val rotationChange = event.calculateRotation()
@@ -270,14 +270,14 @@ suspend fun PointerInputScope.gestureDetectorAnalyser(analyse: (zoomVal: Float, 
                             if (shouldBlock) {
                                 event.changes.fastForEach {
                                     if (it.positionChanged()) {
-                                        it.consumeAllChanges()
+                                        it.consume()
                                     }
                                 }
                             }
                         } else {
                             event.changes.fastForEach {
                                 if (it.positionChanged()) {
-                                    it.consumeAllChanges()
+                                    it.consume()
                                 }
                             }
                         }

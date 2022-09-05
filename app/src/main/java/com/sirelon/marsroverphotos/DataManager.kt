@@ -67,7 +67,7 @@ class DataManager(
     }
 
     fun trackEvent(event: String, params: Map<String, Any?> = emptyMap()) {
-        Timber.d("trackEvent() called with: event = $event, params = $params");
+        Timber.d("trackEvent() called with: event = $event, params = $params")
         val bundle = Bundle()
 
         params.forEach { bundle.putString(it.key, it.value.toString()) }

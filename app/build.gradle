@@ -95,6 +95,7 @@ dependencies {
     def accompanistVer = '0.26.2-beta'
     implementation "com.google.accompanist:accompanist-pager:$accompanistVer"
     implementation "com.google.accompanist:accompanist-placeholder-material:$accompanistVer"
+//    implementation "com.google.accompanist:accompanist-permissions:$accompanistVer"
 
     // Material design icons
     implementation "androidx.compose.material:material-icons-core:$composeVer"

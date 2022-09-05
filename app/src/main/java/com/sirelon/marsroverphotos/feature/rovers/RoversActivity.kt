@@ -292,7 +292,7 @@ class RoversActivity : FragmentActivity() {
 //                    } else it
 //                }
                 .build()
-            Timber.d("ComposableBannerAd called $personalized");
+            Timber.d("ComposableBannerAd called $personalized")
             // Start loading the ad in the background.
             adView.loadAd(adRequest)
 
@@ -424,7 +424,7 @@ fun RoversContent(
 
 @Composable
 fun RoverItem(rover: Rover, onClick: (rover: Rover) -> Unit) {
-    Timber.d("RoverItem() called with: rover = $rover");
+    Timber.d("RoverItem() called with: rover = $rover")
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -451,7 +451,7 @@ fun RoverItem(rover: Rover, onClick: (rover: Rover) -> Unit) {
                 verticalArrangement = Arrangement.SpaceAround
             ) {
                 InfoText(
-                    label = stringResource(id = com.sirelon.marsroverphotos.R.string.label_photos_total),
+                    label = stringResource(id = R.string.label_photos_total),
                     text = "${rover.totalPhotos}"
                 )
                 InfoText(label = "Last photo date:", text = rover.maxDate)
