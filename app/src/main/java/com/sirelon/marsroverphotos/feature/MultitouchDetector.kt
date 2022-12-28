@@ -1,29 +1,44 @@
 package com.sirelon.marsroverphotos.feature
 
 import android.graphics.Matrix
-import androidx.compose.foundation.gestures.*
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.calculateCentroid
+import androidx.compose.foundation.gestures.calculateCentroidSize
+import androidx.compose.foundation.gestures.calculatePan
+import androidx.compose.foundation.gestures.calculateRotation
+import androidx.compose.foundation.gestures.calculateZoom
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.*
+import androidx.compose.ui.input.pointer.PointerInputScope
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.positionChanged
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastForEach
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.PagerState
 import com.sirelon.marsroverphotos.storage.MarsImage
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import kotlin.math.*
+import kotlin.math.PI
+import kotlin.math.abs
+import kotlin.math.roundToInt
+import kotlin.math.sqrt
 
 /**
  * Created on 15.04.2021 21:48 for Mars-Rover-Photos.
@@ -40,12 +55,10 @@ interface MultitouchDetectorCallback {
     fun scrollGesture(scrollDelta: Float)
 }
 
-@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun MultitouchDetector(
-    modifier: Modifier,
     state: MultitouchState,
-    pagerState: PagerState,
+    modifier: Modifier = Modifier,
     callback: MultitouchDetectorCallback? = null,
     content: @Composable () -> Unit,
 ) {
@@ -197,93 +210,91 @@ class MultitouchState(
 }
 
 suspend fun PointerInputScope.gestureDetectorAnalyser(analyse: (zoomVal: Float, offsetXVal: Float, offsetYVal: Float) -> Boolean) {
-    forEachGesture {
-        awaitPointerEventScope {
-            var rotation = 0f
-            var zoom = 1f
-            var pan = Offset.Zero
-            var pastTouchSlop = false
-            val touchSlop = viewConfiguration.touchSlop
-            var lockedToPanZoom = false
+    awaitEachGesture {
+        var rotation = 0f
+        var zoom = 1f
+        var pan = Offset.Zero
+        var pastTouchSlop = false
+        val touchSlop = viewConfiguration.touchSlop
+        var lockedToPanZoom = false
 
-            awaitFirstDown(requireUnconsumed = false)
-            do {
-                val event = awaitPointerEvent()
-                val canceled = event.changes.fastAny { it.isConsumed }
-                if (!canceled) {
-                    val zoomChange = event.calculateZoom()
-                    val rotationChange = event.calculateRotation()
-                    val panChange = event.calculatePan()
+        awaitFirstDown(requireUnconsumed = false)
+        do {
+            val event = awaitPointerEvent()
+            val canceled = event.changes.fastAny { it.isConsumed }
+            if (!canceled) {
+                val zoomChange = event.calculateZoom()
+                val rotationChange = event.calculateRotation()
+                val panChange = event.calculatePan()
 
-                    if (!pastTouchSlop) {
-                        zoom *= zoomChange
-                        rotation += rotationChange
-                        pan += panChange
+                if (!pastTouchSlop) {
+                    zoom *= zoomChange
+                    rotation += rotationChange
+                    pan += panChange
 
-                        val centroidSize =
-                            event.calculateCentroidSize(useCurrent = false)
-                        val zoomMotion = abs(1 - zoom) * centroidSize
-                        val rotationMotion =
-                            abs(rotation * PI.toFloat() * centroidSize / 180f)
-                        val panMotion = pan.getDistance()
+                    val centroidSize =
+                        event.calculateCentroidSize(useCurrent = false)
+                    val zoomMotion = abs(1 - zoom) * centroidSize
+                    val rotationMotion =
+                        abs(rotation * PI.toFloat() * centroidSize / 180f)
+                    val panMotion = pan.getDistance()
 
-                        if (zoomMotion > touchSlop ||
-                            rotationMotion > touchSlop ||
-                            panMotion > touchSlop
-                        ) {
-                            pastTouchSlop = true
-                            lockedToPanZoom = false && rotationMotion < touchSlop
-                        }
+                    if (zoomMotion > touchSlop ||
+                        rotationMotion > touchSlop ||
+                        panMotion > touchSlop
+                    ) {
+                        pastTouchSlop = true
+                        lockedToPanZoom = false && rotationMotion < touchSlop
                     }
+                }
 
-                    if (pastTouchSlop) {
-                        val centroid = event.calculateCentroid(useCurrent = false)
-                        val effectiveRotation =
-                            if (lockedToPanZoom) 0f else rotationChange
-                        if (effectiveRotation != 0f ||
-                            zoomChange != 1f ||
-                            panChange != Offset.Zero
-                        ) {
-                            val anchorX = centroid.x - size.width / 2f
-                            val anchorY = centroid.y - size.height / 2f
-                            val matrix = Matrix()
-                            matrix.postRotate(effectiveRotation, anchorX, anchorY)
-                            matrix.postScale(
-                                zoomChange,
-                                zoomChange,
-                                anchorX,
-                                anchorY
-                            )
-                            matrix.postTranslate(pan.x, pan.y)
+                if (pastTouchSlop) {
+                    val centroid = event.calculateCentroid(useCurrent = false)
+                    val effectiveRotation =
+                        if (lockedToPanZoom) 0f else rotationChange
+                    if (effectiveRotation != 0f ||
+                        zoomChange != 1f ||
+                        panChange != Offset.Zero
+                    ) {
+                        val anchorX = centroid.x - size.width / 2f
+                        val anchorY = centroid.y - size.height / 2f
+                        val matrix = Matrix()
+                        matrix.postRotate(effectiveRotation, anchorX, anchorY)
+                        matrix.postScale(
+                            zoomChange,
+                            zoomChange,
+                            anchorX,
+                            anchorY
+                        )
+                        matrix.postTranslate(pan.x, pan.y)
 
-                            val v = FloatArray(9)
-                            matrix.getValues(v)
-                            val scaleX = v[Matrix.MSCALE_X]
-                            val skewY = v[Matrix.MSKEW_Y]
+                        val v = FloatArray(9)
+                        matrix.getValues(v)
+                        val scaleX = v[Matrix.MSCALE_X]
+                        val skewY = v[Matrix.MSKEW_Y]
 //                                            val offsetX = v[Matrix.MTRANS_X]
 //                                            val offsetY = v[Matrix.MTRANS_Y]
-                            val offsetXVal = panChange.x
-                            val offsetYVal = panChange.y
-                            val zoomVal = sqrt(scaleX * scaleX + skewY * skewY)
-                            val shouldBlock = analyse(zoomVal, offsetXVal, offsetYVal)
+                        val offsetXVal = panChange.x
+                        val offsetYVal = panChange.y
+                        val zoomVal = sqrt(scaleX * scaleX + skewY * skewY)
+                        val shouldBlock = analyse(zoomVal, offsetXVal, offsetYVal)
 
-                            if (shouldBlock) {
-                                event.changes.fastForEach {
-                                    if (it.positionChanged()) {
-                                        it.consume()
-                                    }
-                                }
-                            }
-                        } else {
+                        if (shouldBlock) {
                             event.changes.fastForEach {
                                 if (it.positionChanged()) {
                                     it.consume()
                                 }
                             }
                         }
+                    } else {
+                        event.changes.fastForEach {
+                            if (it.positionChanged()) {
+                                it.consume()
+                            }
+                        }
                     }
                 }
-            } while (!canceled && event.changes.fastAny { it.pressed })
-        }
+            }
+        } while (!canceled && event.changes.fastAny { it.pressed })
     }
 }

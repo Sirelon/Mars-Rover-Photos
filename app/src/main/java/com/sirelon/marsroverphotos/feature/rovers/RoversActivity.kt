@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos.feature.rovers
 
+import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
@@ -10,7 +11,6 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -26,18 +26,12 @@ import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material.icons.outlined.ViewCarousel
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -46,12 +40,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -59,13 +54,8 @@ import androidx.navigation.compose.*
 import androidx.navigation.navArgument
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
-import coil.util.CoilUtils
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.ads.mediation.admob.AdMobAdapter
 import com.google.android.gms.ads.*
-import com.google.android.gms.common.util.CollectionUtils.listOf
-import com.google.android.gms.common.util.CollectionUtils.mapOf
-import com.google.common.io.Files.append
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.recordException
@@ -87,8 +77,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import java.util.Collections.emptyList
-
 
 @ExperimentalAnimationApi
 @ExperimentalPagerApi
@@ -98,7 +86,9 @@ class RoversActivity : FragmentActivity() {
 
     // Determine the screen width (less decorations) to use for the ad width.
     // If the ad hasn't been laid out, default to the full screen width.
+    @Suppress("DEPRECATION")
     private val adSize: AdSize
+        @SuppressLint("VisibleForTests")
         get() {
             val display = windowManager.defaultDisplay
             val outMetrics = DisplayMetrics()
@@ -271,6 +261,7 @@ class RoversActivity : FragmentActivity() {
         }
     }
 
+    @OptIn(ExperimentalLifecycleComposeApi::class)
     @Composable
     private fun ComposableBannerAd(modifier: Modifier) {
         if (!RoverApplication.APP.adEnabled) {
@@ -278,7 +269,7 @@ class RoversActivity : FragmentActivity() {
             return
         }
 
-        val personalized by gdprHelper.acceptGdpr.collectAsState(initial = false)
+        val personalized by gdprHelper.acceptGdpr.collectAsStateWithLifecycle(initialValue = false)
 
         AndroidView<View>(modifier = modifier, factory = { adView }) {
             val adRequest = AdRequest
@@ -404,8 +395,6 @@ sealed class Screen(val route: String, val iconCreator: @Composable () -> ImageV
 
     class Rover(val id: Long) : Screen("rover", { Icons.Outlined.ViewCarousel })
 
-    class Images(val ids: List<String>) : Screen("photos", { Icons.Outlined.ViewCarousel })
-
     object Ukraine : Screen("ukraine", { Icons.Outlined.Info })
 }
 
@@ -459,27 +448,6 @@ fun RoverItem(rover: Rover, onClick: (rover: Rover) -> Unit) {
                 InfoText(label = "Landing date on Mars:", text = rover.landingDate)
             }
         }
-    }
-}
-
-@Composable
-fun CommonItem(title: String, imageAsset: Painter, onClick: () -> Unit) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .padding(16.dp)
-            .clickable(onClick = onClick)
-    ) {
-        TitleText(title)
-        Spacer(modifier = Modifier.height(8.dp))
-        Image(
-            painter = imageAsset,
-            contentScale = ContentScale.FillWidth,
-            modifier = Modifier
-                .clip(MaterialTheme.shapes.large)
-                .fillMaxWidth(),
-            contentDescription = null
-        )
     }
 }
 

@@ -92,6 +92,7 @@ fun FavoritePhotosContent(
     onFavoriteClick: (image: MarsImage) -> Unit,
     emptyContent: @Composable () -> Unit
 ) {
+    // LazyVerticalStaggeredGrid
     if (false) {
         LazyVerticalGrid(columns = GridCells.Fixed(2), content = {
             items(items.itemCount) {

@@ -2,15 +2,12 @@ package com.sirelon.marsroverphotos.feature.photos
 
 import android.app.DatePickerDialog
 import android.widget.Toast
-import androidx.annotation.OptIn
 import androidx.compose.animation.*
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -24,6 +21,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sirelon.marsroverphotos.R
@@ -36,6 +35,7 @@ import java.util.*
 /**
  * Created on 07.03.2021 12:46 for Mars-Rover-Photos.
  */
+@kotlin.OptIn(ExperimentalLifecycleComposeApi::class)
 @ExperimentalAnimationApi
 @Composable
 fun RoverPhotosScreen(
@@ -47,9 +47,9 @@ fun RoverPhotosScreen(
 ) {
     viewModel.setRoverId(roverId)
 
-    val photos: List<MarsImage>? by viewModel.photosFlow.collectAsState(initial = null)
+    val photos: List<MarsImage>? by viewModel.photosFlow.collectAsStateWithLifecycle(initialValue = null)
 
-    val sol by viewModel.solFlow.collectAsState(initial = 0)
+    val sol by viewModel.solFlow.collectAsStateWithLifecycle(initialValue = 0)
 
     var openSolDialog by remember { mutableStateOf(false) }
 
@@ -215,7 +215,7 @@ private fun SolDialog(
             text = {
                 val context = LocalContext.current
                 SolChanger(sol, maxSol) {
-                    if (sol ?: 0 > maxSol) {
+                    if ((sol ?: 0) > maxSol) {
                         sol = maxSol
                         Toast.makeText(
                             context,
