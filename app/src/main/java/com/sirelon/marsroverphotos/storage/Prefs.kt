@@ -2,8 +2,12 @@ package com.sirelon.marsroverphotos.storage
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import androidx.lifecycle.MutableLiveData
 import timber.log.Timber
+
+private const val THEME_KEY = "theme"
+private const val GRID_VIEW_KEY = "gridView"
 
 /**
  * Created on 29.07.2021 23:54 for Mars-Rover-Photos.
@@ -26,13 +30,22 @@ object Prefs {
 
     var theme: Theme
         get() {
-            val ordinal = sharedPreferences.getInt("theme", Theme.SYSTEM.ordinal)
+            val ordinal = sharedPreferences.getInt(THEME_KEY, Theme.SYSTEM.ordinal)
             return Theme.values()[ordinal]
         }
         set(value) {
-            Timber.d("$value in SET called")
             themeLiveData.postValue(value)
-            sharedPreferences.edit().putInt("theme", value.ordinal).apply()
+            sharedPreferences.edit {
+                putInt(THEME_KEY, value.ordinal)
+            }
+        }
+
+    var gridView: Boolean
+        get() = sharedPreferences.getBoolean(GRID_VIEW_KEY, false)
+        set(value) {
+            sharedPreferences.edit {
+                putBoolean(GRID_VIEW_KEY, value)
+            }
         }
 }
 

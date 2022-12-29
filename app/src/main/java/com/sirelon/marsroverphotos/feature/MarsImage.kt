@@ -15,12 +15,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Scale
+import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
@@ -31,7 +31,12 @@ import com.sirelon.marsroverphotos.storage.MarsImage
  * Created on 01.03.2021 22:33 for Mars-Rover-Photos.
  */
 @Composable
-fun MarsImageComposable(marsImage: MarsImage, onClick: () -> Unit, onFavoriteClick: () -> Unit) {
+fun MarsImageComposable(
+    modifier: Modifier = Modifier,
+    marsImage: MarsImage,
+    onClick: () -> Unit,
+    onFavoriteClick: () -> Unit
+) {
     val ready = remember { mutableStateOf(false) }
     Card(
         modifier = Modifier
@@ -54,7 +59,7 @@ fun MarsImageComposable(marsImage: MarsImage, onClick: () -> Unit, onFavoriteCli
 fun PhotoStats(marsImage: MarsImage, onFavoriteClick: () -> Unit) {
     val stats = marsImage.stats
 
-    Row(
+    FlowRow(
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .fillMaxWidth()
@@ -69,12 +74,11 @@ fun PhotoStats(marsImage: MarsImage, onFavoriteClick: () -> Unit) {
             StatsInfoText(stats.share, Icons.Filled.Share, "counterShare")
         }
 
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-            MarsImageFavoriteToggle(
-                checked = marsImage.favorite,
-                onCheckedChange = { onFavoriteClick() }
-            )
-        }
+        MarsImageFavoriteToggle(
+            modifier = Modifier.fillMaxWidth(),
+            checked = marsImage.favorite,
+            onCheckedChange = { onFavoriteClick() }
+        )
     }
 }
 
@@ -90,7 +94,6 @@ fun MarsImageFavoriteToggle(
         onCheckedChange = onCheckedChange
     ) {
         Icon(
-            modifier = Modifier.fillMaxSize(),
             tint = MaterialTheme.colors.secondary,
             imageVector = if (checked) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
             contentDescription = null // handled by click label of parent
@@ -106,10 +109,11 @@ fun NetworkImage(
     imageUrl: String
 ) {
     val painter = rememberAsyncImagePainter(
-        ImageRequest.Builder(LocalContext.current).data(data = imageUrl).apply(block = fun ImageRequest.Builder.() {
-            crossfade(true)
-            placeholder(R.drawable.img_placeholder)
-        }).build()
+        ImageRequest.Builder(LocalContext.current).data(data = imageUrl)
+            .apply(block = fun ImageRequest.Builder.() {
+                crossfade(true)
+                placeholder(R.drawable.img_placeholder)
+            }).build()
     )
     Image(
         modifier = modifier,
@@ -125,12 +129,13 @@ private fun ImageLoader(imageUrl: String, success: () -> Unit) {
     val painter = //            crossfade(true)
 //            placeholder(R.drawable.img_placeholder)
         rememberAsyncImagePainter(
-            ImageRequest.Builder(LocalContext.current).data(data = imageUrl).apply(block = fun ImageRequest.Builder.() {
-                //            crossfade(true)
-                //            placeholder(R.drawable.img_placeholder)
-                scale(Scale.FILL)
-                listener { _, _ -> success() }
-            }).build()
+            ImageRequest.Builder(LocalContext.current).data(data = imageUrl)
+                .apply(block = fun ImageRequest.Builder.() {
+                    //            crossfade(true)
+                    //            placeholder(R.drawable.img_placeholder)
+                    scale(Scale.FILL)
+                    listener { _, _ -> success() }
+                }).build()
         )
     Image(
         modifier = Modifier

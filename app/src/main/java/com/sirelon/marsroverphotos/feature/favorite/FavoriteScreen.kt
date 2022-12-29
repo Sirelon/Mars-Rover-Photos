@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.material.Icon
@@ -21,7 +20,7 @@ import androidx.compose.material.icons.filled.ViewList
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -38,6 +37,7 @@ import com.sirelon.marsroverphotos.feature.navigateToImages
 import com.sirelon.marsroverphotos.feature.photos.EmptyPhotos
 import com.sirelon.marsroverphotos.feature.popular.PopularPhotosViewModel
 import com.sirelon.marsroverphotos.storage.MarsImage
+import com.sirelon.marsroverphotos.storage.Prefs
 import com.sirelon.marsroverphotos.ui.CenteredProgress
 
 /**
@@ -103,15 +103,20 @@ fun FavoritePhotosContent(
     emptyContent: @Composable () -> Unit
 ) {
 
-    var gridView by remember {
-        mutableStateOf(false)
+    var gridView by rememberSaveable {
+        mutableStateOf(Prefs.gridView)
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
             title = { Text(text = title) },
             actions = {
-                IconButton(onClick = { gridView = !gridView }) {
+                IconButton(
+                    onClick = {
+                        gridView = !gridView
+                        Prefs.gridView = gridView
+                    },
+                ) {
                     if (gridView) {
                         Icon(
                             imageVector = Icons.Default.ViewList,
@@ -151,6 +156,8 @@ fun FavoritePhotosContent(
                     val image = items[it]
                     if (image != null) {
                         MarsImageComposable(
+                            // TODO: Animation
+                            modifier = Modifier,
                             marsImage = image,
                             onClick = { onItemClick(image) },
                             onFavoriteClick = { onFavoriteClick(image) })
