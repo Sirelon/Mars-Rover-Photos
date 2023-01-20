@@ -45,7 +45,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
@@ -261,7 +260,6 @@ class RoversActivity : FragmentActivity() {
         }
     }
 
-    @OptIn(ExperimentalLifecycleComposeApi::class)
     @Composable
     private fun ComposableBannerAd(modifier: Modifier) {
         if (!RoverApplication.APP.adEnabled) {
