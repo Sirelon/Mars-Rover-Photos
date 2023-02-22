@@ -16,21 +16,19 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.firebase.FirebaseApp
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.recordException
 
 @Composable
-@Preview
+@Preview(showBackground = true, device = Devices.AUTOMOTIVE_1024p)
 fun UkraineInfoScreen() {
     val uriHandler = LocalUriHandler.current
 
@@ -52,7 +50,7 @@ fun UkraineInfoScreen() {
                     style = MaterialTheme.typography.subtitle2,
                 )
                 Text(text = "As you probably know, we have war in the Ukraine.. The very terrible and merciless war.")
-                Text(text = "Many victims, many misfortunes, many broken lives are in this war. Everyday, during more than six month, our civilian cities is under attack of missile strikes, some territory are occupied and no one knows how many deaths are there.")
+                Text(text = "Many victims, many misfortunes, many broken lives are in this war. Everyday our civilian cities is under attack of missile strikes, some territory are occupied and no one knows how many deaths are there.")
                 Text(text = "In the world, where Elon Musk has plans to colonize the Mars, where NASA wants to resume mission to the Moon, where scientists from around the World united to take picture of Black Hole, in this world we have the country and people which start and support the biggest war after WW2 in Europe.")
                 Text(text = "Russia, which doesn't want to invest money to science but invest to war. Russia, which is killing people everyday. Russia invest money to weapons, to propaganda, to hatred of you, if you are not a russian. ")
                 TextButton(
@@ -115,17 +113,17 @@ fun UkraineBanner(title: String = "#Stand with Ukraine", onClick: () -> Unit) {
             .clickable(onClick = onClick)
             .drawBehind {
                 val halfHeight = size.height / 2
+                val alpha = 0.7f
                 drawRect(
-                    color = Color.Blue,
+                    color = Color.Blue.copy(alpha = alpha),
                     size = size.copy(height = halfHeight)
                 )
                 drawRect(
-                    color = Color.Yellow,
+                    color = Color.Yellow.copy(alpha = alpha),
                     size = size.copy(height = halfHeight),
                     topLeft = Offset(x = 0f, y = halfHeight)
                 )
             }
-            .shadow(elevation = 2.dp)
     ) {
         Text(
             text = title,
