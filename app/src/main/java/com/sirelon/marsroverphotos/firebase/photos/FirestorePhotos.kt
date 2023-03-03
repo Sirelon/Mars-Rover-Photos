@@ -3,7 +3,11 @@ package com.sirelon.marsroverphotos.firebase.photos
 import androidx.annotation.WorkerThread
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
-import com.google.firebase.firestore.*
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.SetOptions
 import com.sirelon.marsroverphotos.feature.firebase.FirebaseConstants
 import com.sirelon.marsroverphotos.feature.firebase.FirebasePhoto
 import com.sirelon.marsroverphotos.feature.firebase.toFireBase
@@ -29,8 +33,8 @@ internal class FirestorePhotos : IFirebasePhotos {
 
     @WorkerThread
     suspend fun makeItPopular(photo: MarsImage) {
-        val see = randomInt(50, 500)
-        val scale = randomInt(10, see)
+        val see = randomInt(0, 1000)
+        val scale = randomInt(0, 1000)
         val db = mapOf(
             "seeCounter" to see,
             "scaleCounter" to scale,
@@ -38,11 +42,6 @@ internal class FirestorePhotos : IFirebasePhotos {
             "shareCounter" to randomInt(0, scale),
             "favoriteCounter" to randomInt(0, scale),
         )
-
-        //                .orderBy("shareCounter", queryDirection)
-//                .orderBy("saveCounter", queryDirection)
-//            .orderBy("seeCounter", queryDirection)
-//            .orderBy("scaleCounter", queryDirection)
         val task = photosCollection().document(photo.id).update(db)
         Tasks.await(task)
     }

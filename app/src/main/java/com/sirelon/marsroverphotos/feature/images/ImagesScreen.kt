@@ -7,16 +7,20 @@ import android.net.Uri
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -43,6 +47,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sirelon.marsroverphotos.BuildConfig
 import com.sirelon.marsroverphotos.feature.MarsImageFavoriteToggle
 import com.sirelon.marsroverphotos.feature.MultitouchDetector
 import com.sirelon.marsroverphotos.feature.MultitouchDetectorCallback
@@ -140,6 +145,23 @@ private fun ImagesPagerContent(
             val uiEvent by viewModel.uiEvent.collectAsStateWithLifecycle(initialValue = null)
 
             OnEvent(uiEvent = uiEvent)
+
+            if (BuildConfig.DEBUG) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.BottomCenter),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    Button(onClick = { viewModel.makePopular(list[pagerState.currentPage]) }) {
+                        Text(text = "Make popular")
+                    }
+
+                    Button(onClick = { viewModel.removePopular(list[pagerState.currentPage]) }) {
+                        Text(text = "Remove popular")
+                    }
+                }
+            }
         }
     }
 }

@@ -74,4 +74,15 @@ class ImagesRepository(private val context: Context) {
             remoteMediator = PopularRemoteMediator(FirebaseProvider.firebasePhotos, imagesDao)
         ).flow
     }
+
+    /**
+     * Debug methods
+     */
+    internal suspend fun makePopular(marsImage: MarsImage) {
+        firestorePhotos.makeItPopular(marsImage)
+    }
+
+    internal suspend fun removePopular(marsImage: MarsImage) {
+        firestorePhotos.makeItPopular(marsImage)
+    }
 }

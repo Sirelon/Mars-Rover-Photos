@@ -186,6 +186,20 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
         return shareIntent
     }
 
+    /**
+     * Debug methods
+     */
+    internal fun makePopular(marsImage: MarsImage) {
+        viewModelScope.launch(IO) {
+            repository.makePopular(marsImage)
+        }
+    }
+
+    internal fun removePopular(marsImage: MarsImage) {
+        viewModelScope.launch(IO) {
+            repository.removePopular(marsImage)
+        }
+    }
 }
 
 sealed class UiEvent {
