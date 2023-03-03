@@ -77,12 +77,17 @@ fun ImageScreen(
 
     val pagerState = rememberPagerState(selectedPosition)
 
-    Crossfade(targetState = images, label = "Images") {
-        when {
-            it.isEmpty() -> CenteredProgress()
-            else -> {
-                ImagesPagerContent(activity, viewModel, it, pagerState)
-            }
+    Crossfade(targetState = images.isEmpty(), label = "Images") {
+
+        if (it) {
+            CenteredProgress()
+        } else {
+            ImagesPagerContent(
+                activity = activity,
+                viewModel = viewModel,
+                list = images,
+                pagerState = pagerState
+            )
         }
     }
 }

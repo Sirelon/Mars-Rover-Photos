@@ -24,6 +24,7 @@ import com.sirelon.marsroverphotos.extensions.recordException
 import com.sirelon.marsroverphotos.feature.MultitouchDetectorCallback
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.tracker.FullscreenImageTracker
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -33,6 +34,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -65,6 +67,7 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
                 flowOf(it)
             }
         }
+        .mapLatest { it.toImmutableList() }
         .flowOn(IO)
 
     fun setIdsToShow(ids: List<String>) {

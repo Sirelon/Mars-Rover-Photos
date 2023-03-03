@@ -47,6 +47,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -229,7 +230,7 @@ class RoversActivity : FragmentActivity() {
     ) {
         BottomNavigation {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
-            val currentRoute = navBackStackEntry?.destination?.route
+            val navDestination = navBackStackEntry?.destination
             bottomItems.forEach { screen ->
                 BottomNavigationItem(
                     icon = {
@@ -238,7 +239,7 @@ class RoversActivity : FragmentActivity() {
                             contentDescription = null
                         )
                     },
-                    selected = currentRoute == screen.route,
+                    selected = navDestination?.hierarchy?.any { it.route == screen.route } == true,
                     selectedContentColor = MaterialTheme.colors.secondary,
                     unselectedContentColor = Color.White.copy(alpha = ContentAlpha.medium),
                     onClick = {
