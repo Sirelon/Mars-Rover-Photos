@@ -25,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -37,6 +36,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -65,18 +65,21 @@ fun ImageScreen(
     selectedId: String?
 ) {
     val ids = photoIds ?: emptyList()
-    viewModel.setIdsToShow(ids)
+    LaunchedEffect(key1 = photoIds, block = {
+        viewModel.setIdsToShow(ids)
+    })
 
-    val selectedPosition = ids.indexOf(selectedId)
+    val selectedPosition = remember(key1 = photoIds, key2 = selectedId) {
+        ids.indexOf(selectedId)
+    }
+
+    val images by viewModel.imagesFlow.collectAsStateWithLifecycle(initialValue = emptyList())
 
     val pagerState = rememberPagerState(selectedPosition)
 
-    val imagesA by viewModel.imagesLiveData.observeAsState()
-    val images = imagesA
-
-    Crossfade(targetState = images) {
+    Crossfade(targetState = images, label = "Images") {
         when {
-            it.isNullOrEmpty() -> CenteredProgress()
+            it.isEmpty() -> CenteredProgress()
             else -> {
                 ImagesPagerContent(activity, viewModel, it, pagerState)
             }
@@ -125,16 +128,15 @@ private fun ImagesPagerContent(
                 viewModel.updateFavorite(marsImage)
             }
 
-            val uiEvent = viewModel.uiEvent.observeAsState()
-            val value = uiEvent.value
+            val uiEvent by viewModel.uiEvent.collectAsStateWithLifecycle(initialValue = null)
 
-            onEvent(value, activity)
+            OnEvent(uiEvent = uiEvent, activity = activity)
         }
     }
 }
 
 @Composable
-private fun BoxScope.onEvent(uiEvent: UiEvent?, activity: FragmentActivity) {
+private fun BoxScope.OnEvent(uiEvent: UiEvent?, activity: FragmentActivity) {
     if (uiEvent?.handled == true) return
 
     SideEffect {
@@ -161,6 +163,7 @@ private fun BoxScope.onEvent(uiEvent: UiEvent?, activity: FragmentActivity) {
                 )
             })
         }
+
         null -> {
 
         }

@@ -1,20 +1,18 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package com.sirelon.marsroverphotos.feature.images
 
 import android.app.Application
-import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
-import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import coil.ImageLoader
 import coil.request.ImageRequest
@@ -27,8 +25,11 @@ import com.sirelon.marsroverphotos.feature.MultitouchDetectorCallback
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.tracker.FullscreenImageTracker
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
@@ -36,7 +37,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
-import java.io.OutputStream
 
 
 /**
@@ -51,9 +51,10 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
 
     private val idsEmitor = MutableStateFlow<List<String>>(emptyList())
 
-    val uiEvent = MutableLiveData<UiEvent?>()
+    private val uiEventEmitter = MutableStateFlow<UiEvent?>(null)
+    val uiEvent: Flow<UiEvent> = uiEventEmitter.filterNotNull()
 
-    val imagesLiveData = idsEmitor
+    val imagesFlow = idsEmitor
         .flatMapLatest { repository.loadImages(it) }
         .flatMapLatest {
             if (it.isEmpty()) {
@@ -65,7 +66,6 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
             }
         }
         .flowOn(IO)
-        .asLiveData()
 
     fun setIdsToShow(ids: List<String>) {
         idsEmitor.value = ids
@@ -82,7 +82,6 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
 
     @Suppress("DEPRECATION")
     fun saveImage(activity: FragmentActivity, photo: MarsImage) {
-        val appUrl = "https://play.google.com/store/apps/details?id=${activity.packageName}"
         viewModelScope.launch(IO) {
             kotlin.runCatching {
                 val loader = ImageLoader(activity)
@@ -93,7 +92,6 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
 
                 val result = (loader.execute(request) as SuccessResult).drawable
                 val bitmap = (result as BitmapDrawable).bitmap
-
 
                 val localUrl: String?
                 val contentValues = ContentValues()
@@ -121,7 +119,7 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
                 // Update counter for save
                 localUrl
             }
-                .onSuccess { uiEvent.postValue(UiEvent.PhotoSaved(it)) }
+                .onSuccess { uiEventEmitter.value = UiEvent.PhotoSaved(it) }
                 .onFailure {
                     recordException(it)
                     withContext(Dispatchers.Main) {
