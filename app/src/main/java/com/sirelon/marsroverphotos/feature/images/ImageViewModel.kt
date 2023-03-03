@@ -55,6 +55,8 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
     private val uiEventEmitter = MutableStateFlow<UiEvent?>(null)
     val uiEvent: Flow<UiEvent> = uiEventEmitter.filterNotNull()
 
+    var shouldTrack = true
+
     val imagesFlow = idsEmitor
         .flatMapLatest { repository.loadImages(it) }
         .flatMapLatest {
@@ -78,8 +80,10 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
             repository.updateFavForImage(image)
         }
 
-        val tracker = getApplication<RoverApplication>().tracker
-        tracker.trackFavorite(image, "Images", !image.favorite)
+        if (shouldTrack) {
+            val tracker = getApplication<RoverApplication>().tracker
+            tracker.trackFavorite(image, "Images", !image.favorite)
+        }
     }
 
     @Suppress("DEPRECATION")
@@ -145,12 +149,16 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
     }
 
     fun trackSaveClick() {
-        getApplication<RoverApplication>().tracker.trackClick("save")
+        if (shouldTrack) {
+            getApplication<RoverApplication>().tracker.trackClick("save")
+        }
     }
 
     fun shareMarsImage(marsImage: MarsImage) {
         val application = getApplication<RoverApplication>()
-        application.tracker.trackClick("share")
+        if (shouldTrack) {
+            application.tracker.trackClick("share")
+        }
 
         viewModelScope.launch(IO) {
             RoverApplication.APP.dataManger.updatePhotoShareCounter(marsImage, null)

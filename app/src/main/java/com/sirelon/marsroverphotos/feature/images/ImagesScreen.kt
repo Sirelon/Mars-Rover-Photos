@@ -61,6 +61,7 @@ import com.sirelon.marsroverphotos.ui.NoScrollEffect
 @Composable
 fun ImageScreen(
     viewModel: ImageViewModel = viewModel(),
+    trackingEnabled: Boolean,
     photoIds: List<String>?,
     selectedId: String?
 ) {
@@ -68,6 +69,10 @@ fun ImageScreen(
     LaunchedEffect(key1 = photoIds, block = {
         viewModel.setIdsToShow(ids)
     })
+
+    LaunchedEffect(key1 = trackingEnabled) {
+        viewModel.shouldTrack = trackingEnabled
+    }
 
     val selectedPosition = remember(key1 = photoIds, key2 = selectedId) {
         ids.indexOf(selectedId)

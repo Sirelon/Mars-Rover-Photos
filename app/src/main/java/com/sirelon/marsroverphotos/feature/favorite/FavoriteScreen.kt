@@ -86,7 +86,11 @@ fun PopularScreen(
         items = items,
         onFavoriteClick = viewModel::updateFavorite,
         onItemClick = { image ->
-            navController.navigateToImages(image, items.itemSnapshotList.items)
+            navController.navigateToImages(
+                image = image,
+                allphotos = items.itemSnapshotList.items,
+                trackingEnabled = false
+            )
         },
         emptyContent = {}
     )
@@ -145,7 +149,7 @@ fun FavoritePhotosContent(
             modifier = modifier.weight(1f),
             contentPadding = PaddingValues(16.dp),
             columns = if (gridView) {
-                StaggeredGridCells.Adaptive(150.dp)
+                StaggeredGridCells.Fixed(2)
             } else {
                 StaggeredGridCells.Fixed(1)
             },

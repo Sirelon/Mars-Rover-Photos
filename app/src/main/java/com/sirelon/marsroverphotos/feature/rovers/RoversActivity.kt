@@ -343,13 +343,16 @@ class RoversActivity : FragmentActivity() {
 
 
             composable(
-                route = "photos/{pid}?ids={ids}",
+                route = "photos/{pid}?ids={ids}&shouldTrack={shouldTrack}",
                 arguments = listOf(
                     navArgument("pid") { type = NavType.StringType },
-                    navArgument("ids") { type = NavType.StringType })
+                    navArgument("ids") { type = NavType.StringType },
+                    navArgument("shouldTrack") { type = NavType.BoolType },
+                )
             ) {
                 val ids = it.arguments?.getString("ids")?.split(", ")?.toList()
                 val selectedImage = it.arguments?.getString("pid")
+                val shouldTrack = it.arguments?.getBoolean("shouldTrack") ?: false
 
                 if (ids.isNullOrEmpty()) {
                     recordException(IllegalArgumentException("Try to open ${it.id} with $ids and $selectedImage"))
@@ -357,7 +360,8 @@ class RoversActivity : FragmentActivity() {
                 } else {
                     ImageScreen(
                         photoIds = ids,
-                        selectedId = selectedImage
+                        selectedId = selectedImage,
+                        trackingEnabled = shouldTrack,
                     )
                 }
             }
