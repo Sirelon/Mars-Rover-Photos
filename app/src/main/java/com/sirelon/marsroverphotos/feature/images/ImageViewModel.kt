@@ -11,7 +11,6 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.widget.Toast
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import coil.ImageLoader
@@ -84,7 +83,8 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
     }
 
     @Suppress("DEPRECATION")
-    fun saveImage(activity: FragmentActivity, photo: MarsImage) {
+    fun saveImage(photo: MarsImage) {
+        val activity = getApplication<RoverApplication>()
         viewModelScope.launch(IO) {
             kotlin.runCatching {
                 val loader = ImageLoader(activity)
@@ -148,16 +148,20 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
         getApplication<RoverApplication>().tracker.trackClick("save")
     }
 
-    fun shareMarsImage(activity: FragmentActivity, marsImage: MarsImage) {
-        getApplication<RoverApplication>().tracker.trackClick("share")
+    fun shareMarsImage(marsImage: MarsImage) {
+        val application = getApplication<RoverApplication>()
+        application.tracker.trackClick("share")
 
         viewModelScope.launch(IO) {
             RoverApplication.APP.dataManger.updatePhotoShareCounter(marsImage, null)
         }
 
         val shareIntent = shareIntent(marsImage)
-        activity.startActivity(
-            Intent.createChooser(shareIntent, activity.resources.getText(R.string.share))
+        application.startActivity(
+            Intent.createChooser(shareIntent, application.resources.getText(R.string.share))
+                .apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
         )
     }
 

@@ -355,9 +355,9 @@ class RoversActivity : FragmentActivity() {
 
                 if (ids.isNullOrEmpty()) {
                     recordException(IllegalArgumentException("Try to open ${it.id} with $ids and $selectedImage"))
+                    navController.popBackStack()
                 } else {
                     ImageScreen(
-                        activity = this@RoversActivity,
                         photoIds = ids,
                         selectedId = selectedImage
                     )

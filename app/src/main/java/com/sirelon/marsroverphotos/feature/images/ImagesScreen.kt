@@ -1,9 +1,10 @@
+@file:OptIn(ExperimentalPagerApi::class)
+
 package com.sirelon.marsroverphotos.feature.images
 
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -34,8 +35,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -55,11 +56,9 @@ import com.sirelon.marsroverphotos.ui.NoScrollEffect
 /**
  * Created on 13.04.2021 22:52 for Mars-Rover-Photos.
  */
-@ExperimentalAnimationApi
-@ExperimentalPagerApi
+
 @Composable
 fun ImageScreen(
-    activity: FragmentActivity,
     viewModel: ImageViewModel = viewModel(),
     photoIds: List<String>?,
     selectedId: String?
@@ -83,7 +82,6 @@ fun ImageScreen(
             CenteredProgress()
         } else {
             ImagesPagerContent(
-                activity = activity,
                 viewModel = viewModel,
                 list = images,
                 pagerState = pagerState
@@ -95,7 +93,6 @@ fun ImageScreen(
 @ExperimentalPagerApi
 @Composable
 private fun ImagesPagerContent(
-    activity: FragmentActivity,
     viewModel: ImageViewModel,
     list: List<MarsImage>,
     pagerState: PagerState
@@ -115,12 +112,13 @@ private fun ImagesPagerContent(
         TopAppBar(
             title = { Text(text = titleState) },
             actions = {
-                SaveIcon(
-                    activity,
-                    viewModel,
-                    image = { list[pagerState.currentPage] },
-                )
-                ShareIcon(activity, viewModel, image = { list[pagerState.currentPage] })
+                SaveIcon(onClick = {
+                    viewModel.trackSaveClick()
+                    viewModel.saveImage(list[pagerState.currentPage])
+                })
+                ShareIcon(onClick = {
+                    viewModel.shareMarsImage(list[pagerState.currentPage])
+                })
             },
         )
         Spacer(modifier = Modifier.height(30.dp))
@@ -135,13 +133,13 @@ private fun ImagesPagerContent(
 
             val uiEvent by viewModel.uiEvent.collectAsStateWithLifecycle(initialValue = null)
 
-            OnEvent(uiEvent = uiEvent, activity = activity)
+            OnEvent(uiEvent = uiEvent)
         }
     }
 }
 
 @Composable
-private fun BoxScope.OnEvent(uiEvent: UiEvent?, activity: FragmentActivity) {
+private fun BoxScope.OnEvent(uiEvent: UiEvent?) {
     if (uiEvent?.handled == true) return
 
     SideEffect {
@@ -152,13 +150,15 @@ private fun BoxScope.OnEvent(uiEvent: UiEvent?, activity: FragmentActivity) {
 
     when (uiEvent) {
         is UiEvent.PhotoSaved -> {
+            val context = LocalContext.current
             val imagePath = uiEvent.imagePath
             MarsSnackbar(
                 snackbarHostState = snackbarHostState,
                 modifier = Modifier.align(Alignment.BottomCenter),
                 actionClick = {
                     val openIntent = Intent(Intent.ACTION_VIEW, Uri.parse(imagePath))
-                    activity.startActivity(openIntent)
+                    openIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    context.startActivity(openIntent)
                 }
             )
             LaunchedEffect(key1 = uiEvent, block = {
@@ -177,14 +177,9 @@ private fun BoxScope.OnEvent(uiEvent: UiEvent?, activity: FragmentActivity) {
 
 @Composable
 private fun SaveIcon(
-    activity: FragmentActivity,
-    viewModel: ImageViewModel,
-    image: () -> MarsImage
+    onClick: () -> Unit
 ) {
-    IconButton(onClick = {
-        viewModel.trackSaveClick()
-        viewModel.saveImage(activity, image())
-    }) {
+    IconButton(onClick = onClick) {
         Icon(
             painter = rememberVectorPainter(image = Icons.Filled.Save),
             contentDescription = "Save"
@@ -193,10 +188,8 @@ private fun SaveIcon(
 }
 
 @Composable
-fun ShareIcon(activity: FragmentActivity, viewModel: ImageViewModel, image: () -> MarsImage) {
-    IconButton(onClick = {
-        viewModel.shareMarsImage(activity = activity, marsImage = image())
-    }) {
+private fun ShareIcon(onClick: () -> Unit) {
+    IconButton(onClick = onClick) {
         Icon(
             painter = rememberVectorPainter(image = Icons.Filled.Share),
             contentDescription = "Share"
