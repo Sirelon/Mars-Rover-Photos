@@ -1,10 +1,11 @@
-@file:OptIn(ExperimentalPagerApi::class)
+@file:OptIn(ExperimentalFoundationApi::class)
 
 package com.sirelon.marsroverphotos.feature.images
 
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -13,6 +14,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -39,10 +43,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.PagerState
-import com.google.accompanist.pager.rememberPagerState
 import com.sirelon.marsroverphotos.feature.MarsImageFavoriteToggle
 import com.sirelon.marsroverphotos.feature.MultitouchDetector
 import com.sirelon.marsroverphotos.feature.MultitouchDetectorCallback
@@ -57,6 +57,7 @@ import com.sirelon.marsroverphotos.ui.NoScrollEffect
  * Created on 13.04.2021 22:52 for Mars-Rover-Photos.
  */
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ImageScreen(
     viewModel: ImageViewModel = viewModel(),
@@ -90,7 +91,7 @@ fun ImageScreen(
     }
 }
 
-@ExperimentalPagerApi
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ImagesPagerContent(
     viewModel: ImageViewModel,
@@ -197,9 +198,8 @@ private fun ShareIcon(onClick: () -> Unit) {
     }
 }
 
-@ExperimentalPagerApi
 @Composable
-fun ImagesPager(
+private fun ImagesPager(
     pagerState: PagerState,
     images: List<MarsImage>,
     callback: MultitouchDetectorCallback,
@@ -210,7 +210,7 @@ fun ImagesPager(
 
         // TODO: can be native https://android-review.googlesource.com/#/q/I01120224eaccd9ee255890eb409e87a7ef7ffd5f
         HorizontalPager(
-            count = images.size,
+            pageCount = images.size,
             state = pagerState,
             modifier = Modifier
                 .fillMaxSize()

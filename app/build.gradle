@@ -96,7 +96,6 @@ dependencies {
     implementation "androidx.compose.material:material:$composeVer"
 //    https://github.com/google/accompanist
     def accompanistVer = '0.29.1-alpha'
-    implementation "com.google.accompanist:accompanist-pager:$accompanistVer"
     implementation "com.google.accompanist:accompanist-placeholder-material:$accompanistVer"
     implementation "com.google.accompanist:accompanist-flowlayout:$accompanistVer"
 //    implementation "com.google.accompanist:accompanist-permissions:$accompanistVer"

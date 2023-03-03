@@ -55,7 +55,6 @@ import androidx.navigation.compose.*
 import androidx.navigation.navArgument
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
-import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.android.gms.ads.*
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
@@ -80,7 +79,6 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 @ExperimentalAnimationApi
-@ExperimentalPagerApi
 class RoversActivity : FragmentActivity() {
 
     private val gdprHelper = GdprHelper(this)
