@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos.feature
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -101,18 +102,21 @@ fun MarsImageFavoriteToggle(
     }
 }
 
-@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun NetworkImage(
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Crop,
+    @DrawableRes
+    placeholderRes: Int? = R.drawable.img_placeholder,
     imageUrl: String
 ) {
     val painter = rememberAsyncImagePainter(
         ImageRequest.Builder(LocalContext.current).data(data = imageUrl)
             .apply(block = fun ImageRequest.Builder.() {
                 crossfade(true)
-                placeholder(R.drawable.img_placeholder)
+                placeholderRes?.let {
+                    placeholder(placeholderRes)
+                }
             }).build()
     )
     Image(

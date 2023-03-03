@@ -207,8 +207,6 @@ private fun ImagesPager(
 ) {
 
     NoScrollEffect {
-
-        // TODO: can be native https://android-review.googlesource.com/#/q/I01120224eaccd9ee255890eb409e87a7ef7ffd5f
         HorizontalPager(
             pageCount = images.size,
             state = pagerState,
@@ -241,7 +239,8 @@ private fun ImagesPager(
                     NetworkImage(
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.FillWidth,
-                        imageUrl = marsImage.imageUrl
+                        imageUrl = marsImage.imageUrl,
+                        placeholderRes = null,
                     )
                 }
 
