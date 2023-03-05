@@ -8,7 +8,8 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,13 +18,10 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import coil.annotation.ExperimentalCoilApi
+import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Scale
-import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.material.placeholder
-import com.google.accompanist.placeholder.material.shimmer
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.storage.MarsImage
 
@@ -37,18 +35,46 @@ fun MarsImageComposable(
     onClick: () -> Unit,
     onFavoriteClick: () -> Unit
 ) {
-    val ready = remember { mutableStateOf(false) }
+    val imageUrl = marsImage.imageUrl
+
+    val painter = rememberAsyncImagePainter(
+        ImageRequest.Builder(LocalContext.current).data(data = imageUrl)
+            .apply(block = fun ImageRequest.Builder.() {
+                crossfade(true)
+                scale(Scale.FILL)
+            }).build()
+    )
+
+    val loading by remember {
+        derivedStateOf {
+            painter.state is AsyncImagePainter.State.Loading
+        }
+    }
     Card(
         modifier = modifier
             .padding(vertical = 8.dp)
             .fillMaxWidth()
-            .clickable { onClick() }
-            .placeholder(visible = !ready.value, highlight = PlaceholderHighlight.shimmer()),
+            .clickable(onClick = onClick)
+            // TODO: some bug here: when flings, by some reason state doesn't update properly.
+//            .placeholder(
+////                visible = loading,
+//                highlight = PlaceholderHighlight.shimmer()
+//            )
+        ,
         shape = MaterialTheme.shapes.large
     ) {
         Column {
-            ImageLoader(marsImage.imageUrl) { ready.value = true }
-            if (ready.value) {
+            Image(
+                modifier = Modifier
+                    .defaultMinSize(minHeight = 100.dp)
+                    .fillMaxWidth(),
+                contentScale = ContentScale.FillWidth,
+                painter = painter,
+                alignment = Alignment.TopCenter,
+                contentDescription = imageUrl
+            )
+
+            if (!loading) {
                 PhotoStats(marsImage, onFavoriteClick)
             }
         }
@@ -122,30 +148,6 @@ fun NetworkImage(
         painter = painter,
         contentDescription = imageUrl,
         contentScale = contentScale
-    )
-}
-
-@OptIn(ExperimentalCoilApi::class)
-@Composable
-private fun ImageLoader(imageUrl: String, success: () -> Unit) {
-    val painter = //            crossfade(true)
-//            placeholder(R.drawable.img_placeholder)
-        rememberAsyncImagePainter(
-            ImageRequest.Builder(LocalContext.current).data(data = imageUrl)
-                .apply(block = fun ImageRequest.Builder.() {
-                    //            crossfade(true)
-                    //            placeholder(R.drawable.img_placeholder)
-                    scale(Scale.FILL)
-                    listener { _, _ -> success() }
-                }).build()
-        )
-    Image(
-        modifier = Modifier
-            .requiredHeightIn(100.dp, 300.dp)
-            .fillMaxWidth(),
-        contentScale = ContentScale.FillWidth,
-        painter = painter,
-        contentDescription = imageUrl
     )
 }
 
