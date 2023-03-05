@@ -21,7 +21,6 @@ import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Scale
-import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
@@ -40,7 +39,7 @@ fun MarsImageComposable(
 ) {
     val ready = remember { mutableStateOf(false) }
     Card(
-        modifier = Modifier
+        modifier = modifier
             .padding(vertical = 8.dp)
             .fillMaxWidth()
             .clickable { onClick() }
@@ -56,24 +55,23 @@ fun MarsImageComposable(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun PhotoStats(marsImage: MarsImage, onFavoriteClick: () -> Unit) {
     val stats = marsImage.stats
 
     FlowRow(
         modifier = Modifier
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .fillMaxWidth()
+            .padding(8.dp)
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Column {
-            StatsInfoText(stats.see, Icons.Filled.Visibility, "counterSee")
-            StatsInfoText(stats.scale, Icons.Filled.ZoomIn, "counterScale")
-        }
-        Spacer(modifier = Modifier.width(16.dp))
-        Column {
-            StatsInfoText(stats.save, Icons.Filled.Save, "counterSave")
-            StatsInfoText(stats.share, Icons.Filled.Share, "counterShare")
-        }
+
+        StatsInfoText(stats.see, Icons.Filled.Visibility, "counterSee")
+        StatsInfoText(stats.scale, Icons.Filled.ZoomIn, "counterScale")
+        StatsInfoText(stats.save, Icons.Filled.Save, "counterSave")
+        StatsInfoText(stats.share, Icons.Filled.Share, "counterShare")
 
         MarsImageFavoriteToggle(
             modifier = Modifier.fillMaxWidth(),
@@ -158,11 +156,16 @@ private fun StatsInfoText(counter: Long, image: ImageVector, desc: String) {
 
     Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
+            modifier = Modifier.size(20.dp),
             painter = rememberVectorPainter(image = image),
             contentDescription = desc,
-            tint = MaterialTheme.colors.secondary
+            tint = MaterialTheme.colors.secondary,
         )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(text = counter.toString())
+        Spacer(modifier = Modifier.width(6.dp))
+        Text(
+            text = counter.toString(),
+            style = MaterialTheme.typography.caption,
+            color = MaterialTheme.colors.onSurface
+        )
     }
 }
