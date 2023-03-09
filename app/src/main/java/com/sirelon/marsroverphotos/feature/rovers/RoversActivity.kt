@@ -30,6 +30,7 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material.icons.outlined.ViewCarousel
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -52,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -63,6 +65,7 @@ import androidx.navigation.compose.*
 import androidx.navigation.navArgument
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.android.gms.ads.*
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
@@ -119,6 +122,7 @@ class RoversActivity : FragmentActivity() {
         if (RoverApplication.APP.adEnabled) {
             gdprHelper.init()
         }
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
             val theme by Prefs.themeLiveData.observeAsState(initial = Prefs.theme)
@@ -128,17 +132,33 @@ class RoversActivity : FragmentActivity() {
 
             val isDark: Boolean =
                 if (theme == Theme.SYSTEM) isSystemInDarkTheme() else theme == Theme.DARK
+
+            var hideUI by remember {
+                mutableStateOf(false)
+            }
+
+            val systemUiController = rememberSystemUiController()
+            val useDarkIcons = !isDark
+
+            DisposableEffect(key1 = systemUiController, key2 = useDarkIcons) {
+                // Update all of the system bar colors to be transparent, and use
+                // dark icons if we're in light theme
+                systemUiController.setSystemBarsColor(
+                    color = Color.Transparent,
+                    darkIcons = useDarkIcons
+                )
+                // setStatusBarColor() and setNavigationBarColor() also exist
+                onDispose {}
+            }
+
             MarsRoverPhotosTheme(isDark) {
                 val navController = rememberNavController()
-
-                var hideUI by remember {
-                    mutableStateOf(false)
-                }
 
                 Scaffold(
                     topBar = {
                         AnimatedVisibility(
                             visible = !hideUI,
+                            modifier = Modifier.systemBarsPadding(),
                             enter = fadeIn() + expandVertically(),
                             exit = fadeOut() + shrinkVertically(),
                         ) {
@@ -252,7 +272,7 @@ class RoversActivity : FragmentActivity() {
         navController: NavHostController,
         bottomItems: List<Screen>
     ) {
-        BottomNavigation {
+        BottomNavigation(modifier = Modifier.navigationBarsPadding()) {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val navDestination = navBackStackEntry?.destination
             bottomItems.forEach { screen ->
