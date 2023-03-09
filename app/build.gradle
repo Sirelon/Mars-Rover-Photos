@@ -3,7 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-parcelize'
     // https://github.com/google/ksp/releases
-    id 'com.google.devtools.ksp' version '1.8.0-1.0.9'
+    id 'com.google.devtools.ksp' version '1.8.10-1.0.9'
 }
 apply plugin: 'kotlin-android'
 apply plugin: 'com.google.gms.google-services'
@@ -20,7 +20,7 @@ def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
-    compileSdkVersion 33
+    compileSdk 33
     signingConfigs {
         release {
             keyAlias keystoreProperties['keyAlias']
@@ -79,7 +79,7 @@ android {
 dependencies {
     implementation 'com.google.devtools.ksp:symbol-processing-api:1.8.0-1.0.9'
 
-    implementation 'androidx.lifecycle:lifecycle-runtime-compose:2.6.0-rc01'
+    implementation 'androidx.lifecycle:lifecycle-runtime-compose:2.6.0'
 
     // COMPOSEEEE
 
@@ -107,11 +107,11 @@ dependencies {
     implementation "androidx.compose.runtime:runtime-livedata:$composeVer"
 
     // https://developer.android.com/jetpack/androidx/releases/navigation
-    implementation 'androidx.navigation:navigation-compose:2.6.0-alpha06'
+    implementation 'androidx.navigation:navigation-compose:2.6.0-alpha07'
     // https://developer.android.com/jetpack/androidx/releases/paging
     implementation 'androidx.paging:paging-compose:1.0.0-alpha18'
 //    https://developer.android.com/jetpack/androidx/releases/constraintlayout
-    implementation 'androidx.constraintlayout:constraintlayout-compose:1.1.0-alpha07'
+    implementation 'androidx.constraintlayout:constraintlayout-compose:1.1.0-alpha08'
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
