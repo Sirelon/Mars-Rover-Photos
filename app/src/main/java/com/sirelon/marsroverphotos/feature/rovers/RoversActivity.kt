@@ -140,13 +140,19 @@ class RoversActivity : FragmentActivity() {
             val systemUiController = rememberSystemUiController()
             val useDarkIcons = !isDark
 
-            DisposableEffect(key1 = systemUiController, key2 = useDarkIcons) {
+            DisposableEffect(key1 = systemUiController, key2 = useDarkIcons, key3 = hideUI) {
                 // Update all of the system bar colors to be transparent, and use
                 // dark icons if we're in light theme
                 systemUiController.setSystemBarsColor(
                     color = Color.Transparent,
                     darkIcons = useDarkIcons
                 )
+
+                systemUiController.setNavigationBarColor(
+                    color = if (hideUI) Color.Transparent else Color.Black,
+                    darkIcons = useDarkIcons
+                )
+
                 // setStatusBarColor() and setNavigationBarColor() also exist
                 onDispose {}
             }
