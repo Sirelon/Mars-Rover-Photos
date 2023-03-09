@@ -178,12 +178,6 @@ private fun ImagesPagerContent(
 
 @Composable
 private fun BoxScope.OnEvent(uiEvent: UiEvent?) {
-    if (uiEvent?.handled == true) return
-
-    SideEffect {
-        uiEvent?.handled = true
-    }
-
     val snackbarHostState = remember { SnackbarHostState() }
 
     when (uiEvent) {

@@ -28,16 +28,17 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -57,8 +58,8 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
 
     private val idsEmitor = MutableStateFlow<List<String>>(emptyList())
 
-    private val uiEventEmitter = MutableStateFlow<UiEvent?>(null)
-    val uiEvent: Flow<UiEvent> = uiEventEmitter.filterNotNull()
+    private val uiEventEmitter = Channel<UiEvent>(capacity = Channel.BUFFERED)
+    val uiEvent: Flow<UiEvent> = uiEventEmitter.receiveAsFlow()
 
     var shouldTrack = true
 
@@ -140,7 +141,7 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
                 // Update counter for save
                 localUrl
             }
-                .onSuccess { uiEventEmitter.value = UiEvent.PhotoSaved(it) }
+                .onSuccess { uiEventEmitter.send(UiEvent.PhotoSaved(it)) }
                 .onFailure {
                     recordException(it)
                     withContext(Dispatchers.Main) {
@@ -221,8 +222,6 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
 }
 
 sealed class UiEvent {
-    var handled = false
-
     class PhotoSaved(val imagePath: String?) : UiEvent()
 }
 
