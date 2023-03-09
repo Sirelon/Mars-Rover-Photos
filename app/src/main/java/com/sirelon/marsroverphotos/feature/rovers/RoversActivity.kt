@@ -164,11 +164,11 @@ class RoversActivity : FragmentActivity() {
                     topBar = {
                         AnimatedVisibility(
                             visible = !hideUI,
-                            modifier = Modifier.systemBarsPadding(),
                             enter = fadeIn() + expandVertically(),
                             exit = fadeOut() + shrinkVertically(),
                         ) {
-                            UkraineBanner {
+
+                            UkraineBanner(modifier = Modifier.statusBarsPadding()) {
                                 RoverApplication.APP.tracker.trackClick("UkraineBanner_Top")
 
                                 navController.navigate(Screen.Ukraine.route) {

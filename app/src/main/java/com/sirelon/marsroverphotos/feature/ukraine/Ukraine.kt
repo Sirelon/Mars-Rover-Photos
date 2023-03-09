@@ -61,7 +61,7 @@ fun UkraineInfoScreen() {
                     Text(text = "Russia introduced new form of fascism: rashism. ")
                 }
                 Text(text = "It's terrible, and I don't understand how this could even happen in XXI century. ")
-                Text(text = "But Ukraine are fighting with this evil. It's very hard, we don't have such resources as Russia has. But we stand. Event more, we are trying to liberate our territory and people. ")
+                Text(text = "But Ukraine is fighting with this evil. It's very hard, we don't have such resources as Russia has. But we stand. Event more, we are trying to liberate our territory and people. ")
                 Text(text = "To be honest, it's fantastic. But without help from almost all world it couldn't be true. And I'm thank you all, who help us with our battle for life. ")
                 Text(
                     text = "Thank you!",
@@ -106,9 +106,13 @@ fun UkraineInfoScreen() {
 }
 
 @Composable
-fun UkraineBanner(title: String = "#Stand with Ukraine", onClick: () -> Unit) {
+fun UkraineBanner(
+    modifier: Modifier = Modifier,
+    title: String = "#Stand with Ukraine",
+    onClick: () -> Unit
+) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
             .drawBehind {
