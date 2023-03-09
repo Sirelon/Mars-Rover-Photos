@@ -23,17 +23,22 @@ import com.sirelon.marsroverphotos.extensions.recordException
 import com.sirelon.marsroverphotos.feature.MultitouchDetectorCallback
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.tracker.FullscreenImageTracker
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -57,7 +62,9 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
 
     var shouldTrack = true
 
-    val imagesFlow = idsEmitor
+    private val hideUiEmitter = MutableStateFlow(false)
+
+    private val imagesFlow: Flow<ImmutableList<MarsImage>> = idsEmitor
         .flatMapLatest { repository.loadImages(it) }
         .flatMapLatest {
             if (it.isEmpty()) {
@@ -70,6 +77,13 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
         }
         .mapLatest { it.toImmutableList() }
         .flowOn(IO)
+
+    val screenState = combine(imagesFlow, hideUiEmitter, ::ImageScreenState)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = ImageScreenState()
+        )
 
     fun setIdsToShow(ids: List<String>) {
         idsEmitor.value = ids
@@ -154,6 +168,10 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
         }
     }
 
+    override fun onTap() {
+        hideUiEmitter.value = !hideUiEmitter.value
+    }
+
     fun shareMarsImage(marsImage: MarsImage) {
         val application = getApplication<RoverApplication>()
         if (shouldTrack) {
@@ -207,3 +225,9 @@ sealed class UiEvent {
 
     class PhotoSaved(val imagePath: String?) : UiEvent()
 }
+
+
+data class ImageScreenState(
+    val images: ImmutableList<MarsImage> = persistentListOf(),
+    val hideUi: Boolean = false,
+)

@@ -54,6 +54,9 @@ class FullscreenImageTracker : MultitouchDetectorCallback {
         })
 
     override var currentImage: MarsImage? = null
+    override fun onTap() {
+        Timber.d("onTap() called")
+    }
 
     override fun onDoubleTap(zoomToChange: Float) {
         Timber.d("onDoubleTap() called with: zoomToChange = $zoomToChange, $currentImage")

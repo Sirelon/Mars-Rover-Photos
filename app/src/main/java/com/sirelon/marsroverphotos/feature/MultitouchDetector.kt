@@ -48,6 +48,8 @@ interface MultitouchDetectorCallback {
 
     var currentImage: MarsImage?
 
+    fun onTap()
+
     fun onDoubleTap(zoomToChange: Float)
 
     fun onZoomGesture(zoomToChange: Float, offsetY: Float, offsetX: Float, shouldBlock: Boolean)
@@ -75,13 +77,17 @@ fun MultitouchDetector(
             .fillMaxSize()
             .pointerInput(Unit) {
                 scope.launch {
-                    detectTapGestures(onDoubleTap = {
-                        val toChange = if (zoomToChange != 1f) 1f else state.maxZoom
-                        offsetX = 0f
-                        offsetY = 0f
-                        zoomToChange = toChange
-                        callback?.onDoubleTap(toChange)
-                    })
+                    detectTapGestures(
+                        onTap = {
+                            callback?.onTap()
+                        },
+                        onDoubleTap = {
+                            val toChange = if (zoomToChange != 1f) 1f else state.maxZoom
+                            offsetX = 0f
+                            offsetY = 0f
+                            zoomToChange = toChange
+                            callback?.onDoubleTap(toChange)
+                        })
                 }
 
                 gestureDetectorAnalyser { zoomVal: Float, offsetXVal: Float, offsetYVal: Float ->

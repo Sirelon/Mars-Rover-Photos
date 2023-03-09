@@ -4,6 +4,7 @@ package com.sirelon.marsroverphotos.feature.images
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -83,19 +84,20 @@ fun ImageScreen(
         ids.indexOf(selectedId)
     }
 
-    val images by viewModel.imagesFlow.collectAsStateWithLifecycle(initialValue = emptyList())
+    val screenState by viewModel.screenState.collectAsStateWithLifecycle()
+
+    val images = screenState.images
 
     val pagerState = rememberPagerState(selectedPosition)
-
     Crossfade(targetState = images.isEmpty(), label = "Images") {
-
         if (it) {
             CenteredProgress()
         } else {
             ImagesPagerContent(
                 viewModel = viewModel,
                 list = images,
-                pagerState = pagerState
+                pagerState = pagerState,
+                hideUi = screenState.hideUi,
             )
         }
     }
@@ -106,6 +108,7 @@ fun ImageScreen(
 private fun ImagesPagerContent(
     viewModel: ImageViewModel,
     list: List<MarsImage>,
+    hideUi: Boolean,
     pagerState: PagerState
 ) {
     var titleState by remember { mutableStateOf("Mars rover photos") }
@@ -119,20 +122,44 @@ private fun ImagesPagerContent(
         }
     }
 
+    val currentImage = remember(pagerState.currentPage) {
+        list[pagerState.currentPage]
+    }
+
     Column {
-        TopAppBar(
-            title = { Text(text = titleState) },
-            actions = {
-                SaveIcon(onClick = {
-                    viewModel.trackSaveClick()
-                    viewModel.saveImage(list[pagerState.currentPage])
-                })
-                ShareIcon(onClick = {
-                    viewModel.shareMarsImage(list[pagerState.currentPage])
-                })
-            },
-        )
-        Spacer(modifier = Modifier.height(30.dp))
+        AnimatedVisibility(visible = !hideUi) {
+            TopAppBar(
+                title = { Text(text = titleState) },
+                actions = {
+                    SaveIcon(onClick = {
+                        viewModel.trackSaveClick()
+                        viewModel.saveImage(currentImage)
+                    })
+                    ShareIcon(onClick = {
+                        viewModel.shareMarsImage(currentImage)
+                    })
+                },
+            )
+            Spacer(modifier = Modifier.height(30.dp))
+        }
+
+        if (BuildConfig.DEBUG) {
+            AnimatedVisibility(visible = !hideUi) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    Button(onClick = { viewModel.makePopular(currentImage) }) {
+                        Text(text = "Make popular")
+                    }
+
+                    Button(onClick = { viewModel.removePopular(currentImage) }) {
+                        Text(text = "Remove popular")
+                    }
+                }
+            }
+        }
+
         Box {
             ImagesPager(
                 pagerState = pagerState,
@@ -145,23 +172,6 @@ private fun ImagesPagerContent(
             val uiEvent by viewModel.uiEvent.collectAsStateWithLifecycle(initialValue = null)
 
             OnEvent(uiEvent = uiEvent)
-
-            if (BuildConfig.DEBUG) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.BottomCenter),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    Button(onClick = { viewModel.makePopular(list[pagerState.currentPage]) }) {
-                        Text(text = "Make popular")
-                    }
-
-                    Button(onClick = { viewModel.removePopular(list[pagerState.currentPage]) }) {
-                        Text(text = "Remove popular")
-                    }
-                }
-            }
         }
     }
 }
