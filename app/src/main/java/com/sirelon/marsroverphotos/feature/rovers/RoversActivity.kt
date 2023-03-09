@@ -11,7 +11,12 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -28,6 +33,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -123,18 +131,34 @@ class RoversActivity : FragmentActivity() {
             MarsRoverPhotosTheme(isDark) {
                 val navController = rememberNavController()
 
+                var hideUI by remember {
+                    mutableStateOf(false)
+                }
+
                 Scaffold(
                     topBar = {
-                        UkraineBanner {
-                            RoverApplication.APP.tracker.trackClick("UkraineBanner_Top")
+                        AnimatedVisibility(
+                            visible = !hideUI,
+                            enter = fadeIn() + expandVertically(),
+                            exit = fadeOut() + shrinkVertically(),
+                        ) {
+                            UkraineBanner {
+                                RoverApplication.APP.tracker.trackClick("UkraineBanner_Top")
 
-                            navController.navigate(Screen.Ukraine.route) {
-                                this.launchSingleTop = true
+                                navController.navigate(Screen.Ukraine.route) {
+                                    this.launchSingleTop = true
+                                }
                             }
                         }
                     },
                     bottomBar = {
-                        RoversBottomBar(navController, bottomItems)
+                        AnimatedVisibility(
+                            visible = !hideUI,
+                            enter = fadeIn() + expandVertically(),
+                            exit = fadeOut() + shrinkVertically(),
+                        ) {
+                            RoversBottomBar(navController, bottomItems)
+                        }
                     },
                     content = { paddingValues ->
                         ConstraintLayout(
@@ -151,7 +175,9 @@ class RoversActivity : FragmentActivity() {
                             }
 
                             Box(modifier = contentModifier) {
-                                RoversNavHost(navController)
+                                RoversNavHost(navController, onHideUi = {
+                                    hideUI = it
+                                })
                             }
                             val adModifier = Modifier.constrainAs(ad) {
                                 bottom.linkTo(parent.bottom)
@@ -291,7 +317,10 @@ class RoversActivity : FragmentActivity() {
     }
 
     @Composable
-    private fun RoversNavHost(navController: NavHostController) {
+    private fun RoversNavHost(
+        navController: NavHostController,
+        onHideUi: (Boolean) -> Unit,
+    ) {
         NavHost(
             navController = navController,
             startDestination = Screen.Rovers.route
@@ -362,6 +391,7 @@ class RoversActivity : FragmentActivity() {
                         photoIds = ids,
                         selectedId = selectedImage,
                         trackingEnabled = shouldTrack,
+                        onHideUi = onHideUi,
                     )
                 }
             }

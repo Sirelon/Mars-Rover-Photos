@@ -32,6 +32,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
@@ -69,7 +70,8 @@ fun ImageScreen(
     viewModel: ImageViewModel = viewModel(),
     trackingEnabled: Boolean,
     photoIds: List<String>?,
-    selectedId: String?
+    selectedId: String?,
+    onHideUi: (Boolean) -> Unit,
 ) {
     val ids = photoIds ?: emptyList()
     LaunchedEffect(key1 = photoIds, block = {
@@ -80,11 +82,21 @@ fun ImageScreen(
         viewModel.shouldTrack = trackingEnabled
     }
 
+    DisposableEffect(key1 = ids) {
+        onDispose {
+            onHideUi(false)
+        }
+    }
+
     val selectedPosition = remember(key1 = photoIds, key2 = selectedId) {
         ids.indexOf(selectedId)
     }
 
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
+
+    SideEffect {
+        onHideUi(screenState.hideUi)
+    }
 
     val images = screenState.images
 
