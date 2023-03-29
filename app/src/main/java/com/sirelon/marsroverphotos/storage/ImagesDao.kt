@@ -6,7 +6,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Transaction
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
@@ -58,9 +57,10 @@ interface ImagesDao {
     @Query("DELETE FROM images WHERE popular = 1")
     fun deleteAllPopular()
 
-    @Transaction
-    suspend fun withTransaction(action: suspend () -> Unit) {
-        action.invoke()
-    }
+    // Wait until it fixed: https://issuetracker.google.com/issues/275678088
+//    @Transaction
+//    suspend fun withTransaction(action: suspend () -> Unit) {
+//        action.invoke()
+//    }
 
 }

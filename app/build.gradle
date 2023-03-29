@@ -76,8 +76,12 @@ android {
     namespace 'com.sirelon.marsroverphotos'
 }
 
+ksp {
+    arg("room.generateKotlin", "true")
+}
+
 dependencies {
-    implementation 'com.google.devtools.ksp:symbol-processing-api:1.8.0-1.0.9'
+    implementation 'com.google.devtools.ksp:symbol-processing-api:1.8.10-1.0.9'
 
     // https://developer.android.com/jetpack/androidx/releases/lifecycle
     implementation 'androidx.lifecycle:lifecycle-runtime-compose:2.6.1'
