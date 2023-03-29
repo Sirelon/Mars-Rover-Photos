@@ -4,9 +4,7 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
-import androidx.room.withTransaction
 import com.sirelon.marsroverphotos.firebase.photos.IFirebasePhotos
-import com.sirelon.marsroverphotos.storage.DataBaseProvider
 import com.sirelon.marsroverphotos.storage.ImagesDao
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.storage.StatsUpdate
@@ -60,18 +58,7 @@ class PopularRemoteMediator(
                 firebasePhotos.loadPopularPhotos(loadSize, state.lastItemOrNull()?.id)
                     .mapIndexed { index, item -> item.toMarsImage(index + alreadyInDb) }
 
-//            dao.withTransaction {
-//                val ids = dao.insertImages(list).mapIndexed { index, rowId -> rowId to index }
-//                val grouped = ids.groupBy { it.first == -1L }
-//                val toUpdate = grouped[true]?.map { list[it.second] }
-//
-//                toUpdate?.forEach {
-//                    dao.updateStats(StatsUpdate(it.id, it.stats))
-//                }
-//            }
-
-            // Wait until it fixed: https://issuetracker.google.com/issues/275678088
-            DataBaseProvider.dataBase.withTransaction {
+            dao.withDaoTransaction {
                 val ids = dao.insertImages(list).mapIndexed { index, rowId -> rowId to index }
                 val grouped = ids.groupBy { it.first == -1L }
                 val toUpdate = grouped[true]?.map { list[it.second] }
