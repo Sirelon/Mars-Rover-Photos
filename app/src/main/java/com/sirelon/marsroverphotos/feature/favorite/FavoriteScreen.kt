@@ -153,7 +153,7 @@ fun FavoritePhotosContent(
             } else {
                 StaggeredGridCells.Fixed(1)
             },
-            verticalArrangement = spacedBy,
+            verticalItemSpacing = 16.dp,
             horizontalArrangement = spacedBy,
             content = {
                 items(items.itemCount) {

@@ -2,7 +2,7 @@
 
 buildscript {
     ext.kotlin_version = '1.8.10'
-    ext.composeVer = '1.4.0-beta02'
+    ext.composeVer = '1.5.0-alpha01'
     repositories {
         mavenCentral()
         maven { url "https://maven.google.com" }
@@ -10,7 +10,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.1.0-alpha08'
+        classpath 'com.android.tools.build:gradle:8.1.0-alpha10'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.4'
         classpath 'com.google.firebase:perf-plugin:1.4.2'

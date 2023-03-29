@@ -71,7 +71,7 @@ android {
 
     composeOptions {
 //        https://developer.android.com/jetpack/androidx/releases/compose-compiler
-        kotlinCompilerExtensionVersion "1.4.3"
+        kotlinCompilerExtensionVersion "1.4.4"
     }
     namespace 'com.sirelon.marsroverphotos'
 }
@@ -79,7 +79,8 @@ android {
 dependencies {
     implementation 'com.google.devtools.ksp:symbol-processing-api:1.8.0-1.0.9'
 
-    implementation 'androidx.lifecycle:lifecycle-runtime-compose:2.6.0'
+    // https://developer.android.com/jetpack/androidx/releases/lifecycle
+    implementation 'androidx.lifecycle:lifecycle-runtime-compose:2.6.1'
 
     // COMPOSEEEE
 
@@ -95,7 +96,7 @@ dependencies {
     // Material Design
     implementation "androidx.compose.material:material:$composeVer"
 //    https://github.com/google/accompanist
-    def accompanistVer = '0.29.1-alpha'
+    def accompanistVer = '0.30.0'
     implementation "com.google.accompanist:accompanist-placeholder-material:$accompanistVer"
     implementation "com.google.accompanist:accompanist-flowlayout:$accompanistVer"
     implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanistVer"
@@ -107,11 +108,11 @@ dependencies {
     implementation "androidx.compose.runtime:runtime-livedata:$composeVer"
 
     // https://developer.android.com/jetpack/androidx/releases/navigation
-    implementation 'androidx.navigation:navigation-compose:2.6.0-alpha07'
+    implementation 'androidx.navigation:navigation-compose:2.6.0-alpha08'
     // https://developer.android.com/jetpack/androidx/releases/paging
     implementation 'androidx.paging:paging-compose:1.0.0-alpha18'
 //    https://developer.android.com/jetpack/androidx/releases/constraintlayout
-    implementation 'androidx.constraintlayout:constraintlayout-compose:1.1.0-alpha08'
+    implementation 'androidx.constraintlayout:constraintlayout-compose:1.1.0-alpha09'
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
@@ -119,28 +120,28 @@ dependencies {
     testImplementation 'com.nhaarman:mockito-kotlin:1.6.0'
     testImplementation 'org.amshove.kluent:kluent:1.68'
 
-    // https://developer.android.com/jetpack/androidx/releases/
-    implementation 'androidx.activity:activity-compose:1.7.0-beta02'
+    // https://developer.android.com/jetpack/androidx/releases/activity
+    implementation 'androidx.activity:activity-compose:1.7.0'
     implementation 'androidx.annotation:annotation:1.6.0'
 
 //    https://developer.android.com/jetpack/androidx/releases/room
-    def room_version = '2.5.0'
+    def room_version = '2.6.0-alpha01'
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
     implementation "androidx.room:room-paging:$room_version"
     ksp "androidx.room:room-compiler:$room_version"
 
 //    https://developer.android.com/jetpack/androidx/releases/work
-    implementation 'androidx.work:work-runtime-ktx:2.8.0'
+    implementation 'androidx.work:work-runtime-ktx:2.8.1'
 
 //    https://developer.android.com/jetpack/androidx/releases/paging
     def paging_version = '3.1.1'
     implementation "androidx.paging:paging-runtime-ktx:$paging_version"
     // https://github.com/material-components/material-components-android/releases
-    implementation 'com.google.android.material:material:1.9.0-alpha02'
+    implementation 'com.google.android.material:material:1.9.0-beta01'
 
 //    https://github.com/coil-kt/coil/blob/main/CHANGELOG.md
-    implementation('io.coil-kt:coil-compose:2.2.2')
+    implementation('io.coil-kt:coil-compose:2.3.0')
 
     //    https://developer.android.com/jetpack/androidx/releases/appcompat
     implementation 'androidx.appcompat:appcompat:1.7.0-alpha02'
@@ -150,7 +151,7 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-gson:$retrofitVer"
 
 //    https://firebase.google.com/support/release-notes/android
-    implementation platform('com.google.firebase:firebase-bom:31.2.3')
+    implementation platform('com.google.firebase:firebase-bom:31.4.0')
 
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-crashlytics'
