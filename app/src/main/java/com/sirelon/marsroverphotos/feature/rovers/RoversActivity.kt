@@ -295,6 +295,11 @@ class RoversActivity : FragmentActivity() {
                     onClick = {
                         track("bottom_${screen.route}")
 
+                        // So ugly :(
+                        while (navController.navigateUp()) {
+                          // It's okay
+                        }
+
                         navController.navigate(screen.route) {
                             // Pop up to the start destination of the graph to
                             // avoid building up a large stack of destinations
