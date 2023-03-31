@@ -5,6 +5,7 @@ import com.sirelon.marsroverphotos.extensions.exceptionHandler
 import com.sirelon.marsroverphotos.feature.MultitouchDetectorCallback
 import com.sirelon.marsroverphotos.firebase.photos.FirebaseProvider
 import com.sirelon.marsroverphotos.storage.MarsImage
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -56,6 +57,7 @@ class FullscreenImageTracker : MultitouchDetectorCallback {
     override var currentImage: MarsImage? = null
     override fun onTap() {
         Timber.d("onTap() called")
+        tracker.trackClick("tap_fullscreen_photo")
     }
 
     override fun onDoubleTap(zoomToChange: Float) {
@@ -78,6 +80,7 @@ class FullscreenImageTracker : MultitouchDetectorCallback {
         scrollChangeCollector.onEvent(scrollDelta)
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     private fun trackScale() {
         currentImage?.let { marsPhoto ->
             GlobalScope.launch(exceptionHandler) {

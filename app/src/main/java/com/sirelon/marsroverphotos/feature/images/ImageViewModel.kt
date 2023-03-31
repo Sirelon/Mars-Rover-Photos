@@ -46,11 +46,13 @@ import timber.log.Timber
 import java.io.File
 
 
+private val fullscreenImageTracker = FullscreenImageTracker()
+
 /**
  * Created on 22.08.2020 18:59 for Mars-Rover-Photos.
  */
 class ImageViewModel(app: Application) : AndroidViewModel(app),
-    MultitouchDetectorCallback by FullscreenImageTracker() {
+    MultitouchDetectorCallback by fullscreenImageTracker {
 
     private val IO = Dispatchers.IO + exceptionHandler
 
@@ -171,6 +173,19 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
 
     override fun onTap() {
         hideUiEmitter.value = !hideUiEmitter.value
+        fullscreenImageTracker.onTap()
+    }
+
+    override fun onZoomGesture(
+        zoomToChange: Float,
+        offsetY: Float,
+        offsetX: Float,
+        shouldBlock: Boolean
+    ) {
+        fullscreenImageTracker.onZoomGesture(zoomToChange, offsetY, offsetX, shouldBlock)
+        if (zoomToChange != 1f) {
+            hideUiEmitter.value = true
+        }
     }
 
     fun shareMarsImage(marsImage: MarsImage) {

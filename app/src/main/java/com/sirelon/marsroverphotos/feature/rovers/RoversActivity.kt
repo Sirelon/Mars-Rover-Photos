@@ -7,7 +7,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.format.Formatter
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.compose.setContent
@@ -218,7 +217,7 @@ class RoversActivity : FragmentActivity() {
 
         // Configurate ads
         MobileAds.initialize(this@RoversActivity) {
-            Log.d("RoverApplication", "On Add Init status $it")
+            Timber.d("On Add Init status " + it)
         }
 //        val testDeviceIds =
 //            listOf("235F224A866C9DFBEB26755C3E0337B3", AdRequest.DEVICE_ID_EMULATOR)
