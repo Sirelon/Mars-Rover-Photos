@@ -116,5 +116,6 @@ app/.idea/
 app/gradle/
 app/gradlew
 app/gradlew.bat
+app/mapping.txt
 
 Cloud/
