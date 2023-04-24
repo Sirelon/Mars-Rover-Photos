@@ -8,9 +8,11 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -38,12 +40,14 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -51,14 +55,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sirelon.marsroverphotos.BuildConfig
 import com.sirelon.marsroverphotos.feature.MarsImageFavoriteToggle
-import com.sirelon.marsroverphotos.feature.MultitouchDetector
 import com.sirelon.marsroverphotos.feature.MultitouchDetectorCallback
-import com.sirelon.marsroverphotos.feature.MultitouchState
 import com.sirelon.marsroverphotos.feature.NetworkImage
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.ui.CenteredProgress
 import com.sirelon.marsroverphotos.ui.MarsSnackbar
 import com.sirelon.marsroverphotos.ui.NoScrollEffect
+import kotlinx.coroutines.launch
+import net.engawapg.lib.zoomable.rememberZoomState
+import net.engawapg.lib.zoomable.zoomable
 
 /**
  * Created on 13.04.2021 22:52 for Mars-Rover-Photos.
@@ -249,6 +254,7 @@ private fun ImagesPager(
     favoriteClick: (MarsImage, Boolean) -> Unit
 ) {
 
+    val scope = rememberCoroutineScope()
     NoScrollEffect {
         HorizontalPager(
             pageCount = images.size,
@@ -264,28 +270,60 @@ private fun ImagesPager(
                 callback.currentImage = marsImage
             }
 
-            Box {
-                val state = rememberSaveable(saver = MultitouchState.Saver) {
-                    MultitouchState(
-                        maxZoom = 5f,
-                        minZoom = 1f,
-                        zoom = 1f,
-                        enabled = !pagerState.isScrollInProgress
+            BoxWithConstraints {
+                val zoomState = rememberZoomState(
+                    contentSize = Size(
+                        width = this.minWidth.value,
+                        height = this.minHeight.value
                     )
-                }
+                )
 
-                MultitouchDetector(
-                    modifier = Modifier,
-                    state = state,
-                    callback = callback
-                ) {
-                    NetworkImage(
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.FillWidth,
-                        imageUrl = marsImage.imageUrl,
-                        placeholderRes = null,
-                    )
-                }
+                NetworkImage(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .zoomable(zoomState, enableOneFingerZoom = false)
+                        .pointerInput(key1 = null) {
+                            detectTapGestures(
+                                onTap = {
+                                    callback.onTap()
+                                },
+                                onDoubleTap = {
+                                    if (zoomState.scale > 1f) {
+                                        scope.launch {
+                                            zoomState.reset()
+                                        }
+                                    }
+
+                                    callback.onDoubleTap(zoomState.scale)
+                                },
+                            )
+                        },
+                    contentScale = ContentScale.FillWidth,
+                    imageUrl = marsImage.imageUrl,
+                    placeholderRes = null,
+                )
+
+//                val state = rememberSaveable(saver = MultitouchState.Saver) {
+//                    MultitouchState(
+//                        maxZoom = 5f,
+//                        minZoom = 1f,
+//                        zoom = 1f,
+//                        enabled = !pagerState.isScrollInProgress
+//                    )
+//                }
+
+//                MultitouchDetector(
+//                    modifier = Modifier,
+//                    state = state,
+//                    callback = callback
+//                ) {
+//                    NetworkImage(
+//                        modifier = Modifier.fillMaxSize(),
+//                        contentScale = ContentScale.FillWidth,
+//                        imageUrl = marsImage.imageUrl,
+//                        placeholderRes = null,
+//                    )
+//                }
 
                 MarsImageFavoriteToggle(
                     modifier = Modifier
@@ -296,6 +334,14 @@ private fun ImagesPager(
                         favoriteClick(marsImage, it)
                     }
                 )
+
+                // Reset zoom state when the page is moved out of the window.
+                val isVisible = page == pagerState.settledPage
+                LaunchedEffect(isVisible) {
+                    if (!isVisible) {
+                        zoomState.reset()
+                    }
+                }
             }
         }
     }

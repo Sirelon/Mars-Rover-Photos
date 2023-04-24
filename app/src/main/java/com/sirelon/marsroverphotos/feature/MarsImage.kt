@@ -91,7 +91,7 @@ fun PhotoStats(marsImage: MarsImage, onFavoriteClick: () -> Unit) {
             .padding(8.dp)
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround,
-        verticalAlignment = Alignment.CenterVertically
+        verticalArrangement = Arrangement.Center
     ) {
 
         StatsInfoText(stats.see, Icons.Filled.Visibility, "counterSee")

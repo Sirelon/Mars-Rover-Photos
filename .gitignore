@@ -119,3 +119,5 @@ app/gradlew.bat
 app/mapping.txt
 
 Cloud/
+/app/release/output-metadata.json
+/release/output-metadata.json
