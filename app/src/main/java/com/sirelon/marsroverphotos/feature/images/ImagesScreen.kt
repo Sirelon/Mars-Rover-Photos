@@ -105,7 +105,10 @@ fun ImageScreen(
 
     val images = screenState.images
 
-    val pagerState = rememberPagerState(selectedPosition)
+    val pagerState = rememberPagerState(
+        initialPage = selectedPosition,
+        pageCount = { images.size },
+    )
     Crossfade(targetState = images.isEmpty(), label = "Images") {
         if (it) {
             CenteredProgress()
@@ -257,7 +260,6 @@ private fun ImagesPager(
     val scope = rememberCoroutineScope()
     NoScrollEffect {
         HorizontalPager(
-            pageCount = images.size,
             state = pagerState,
             modifier = Modifier
                 .fillMaxSize()

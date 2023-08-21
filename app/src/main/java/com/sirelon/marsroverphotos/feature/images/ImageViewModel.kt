@@ -131,7 +131,7 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                     contentValues
                 )
-                activity.contentResolver.openOutputStream(imageUri!!).use {
+                activity.contentResolver.openOutputStream(imageUri!!)?.use {
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
                 }
                 localUrl = imageUri.toString()
