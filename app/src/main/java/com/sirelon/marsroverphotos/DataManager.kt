@@ -23,7 +23,7 @@ import timber.log.Timber
 @SuppressLint("CheckResult")
 class DataManager(
     val context: Context, private val tracker: ITracker,
-     api: RestApi = RestApi(context)
+     api: RestApi = RestApi()
 ) {
 
     val roverRepo = RoversRepository(context, api)

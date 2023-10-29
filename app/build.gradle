@@ -149,11 +149,13 @@ dependencies {
     //    https://developer.android.com/jetpack/androidx/releases/appcompat
     implementation 'androidx.appcompat:appcompat:1.7.0-alpha03'
 
-    def retrofitVer = '2.9.0'
-    implementation "com.squareup.retrofit2:retrofit:$retrofitVer"
-//  https://github.com/JakeWharton/retrofit2-kotlinx-serialization-converter
-    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
     implementation 'com.squareup.okhttp3:logging-interceptor:4.11.0'
+
+    def ktor_version = "2.3.5"
+    implementation "io.ktor:ktor-client-core:$ktor_version"
+    implementation "io.ktor:ktor-client-okhttp:$ktor_version"
+    implementation "io.ktor:ktor-client-content-negotiation:$ktor_version"
+    implementation "io.ktor:ktor-serialization-kotlinx-json:$ktor_version"
 
 //    https://github.com/Kotlin/kotlinx.serialization/releases
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0"

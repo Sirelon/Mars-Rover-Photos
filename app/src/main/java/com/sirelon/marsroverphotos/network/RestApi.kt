@@ -1,7 +1,5 @@
 package com.sirelon.marsroverphotos.network
 
-import android.content.Context
-import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.sirelon.marsroverphotos.feature.photos.mapToUi
 import com.sirelon.marsroverphotos.feature.photos.preveranceToUI
 import com.sirelon.marsroverphotos.feature.rovers.Curiosity_ID
@@ -11,22 +9,23 @@ import com.sirelon.marsroverphotos.feature.rovers.PERSEVARANCE_ID
 import com.sirelon.marsroverphotos.feature.rovers.Spirit_ID
 import com.sirelon.marsroverphotos.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.storage.MarsImage
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
 
 /**
  * @author romanishin
  * @since 31.10.16 on 15:28
  */
-class RestApi(context: Context) {
-    private val nasaApi: NasaApi
+class RestApi {
 
     private val _perseveranceTotalImages = MutableStateFlow<Long?>(null)
     val perseveranceTotalImages = _perseveranceTotalImages.filterNotNull().distinctUntilChanged()
@@ -39,25 +38,30 @@ class RestApi(context: Context) {
         explicitNulls = false
     }
 
-    init {
-        val loggingInterceptor = HttpLoggingInterceptor()
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
+    private val ktor = HttpClient(OkHttp) {
+        // default validation to throw exceptions for non-2xx responses
+        expectSuccess = true
+        engine {
+            // add logging interceptor
+            addInterceptor(HttpLoggingInterceptor().apply {
+                setLevel(
+                    HttpLoggingInterceptor.Level.BODY
+                )
+            })
+        }
 
-        val okkClient = OkHttpClient.Builder()
-            .addInterceptor(loggingInterceptor)
-            .build()
+        // set default request parameters
+        defaultRequest {
+            // add base url for all request
+            url("https://api.nasa.gov")
+        }
 
-        val contentType = "application/json".toMediaType()
-
-
-        val retrofit = Retrofit.Builder()
-            .client(okkClient)
-            .baseUrl("https://api.nasa.gov")
-            .addConverterFactory(json.asConverterFactory(contentType))
-            .build()
-
-        nasaApi = retrofit.create(NasaApi::class.java)
+        install(ContentNegotiation) {
+            json(json)
+        }
     }
+
+    private val nasaApi: NasaApi = NasaApi(ktor)
 
     suspend fun getRoversPhotos(query: PhotosQueryRequest): List<MarsImage> {
         // We should call another api if rover is insight
