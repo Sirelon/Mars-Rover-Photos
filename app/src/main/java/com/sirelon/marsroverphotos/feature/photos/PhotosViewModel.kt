@@ -6,13 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.exceptionHandler
 import com.sirelon.marsroverphotos.extensions.logD
-import com.sirelon.marsroverphotos.feature.images.ImagesRepository
-import com.sirelon.marsroverphotos.feature.rovers.RoversRepository
+import com.sirelon.marsroverphotos.extensions.recordException
 import com.sirelon.marsroverphotos.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.models.RoverDateUtil
-import com.sirelon.marsroverphotos.network.RestApi
 import com.sirelon.marsroverphotos.storage.MarsImage
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,7 +42,7 @@ class PhotosViewModel(app: Application) : AndroidViewModel(app) {
         .filterNotNull()
         .mapNotNull { roversRepository.loadRoverById(it) }
         .onEach { dateUtil = RoverDateUtil(it) }
-        .catch { it.printStackTrace() }
+        .catch { recordException(it) }
         .flowOn(Dispatchers.IO)
 
     // null means that we are in loading process.
@@ -54,7 +51,7 @@ class PhotosViewModel(app: Application) : AndroidViewModel(app) {
             if (it != null) photosRepository.refreshImages(it)
             else null
         }
-        .catch { it.printStackTrace() }
+        .catch { recordException(it) }
         .flowOn(Dispatchers.IO)
 
     val solFlow = queryEmmiter.mapNotNull { it?.sol }

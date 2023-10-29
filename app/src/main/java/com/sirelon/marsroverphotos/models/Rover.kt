@@ -5,7 +5,8 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
  * @author romanishin
@@ -13,32 +14,33 @@ import com.google.gson.annotations.SerializedName
  */
 @Keep
 @Entity
+@Serializable
 data class Rover(
-        @SerializedName(value = "id")
+        @SerialName(value = "id")
         @PrimaryKey
         val id: Long,
 
-        @SerializedName(value = "name")
+        @SerialName(value = "name")
         val name: String,
 
         val drawableName: String,
 
-        @SerializedName(value = "landing_date")
+        @SerialName(value = "landing_date")
         val landingDate: String,
 
-        @SerializedName(value = "launch_date")
+        @SerialName(value = "launch_date")
         val launchDate: String,
 
-        @SerializedName(value = "status")
+        @SerialName(value = "status")
         val status: String,
 
-        @SerializedName(value = "max_sol")
+        @SerialName(value = "max_sol")
         var maxSol: Long,
 
-        @SerializedName(value = "max_date")
+        @SerialName(value = "max_date")
         var maxDate: String,
 
-        @SerializedName(value = "total_photos")
+        @SerialName(value = "total_photos")
         val totalPhotos: Int
 )
 

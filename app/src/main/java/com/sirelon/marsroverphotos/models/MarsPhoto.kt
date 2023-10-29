@@ -2,9 +2,10 @@ package com.sirelon.marsroverphotos.models
 
 import android.os.Parcelable
 import androidx.annotation.Keep
-import com.google.gson.annotations.SerializedName
-import com.sirelon.marsroverphotos.adapter.AdapterConstants
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonNames
 
 /**
  * @author romanishin
@@ -12,27 +13,23 @@ import kotlinx.parcelize.Parcelize
  */
 @Keep
 @Parcelize
+@Serializable
 data class MarsPhoto(
-    @SerializedName(value = "id")
+    @SerialName(value = "id")
     val id: String,
 
-    @SerializedName(value = "sol")
+    @SerialName(value = "sol")
     val sol: Long,
 
-    @SerializedName(value = "name", alternate = ["title"])
+    @JsonNames("name", "title")
     val name: String?,
 
-    @SerializedName(value = "img_src", alternate = ["url"])
+    @JsonNames("img_src", "url")
     val imageUrl: String,
 
-    @SerializedName(value = "earth_date", alternate = ["created_at"])
+    @JsonNames("earth_date", "created_at")
     val earthDate: String,
 
-    @SerializedName(value = "camera")
+    @SerialName(value = "camera")
     val camera: RoverCamera?
-) : ViewType, Parcelable {
-
-    override fun getViewId() = id
-
-    override fun getViewType(): Int = AdapterConstants.MARS_PHOTO
-}
+) : Parcelable

@@ -1,11 +1,10 @@
 package com.sirelon.marsroverphotos.models
 
-import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.Keep
-import com.google.gson.annotations.SerializedName
-import com.sirelon.marsroverphotos.extensions.createParcel
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 
 /**
@@ -14,18 +13,14 @@ import kotlinx.parcelize.Parcelize
  */
 @Keep
 @Parcelize
+@Serializable
 class RoverCamera(
-        @SerializedName(value = "id")
+        @SerialName(value = "id")
         val id: Int,
 
-        @SerializedName(value = "name")
+        @SerialName(value = "name")
         val name: String,
 
-        @SerializedName(value = "full_name")
+        @SerialName(value = "full_name")
         val fullName: String
-) : Parcelable {
-
-    companion object {
-        fun empty(): RoverCamera = RoverCamera(-1, "Default", "Default")
-    }
-}
+) : Parcelable

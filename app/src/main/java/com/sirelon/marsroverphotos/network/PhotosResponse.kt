@@ -1,76 +1,86 @@
 package com.sirelon.marsroverphotos.network
 
 import androidx.annotation.Keep
-import com.google.gson.annotations.SerializedName
 import com.sirelon.marsroverphotos.models.MarsPhoto
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonNames
 
 /**
  * @author romanishin
  * @since 31.10.16 on 15:49
  */
+@OptIn(ExperimentalSerializationApi::class)
 @Keep
+@Serializable
 data class PhotosResponse(
-    @SerializedName("photos", alternate = ["items"])
-    val photos: List<MarsPhoto>
+    @JsonNames("photos", "items")
+    val list: List<MarsPhoto>
 )
 
 @Keep
+@Serializable
 class PerseverancePhotosResponse(
-    @SerializedName("images")
+    @SerialName("images")
     val photos: List<PerseverancePhotoItemResponse>,
-    @SerializedName("total_images")
+    @SerialName("total_images")
     val totalImages: Long?
 )
 
+@OptIn(ExperimentalSerializationApi::class)
 @Keep
+@Serializable
 class PerseverancePhotoItemResponse(
-    @SerializedName(value = "imageid")
+    @SerialName(value = "imageid")
     val id: String,
 
-    @SerializedName(value = "sol")
+    @SerialName(value = "sol")
     val sol: Long,
 
-    @SerializedName(value = "title")
+    @SerialName(value = "title")
     val name: String?,
 
-    @SerializedName(value = "caption")
+    @SerialName(value = "caption")
     val description: String?,
 
-    @SerializedName(value = "credit")
+    @SerialName(value = "credit")
     val credit: String?,
 
-    @SerializedName(value = "image_files")
+    @SerialName(value = "image_files")
     val imageSourceResponse: ImageSourceResponse?,
 
-    @SerializedName(value = "date_taken_utc", alternate = ["date_received"])
+    @JsonNames("date_taken_utc", "date_received")
     val earthDate: String?,
 
-    @SerializedName(value = "camera")
+    @SerialName(value = "camera")
     val camera: PerseveranceCameraResponse?
 )
 
 @Keep
+@Serializable
 class PerseveranceCameraResponse(
-    @SerializedName(value = "camera_model_type")
+    @SerialName(value = "camera_model_type")
     val id: String,
 
-    @SerializedName(value = "filter_name")
+    @SerialName(value = "filter_name")
     val name: String,
 
-    @SerializedName(value = "instrument")
+    @SerialName(value = "instrument")
     val fullName: String
 )
 
 @Keep
+@Serializable
 class ImageSourceResponse(
-    @SerializedName(value = "medium")
+    @SerialName(value = "medium")
     val medium: String?,
 
-    @SerializedName(value = "small")
+    @SerialName(value = "small")
     val small: String?,
-    @SerializedName(value = "full_res")
+    @SerialName(value = "full_res")
     val full_res: String?,
 
-    @SerializedName(value = "large")
+    @SerialName(value = "large")
     val large: String?,
 )

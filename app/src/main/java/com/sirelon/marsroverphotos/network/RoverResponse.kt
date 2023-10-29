@@ -1,37 +1,40 @@
 package com.sirelon.marsroverphotos.network
 
 import androidx.annotation.Keep
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
  * @author romanishin
  * @since 01.11.16 on 11:25
  */
 @Keep
+@Serializable
 data class RoverResponse(
-        @SerializedName(value = "photo_manifest")
+        @SerialName(value = "photo_manifest")
         var roverInfo: RoverInfo
 )
 
 @Keep
+@Serializable
 data class RoverInfo(
-        @SerializedName(value = "name")
+        @SerialName(value = "name")
         var name: String,
 
-        @SerializedName(value = "landing_date")
+        @SerialName(value = "landing_date")
         var landingDate: String,
 
-        @SerializedName(value = "launch_date")
+        @SerialName(value = "launch_date")
         var launchDate: String,
 
-        @SerializedName(value = "status")
+        @SerialName(value = "status")
         var status: String,
 
-        @SerializedName(value = "max_sol")
+        @SerialName(value = "max_sol")
         var maxSol: Long,
 
-        @SerializedName(value = "max_date")
+        @SerialName(value = "max_date")
         var maxDate: String,
 
-        @SerializedName(value = "total_photos")
+        @SerialName(value = "total_photos")
         var totalPhotos: Int)

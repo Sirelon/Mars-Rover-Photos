@@ -4,6 +4,7 @@ plugins {
     id 'kotlin-parcelize'
     // https://github.com/google/ksp/releases
     id 'com.google.devtools.ksp' version '1.9.10-1.0.13'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.9.10'
 }
 apply plugin: 'kotlin-android'
 apply plugin: 'com.google.gms.google-services'
@@ -150,7 +151,12 @@ dependencies {
 
     def retrofitVer = '2.9.0'
     implementation "com.squareup.retrofit2:retrofit:$retrofitVer"
-    implementation "com.squareup.retrofit2:converter-gson:$retrofitVer"
+//  https://github.com/JakeWharton/retrofit2-kotlinx-serialization-converter
+    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.11.0'
+
+//    https://github.com/Kotlin/kotlinx.serialization/releases
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0"
 
 //    https://firebase.google.com/support/release-notes/android
     implementation platform('com.google.firebase:firebase-bom:32.4.1')
