@@ -4,8 +4,8 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-parcelize'
     // https://github.com/google/ksp/releases
-    id 'com.google.devtools.ksp' version '1.9.10-1.0.13'
-    id 'org.jetbrains.kotlin.plugin.serialization' version '1.9.10'
+    id 'com.google.devtools.ksp' version '1.9.20-1.0.14'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.9.20'
     id 'com.google.gms.google-services'
 //    id 'com.google.firebase.crashlytics'
 }
@@ -45,7 +45,7 @@ android {
             postprocessing {
                 removeUnusedCode true
                 removeUnusedResources true
-                obfuscate false
+                obfuscate true
                 optimizeCode true
                 proguardFile 'proguard-rules.pro'
             }
@@ -73,7 +73,7 @@ android {
 
     composeOptions {
 //        https://developer.android.com/jetpack/androidx/releases/compose-compiler
-        kotlinCompilerExtensionVersion "1.5.3"
+        kotlinCompilerExtensionVersion "1.5.4"
     }
     namespace 'com.sirelon.marsroverphotos'
 }
@@ -83,10 +83,10 @@ ksp {
 }
 
 dependencies {
-    implementation 'com.google.devtools.ksp:symbol-processing-api:1.9.10-1.0.13'
+    implementation 'com.google.devtools.ksp:symbol-processing-api:1.9.20-1.0.14'
 
     // https://developer.android.com/jetpack/androidx/releases/lifecycle
-    implementation 'androidx.lifecycle:lifecycle-runtime-compose:2.7.0-alpha03'
+    implementation 'androidx.lifecycle:lifecycle-runtime-compose:2.7.0-beta01'
 
     // COMPOSEEEE
 
@@ -114,7 +114,7 @@ dependencies {
     implementation "androidx.compose.runtime:runtime-livedata:$composeVer"
 
     // https://developer.android.com/jetpack/androidx/releases/navigation
-    implementation 'androidx.navigation:navigation-compose:2.7.4'
+    implementation 'androidx.navigation:navigation-compose:2.7.5'
 //    https://developer.android.com/jetpack/androidx/releases/constraintlayout
     implementation 'androidx.constraintlayout:constraintlayout-compose:1.1.0-alpha13'
 
@@ -139,17 +139,17 @@ dependencies {
     implementation 'androidx.work:work-runtime-ktx:2.8.1'
 
 //    https://developer.android.com/jetpack/androidx/releases/paging
-    def paging_version = '3.2.1'
+    def paging_version = '3.3.0-alpha02'
     implementation "androidx.paging:paging-runtime-ktx:$paging_version"
     implementation "androidx.paging:paging-compose:$paging_version"
 
 //    https://github.com/coil-kt/coil/blob/main/CHANGELOG.md
-    implementation('io.coil-kt:coil-compose:2.4.0')
+    implementation('io.coil-kt:coil-compose:2.5.0')
 
     //    https://developer.android.com/jetpack/androidx/releases/appcompat
     implementation 'androidx.appcompat:appcompat:1.7.0-alpha03'
 
-    implementation 'com.squareup.okhttp3:logging-interceptor:4.11.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
 
     def ktor_version = "2.3.5"
     implementation "io.ktor:ktor-client-core:$ktor_version"
