@@ -1,14 +1,14 @@
 plugins {
+    id 'kotlin-android'
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-parcelize'
     // https://github.com/google/ksp/releases
     id 'com.google.devtools.ksp' version '1.9.10-1.0.13'
     id 'org.jetbrains.kotlin.plugin.serialization' version '1.9.10'
+    id 'com.google.gms.google-services'
+//    id 'com.google.firebase.crashlytics'
 }
-apply plugin: 'kotlin-android'
-apply plugin: 'com.google.gms.google-services'
-apply plugin: 'com.google.firebase.crashlytics'
 
 // Create a variable called keystorePropertiesFile, and initialize it to your
 // keystore.properties file, in the rootProject folder.
@@ -45,7 +45,7 @@ android {
             postprocessing {
                 removeUnusedCode true
                 removeUnusedResources true
-                obfuscate true
+                obfuscate false
                 optimizeCode true
                 proguardFile 'proguard-rules.pro'
             }
@@ -161,14 +161,14 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0"
 
 //    https://firebase.google.com/support/release-notes/android
-    implementation platform('com.google.firebase:firebase-bom:32.4.1')
+    implementation platform('com.google.firebase:firebase-bom:32.5.0')
 
     implementation 'com.google.firebase:firebase-analytics'
-    implementation 'com.google.firebase:firebase-crashlytics'
+//    implementation 'com.google.firebase:firebase-crashlytics'
     implementation 'com.google.firebase:firebase-perf'
     implementation 'com.google.firebase:firebase-firestore'
     implementation 'com.google.firebase:firebase-messaging'
-    implementation 'com.google.android.gms:play-services-ads:22.4.0'
+    implementation 'com.google.android.gms:play-services-ads:22.5.0'
     implementation 'com.google.android.ump:user-messaging-platform:2.1.0'
 
     implementation 'com.jakewharton.timber:timber:5.0.1'

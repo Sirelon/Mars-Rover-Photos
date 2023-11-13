@@ -2,14 +2,11 @@ package com.sirelon.marsroverphotos
 
 import android.app.Application
 import android.util.Log
-import com.google.android.gms.ads.MobileAds
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.sirelon.marsroverphotos.storage.Prefs
 import com.sirelon.marsroverphotos.tracker.FirebaseTracker
 import com.sirelon.marsroverphotos.tracker.ITracker
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import timber.log.Timber
 
 /**
@@ -25,14 +22,16 @@ class RoverApplication : Application() {
     val adEnabled = false
 
     override fun onCreate() {
+        Log.d("Sirelon", "ON CREATE APP $this")
         super.onCreate()
+
         APP = this
 
         Prefs.init(this)
 
-        if (BuildConfig.DEBUG) {
+//        if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
-        }
+//        }
 
         val settings = FirebaseFirestoreSettings.Builder()
             .setPersistenceEnabled(true)

@@ -9,7 +9,6 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.provider.Settings
 import android.util.Log
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlinx.coroutines.CoroutineExceptionHandler
 
 /**
@@ -43,7 +42,7 @@ fun Throwable.logE() {
 
 fun recordException(e: Throwable) {
     e.printStackTrace()
-    FirebaseCrashlytics.getInstance().recordException(e)
+//    FirebaseCrashlytics.getInstance().recordException(e)
 }
 
 val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
