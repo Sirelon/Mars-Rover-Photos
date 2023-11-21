@@ -1,12 +1,12 @@
+//@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    id 'kotlin-android'
-    id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.perf)
+    alias(libs.plugins.ksp)
     id 'kotlin-parcelize'
-    // https://github.com/google/ksp/releases
-    id 'com.google.devtools.ksp' version '1.9.20-1.0.14'
-    id 'org.jetbrains.kotlin.plugin.serialization' version '1.9.20'
-    id 'com.google.gms.google-services'
 //    id 'com.google.firebase.crashlytics'
 }
 

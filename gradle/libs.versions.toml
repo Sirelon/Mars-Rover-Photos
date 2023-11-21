@@ -11,11 +11,12 @@ annotation = "1.7.0"
 kluent = "1.68"
 kotlin = "1.9.20"
 # https://github.com/Kotlin/kotlinx.serialization/releases
-kotlin-serialization = "1.6.0"
+kotlin-serialization = "1.6.1"
 # https://github.com/Kotlin/kotlinx.collections.immutable
 kotlin-collections-immutable = "0.3.6"
 ktx = "1.12.0"
 ktor = "2.3.5"
+# https://github.com/google/ksp/releases
 ksp = "1.9.20-1.0.14"
 # https://developer.android.com/jetpack/androidx/releases/lifecycle
 lifecycle = "2.7.0-rc01"
@@ -33,6 +34,7 @@ timber = "5.0.1"
 work = "2.8.1"
 # https://github.com/usuiat/Zoomable/releases
 zoomable = "1.5.1"
+androidGradlePlugin = "8.3.0-alpha14"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -85,4 +87,12 @@ timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 zoomable = { module = "net.engawapg.lib:zoomable", version.ref = "zoomable" }
 
 [plugins]
-
+android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+# https://plugins.gradle.org/plugin/org.jetbrains.kotlin.plugin.parcelize
+kotlin-parcelize = { id = "org.jetbrains.kotlin.parcelize", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+firebase-perf = { id = "com.google.firebase.firebase-perf", version = "1.4.2" }
+google-services = { id = "com.google.gms.google-services", version = "4.4.0" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
