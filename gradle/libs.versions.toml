@@ -1,6 +1,6 @@
 [versions]
 # https://developer.android.com/jetpack/androidx/releases/activity
-activityCompose = "1.8.0"
+activityCompose = "1.8.1"
 # https://developer.android.com/jetpack/androidx/releases/appcompat
 appcompat = "1.7.0-alpha03"
 # https://github.com/coil-kt/coil/blob/main/CHANGELOG.md
@@ -18,8 +18,8 @@ ktx = "1.12.0"
 ktor = "2.3.5"
 ksp = "1.9.20-1.0.14"
 # https://developer.android.com/jetpack/androidx/releases/lifecycle
-lifecycle = "2.7.0-beta01"
-compose = "1.6.0-alpha08"
+lifecycle = "2.7.0-rc01"
+compose = "1.6.0-beta01"
 # https://github.com/google/accompanist
 accompanist = "0.33.2-alpha"
 loggingInterceptor = "4.12.0"
