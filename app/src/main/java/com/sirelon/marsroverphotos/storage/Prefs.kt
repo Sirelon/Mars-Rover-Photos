@@ -3,8 +3,7 @@ package com.sirelon.marsroverphotos.storage
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import androidx.lifecycle.MutableLiveData
-import timber.log.Timber
+import kotlinx.coroutines.flow.MutableStateFlow
 
 private const val THEME_KEY = "theme"
 private const val GRID_VIEW_KEY = "gridView"
@@ -20,21 +19,15 @@ object Prefs {
         sharedPreferences = context.getSharedPreferences("mars-rover-photos", Context.MODE_PRIVATE)
     }
 
-    val themeLiveData = MutableLiveData<Theme>()
-
-    init {
-        themeLiveData.observeForever {
-            Timber.d("$it called")
-        }
-    }
+    val themeLiveData = MutableStateFlow<Theme>(Theme.SYSTEM)
 
     var theme: Theme
         get() {
             val ordinal = sharedPreferences.getInt(THEME_KEY, Theme.SYSTEM.ordinal)
-            return Theme.values()[ordinal]
+            return Theme.entries[ordinal]
         }
         set(value) {
-            themeLiveData.postValue(value)
+            themeLiveData.value = value
             sharedPreferences.edit {
                 putInt(THEME_KEY, value.ordinal)
             }

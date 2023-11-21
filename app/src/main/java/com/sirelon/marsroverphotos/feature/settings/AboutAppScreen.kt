@@ -2,13 +2,21 @@ package com.sirelon.marsroverphotos.feature.settings
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.Card
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -24,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sirelon.marsroverphotos.BuildConfig
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
@@ -31,7 +40,7 @@ import com.sirelon.marsroverphotos.storage.Prefs
 import com.sirelon.marsroverphotos.storage.Theme
 import com.sirelon.marsroverphotos.ui.MarsRoverPhotosTheme
 import com.sirelon.marsroverphotos.ui.RadioButtonText
-import java.util.*
+import java.util.Calendar
 
 @Preview(showBackground = true)
 @Composable
@@ -102,7 +111,7 @@ fun AboutAppContent(onClearCache: () -> Unit, onRateApp: () -> Unit) {
 
 @Composable
 private fun ThemeChanger() {
-    val currentTheme by Prefs.themeLiveData.observeAsState(initial = Prefs.theme)
+    val currentTheme by Prefs.themeLiveData.collectAsStateWithLifecycle()
     Card(
         modifier = Modifier
             .fillMaxWidth()

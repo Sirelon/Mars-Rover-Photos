@@ -1,11 +1,11 @@
 package com.sirelon.marsroverphotos.storage
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.sirelon.marsroverphotos.models.Rover
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Created on 2019-03-14 12:55 for Mars-Rover-Photos.
@@ -24,7 +24,7 @@ interface RoverDao {
     fun updateRoverCountPhotos(roverId: Long, photos: Long)
 
     @Query("SELECT * FROM rover")
-    fun getRovers(): LiveData<List<Rover>>
+    fun getRovers(): Flow<List<Rover>>
 
     @Query("SELECT * FROM rover WHERE id = :id")
     suspend fun loadRoverById(id: Long): Rover?

@@ -83,82 +83,57 @@ ksp {
 }
 
 dependencies {
-    implementation 'com.google.devtools.ksp:symbol-processing-api:1.9.20-1.0.14'
+    implementation(libs.androidx.ktx)
+    implementation(libs.ksp)
+    implementation(libs.androidx.compose)
 
-    // https://developer.android.com/jetpack/androidx/releases/lifecycle
-    implementation 'androidx.lifecycle:lifecycle-runtime-compose:2.7.0-beta01'
+//    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
-    // COMPOSEEEE
+    debugImplementation(libs.compose.ui.tooling)
+    implementation(libs.compose.ui)
+    implementation(libs.compose.ui.util)
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.material)
+    implementation(libs.compose.material.icons.core)
+    implementation(libs.compose.material.icons.extended)
 
-    debugImplementation "androidx.compose.ui:ui-tooling:$composeVer"
-    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    implementation(libs.accompanist.placeholder)
+    implementation(libs.accompanist.flowlayout)
+    implementation(libs.accompanist.systemuicontroller)
 
-    implementation "androidx.compose.ui:ui:$composeVer"
-    implementation "androidx.compose.ui:ui-util:$composeVer"
-    // Tooling support (Previews, etc.)
-    implementation "androidx.compose.ui:ui-tooling:$composeVer"
-    // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
-    implementation "androidx.compose.foundation:foundation:$composeVer"
-    // Material Design
-    implementation "androidx.compose.material:material:$composeVer"
-//    https://github.com/google/accompanist
-    def accompanistVer = '0.33.2-alpha'
-    implementation "com.google.accompanist:accompanist-placeholder-material:$accompanistVer"
-    implementation "com.google.accompanist:accompanist-flowlayout:$accompanistVer"
-    implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanistVer"
-
-    // Material design icons
-    implementation "androidx.compose.material:material-icons-core:$composeVer"
-    implementation "androidx.compose.material:material-icons-extended:$composeVer"
-    // Integration with observables
-    implementation "androidx.compose.runtime:runtime-livedata:$composeVer"
-
-    // https://developer.android.com/jetpack/androidx/releases/navigation
-    implementation 'androidx.navigation:navigation-compose:2.7.5'
-//    https://developer.android.com/jetpack/androidx/releases/constraintlayout
-    implementation 'androidx.constraintlayout:constraintlayout-compose:1.1.0-alpha13'
+    implementation libs.navigation.compose
+    implementation libs.androidx.constraintlayout.compose
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    testImplementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
-    testImplementation 'com.nhaarman:mockito-kotlin:1.6.0'
-    testImplementation 'org.amshove.kluent:kluent:1.68'
+    testImplementation libs.kotlin.stdlib
+    testImplementation libs.kotlin.test.junit
+    testImplementation libs.mockito.kotlin
+    testImplementation libs.kluent
 
-    // https://developer.android.com/jetpack/androidx/releases/activity
-    implementation 'androidx.activity:activity-compose:1.8.0'
-    implementation 'androidx.annotation:annotation:1.7.0'
+    implementation libs.androidx.activity.compose
+    implementation libs.androidx.annotation
 
-//    https://developer.android.com/jetpack/androidx/releases/room
-    def room_version = '2.6.0'
-    implementation "androidx.room:room-runtime:$room_version"
-    implementation "androidx.room:room-ktx:$room_version"
-    implementation "androidx.room:room-paging:$room_version"
-    ksp "androidx.room:room-compiler:$room_version"
+    implementation libs.androidx.room.runtime
+    implementation libs.androidx.room.ktx
+    implementation libs.androidx.room.paging
+    ksp libs.androidx.room.compiler
 
-//    https://developer.android.com/jetpack/androidx/releases/work
-    implementation 'androidx.work:work-runtime-ktx:2.8.1'
+    implementation libs.androidx.work.runtime.ktx
 
-//    https://developer.android.com/jetpack/androidx/releases/paging
-    def paging_version = '3.3.0-alpha02'
-    implementation "androidx.paging:paging-runtime-ktx:$paging_version"
-    implementation "androidx.paging:paging-compose:$paging_version"
+    implementation libs.androidx.paging.runtime.ktx
+    implementation libs.androidx.paging.compose
 
-//    https://github.com/coil-kt/coil/blob/main/CHANGELOG.md
-    implementation('io.coil-kt:coil-compose:2.5.0')
+    implementation(libs.coil)
+    implementation libs.androidx.appcompat
 
-    //    https://developer.android.com/jetpack/androidx/releases/appcompat
-    implementation 'androidx.appcompat:appcompat:1.7.0-alpha03'
+    implementation libs.logging.interceptor
 
-    implementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
+    implementation libs.ktor.core
+    implementation libs.ktor.client.okhttp
+    implementation libs.ktor.client.content.negotiation
+    implementation libs.ktor.serialization.kotlinx.json
 
-    def ktor_version = "2.3.5"
-    implementation "io.ktor:ktor-client-core:$ktor_version"
-    implementation "io.ktor:ktor-client-okhttp:$ktor_version"
-    implementation "io.ktor:ktor-client-content-negotiation:$ktor_version"
-    implementation "io.ktor:ktor-serialization-kotlinx-json:$ktor_version"
-
-//    https://github.com/Kotlin/kotlinx.serialization/releases
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0"
+    implementation libs.kotlinx.serialization.json
 
 //    https://firebase.google.com/support/release-notes/android
     implementation platform('com.google.firebase:firebase-bom:32.5.0')
@@ -171,11 +146,9 @@ dependencies {
     implementation 'com.google.android.gms:play-services-ads:22.5.0'
     implementation 'com.google.android.ump:user-messaging-platform:2.1.0'
 
-    implementation 'com.jakewharton.timber:timber:5.0.1'
+    implementation libs.timber
 
-//    https://github.com/Kotlin/kotlinx.collections.immutable
-    implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.6")
+    implementation(libs.kotlinx.collections.immutable)
 
-    // https://github.com/usuiat/Zoomable/releases
-    implementation "net.engawapg.lib:zoomable:1.5.1"
+    implementation libs.zoomable
 }
