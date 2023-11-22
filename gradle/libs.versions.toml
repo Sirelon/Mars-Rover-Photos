@@ -28,9 +28,11 @@ mockito = "1.6.0"
 # https://developer.android.com/jetpack/androidx/releases/paging
 paging = "3.3.0-alpha02"
 # https://developer.android.com/jetpack/androidx/releases/room
+playServicesAds = "22.5.0"
 room = "2.6.0"
 # https://developer.android.com/jetpack/androidx/releases/work
 timber = "5.0.1"
+userMessagingPlatform = "2.1.0"
 work = "2.8.1"
 # https://github.com/usuiat/Zoomable/releases
 zoomable = "1.5.1"
@@ -83,6 +85,8 @@ accompanist-placeholder = { group = "com.google.accompanist", name = "accompanis
 accompanist-flowlayout = { group = "com.google.accompanist", name = "accompanist-flowlayout", version.ref = "accompanist" }
 accompanist-systemuicontroller = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanist" }
 
+play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "playServicesAds" }
+user-messaging-platform = { module = "com.google.android.ump:user-messaging-platform", version.ref = "userMessagingPlatform" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 zoomable = { module = "net.engawapg.lib:zoomable", version.ref = "zoomable" }
 
@@ -94,5 +98,6 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.parcelize", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 firebase-perf = { id = "com.google.firebase.firebase-perf", version = "1.4.2" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version = "2.9.9" }
 google-services = { id = "com.google.gms.google-services", version = "4.4.0" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

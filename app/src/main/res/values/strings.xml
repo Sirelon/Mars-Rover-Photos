@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Mars Rover Photos</string>
-
     <string name="title_activity_image">ImageActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>

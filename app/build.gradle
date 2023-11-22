@@ -3,11 +3,11 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.google.services)
-    alias(libs.plugins.firebase.perf)
     alias(libs.plugins.ksp)
     id 'kotlin-parcelize'
-//    id 'com.google.firebase.crashlytics'
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.perf)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 // Create a variable called keystorePropertiesFile, and initialize it to your
@@ -44,7 +44,7 @@ android {
         release {
             postprocessing {
                 removeUnusedCode true
-                removeUnusedResources true
+//                removeUnusedResources true // causes The Crashlytics build ID is missing for some reason
                 obfuscate true
                 optimizeCode true
                 proguardFile 'proguard-rules.pro'
@@ -87,8 +87,6 @@ dependencies {
     implementation(libs.ksp)
     implementation(libs.androidx.compose)
 
-//    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-
     debugImplementation(libs.compose.ui.tooling)
     implementation(libs.compose.ui)
     implementation(libs.compose.ui.util)
@@ -96,6 +94,7 @@ dependencies {
     implementation(libs.compose.material)
     implementation(libs.compose.material.icons.core)
     implementation(libs.compose.material.icons.extended)
+    implementation(libs.compose.ui.tooling)
 
     implementation(libs.accompanist.placeholder)
     implementation(libs.accompanist.flowlayout)
@@ -136,15 +135,16 @@ dependencies {
     implementation libs.kotlinx.serialization.json
 
 //    https://firebase.google.com/support/release-notes/android
-    implementation platform('com.google.firebase:firebase-bom:32.5.0')
+    implementation platform('com.google.firebase:firebase-bom:32.6.0')
 
     implementation 'com.google.firebase:firebase-analytics'
-//    implementation 'com.google.firebase:firebase-crashlytics'
+    implementation 'com.google.firebase:firebase-crashlytics'
     implementation 'com.google.firebase:firebase-perf'
     implementation 'com.google.firebase:firebase-firestore'
     implementation 'com.google.firebase:firebase-messaging'
-    implementation 'com.google.android.gms:play-services-ads:22.5.0'
-    implementation 'com.google.android.ump:user-messaging-platform:2.1.0'
+
+    implementation libs.play.services.ads
+    implementation libs.user.messaging.platform
 
     implementation libs.timber
 
