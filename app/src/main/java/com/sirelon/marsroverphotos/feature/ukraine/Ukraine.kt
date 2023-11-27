@@ -28,7 +28,7 @@ import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.recordException
 
 @Composable
-@Preview(showBackground = true, device = Devices.AUTOMOTIVE_1024p)
+@Preview(showBackground = true, device = Devices.DEFAULT)
 fun UkraineInfoScreen() {
     val uriHandler = LocalUriHandler.current
 
@@ -45,31 +45,29 @@ fun UkraineInfoScreen() {
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
-                    text = "Hello, my name is Alex. I am Ukrainian, and I'm proud of it.",
+                    text = "Hello, I'm Oleksandr, a proud Ukrainian",
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.subtitle2,
                 )
-                Text(text = "As you probably know, we have war in the Ukraine.. The very terrible and merciless war.")
-                Text(text = "Many victims, many misfortunes, many broken lives are in this war. Everyday our civilian cities is under attack of missile strikes, some territory are occupied and no one knows how many deaths are there.")
-                Text(text = "In the world, where Elon Musk has plans to colonize the Mars, where NASA wants to resume mission to the Moon, where scientists from around the World united to take picture of Black Hole, in this world we have the country and people which start and support the biggest war after WW2 in Europe.")
-                Text(text = "Russia, which doesn't want to invest money to science but invest to war. Russia, which is killing people everyday. Russia invest money to weapons, to propaganda, to hatred of you, if you are not a russian. ")
+                Text(text = "As you may be aware, Ukraine is currently facing a severe and merciless war. Countless lives have been lost, and our cities endure daily missile strikes, with some territories occupied and the true extent of casualties unknown.")
+                Text(text = "In a world where Russia, without a shred of decency, prioritizes war over science, engaging in daily violence and propagating hatred, they've even birthed a new form of fascism called")
+
                 TextButton(
                     onClick = {
                         RoverApplication.APP.tracker.trackClick("Ukraine_wiki")
                         uriHandler.openUri("https://en.wikipedia.org/wiki/Rashism")
                     }) {
-                    Text(text = "Russia introduced new form of fascism: rashism. ")
+                    Text(text = "rashism.")
                 }
-                Text(text = "It's terrible, and I don't understand how this could even happen in XXI century. ")
-                Text(text = "But Ukraine is fighting with this evil. It's very hard, we don't have such resources as Russia has. But we stand. Event more, we are trying to liberate our territory and people. ")
-                Text(text = "To be honest, it's fantastic. But without help from almost all world it couldn't be true. And I'm thank you all, who help us with our battle for life. ")
+                Text(text = "The sheer brutality of it is unfathomable in the 21st century. Yet, Ukraine persists against this evil, despite being outgunned and outmanned by Russia. We're not just surviving; we're fighting tooth and nail to liberate our territory and people.")
+                Text(text = "This struggle is nothing short of incredible, fueled by the support of compassionate individuals worldwide. Massive thanks to those who stand with us in this desperate battle for survival.")
                 Text(
                     text = "Thank you!",
                     color = Color.Red,
                     style = MaterialTheme.typography.subtitle2
                 )
-                Text(text = "But also I have to ask you something. Please, do not forget us. We need your support. The war hasn't ended. Remember that we are fighting with evil for democracy for our life for better future for all of us and you. ")
-                Text(text = "For more information and for incredible stories about ukrainian heroes you can read here:")
+                Text(text = "Don't just scroll past this. Remember us. We need your unwavering support as the war rages on. We're fighting for democracy, for our lives, and for a better future for everyone.")
+                Text(text = "For more gritty details and stories of resilience from Ukrainian heroes, check out ")
                 TextButton(onClick = {
                     RoverApplication.APP.tracker.trackClick("Ukraine_site")
                     uriHandler.openUri("https://war.ukraine.ua/")
@@ -85,7 +83,7 @@ fun UkraineInfoScreen() {
                     Text(text = "sasha.sirelon@gmail.com")
                 }
                 Text(
-                    text = "Thank you!",
+                    text = "Thanks a bunch – we're all in this together!",
                     color = Color.Red,
                     style = MaterialTheme.typography.subtitle2
                 )
@@ -117,7 +115,7 @@ fun UkraineBanner(
             .clickable(onClick = onClick)
             .drawBehind {
                 val halfHeight = size.height / 2
-                val alpha = 0.7f
+                val alpha = 0.5f
                 drawRect(
                     color = Color.Blue.copy(alpha = alpha),
                     size = size.copy(height = halfHeight)
@@ -135,7 +133,7 @@ fun UkraineBanner(
                 .fillMaxWidth()
                 .padding(8.dp),
             textAlign = TextAlign.Center,
-            color = Color.Red,
+            color = Color.White,
             style = MaterialTheme.typography.h6.copy(
                 shadow = Shadow(
                     color = Color.Black,
@@ -144,5 +142,13 @@ fun UkraineBanner(
                 )
             )
         )
+    }
+}
+
+@Preview(showBackground = true, device = Devices.DEFAULT)
+@Composable
+private fun PreviewBanner() {
+    UkraineBanner {
+
     }
 }
