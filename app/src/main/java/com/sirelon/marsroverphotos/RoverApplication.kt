@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
+import com.google.firebase.firestore.PersistentCacheSettings
 import com.sirelon.marsroverphotos.storage.Prefs
 import com.sirelon.marsroverphotos.tracker.FirebaseTracker
 import com.sirelon.marsroverphotos.tracker.ITracker
@@ -34,7 +35,7 @@ class RoverApplication : Application() {
 //        }
 
         val settings = FirebaseFirestoreSettings.Builder()
-            .setPersistenceEnabled(true)
+            .setLocalCacheSettings(PersistentCacheSettings.newBuilder().build())
             .build()
         FirebaseFirestore.getInstance().firestoreSettings = settings
     }

@@ -3,10 +3,29 @@ package com.sirelon.marsroverphotos.feature
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.ZoomIn
+import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconToggleButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -119,7 +138,7 @@ fun MarsImageFavoriteToggle(
         onCheckedChange = onCheckedChange
     ) {
         Icon(
-            tint = MaterialTheme.colors.secondary,
+            tint = MaterialTheme.colorScheme.secondary,
             imageVector = if (checked) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
             contentDescription = null // handled by click label of parent
         )
@@ -161,13 +180,13 @@ private fun StatsInfoText(counter: Long, image: ImageVector, desc: String) {
             modifier = Modifier.size(20.dp),
             painter = rememberVectorPainter(image = image),
             contentDescription = desc,
-            tint = MaterialTheme.colors.secondary,
+            tint = MaterialTheme.colorScheme.secondary,
         )
         Spacer(modifier = Modifier.width(6.dp))
         Text(
             text = counter.toString(),
-            style = MaterialTheme.typography.caption,
-            color = MaterialTheme.colors.onSurface
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }

@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos.feature.gdpr
 
+import android.app.Activity
 import androidx.annotation.Keep
 import androidx.core.app.ComponentActivity
 import com.google.android.ump.*
@@ -11,7 +12,7 @@ import timber.log.Timber
 /**
  * Created on 07.09.2021 23:51 for Mars-Rover-Photos.
  */
-class GdprHelper(private val activity: ComponentActivity) {
+class GdprHelper(private val activity: Activity) {
 
     private val consentInformation by lazy { UserMessagingPlatform.getConsentInformation(activity) }
 

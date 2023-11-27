@@ -9,14 +9,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.LinearProgressIndicator
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ViewList
 import androidx.compose.material.icons.filled.GridView
-import androidx.compose.material.icons.filled.ViewList
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -96,7 +97,7 @@ fun PopularScreen(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun FavoritePhotosContent(
     modifier: Modifier,
@@ -123,7 +124,7 @@ fun FavoritePhotosContent(
                 ) {
                     if (gridView) {
                         Icon(
-                            imageVector = Icons.Default.ViewList,
+                            imageVector = Icons.AutoMirrored.Filled.ViewList,
                             contentDescription = "Change to List View",
                         )
                     } else {

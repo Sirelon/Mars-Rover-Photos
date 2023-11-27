@@ -33,19 +33,18 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material.icons.outlined.ViewCarousel
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -301,11 +300,11 @@ class RoversActivity : FragmentActivity() {
         navController: NavHostController,
         bottomItems: List<Screen>
     ) {
-        BottomNavigation(modifier = Modifier.navigationBarsPadding()) {
+        NavigationBar(modifier = Modifier.navigationBarsPadding()) {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val navDestination = navBackStackEntry?.destination
             bottomItems.forEach { screen ->
-                BottomNavigationItem(
+                NavigationBarItem(
                     icon = {
                         Icon(
                             screen.iconCreator.invoke(),
@@ -313,8 +312,10 @@ class RoversActivity : FragmentActivity() {
                         )
                     },
                     selected = navDestination?.hierarchy?.any { it.route == screen.route } == true,
-                    selectedContentColor = MaterialTheme.colors.secondary,
-                    unselectedContentColor = Color.White.copy(alpha = ContentAlpha.medium),
+                    // TODO:
+//                    colors = NavigationBarItemColors(),
+//                    selectedContentColor = MaterialTheme.colorScheme.secondary,
+//                    unselectedContentColor = Color.White.copy(alpha = ContentAlpha.medium),
                     onClick = {
                         track("bottom_${screen.route}")
 
@@ -496,7 +497,7 @@ fun RoversContent(
     LazyColumn {
         items(rovers) { item ->
             RoverItem(rover = item, onClick = onClick)
-            Divider()
+            HorizontalDivider()
         }
     }
 }
@@ -545,7 +546,7 @@ fun RoverItem(rover: Rover, onClick: (rover: Rover) -> Unit) {
 private fun TitleText(text: String) {
     val typography = MaterialTheme.typography
     Text(
-        text = text, style = typography.h6, color = MaterialTheme.colors.secondary
+        text = text, style = typography.titleLarge, color = MaterialTheme.colorScheme.secondary
     )
 }
 
@@ -553,9 +554,9 @@ private fun TitleText(text: String) {
 fun InfoText(label: String, text: String) {
     val typography = MaterialTheme.typography
     val textToShow = AnnotatedString.Builder().apply {
-        pushStyle(typography.subtitle2.toSpanStyle())
+        pushStyle(typography.titleMedium.toSpanStyle())
         append("$label ")
-        pushStyle(style = typography.subtitle1.toSpanStyle())
+        pushStyle(style = typography.titleSmall.toSpanStyle())
         append(text)
     }
     Text(

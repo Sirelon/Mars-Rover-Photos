@@ -7,10 +7,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
@@ -34,7 +34,7 @@ fun UkraineInfoScreen() {
 
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
         CompositionLocalProvider(
-            LocalTextStyle provides MaterialTheme.typography.subtitle1.copy(
+            LocalTextStyle provides MaterialTheme.typography.titleMedium.copy(
                 textAlign = TextAlign.Center
             )
         ) {
@@ -47,7 +47,7 @@ fun UkraineInfoScreen() {
                 Text(
                     text = "Hello, I'm Oleksandr, a proud Ukrainian",
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.subtitle2,
+                    style = MaterialTheme.typography.titleSmall,
                 )
                 Text(text = "As you may be aware, Ukraine is currently facing a severe and merciless war. Countless lives have been lost, and our cities endure daily missile strikes, with some territories occupied and the true extent of casualties unknown.")
                 Text(text = "In a world where Russia, without a shred of decency, prioritizes war over science, engaging in daily violence and propagating hatred, they've even birthed a new form of fascism called")
@@ -64,7 +64,7 @@ fun UkraineInfoScreen() {
                 Text(
                     text = "Thank you!",
                     color = Color.Red,
-                    style = MaterialTheme.typography.subtitle2
+                    style = MaterialTheme.typography.titleSmall
                 )
                 Text(text = "Don't just scroll past this. Remember us. We need your unwavering support as the war rages on. We're fighting for democracy, for our lives, and for a better future for everyone.")
                 Text(text = "For more gritty details and stories of resilience from Ukrainian heroes, check out ")
@@ -85,7 +85,7 @@ fun UkraineInfoScreen() {
                 Text(
                     text = "Thanks a bunch – we're all in this together!",
                     color = Color.Red,
-                    style = MaterialTheme.typography.subtitle2
+                    style = MaterialTheme.typography.titleSmall
                 )
             }
         }
@@ -134,7 +134,7 @@ fun UkraineBanner(
                 .padding(8.dp),
             textAlign = TextAlign.Center,
             color = Color.White,
-            style = MaterialTheme.typography.h6.copy(
+            style = MaterialTheme.typography.titleLarge.copy(
                 shadow = Shadow(
                     color = Color.Black,
                     offset = Offset(2f, 2f),

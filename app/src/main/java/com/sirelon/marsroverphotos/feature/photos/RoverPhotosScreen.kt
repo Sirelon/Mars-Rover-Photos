@@ -25,18 +25,18 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Card
-import androidx.compose.material.Divider
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Slider
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Autorenew
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -103,7 +103,7 @@ fun RoverPhotosScreen(
             HeaderButton("Sol date: \n$sol") {
                 openSolDialog = true
             }
-            Divider(
+            HorizontalDivider(
                 modifier = Modifier
                     .width(1.dp)
                     .fillMaxHeight()
@@ -199,7 +199,7 @@ private fun PhotosList(
                     if (title != null) {
                         Text(
                             text = title,
-                            style = MaterialTheme.typography.caption,
+                            style = MaterialTheme.typography.bodySmall,
                             modifier = Modifier.padding(4.dp),
                             textAlign = TextAlign.Center
                         )
@@ -268,7 +268,7 @@ private fun SolChanger(sol: Long?, maxSol: Long, onSolChanged: (sol: Long?) -> U
             Text(
                 text = "Sol: ",
                 modifier = Modifier.weight(1f),
-                style = MaterialTheme.typography.h6.copy(color = MaterialTheme.colors.secondary)
+                style = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.secondary)
             )
             OutlinedTextField(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),

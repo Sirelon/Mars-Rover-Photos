@@ -10,11 +10,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,7 +53,7 @@ fun DefaultPreview() {
 @Composable
 fun AboutAppContent(onClearCache: () -> Unit, onRateApp: () -> Unit) {
     val typography = MaterialTheme.typography
-    val colors = MaterialTheme.colors
+    val colors = MaterialTheme.colorScheme
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -65,12 +65,12 @@ fun AboutAppContent(onClearCache: () -> Unit, onRateApp: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(painter = painterResource(id = R.drawable.alien_icon), contentDescription = "logo")
-        Text(text = "Mars rover photos", style = typography.h5)
+        Text(text = "Mars rover photos", style = typography.headlineSmall)
         Text(
             text = stringResource(id = R.string.about_description),
-            style = typography.body1,
+            style = typography.bodyLarge,
             textAlign = TextAlign.Center,
-            color = colors.secondaryVariant
+            color = colors.tertiary,
         )
 
         Column(
@@ -101,7 +101,7 @@ fun AboutAppContent(onClearCache: () -> Unit, onRateApp: () -> Unit) {
         )
         Text(
             text = copyrightText,
-            style = MaterialTheme.typography.caption,
+            style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.padding(16.dp)
         )
 
@@ -125,7 +125,7 @@ private fun ThemeChanger() {
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = "Change theme of application",
-                style = MaterialTheme.typography.h6.copy(textAlign = TextAlign.Center)
+                style = MaterialTheme.typography.titleLarge.copy(textAlign = TextAlign.Center)
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -157,7 +157,7 @@ fun LinkifyText(text: String, link: String) {
 
     val layoutResult = remember { mutableStateOf<TextLayoutResult?>(null) }
 
-    val colors = MaterialTheme.colors
+    val colors = MaterialTheme.colorScheme
 
     val apiString = AnnotatedString.Builder(text).apply {
         pushStyle(

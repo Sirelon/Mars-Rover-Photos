@@ -1,13 +1,17 @@
 package com.sirelon.marsroverphotos.ui
 
-import androidx.annotation.OptIn
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
@@ -23,7 +27,7 @@ fun MarsSnackbar(
     snackbarHostState: SnackbarHostState,
     actionClick: (() -> Unit)? = null
 ) {
-    val actionText = snackbarHostState.currentSnackbarData?.actionLabel
+    val actionText = snackbarHostState.currentSnackbarData?.visuals?.actionLabel
     SnackbarHost(
         modifier = modifier,
         hostState = snackbarHostState,
@@ -38,7 +42,11 @@ fun MarsSnackbar(
                             Text(text = actionText)
                         }
                 },
-                content = { Text(text = snackbarHostState.currentSnackbarData?.message ?: "") },
+                content = {
+                    Text(
+                        text = snackbarHostState.currentSnackbarData?.visuals?.message ?: ""
+                    )
+                },
             )
         })
 }
@@ -65,7 +73,7 @@ fun RadioButtonText(
     }
 }
 
-@kotlin.OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NoScrollEffect(content: @Composable () -> Unit) {
     CompositionLocalProvider(LocalOverscrollConfiguration provides null) {
