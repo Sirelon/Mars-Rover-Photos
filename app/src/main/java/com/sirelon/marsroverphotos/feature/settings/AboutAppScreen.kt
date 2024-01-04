@@ -70,7 +70,7 @@ fun AboutAppContent(onClearCache: () -> Unit, onRateApp: () -> Unit) {
             text = stringResource(id = R.string.about_description),
             style = typography.bodyLarge,
             textAlign = TextAlign.Center,
-            color = colors.tertiary,
+//            color = colors.tertiary,
         )
 
         Column(

@@ -546,7 +546,9 @@ fun RoverItem(rover: Rover, onClick: (rover: Rover) -> Unit) {
 private fun TitleText(text: String) {
     val typography = MaterialTheme.typography
     Text(
-        text = text, style = typography.titleLarge, color = MaterialTheme.colorScheme.secondary
+        text = text,
+        style = typography.titleLarge,
+//        color = MaterialTheme.colorScheme.secondary
     )
 }
 

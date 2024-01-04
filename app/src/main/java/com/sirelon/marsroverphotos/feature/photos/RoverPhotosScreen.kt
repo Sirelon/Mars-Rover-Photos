@@ -268,7 +268,9 @@ private fun SolChanger(sol: Long?, maxSol: Long, onSolChanged: (sol: Long?) -> U
             Text(
                 text = "Sol: ",
                 modifier = Modifier.weight(1f),
-                style = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.secondary)
+                style = MaterialTheme.typography.titleLarge.copy(
+//                    color = MaterialTheme.colorScheme.secondary
+                )
             )
             OutlinedTextField(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
