@@ -81,8 +81,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import coil.ImageLoader
-import coil.annotation.ExperimentalCoilApi
+import coil3.ImageLoader
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
@@ -259,7 +258,6 @@ class RoversActivity : FragmentActivity() {
     }
 
 
-    @OptIn(ExperimentalCoilApi::class)
     private fun clearCache() {
         track("Clear cache")
         val ctx = application

@@ -13,9 +13,11 @@ import android.provider.MediaStore
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import coil.ImageLoader
-import coil.request.ImageRequest
-import coil.request.SuccessResult
+import coil3.ImageLoader
+import coil3.annotation.ExperimentalCoilApi
+import coil3.request.ImageRequest
+import coil3.request.SuccessResult
+import coil3.request.allowHardware
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.extensions.exceptionHandler
@@ -103,18 +105,20 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
         }
     }
 
+    @OptIn(ExperimentalCoilApi::class)
     @Suppress("DEPRECATION")
     fun saveImage(photo: MarsImage) {
-        val activity = getApplication<RoverApplication>()
+        val context = getApplication<RoverApplication>()
         viewModelScope.launch(IO) {
             kotlin.runCatching {
-                val loader = ImageLoader(activity)
-                val request = ImageRequest.Builder(activity)
+                val loader = ImageLoader(context)
+                val request = ImageRequest.Builder(context)
                     .data(photo.imageUrl)
                     .allowHardware(false) // Disable hardware bitmaps.
                     .build()
 
-                val result = (loader.execute(request) as SuccessResult).drawable
+                val result =
+                    (loader.execute(request) as SuccessResult).image.asDrawable(context.resources)
                 val bitmap = (result as BitmapDrawable).bitmap
 
                 val localUrl: String?
@@ -127,11 +131,11 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
                         (Environment.DIRECTORY_PICTURES + File.separator) + "MarsRoverPhotos"
                     )
                 }
-                val imageUri = activity.contentResolver.insert(
+                val imageUri = context.contentResolver.insert(
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                     contentValues
                 )
-                activity.contentResolver.openOutputStream(imageUri!!)?.use {
+                context.contentResolver.openOutputStream(imageUri!!)?.use {
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
                 }
                 localUrl = imageUri.toString()
@@ -148,7 +152,7 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
                     recordException(it)
                     withContext(Dispatchers.Main) {
                         it.printStackTrace()
-                        Toast.makeText(activity, "Error occurred ${it.message}", Toast.LENGTH_SHORT)
+                        Toast.makeText(context, "Error occurred ${it.message}", Toast.LENGTH_SHORT)
                             .show()
                     }
                 }

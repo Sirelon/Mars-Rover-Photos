@@ -1,6 +1,5 @@
 package com.sirelon.marsroverphotos.feature.favorite
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,14 +15,16 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -97,7 +98,7 @@ fun PopularScreen(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoritePhotosContent(
     modifier: Modifier,
@@ -113,7 +114,8 @@ fun FavoritePhotosContent(
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        TopAppBar(
+        val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+        MediumTopAppBar(
             title = { Text(text = title) },
             actions = {
                 IconButton(
@@ -134,7 +136,8 @@ fun FavoritePhotosContent(
                         )
                     }
                 }
-            }
+            },
+            scrollBehavior = scrollBehavior,
         )
 
         if (items.loadState.refresh == LoadState.Loading) {
@@ -147,7 +150,10 @@ fun FavoritePhotosContent(
 
         val spacedBy = Arrangement.spacedBy(16.dp)
         LazyVerticalStaggeredGrid(
-            modifier = modifier.weight(1f),
+            modifier = modifier
+                .weight(1f)
+                .nestedScroll(scrollBehavior.nestedScrollConnection)
+            ,
             contentPadding = PaddingValues(16.dp),
             columns = if (gridView) {
                 StaggeredGridCells.Fixed(2)
