@@ -545,18 +545,24 @@ private fun TitleText(text: String) {
     val typography = MaterialTheme.typography
     Text(
         text = text,
-        style = typography.titleLarge,
-//        color = MaterialTheme.colorScheme.secondary
+        style = typography.headlineMedium,
+        color = MaterialTheme.colorScheme.tertiary
     )
 }
 
 @Composable
-fun InfoText(label: String, text: String) {
+private fun InfoText(label: String, text: String) {
     val typography = MaterialTheme.typography
     val textToShow = AnnotatedString.Builder().apply {
-        pushStyle(typography.titleMedium.toSpanStyle())
+        pushStyle(
+            typography.titleMedium.toSpanStyle()
+                .copy(color = MaterialTheme.colorScheme.secondary)
+        )
         append("$label ")
-        pushStyle(style = typography.titleSmall.toSpanStyle())
+        pushStyle(
+            style = typography.titleSmall.toSpanStyle()
+                .copy(color = MaterialTheme.colorScheme.onSurface)
+        )
         append(text)
     }
     Text(
