@@ -61,10 +61,12 @@ class RestApi {
         install(ContentNegotiation) {
             json(json)
         }
+
         install(HttpTimeout) {
             val timeout = TimeUnit.MINUTES.toMillis(2)
             connectTimeoutMillis = timeout
             requestTimeoutMillis = timeout
+            socketTimeoutMillis = timeout
         }
     }
 
