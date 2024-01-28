@@ -64,7 +64,6 @@ import com.sirelon.marsroverphotos.ui.CenteredProgress
 import com.sirelon.marsroverphotos.ui.MarsSnackbar
 import com.sirelon.marsroverphotos.ui.NoScrollEffect
 import kotlinx.coroutines.launch
-import net.engawapg.lib.zoomable.ZoomableDefaults
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
 
@@ -268,7 +267,6 @@ private fun ImagesPager(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background),
-            pageNestedScrollConnection = ZoomableDefaults.pageNestedScrollConnection,
             ) { page ->
             // Our page content
             val marsImage = images[page]
