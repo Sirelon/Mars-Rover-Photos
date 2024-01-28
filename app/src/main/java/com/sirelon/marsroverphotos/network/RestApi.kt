@@ -11,6 +11,7 @@ import com.sirelon.marsroverphotos.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.storage.MarsImage
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.serialization.kotlinx.json.json
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import okhttp3.logging.HttpLoggingInterceptor
+import java.util.concurrent.TimeUnit
 
 /**
  * @author romanishin
@@ -58,6 +60,11 @@ class RestApi {
 
         install(ContentNegotiation) {
             json(json)
+        }
+        install(HttpTimeout) {
+            val timeout = TimeUnit.MINUTES.toMillis(2)
+            connectTimeoutMillis = timeout
+            requestTimeoutMillis = timeout
         }
     }
 
