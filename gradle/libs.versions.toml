@@ -1,6 +1,6 @@
 [versions]
 # https://developer.android.com/jetpack/androidx/releases/activity
-activityCompose = "1.9.0-alpha02"
+activityCompose = "1.9.0-alpha03"
 # https://developer.android.com/jetpack/androidx/releases/appcompat
 appcompat = "1.7.0-alpha03"
 # https://github.com/coil-kt/coil/blob/main/CHANGELOG.md
@@ -23,15 +23,15 @@ ksp = "1.9.22-1.0.16"
 # https://developer.android.com/jetpack/androidx/releases/lifecycle
 lifecycle = "2.8.0-alpha01"
 # https://developer.android.com/jetpack/androidx/releases/compose
-compose = "1.7.0-alpha01"
+compose = "1.7.0-alpha02"
 # https://developer.android.com/jetpack/androidx/releases/compose-material3
-compose-material3 = "1.2.0-rc01"
+compose-material3 = "1.2.0"
 # https://github.com/google/accompanist/releases
 accompanist = "0.34.0"
 loggingInterceptor = "4.12.0"
 mockito = "1.6.0"
 # https://developer.android.com/jetpack/androidx/releases/paging
-paging = "3.3.0-alpha02"
+paging = "3.3.0-alpha03"
 playServicesAds = "22.6.0"
 # https://developer.android.com/jetpack/androidx/releases/room
 room = "2.6.1"
@@ -40,8 +40,8 @@ userMessagingPlatform = "2.2.0"
 # https://developer.android.com/jetpack/androidx/releases/work
 work = "2.9.0"
 # https://github.com/usuiat/Zoomable/releases
-zoomable = "1.6.0-beta4"
-androidGradlePlugin = "8.4.0-alpha07"
+zoomable = "1.6.0"
+androidGradlePlugin = "8.4.0-alpha08"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }

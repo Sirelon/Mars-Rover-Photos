@@ -73,7 +73,7 @@ android {
 
     composeOptions {
 //        https://developer.android.com/jetpack/androidx/releases/compose-compiler
-        kotlinCompilerExtensionVersion "1.5.8"
+        kotlinCompilerExtensionVersion "1.5.9"
     }
     namespace 'com.sirelon.marsroverphotos'
 }
@@ -136,7 +136,7 @@ dependencies {
     implementation libs.kotlinx.serialization.json
 
 //    https://firebase.google.com/support/release-notes/android
-    implementation platform('com.google.firebase:firebase-bom:32.7.0')
+    implementation platform('com.google.firebase:firebase-bom:32.7.1')
 
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-crashlytics'
