@@ -1,0 +1,18 @@
+restartable scheme("[androidx.compose.ui.UiComposable]") fun FavoriteScreen(
+  unstable navController: NavController
+  stable modifier: Modifier? = @static Companion
+  viewModel: FavoriteImagesViewModel? = @dynamic viewModel(null, null, null, null, $composer, 0, 0b1111)
+)
+restartable scheme("[androidx.compose.ui.UiComposable]") fun PopularScreen(
+  unstable navController: NavController
+  stable modifier: Modifier? = @static Companion
+  viewModel: PopularPhotosViewModel? = @dynamic viewModel(null, null, null, null, $composer, 0, 0b1111)
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable, [androidx.compose.ui.UiComposable]]") fun FavoritePhotosContent(
+  stable modifier: Modifier
+  stable title: String
+  items: LazyPagingItems<MarsImage>
+  stable onItemClick: Function1<@[ParameterName(name = 'image')] MarsImage, Unit>
+  stable onFavoriteClick: Function1<@[ParameterName(name = 'image')] MarsImage, Unit>
+  stable emptyContent: Function2<Composer, Int, Unit>
+)

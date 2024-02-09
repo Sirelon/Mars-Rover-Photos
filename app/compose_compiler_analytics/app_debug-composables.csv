@@ -1,0 +1,4 @@
+package,name,composable,skippable,restartable,readonly,inline,isLambda,hasDefaults,defaultsGroup,groups,calls,
+com.sirelon.marsroverphotos.feature.favorite.FavoriteScreen,FavoriteScreen,1,0,1,0,0,0,0,0,1,5,
+com.sirelon.marsroverphotos.feature.favorite.PopularScreen,PopularScreen,1,0,1,0,0,0,0,0,1,4,
+com.sirelon.marsroverphotos.feature.favorite.FavoritePhotosContent,FavoritePhotosContent,1,1,1,0,0,0,0,0,1,2,

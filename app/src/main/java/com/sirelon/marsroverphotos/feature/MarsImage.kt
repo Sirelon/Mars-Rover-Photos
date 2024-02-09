@@ -68,7 +68,7 @@ fun MarsImageComposable(
 
     val loading by remember {
         derivedStateOf {
-            painter.state is AsyncImagePainter.State.Loading
+            painter.state !is AsyncImagePainter.State.Success
         }
     }
     Card(

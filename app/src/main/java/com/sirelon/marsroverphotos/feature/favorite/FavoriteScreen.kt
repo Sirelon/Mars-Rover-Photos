@@ -42,6 +42,7 @@ import com.sirelon.marsroverphotos.feature.popular.PopularPhotosViewModel
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.storage.Prefs
 import com.sirelon.marsroverphotos.ui.CenteredProgress
+import java.util.UUID
 
 /**
  * Created on 01.03.2021 22:32 for Mars-Rover-Photos.
@@ -118,7 +119,7 @@ fun FavoritePhotosContent(
         val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
         TopAppBar(
             title = { Text(text = title) },
-            windowInsets = WindowInsets(0,0,0,0),
+            windowInsets = WindowInsets(0, 0, 0, 0),
             actions = {
                 IconButton(
                     onClick = {
@@ -154,8 +155,7 @@ fun FavoritePhotosContent(
         LazyVerticalStaggeredGrid(
             modifier = modifier
                 .weight(1f)
-                .nestedScroll(scrollBehavior.nestedScrollConnection)
-            ,
+                .nestedScroll(scrollBehavior.nestedScrollConnection),
             contentPadding = PaddingValues(16.dp),
             columns = if (gridView) {
                 StaggeredGridCells.Fixed(2)
@@ -165,7 +165,11 @@ fun FavoritePhotosContent(
             verticalItemSpacing = 16.dp,
             horizontalArrangement = spacedBy,
             content = {
-                items(items.itemCount) {
+                items(
+                    items.itemCount,
+                    key = { items.peek(it)?.id ?: UUID.randomUUID() },
+                    contentType = { "MarsImageComposable" }
+                ) {
                     val image = items[it]
                     if (image != null) {
                         MarsImageComposable(

@@ -1,0 +1,185 @@
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun MarsImageComposable(
+  stable modifier: Modifier? = @static Companion
+  stable marsImage: MarsImage
+  stable onClick: Function0<Unit>
+  stable onFavoriteClick: Function0<Unit>
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun PhotoStats(
+  stable marsImage: MarsImage
+  stable onFavoriteClick: Function0<Unit>
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun MarsImageFavoriteToggle(
+  stable modifier: Modifier? = @static Companion
+  stable checked: Boolean
+  stable onCheckedChange: Function1<Boolean, Unit>
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun NetworkImage(
+  stable modifier: Modifier? = @static Companion
+  stable contentScale: ContentScale? = @static Companion.Crop
+  stable placeholderRes: Int? = @static drawable.img_placeholder
+  stable imageUrl: String
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun StatsInfoText(
+  stable counter: Long
+  stable image: ImageVector
+  stable desc: String
+)
+restartable scheme("[androidx.compose.ui.UiComposable]") fun FavoriteScreen(
+  unstable navController: NavController
+  stable modifier: Modifier? = @static Companion
+  unstable viewModel: FavoriteImagesViewModel? = @dynamic viewModel(null, null, null, null, $composer, 0, 0b1111)
+)
+restartable scheme("[androidx.compose.ui.UiComposable]") fun PopularScreen(
+  unstable navController: NavController
+  stable modifier: Modifier? = @static Companion
+  unstable viewModel: PopularPhotosViewModel? = @dynamic viewModel(null, null, null, null, $composer, 0, 0b1111)
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable, [androidx.compose.ui.UiComposable]]") fun FavoritePhotosContent(
+  stable modifier: Modifier
+  stable title: String
+  items: LazyPagingItems<MarsImage>
+  stable onItemClick: Function1<@[ParameterName(name = 'image')] MarsImage, Unit>
+  stable onFavoriteClick: Function1<@[ParameterName(name = 'image')] MarsImage, Unit>
+  stable emptyContent: Function2<Composer, Int, Unit>
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun ImageScreen(
+  unstable viewModel: ImageViewModel? = @dynamic viewModel(null, null, null, null, $composer, 0, 0b1111)
+  stable trackingEnabled: Boolean
+  stable photoIds: List<String>?
+  stable selectedId: String?
+  stable onHideUi: Function1<Boolean, Unit>
+)
+restartable scheme("[androidx.compose.ui.UiComposable]") fun ImagesPagerContent(
+  unstable viewModel: ImageViewModel
+  stable list: List<MarsImage>
+  stable hideUi: Boolean
+  stable pagerState: PagerState
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun OnEvent(
+  stable <this>: BoxScope
+  stable uiEvent: UiEvent?
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun SaveIcon(
+  stable onClick: Function0<Unit>
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun ShareIcon(
+  stable onClick: Function0<Unit>
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun ImagesPager(
+  stable pagerState: PagerState
+  stable images: List<MarsImage>
+  callback: MultitouchDetectorCallback
+  stable favoriteClick: Function2<MarsImage, Boolean, Unit>
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun EmptyPhotos(
+  stable title: String
+  stable btnTitle: String
+  stable callback: Function0<Unit>
+)
+restartable scheme("[androidx.compose.ui.UiComposable]") fun RoverPhotosScreen(
+  unstable activity: FragmentActivity
+  stable modifier: Modifier? = @static Companion
+  unstable navHost: NavController
+  stable roverId: Long
+  unstable viewModel: PhotosViewModel? = @dynamic viewModel(null, null, null, null, $composer, 0, 0b1111)
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun RefreshButton(
+  stable fabVisible: Boolean
+  stable modifier: Modifier
+  stable onClick: Function0<Unit>
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun PhotosList(
+  stable modifier: Modifier
+  stable photos: List<MarsImage>
+  stable onPhotoClick: Function1<@[ParameterName(name = 'image')] MarsImage, Unit>
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun PhotoCard(
+  stable image: MarsImage
+  stable onPhotoClick: Function1<@[ParameterName(name = 'image')] MarsImage, Unit>
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun SolDialog(
+  stable openDialog: Boolean
+  stable maxSol: Long
+  stable sol: Long
+  stable onClose: Function0<Unit>
+  stable onChoose: Function1<@[ParameterName(name = 'sol')] Long, Unit>
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun SolChanger(
+  stable sol: Long?
+  stable maxSol: Long
+  stable onSolChanged: Function1<@[ParameterName(name = 'sol')] Long?, Unit>
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun HeaderButton(
+  stable <this>: RowScope
+  stable txt: String
+  stable onClick: Function0<Unit>
+)
+restartable scheme("[androidx.compose.ui.UiComposable]") fun RoversBottomBar(
+  unstable navController: NavHostController
+  stable bottomItems: List<Screen>
+  unstable <this>: RoversActivity
+)
+restartable scheme("[androidx.compose.ui.UiComposable]") fun ComposableBannerAd(
+  stable modifier: Modifier
+  unstable <this>: RoversActivity
+)
+restartable scheme("[androidx.compose.ui.UiComposable]") fun RoversNavHost(
+  unstable navController: NavHostController
+  stable onHideUi: Function1<Boolean, Unit>
+  unstable <this>: RoversActivity
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun RoversContent(
+  stable rovers: List<Rover>
+  stable onClick: Function1<@[ParameterName(name = 'rover')] Rover, Unit>
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun RoverItem(
+  stable rover: Rover
+  stable onClick: Function1<@[ParameterName(name = 'rover')] Rover, Unit>
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun TitleText(
+  stable text: String
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun InfoText(
+  stable label: String
+  stable text: String
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun DefaultPreview()
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun AboutAppContent(
+  stable onClearCache: Function0<Unit>
+  stable onRateApp: Function0<Unit>
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun ThemeChanger()
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun LinkifyText(
+  stable text: String
+  stable link: String
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun UkraineInfoScreen()
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun UkraineBanner(
+  stable modifier: Modifier? = @static Companion
+  stable title: String? = @static "#Stand with Ukraine"
+  stable onClick: Function0<Unit>
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun PreviewBanner()
+restartable skippable scheme("[0, [0]]") fun MarsRoverPhotosTheme(
+  stable darkTheme: Boolean = @dynamic isSystemInDarkTheme($composer, 0)
+  stable content: Function2<Composer, Int, Unit>
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable, [androidx.compose.ui.UiComposable]]") fun CenteredColumn(
+  stable modifier: Modifier? = @static Companion
+  stable content: @[ExtensionFunctionType] Function3<ColumnScope, Composer, Int, Unit>
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun CenteredProgress()
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun MarsSnackbar(
+  stable modifier: Modifier? = @static Companion
+  stable snackbarHostState: SnackbarHostState
+  stable actionClick: Function0<Unit>? = @static null
+)
+restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun RadioButtonText(
+  stable text: String
+  stable selected: Boolean
+  stable modifier: Modifier? = @static Companion
+  stable onClick: Function0<Unit>
+)
+restartable skippable scheme("[0, [0]]") fun NoScrollEffect(
+  stable content: Function2<Composer, Int, Unit>
+)
