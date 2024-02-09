@@ -3,6 +3,8 @@ package com.sirelon.marsroverphotos.models
 import android.content.Context
 import androidx.annotation.DrawableRes
 import androidx.annotation.Keep
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.serialization.SerialName
@@ -13,6 +15,8 @@ import kotlinx.serialization.Serializable
  * @since 31.10.16 on 15:14
  */
 @Keep
+@Stable
+@Immutable
 @Entity
 @Serializable
 data class Rover(

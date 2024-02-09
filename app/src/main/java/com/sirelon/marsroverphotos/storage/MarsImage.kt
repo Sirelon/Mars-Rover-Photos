@@ -3,6 +3,7 @@ package com.sirelon.marsroverphotos.storage
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.common.math.Stats
 import com.sirelon.marsroverphotos.models.RoverCamera
 
 /**
@@ -24,7 +25,7 @@ data class MarsImage(
     val favorite: Boolean = false,
     val popular: Boolean = false,
     @Embedded(prefix = "counter_")
-    val stats: Stats
+    val stats: Stats,
 )  {
 
     class Stats(

@@ -127,6 +127,7 @@ fun RoverPhotosScreen(
                             viewModel.randomize()
                         })
                 }
+
                 else -> {
                     PhotosList(modifier, it) { image ->
                         viewModel.onPhotoClick(image)
@@ -138,8 +139,18 @@ fun RoverPhotosScreen(
         }
     }
 
-    val fabVisible = photos?.isNotEmpty() == true
-    RefreshButton(fabVisible, modifier, viewModel)
+    val fabVisible = remember(photos?.size) {
+        photos?.isNotEmpty() == true
+    }
+
+    RefreshButton(
+        fabVisible = fabVisible,
+        modifier = modifier,
+        onClick = {
+            viewModel.track("click_refresh")
+            viewModel.goToLatest()
+        },
+    )
 }
 
 @ExperimentalAnimationApi
@@ -147,7 +158,7 @@ fun RoverPhotosScreen(
 private fun RefreshButton(
     fabVisible: Boolean,
     modifier: Modifier,
-    viewModel: PhotosViewModel
+    onClick: () -> Unit,
 ) {
     AnimatedVisibility(visible = fabVisible, enter = fadeIn(), exit = fadeOut()) {
         Box(
@@ -157,10 +168,8 @@ private fun RefreshButton(
         ) {
             FloatingActionButton(
                 modifier = Modifier.align(Alignment.BottomEnd),
-                onClick = {
-                    viewModel.track("click_refresh")
-                    viewModel.goToLatest()
-                }) {
+                onClick = onClick
+            ) {
                 Icon(
                     imageVector = Icons.Filled.Autorenew,
                     contentDescription = "refresh"
@@ -179,34 +188,43 @@ private fun PhotosList(
 ) {
 
     LazyVerticalGrid(columns = GridCells.Fixed(2), modifier = modifier) {
-        items(photos) { image ->
-            Card(
+        items(
+            photos,
+            key = { it.id },
+            contentType = { "MarsPhotoContentType" },
+        ) { image ->
+            PhotoCard(image = image, onPhotoClick = onPhotoClick)
+        }
+    }
+}
+
+@Composable
+private fun PhotoCard(
+    image: MarsImage,
+    onPhotoClick: (image: MarsImage) -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth()
+            .clickable {
+                onPhotoClick(image)
+            },
+        shape = MaterialTheme.shapes.large
+    ) {
+        Column(verticalArrangement = Arrangement.SpaceBetween) {
+            NetworkImage(
                 modifier = Modifier
-                    .padding(8.dp)
                     .fillMaxWidth()
-                    .clickable {
-                        onPhotoClick(image)
-                    },
-                shape = MaterialTheme.shapes.large
-            ) {
-                Column(verticalArrangement = Arrangement.SpaceBetween) {
-                    NetworkImage(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .aspectRatio(1F),
-                        imageUrl = image.imageUrl
-                    )
-                    val title = image.name
-                    if (title != null) {
-                        Text(
-                            text = title,
-                            style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(4.dp),
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                }
-            }
+                    .aspectRatio(1F),
+                imageUrl = image.imageUrl
+            )
+            Text(
+                text = image.name.orEmpty(),
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(4.dp),
+                textAlign = TextAlign.Center
+            )
         }
     }
 }
