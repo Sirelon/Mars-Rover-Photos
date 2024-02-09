@@ -39,10 +39,6 @@ class ImagesRepository(private val context: Context) {
 
     fun loadImages(ids: List<String>) = imagesDao.getImagesByIds(ids)
 
-    fun loadPopularPhotos() = imagesDao.loadPopularImages()
-
-    fun loadFirstImage() = imagesDao.getOneImage()
-
     fun loadFavoritePagedSource(): Flow<PagingData<MarsImage>> {
         return Pager(
             config = PagingConfig(10, 2),
@@ -63,8 +59,6 @@ class ImagesRepository(private val context: Context) {
             }
         }
     }
-
-    fun getFavoriteImages() = imagesDao.getFavoriteImages()
 
     @OptIn(ExperimentalPagingApi::class)
     fun loadPopularPagedSource(): Flow<PagingData<MarsImage>> {

@@ -29,16 +29,16 @@ import kotlin.random.Random
  */
 class PhotosViewModel(app: Application) : AndroidViewModel(app) {
 
-    val dataManger = getApplication<RoverApplication>().dataManger
+    private val dataManger = getApplication<RoverApplication>().dataManger
     private val roversRepository = dataManger.roverRepo
     private val photosRepository = dataManger.photosRepo
     private val imagesRepository = dataManger.imagesRepo
 
-    private val queryEmmiter = MutableStateFlow<PhotosQueryRequest?>(null)
-    private val roverIdEmmiter = MutableStateFlow<Long?>(null)
+    private val queryEmitter = MutableStateFlow<PhotosQueryRequest?>(null)
+    private val roverIdEmitter = MutableStateFlow<Long?>(null)
     private var dateUtil: RoverDateUtil? = null
 
-    private val roverFlow = roverIdEmmiter
+    private val roverFlow = roverIdEmitter
         .filterNotNull()
         .mapNotNull { roversRepository.loadRoverById(it) }
         .onEach { dateUtil = RoverDateUtil(it) }
@@ -46,7 +46,7 @@ class PhotosViewModel(app: Application) : AndroidViewModel(app) {
         .flowOn(Dispatchers.IO)
 
     // null means that we are in loading process.
-    val photosFlow = queryEmmiter
+    val photosFlow = queryEmitter
         .map {
             if (it != null) photosRepository.refreshImages(it)
             else null
@@ -54,7 +54,7 @@ class PhotosViewModel(app: Application) : AndroidViewModel(app) {
         .catch { recordException(it) }
         .flowOn(Dispatchers.IO)
 
-    val solFlow = queryEmmiter.mapNotNull { it?.sol }
+    val solFlow = queryEmitter.mapNotNull { it?.sol }
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -63,16 +63,16 @@ class PhotosViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun setPhotosQuery(query: PhotosQueryRequest) {
+    private fun setPhotosQuery(query: PhotosQueryRequest) {
         query.logD()
-        queryEmmiter.tryEmit(null)
+        queryEmitter.tryEmit(null)
         viewModelScope.launch {
-            queryEmmiter.emit(query)
+            queryEmitter.emit(query)
         }
     }
 
     fun setRoverId(roverId: Long) {
-        roverIdEmmiter.tryEmit(roverId)
+        roverIdEmitter.tryEmit(roverId)
     }
 
     fun randomize() {
@@ -86,7 +86,7 @@ class PhotosViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch(Dispatchers.IO) {
             val rover = roverFlow.first()
             val maxSol = rover.maxSol - 1
-            val query = if (queryEmmiter.value?.sol == maxSol) {
+            val query = if (queryEmitter.value?.sol == maxSol) {
                 randomPhotosQueryRequest()
             } else {
                 PhotosQueryRequest(rover.id, maxSol, null)
@@ -96,7 +96,7 @@ class PhotosViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun getSol() = queryEmmiter.value?.sol ?: 0
+    private fun getSol() = queryEmitter.value?.sol ?: 0
 
     fun earthDateStr(sol: Long): String {
         val time = earthTime(sol)
@@ -125,9 +125,9 @@ class PhotosViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun loadBySol(sol: Long) {
-        val queryRequest = queryEmmiter.value ?: return
+        val queryRequest = queryEmitter.value ?: return
         if (sol == queryRequest.sol) return
-        queryEmmiter.tryEmit(null)
+        queryEmitter.tryEmit(null)
 
         val queryUpdated = queryRequest.copy(sol = sol)
         setPhotosQuery(queryUpdated)

@@ -40,6 +40,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -82,7 +83,7 @@ fun RoverPhotosScreen(
 
     var openSolDialog by remember { mutableStateOf(false) }
 
-    var maxSol: Long by remember(calculation = { mutableStateOf(Long.MAX_VALUE) })
+    var maxSol: Long by remember(calculation = { mutableLongStateOf(Long.MAX_VALUE) })
     LaunchedEffect(key1 = maxSol, block = {
         maxSol = viewModel.maxSol()
     })
@@ -269,7 +270,6 @@ private fun SolChanger(sol: Long?, maxSol: Long, onSolChanged: (sol: Long?) -> U
                 text = "Sol: ",
                 modifier = Modifier.weight(1f),
                 style = MaterialTheme.typography.titleLarge.copy(
-//                    color = MaterialTheme.colorScheme.secondary
                 )
             )
             OutlinedTextField(
@@ -334,22 +334,4 @@ private fun showEarthDateeChooser(activity: FragmentActivity, viewModel: PhotosV
         calender.get(Calendar.DAY_OF_MONTH)
     )
     datePicker.show()
-
-//    findViewById<View>(R.id.dateEarthChoose).setOnClickListener {
-//        // UPDATE TIME
-//        val timeFromSol = viewModel.dateFromSol()
-//
-//        calender.timeInMillis = timeFromSol
-//
-//        datePicker.updateDate(
-//            calender.get(Calendar.YEAR),
-//            calender.get(Calendar.MONTH),
-//            calender.get(Calendar.DAY_OF_MONTH)
-//        )
-//
-//        // Hide title. Need to set AFTER all
-//        datePicker.setTitle("")
-//        // SHOW DIALOG
-//        datePicker.show()
-//    }
 }
