@@ -53,7 +53,6 @@ fun DefaultPreview() {
 @Composable
 fun AboutAppContent(onClearCache: () -> Unit, onRateApp: () -> Unit) {
     val typography = MaterialTheme.typography
-    val colors = MaterialTheme.colorScheme
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -70,7 +69,6 @@ fun AboutAppContent(onClearCache: () -> Unit, onRateApp: () -> Unit) {
             text = stringResource(id = R.string.about_description),
             style = typography.bodyLarge,
             textAlign = TextAlign.Center,
-//            color = colors.tertiary,
         )
 
         Column(

@@ -96,7 +96,6 @@ dependencies {
     implementation(libs.compose.material.icons.extended)
     implementation(libs.compose.ui.tooling)
 
-    implementation(libs.accompanist.placeholder)
     implementation(libs.accompanist.flowlayout)
     implementation(libs.accompanist.systemuicontroller)
 

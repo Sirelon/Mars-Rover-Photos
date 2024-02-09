@@ -18,8 +18,6 @@ class PopularPhotosViewModel(app: Application) : AndroidViewModel(app) {
 
     val popularPhotos = imagesRepository.loadPopularPagedSource()
 
-    fun loadPopular() = imagesRepository.loadPopularPhotos()
-
     fun updateFavorite(image: MarsImage) {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             imagesRepository.updateFavForImage(image)

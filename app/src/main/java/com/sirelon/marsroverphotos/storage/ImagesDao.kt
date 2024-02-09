@@ -19,9 +19,6 @@ interface ImagesDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertImages(images: List<MarsImage>): List<Long>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun replaceImages(images: List<MarsImage>)
-
     @Query("SELECT * FROM images WHERE favorite = 1")
     fun getFavoriteImages(): LiveData<List<MarsImage>>
 

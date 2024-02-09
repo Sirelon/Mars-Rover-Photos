@@ -1,7 +1,6 @@
 package com.sirelon.marsroverphotos.feature.rovers
 
 import android.content.Context
-import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.extensions.recordException
 import com.sirelon.marsroverphotos.models.Rover
@@ -141,10 +140,9 @@ class RoversRepository(context: Context, private val api: RestApi) {
             .map { it.await() }
             .toList()
         updateRoversByInfo(rovers)
-//        roverDao.insertRoversList(rovers)
     }
 
-    suspend fun updateRoverCountPhotos(roverId: Long, photos: Long) {
+    fun updateRoverCountPhotos(roverId: Long, photos: Long) {
         "photos $photos".logD()
         roverDao.updateRoverCountPhotos(roverId, photos)
     }
@@ -153,13 +151,11 @@ class RoversRepository(context: Context, private val api: RestApi) {
 
     suspend fun loadRoverById(id: Long) = roverDao.loadRoverById(id)
 
-    fun updateRoversByInfo(list: List<RoverInfo>) {
-//        DataBaseProvider.dataBase.runInTransaction {
+    private fun updateRoversByInfo(list: List<RoverInfo>) {
         list.forEach(this::updateRoverByInfo)
-//        }
     }
 
-    fun updateRoverByInfo(roverInfo: RoverInfo) {
+    private fun updateRoverByInfo(roverInfo: RoverInfo) {
         "UPDATE ROVER BY INFO $roverInfo".logD()
         // We will not post status, 'cause it's incorrect data
         kotlin.runCatching {

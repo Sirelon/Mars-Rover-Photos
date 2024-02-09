@@ -1,8 +1,5 @@
 package com.sirelon.marsroverphotos.feature.firebase
 
-import com.google.firebase.firestore.Exclude
-import com.sirelon.marsroverphotos.adapter.AdapterConstants
-import com.sirelon.marsroverphotos.models.ViewType
 import com.sirelon.marsroverphotos.storage.MarsImage
 
 /**
@@ -19,10 +16,7 @@ data class FirebasePhoto(
     var scaleCounter: Long,
     var saveCounter: Long,
     var shareCounter: Long
-) : ViewType {
-
-    @Exclude
-    override fun getViewId() = id
+) {
 
     constructor(photo: MarsImage) : this(
         id = photo.id,
@@ -36,8 +30,6 @@ data class FirebasePhoto(
         shareCounter = 0,
         favoriteCounter = 0,
     )
-
-    override fun getViewType() = AdapterConstants.POPULAR_PHOTO
 
     fun toMarsImage(order: Int) = MarsImage(
         id = id,

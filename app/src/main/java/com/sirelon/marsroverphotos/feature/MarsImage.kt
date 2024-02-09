@@ -76,11 +76,6 @@ fun MarsImageComposable(
             .padding(vertical = 8.dp)
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            // TODO: some bug here: when flings, by some reason state doesn't update properly.
-//            .placeholder(
-////                visible = loading,
-//                highlight = PlaceholderHighlight.shimmer()
-//            )
         ,
         shape = MaterialTheme.shapes.large
     ) {
@@ -140,7 +135,6 @@ fun MarsImageFavoriteToggle(
         onCheckedChange = onCheckedChange
     ) {
         Icon(
-//            tint = MaterialTheme.colorScheme.secondary,
             imageVector = if (checked) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
             contentDescription = null // handled by click label of parent
         )
@@ -182,13 +176,11 @@ private fun StatsInfoText(counter: Long, image: ImageVector, desc: String) {
             modifier = Modifier.size(20.dp),
             painter = rememberVectorPainter(image = image),
             contentDescription = desc,
-//            tint = MaterialTheme.colorScheme.secondary,
         )
         Spacer(modifier = Modifier.width(6.dp))
         Text(
             text = counter.toString(),
             style = MaterialTheme.typography.bodySmall,
-//            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }

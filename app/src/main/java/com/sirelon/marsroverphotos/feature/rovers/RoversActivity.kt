@@ -474,17 +474,17 @@ class RoversActivity : FragmentActivity() {
 }
 
 sealed class Screen(val route: String, val iconCreator: @Composable () -> ImageVector) {
-    object Rovers : Screen("rovers", {
+    data object Rovers : Screen("rovers", {
         ImageVector.vectorResource(id = R.drawable.ic_rovers)
     })
 
-    object Favorite : Screen("favorite", { Icons.Outlined.Favorite })
-    object Popular : Screen("popular", { Icons.Outlined.LocalFireDepartment })
-    object About : Screen("about", { Icons.Outlined.Info })
+    data object Favorite : Screen("favorite", { Icons.Outlined.Favorite })
+    data object Popular : Screen("popular", { Icons.Outlined.LocalFireDepartment })
+    data object About : Screen("about", { Icons.Outlined.Info })
 
     class Rover(val id: Long) : Screen("rover", { Icons.Outlined.ViewCarousel })
 
-    object Ukraine : Screen("ukraine", { Icons.Outlined.Info })
+    data object Ukraine : Screen("ukraine", { Icons.Outlined.Info })
 }
 
 @Composable

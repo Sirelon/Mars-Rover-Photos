@@ -3,6 +3,7 @@ package com.sirelon.marsroverphotos.models
 import android.os.Parcelable
 import androidx.annotation.Keep
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
@@ -11,6 +12,7 @@ import kotlinx.serialization.json.JsonNames
  * @author romanishin
  * @since 31.10.16 on 11:19
  */
+@OptIn(ExperimentalSerializationApi::class)
 @Keep
 @Parcelize
 @Serializable

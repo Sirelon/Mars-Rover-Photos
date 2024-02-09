@@ -5,8 +5,6 @@ package com.sirelon.marsroverphotos.extensions
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import android.os.Parcel
-import android.os.Parcelable
 import android.provider.Settings
 import android.util.Log
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -22,15 +20,6 @@ fun Activity.showAppSettings() {
     intent.data = uri
     kotlin.runCatching { this.startActivityForResult(intent, 7898) }
 }
-
-// Inline function to create Parcel Creator
-inline fun <reified T : Parcelable> createParcel(
-    crossinline createFromParcel: (Parcel) -> T?
-): Parcelable.Creator<T> =
-    object : Parcelable.Creator<T> {
-        override fun createFromParcel(source: Parcel): T? = createFromParcel(source)
-        override fun newArray(size: Int): Array<out T?> = arrayOfNulls(size)
-    }
 
 fun Any?.logD() {
     Log.d("Sirelon", this?.toString() ?: "NULL")

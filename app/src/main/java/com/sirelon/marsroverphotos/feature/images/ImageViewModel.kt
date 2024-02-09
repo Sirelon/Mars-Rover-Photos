@@ -187,10 +187,6 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
         shouldBlock: Boolean
     ) {
         fullscreenImageTracker.onZoomGesture(zoomToChange, offsetY, offsetX, shouldBlock)
-        // Think how to improve it.
-//        if (zoomToChange != 1f) {
-//            hideUiEmitter.value = true
-//        }
     }
 
     fun shareMarsImage(marsImage: MarsImage) {

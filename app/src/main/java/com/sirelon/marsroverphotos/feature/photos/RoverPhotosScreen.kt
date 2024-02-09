@@ -114,7 +114,7 @@ fun RoverPhotosScreen(
             }
         }
 
-        Crossfade(targetState = photos) {
+        Crossfade(targetState = photos, label = "[Anim]:Progress") {
             when {
                 it == null -> CenteredProgress()
                 it.isEmpty() -> {

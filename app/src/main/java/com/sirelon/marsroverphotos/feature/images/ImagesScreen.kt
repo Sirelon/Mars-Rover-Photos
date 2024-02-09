@@ -1,12 +1,9 @@
-@file:OptIn(ExperimentalFoundationApi::class)
-
 package com.sirelon.marsroverphotos.feature.images
 
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -71,7 +68,6 @@ import net.engawapg.lib.zoomable.zoomable
  * Created on 13.04.2021 22:52 for Mars-Rover-Photos.
  */
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ImageScreen(
     viewModel: ImageViewModel = viewModel(),
@@ -125,7 +121,7 @@ fun ImageScreen(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ImagesPagerContent(
     viewModel: ImageViewModel,
@@ -307,28 +303,6 @@ private fun ImagesPager(
                     imageUrl = marsImage.imageUrl,
                     placeholderRes = null,
                 )
-
-//                val state = rememberSaveable(saver = MultitouchState.Saver) {
-//                    MultitouchState(
-//                        maxZoom = 5f,
-//                        minZoom = 1f,
-//                        zoom = 1f,
-//                        enabled = !pagerState.isScrollInProgress
-//                    )
-//                }
-
-//                MultitouchDetector(
-//                    modifier = Modifier,
-//                    state = state,
-//                    callback = callback
-//                ) {
-//                    NetworkImage(
-//                        modifier = Modifier.fillMaxSize(),
-//                        contentScale = ContentScale.FillWidth,
-//                        imageUrl = marsImage.imageUrl,
-//                        placeholderRes = null,
-//                    )
-//                }
 
                 MarsImageFavoriteToggle(
                     modifier = Modifier

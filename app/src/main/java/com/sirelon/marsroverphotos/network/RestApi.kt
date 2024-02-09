@@ -98,12 +98,7 @@ class RestApi {
     }
 
     private suspend fun loadPerseverance(query: PhotosQueryRequest): List<MarsImage> {
-//        val dateUtil = query.dateUtil
-//        val dateFrom = dateUtil.dateFromSol(query.sol)
-//        val dateTo = dateUtil.dateFromSol(query.sol)
         val response = nasaApi.getPerseveranceRawImages(
-//            from = "${dateUtil.parseTime(dateFrom)}:date_taken:gte",
-//            to = "${dateUtil.parseTime(dateTo)}:date_taken:lt"
             sol = "${query.sol}:sol:in"
         )
 
