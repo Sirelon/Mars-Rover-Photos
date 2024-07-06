@@ -1,38 +1,38 @@
 [versions]
 # https://developer.android.com/jetpack/androidx/releases/activity
-activityCompose = "1.9.0-alpha03"
+activityCompose = "1.9.0"
 # https://developer.android.com/jetpack/androidx/releases/appcompat
-appcompat = "1.7.0-alpha03"
+appcompat = "1.7.0"
 # https://github.com/coil-kt/coil/blob/main/CHANGELOG.md
-coil = "3.0.0-alpha03"
+coil = "3.0.0-alpha06"
 # https://developer.android.com/jetpack/androidx/releases/constraintlayout
 constraintlayoutCompose = "1.1.0-alpha13"
 # https://developer.android.com/jetpack/androidx/releases/annotation
-annotation = "1.7.1"
+annotation = "1.8.0"
 kluent = "1.68"
-kotlin = "1.9.22"
+kotlin = "2.0.0"
 # https://github.com/Kotlin/kotlinx.serialization/releases
-kotlin-serialization = "1.6.2"
+kotlin-serialization = "1.7.0"
 # https://github.com/Kotlin/kotlinx.collections.immutable
 kotlin-collections-immutable = "0.3.7"
-ktx = "1.12.0"
+ktx = "1.13.1"
 # https://github.com/ktorio/ktor/releases
-ktor = "2.3.7"
+ktor = "2.3.11"
 # https://github.com/google/ksp/releases
-ksp = "1.9.22-1.0.16"
+ksp = "2.0.0-1.0.22"
 # https://developer.android.com/jetpack/androidx/releases/lifecycle
-lifecycle = "2.8.0-alpha01"
+lifecycle = "2.8.3"
 # https://developer.android.com/jetpack/androidx/releases/compose
-compose = "1.7.0-alpha02"
+compose = "1.7.0-beta04"
 # https://developer.android.com/jetpack/androidx/releases/compose-material3
-compose-material3 = "1.2.0"
+compose-material3 = "1.2.1"
 # https://github.com/google/accompanist/releases
 accompanist = "0.34.0"
 loggingInterceptor = "4.12.0"
 mockito = "1.6.0"
 # https://developer.android.com/jetpack/androidx/releases/paging
-paging = "3.3.0-alpha03"
-playServicesAds = "22.6.0"
+paging = "3.3.0"
+playServicesAds = "23.2.0"
 # https://developer.android.com/jetpack/androidx/releases/room
 room = "2.6.1"
 timber = "5.0.1"
@@ -41,7 +41,7 @@ userMessagingPlatform = "2.2.0"
 work = "2.9.0"
 # https://github.com/usuiat/Zoomable/releases
 zoomable = "1.6.0"
-androidGradlePlugin = "8.4.0-alpha08"
+androidGradlePlugin = "8.6.0-alpha08"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -97,12 +97,11 @@ zoomable = { module = "net.engawapg.lib:zoomable", version.ref = "zoomable" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-# https://plugins.gradle.org/plugin/org.jetbrains.kotlin.plugin.parcelize
-kotlin-parcelize = { id = "org.jetbrains.kotlin.parcelize", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 firebase-perf = { id = "com.google.firebase.firebase-perf", version = "1.4.2" }
-firebase-crashlytics = { id = "com.google.firebase.crashlytics", version = "2.9.9" }
-google-services = { id = "com.google.gms.google-services", version = "4.4.0" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.2" }
+google-services = { id = "com.google.gms.google-services", version = "4.4.2" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
