@@ -13,6 +13,7 @@ kluent = "1.68"
 kotlin = "2.0.0"
 # https://github.com/Kotlin/kotlinx.serialization/releases
 kotlin-serialization = "1.7.0"
+
 # https://github.com/Kotlin/kotlinx.collections.immutable
 kotlin-collections-immutable = "0.3.7"
 ktx = "1.13.1"
@@ -23,7 +24,7 @@ ksp = "2.0.0-1.0.22"
 # https://developer.android.com/jetpack/androidx/releases/lifecycle
 lifecycle = "2.8.3"
 # https://developer.android.com/jetpack/androidx/releases/compose
-compose = "1.7.0-beta04"
+compose = "1.7.0-beta05"
 # https://developer.android.com/jetpack/androidx/releases/compose-material3
 compose-material3 = "1.2.1"
 # https://github.com/google/accompanist/releases
