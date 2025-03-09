@@ -22,7 +22,7 @@ def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
-    compileSdk 34
+    compileSdk 35
     signingConfigs {
         release {
             keyAlias keystoreProperties['keyAlias']
@@ -34,10 +34,10 @@ android {
 
     defaultConfig {
         applicationId "com.sirelon.marsroverphotos"
-        minSdkVersion 21
-        targetSdkVersion 34
-        versionCode 45
-        versionName "2.5.1"
+        minSdkVersion 23
+        targetSdkVersion 35
+        versionCode 46
+        versionName "2.5.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         signingConfig signingConfigs.release
     }
@@ -72,10 +72,6 @@ android {
         buildConfig true
     }
 
-    composeOptions {
-//        https://developer.android.com/jetpack/androidx/releases/compose-compiler
-        kotlinCompilerExtensionVersion "1.5.9"
-    }
     namespace 'com.sirelon.marsroverphotos'
 }
 
@@ -107,7 +103,6 @@ dependencies {
     testImplementation libs.kotlin.stdlib
     testImplementation libs.kotlin.test.junit
     testImplementation libs.mockito.kotlin
-    testImplementation libs.kluent
 
     implementation libs.androidx.activity.compose
     implementation libs.androidx.annotation
@@ -136,7 +131,7 @@ dependencies {
     implementation libs.kotlinx.serialization.json
 
 //    https://firebase.google.com/support/release-notes/android
-    implementation platform('com.google.firebase:firebase-bom:33.1.1')
+    implementation platform('com.google.firebase:firebase-bom:33.10.0')
 
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-crashlytics'

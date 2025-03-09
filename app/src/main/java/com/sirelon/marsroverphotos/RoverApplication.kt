@@ -20,7 +20,7 @@ class RoverApplication : Application() {
         lateinit var APP: RoverApplication
     }
 
-    val adEnabled = false
+    val adEnabled = true
 
     override fun onCreate() {
         Log.d("Sirelon", "ON CREATE APP $this")

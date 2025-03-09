@@ -68,7 +68,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.core.view.WindowCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -136,6 +135,9 @@ class RoversActivity : FragmentActivity() {
     private lateinit var adView: AdView
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // https://stackoverflow.com/a/77262627/3127851
+        window.decorView
+
         super.onCreate(savedInstanceState)
 
         val bottomItems = listOf(Screen.Rovers, Screen.Favorite, Screen.Popular, Screen.About)
@@ -143,7 +145,6 @@ class RoversActivity : FragmentActivity() {
         if (RoverApplication.APP.adEnabled) {
             gdprHelper.init()
         }
-        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
             val theme by Prefs.themeLiveData.collectAsStateWithLifecycle()
