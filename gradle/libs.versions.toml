@@ -4,44 +4,44 @@ activityCompose = "1.10.1"
 # https://developer.android.com/jetpack/androidx/releases/appcompat
 appcompat = "1.7.0"
 # https://github.com/coil-kt/coil/blob/main/CHANGELOG.md
-coil = "3.1.0"
+coil = "3.2.0-rc02"
 # https://developer.android.com/jetpack/androidx/releases/constraintlayout
 constraintlayoutCompose = "1.1.1"
 # https://developer.android.com/jetpack/androidx/releases/annotation
 annotation = "1.9.1"
-kotlin = "2.1.10"
+# https://firebase.google.com/support/release-notes/android
+firebaseBom = "33.13.0"
+kotlin = "2.1.20"
 # https://github.com/Kotlin/kotlinx.serialization/releases
-kotlin-serialization = "1.8.0"
+kotlin-serialization = "1.8.1"
 
 # https://github.com/Kotlin/kotlinx.collections.immutable
 kotlin-collections-immutable = "0.3.8"
-ktx = "1.15.0"
+ktx = "1.16.0"
 # https://github.com/ktorio/ktor/releases
-ktor = "3.1.1"
+ktor = "3.1.3"
 # https://github.com/google/ksp/releases
-ksp = "2.1.10-1.0.31"
+ksp = "2.1.20-2.0.1"
 # https://developer.android.com/jetpack/androidx/releases/lifecycle
-lifecycle = "2.8.7"
+lifecycle = "2.9.0"
 # https://developer.android.com/jetpack/androidx/releases/compose
-compose = "1.7.8"
+compose = "1.8.1"
 # https://developer.android.com/jetpack/androidx/releases/compose-material3
-compose-material3 = "1.3.1"
-# https://github.com/google/accompanist/releases
-accompanist = "0.36.0"
+compose-material3 = "1.3.2"
 loggingInterceptor = "4.12.0"
 mockito = "1.6.0"
 # https://developer.android.com/jetpack/androidx/releases/paging
 paging = "3.3.6"
-playServicesAds = "24.0.0"
+playServicesAds = "24.2.0"
 # https://developer.android.com/jetpack/androidx/releases/room
-room = "2.6.1"
+room = "2.7.1"
 timber = "5.0.1"
-userMessagingPlatform = "3.1.0"
+userMessagingPlatform = "3.2.0"
 # https://developer.android.com/jetpack/androidx/releases/work
-work = "2.10.0"
+work = "2.10.1"
 # https://github.com/usuiat/Zoomable/releases
-zoomable = "2.2.0"
-androidGradlePlugin = "8.9.0"
+zoomable = "2.7.0"
+androidGradlePlugin = "8.10.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -61,6 +61,12 @@ androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version
 
 coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
+firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
+firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
+firebase-perf = { module = "com.google.firebase:firebase-perf" }
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlin-collections-immutable" }
@@ -74,7 +80,7 @@ ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serializatio
 
 androidx-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle" }
 # https://developer.android.com/jetpack/androidx/releases/navigation
-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version = "2.8.8" }
+navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version = "2.9.0" }
 logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "loggingInterceptor" }
 mockito-kotlin = { module = "com.nhaarman:mockito-kotlin", version.ref = "mockito" }
 
@@ -83,11 +89,7 @@ compose-ui-util = { group = "androidx.compose.ui", name = "ui-util", version.ref
 compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "compose" }
 compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "compose" }
 compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "compose-material3" }
-compose-material-icons-core = { group = "androidx.compose.material", name = "material-icons-core", version.ref = "compose" }
-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "compose" }
-
-accompanist-flowlayout = { group = "com.google.accompanist", name = "accompanist-flowlayout", version.ref = "accompanist" }
-accompanist-systemuicontroller = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanist" }
+compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version = "1.7.8" }
 
 play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "playServicesAds" }
 user-messaging-platform = { module = "com.google.android.ump:user-messaging-platform", version.ref = "userMessagingPlatform" }
@@ -104,3 +106,13 @@ firebase-perf = { id = "com.google.firebase.firebase-perf", version = "1.4.2" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.3" }
 google-services = { id = "com.google.gms.google-services", version = "4.4.2" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+
+[bundles]
+firebase = [
+    "firebase-bom",
+    "firebase-analytics",
+    "firebase-crashlytics",
+    "firebase-firestore",
+    "firebase-messaging",
+    "firebase-perf",
+]

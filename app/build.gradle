@@ -89,12 +89,8 @@ dependencies {
     implementation(libs.compose.ui.util)
     implementation(libs.compose.foundation)
     implementation(libs.compose.material3)
-    implementation(libs.compose.material.icons.core)
     implementation(libs.compose.material.icons.extended)
     implementation(libs.compose.ui.tooling)
-
-    implementation(libs.accompanist.flowlayout)
-    implementation(libs.accompanist.systemuicontroller)
 
     implementation libs.navigation.compose
     implementation libs.androidx.constraintlayout.compose
@@ -130,14 +126,8 @@ dependencies {
 
     implementation libs.kotlinx.serialization.json
 
-//    https://firebase.google.com/support/release-notes/android
-    implementation platform('com.google.firebase:firebase-bom:33.10.0')
-
-    implementation 'com.google.firebase:firebase-analytics'
-    implementation 'com.google.firebase:firebase-crashlytics'
-    implementation 'com.google.firebase:firebase-perf'
-    implementation 'com.google.firebase:firebase-firestore'
-    implementation 'com.google.firebase:firebase-messaging'
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.bundles.firebase)
 
     implementation libs.play.services.ads
     implementation libs.user.messaging.platform

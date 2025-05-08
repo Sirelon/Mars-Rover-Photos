@@ -9,7 +9,9 @@ import android.text.format.Formatter
 import android.util.DisplayMetrics
 import android.view.View
 import android.widget.Toast
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.expandVertically
@@ -55,7 +57,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -81,7 +82,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import coil3.ImageLoader
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
@@ -159,23 +159,18 @@ class RoversActivity : FragmentActivity() {
                 mutableStateOf(false)
             }
 
-            val systemUiController = rememberSystemUiController()
-            val useDarkIcons = !isDark
-
-            DisposableEffect(key1 = systemUiController, key2 = useDarkIcons, key3 = hideUI) {
-                // Update all of the system bar colors to be transparent, and use
-                // dark icons if we're in light theme
-                systemUiController.setSystemBarsColor(
-                    color = Color.Transparent,
-                    darkIcons = useDarkIcons
+            DisposableEffect(isDark) {
+                enableEdgeToEdge(
+                    statusBarStyle = SystemBarStyle.auto(
+                        android.graphics.Color.TRANSPARENT,
+                        android.graphics.Color.TRANSPARENT,
+                    ) { isDark },
+                    navigationBarStyle = SystemBarStyle.auto(
+                        lightScrim,
+                        darkScrim,
+                    ) { isDark },
                 )
 
-                systemUiController.setNavigationBarColor(
-                    color = if (hideUI) Color.Transparent else Color.Black,
-                    darkIcons = useDarkIcons
-                )
-
-                // setStatusBarColor() and setNavigationBarColor() also exist
                 onDispose {}
             }
 
@@ -572,3 +567,15 @@ private fun InfoText(label: String, text: String) {
         modifier = Modifier.fillMaxWidth()
     )
 }
+
+/**
+ * The default light scrim, as defined by androidx and the platform:
+ * https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:activity/activity/src/main/java/androidx/activity/EdgeToEdge.kt;l=35-38;drc=27e7d52e8604a080133e8b842db10c89b4482598
+ */
+private val lightScrim = android.graphics.Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
+
+/**
+ * The default dark scrim, as defined by androidx and the platform:
+ * https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:activity/activity/src/main/java/androidx/activity/EdgeToEdge.kt;l=40-44;drc=27e7d52e8604a080133e8b842db10c89b4482598
+ */
+private val darkScrim = android.graphics.Color.argb(0x80, 0x1b, 0x1b, 0x1b)
