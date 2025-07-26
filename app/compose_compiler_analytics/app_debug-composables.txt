@@ -71,11 +71,6 @@ restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun ImagesPag
   callback: MultitouchDetectorCallback
   stable favoriteClick: Function2<MarsImage, Boolean, Unit>
 )
-restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun EmptyPhotos(
-  stable title: String
-  stable btnTitle: String
-  stable callback: Function0<Unit>
-)
 restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun RoverPhotosScreen(
   unstable activity: FragmentActivity
   stable modifier: Modifier? = @static Companion
@@ -165,24 +160,5 @@ restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun UkraineBa
 restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun PreviewBanner()
 restartable skippable scheme("[0, [0]]") fun MarsRoverPhotosTheme(
   stable darkTheme: Boolean = @dynamic isSystemInDarkTheme($composer, 0)
-  stable content: Function2<Composer, Int, Unit>
-)
-restartable skippable scheme("[androidx.compose.ui.UiComposable, [androidx.compose.ui.UiComposable]]") fun CenteredColumn(
-  stable modifier: Modifier? = @static Companion
-  stable content: @[ExtensionFunctionType] Function3<ColumnScope, Composer, Int, Unit>
-)
-restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun CenteredProgress()
-restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun MarsSnackbar(
-  stable modifier: Modifier? = @static Companion
-  stable snackbarHostState: SnackbarHostState
-  stable actionClick: Function0<Unit>? = @static null
-)
-restartable skippable scheme("[androidx.compose.ui.UiComposable]") fun RadioButtonText(
-  stable text: String
-  stable selected: Boolean
-  stable modifier: Modifier? = @static Companion
-  stable onClick: Function0<Unit>
-)
-restartable skippable scheme("[0, [0]]") fun NoScrollEffect(
   stable content: Function2<Composer, Int, Unit>
 )

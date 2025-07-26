@@ -1,8 +1,3 @@
-unstable class AppDataBase_Impl {
-  unstable val _roverDao: Lazy<RoverDao>
-  unstable val _imagesDao: Lazy<ImagesDao>
-  <runtime stability> = Unstable
-}
 unstable class ImagesDao_Impl {
   unstable val __db: RoomDatabase
   unstable val __insertAdapterOfMarsImage: EntityInsertAdapter<MarsImage>
@@ -10,17 +5,12 @@ unstable class ImagesDao_Impl {
   unstable val __updateAdapterOfStatsUpdateAsMarsImage: EntityDeleteOrUpdateAdapter<StatsUpdate>
   <runtime stability> = Unstable
 }
-unstable class RoverDao_Impl {
-  unstable val __db: RoomDatabase
-  unstable val __insertAdapterOfRover: EntityInsertAdapter<Rover>
-  <runtime stability> = Unstable
-}
 unstable class DataManager {
   unstable val context: Context
   runtime val tracker: ITracker
-  unstable val roverRepo: RoversRepository
+  runtime val roverRepo: RoversRepository
   unstable val imagesRepo: ImagesRepository
-  unstable val photosRepo: PhotosRepository
+  runtime val photosRepo: PhotosRepository
   unstable val rovers: Flow<List<Rover>>
   unstable val exceptionHandler: CoroutineExceptionHandler
   <runtime stability> = Unstable
@@ -35,34 +25,6 @@ unstable class FavoriteImagesViewModel {
   unstable val exceptionHandler: CoroutineExceptionHandler
   unstable val repository: ImagesRepository
   unstable val favoriteImagesFlow: Flow<PagingData<MarsImage>>
-  <runtime stability> = Unstable
-}
-stable class FirebaseConstants {
-  stable val PHOTOS_TABLE: String
-  stable val COLECTION_PHOTOS: String
-  stable val COLECTION_ROVERS: String
-  stable val DOCUMENT_INSIGHT: String
-  stable val PHOTO_ID: String
-  stable val PHOTO_SOL: String
-  stable val PHOTOS_IMAGE: String
-  stable val PHOTOS_EARTH_DATE: String
-  stable val PHOTOS_SEEN: String
-  stable val PHOTOS_SCALE: String
-  stable val PHOTOS_SAVE: String
-  stable val PHOTOS_SHARE: String
-  <runtime stability> = Stable
-}
-unstable class FirebasePhoto {
-  stable val id: String
-  stable val sol: Long
-  stable val name: String
-  stable val imageUrl: String
-  stable val earthDate: String
-  stable var seeCounter: Long
-  stable var favoriteCounter: Long
-  stable var scaleCounter: Long
-  stable var saveCounter: Long
-  stable var shareCounter: Long
   <runtime stability> = Unstable
 }
 unstable class GdprHelper {
@@ -92,10 +54,10 @@ stable class PhotoSaved {
 stable class UiEvent {
   <runtime stability> = Stable
 }
-stable class ImageScreenState {
+runtime class ImageScreenState {
   runtime val images: ImmutableList<MarsImage>
   stable val hideUi: Boolean
-  <runtime stability> = 
+  <runtime stability> = Runtime(MarsImage)
 }
 unstable class ImagesRepository {
   unstable val context: Context
@@ -103,14 +65,10 @@ unstable class ImagesRepository {
   stable val firestorePhotos: FirestorePhotos
   <runtime stability> = Unstable
 }
-unstable class PhotosRepository {
-  unstable val api: RestApi
-  <runtime stability> = Unstable
-}
 unstable class PhotosViewModel {
   unstable val dataManger: DataManager
-  unstable val roversRepository: RoversRepository
-  unstable val photosRepository: PhotosRepository
+  runtime val roversRepository: RoversRepository
+  runtime val photosRepository: PhotosRepository
   unstable val imagesRepository: ImagesRepository
   unstable val queryEmitter: MutableStateFlow<PhotosQueryRequest?>
   unstable val roverIdEmitter: MutableStateFlow<Long?>
@@ -118,11 +76,6 @@ unstable class PhotosViewModel {
   unstable val roverFlow: Flow<Rover>
   unstable val photosFlow: Flow<List<MarsImage>?>
   unstable val solFlow: Flow<Long>
-  <runtime stability> = Unstable
-}
-unstable class PopularRemoteMediator {
-  runtime val firebasePhotos: IFirebasePhotos
-  runtime val dao: ImagesDao
   <runtime stability> = Unstable
 }
 unstable class PopularPhotosViewModel {
@@ -159,38 +112,10 @@ stable class Screen {
   stable val iconCreator: Function2<Composer, Int, ImageVector>
   <runtime stability> = Stable
 }
-unstable class RoversRepository {
-  unstable val api: RestApi
+runtime class RoversRepository {
+  runtime val api: RestApi
   runtime val roverDao: RoverDao
-  <runtime stability> = Unstable
-}
-unstable class FirebaseProvider {
-  unstable val firebasePhotos$delegate: Lazy<FirestorePhotos>
-  <runtime stability> = Unstable
-}
-stable class FirestorePhotos {
-  <runtime stability> = Stable
-}
-unstable class $serializer {
-  unstable val descriptor: SerialDescriptor
-  <runtime stability> = Unstable
-}
-stable class MarsPhoto {
-  stable val id: String
-  stable val sol: Long
-  stable val name: String?
-  stable val imageUrl: String
-  stable val earthDate: String
-  runtime val camera: RoverCamera?
-  runtime var CREATOR: Creator<MarsPhoto>
-  <runtime stability> = 
-}
-runtime class PhotosQueryRequest {
-  stable val roverId: Long
-  stable val sol: Long
-  stable val camera: String?
-  runtime var CREATOR: Creator<PhotosQueryRequest>
-  <runtime stability> = Uncertain(Creator)
+  <runtime stability> = Runtime(RestApi)
 }
 unstable class $serializer {
   unstable val descriptor: SerialDescriptor
@@ -207,110 +132,12 @@ stable class Rover {
   stable var maxDate: String
   stable val totalPhotos: Int
 }
-unstable class $serializer {
-  unstable val descriptor: SerialDescriptor
-  <runtime stability> = Unstable
-}
-runtime class RoverCamera {
-  stable val id: Int
-  stable val name: String
-  stable val fullName: String
-  runtime var CREATOR: Creator<RoverCamera>
-  <runtime stability> = Uncertain(Creator)
-}
 unstable class RoverDateUtil {
   stable val rover: Rover
   unstable val simpleDateFormat: SimpleDateFormat
   stable val SOL_TO_DAY_OFFSET: Double
   unstable val _roverLastDate$delegate: Lazy<Long>
   unstable val _roverLandingDate$delegate: Lazy<Long>
-  <runtime stability> = Unstable
-}
-unstable class NasaApi {
-  unstable val ktor: HttpClient
-  <runtime stability> = Unstable
-}
-unstable class $serializer {
-  unstable val descriptor: SerialDescriptor
-  <runtime stability> = Unstable
-}
-stable class PhotosResponse {
-  runtime val list: List<MarsPhoto>
-  <runtime stability> = 
-}
-unstable class $serializer {
-  unstable val descriptor: SerialDescriptor
-  <runtime stability> = Unstable
-}
-stable class PerseverancePhotosResponse {
-  stable val photos: List<PerseverancePhotoItemResponse>
-  stable val totalImages: Long?
-  <runtime stability> = 
-}
-unstable class $serializer {
-  unstable val descriptor: SerialDescriptor
-  <runtime stability> = Unstable
-}
-stable class PerseverancePhotoItemResponse {
-  stable val id: String
-  stable val sol: Long
-  stable val name: String?
-  stable val description: String?
-  stable val credit: String?
-  stable val imageSourceResponse: ImageSourceResponse?
-  stable val earthDate: String?
-  stable val camera: PerseveranceCameraResponse?
-  <runtime stability> = Stable
-}
-unstable class $serializer {
-  unstable val descriptor: SerialDescriptor
-  <runtime stability> = Unstable
-}
-stable class PerseveranceCameraResponse {
-  stable val id: String
-  stable val name: String
-  stable val fullName: String
-  <runtime stability> = Stable
-}
-unstable class $serializer {
-  unstable val descriptor: SerialDescriptor
-  <runtime stability> = Unstable
-}
-stable class ImageSourceResponse {
-  stable val medium: String?
-  stable val small: String?
-  stable val full_res: String?
-  stable val large: String?
-  <runtime stability> = Stable
-}
-unstable class RestApi {
-  unstable val _perseveranceTotalImages: MutableStateFlow<Long?>
-  unstable val perseveranceTotalImages: Flow<Long>
-  unstable val json: Json
-  unstable val ktor: HttpClient
-  unstable val nasaApi: NasaApi
-  <runtime stability> = Unstable
-}
-unstable class $serializer {
-  unstable val descriptor: SerialDescriptor
-  <runtime stability> = Unstable
-}
-unstable class RoverResponse {
-  unstable var roverInfo: RoverInfo
-  <runtime stability> = Unstable
-}
-unstable class $serializer {
-  unstable val descriptor: SerialDescriptor
-  <runtime stability> = Unstable
-}
-unstable class RoverInfo {
-  stable var name: String
-  stable var landingDate: String
-  stable var launchDate: String
-  stable var status: String
-  stable var maxSol: Long
-  stable var maxDate: String
-  stable var totalPhotos: Int
   <runtime stability> = Unstable
 }
 unstable class AppDataBase {
@@ -320,39 +147,9 @@ unstable class DataBaseProvider {
   unstable var dataBase: AppDataBase
   <runtime stability> = Unstable
 }
-stable class Stats {
-  stable val see: Long
-  stable val scale: Long
-  stable val save: Long
-  stable val share: Long
-  stable val favorite: Long
-  <runtime stability> = Stable
-}
-runtime class MarsImage {
-  stable val id: String
-  stable val order: Int
-  stable val sol: Long
-  stable val name: String?
-  stable val imageUrl: String
-  stable val earthDate: String
-  runtime val camera: RoverCamera?
-  stable val favorite: Boolean
-  stable val popular: Boolean
-  stable val stats: Stats
-  <runtime stability> = Uncertain(Creator)
-}
-stable class StatsUpdate {
-  stable val id: String
-  stable val stats: Stats
-  <runtime stability> = Stable
-}
 unstable class Prefs {
   unstable var sharedPreferences: SharedPreferences
   unstable val themeLiveData: MutableStateFlow<Theme>
-  <runtime stability> = Unstable
-}
-unstable class DataFlowCollector {
-  unstable val flow: MutableStateFlow<T?>
   <runtime stability> = Unstable
 }
 unstable class FirebaseTracker {
@@ -362,8 +159,8 @@ unstable class FirebaseTracker {
 unstable class FullscreenImageTracker {
   runtime val tracker: ITracker
   unstable val dataManager: DataManager
-  unstable val scrollChangeCollector: DataFlowCollector<Float>
-  unstable val zoomChangeCollector: DataFlowCollector<Triple<Float, Float, Float>>
+  runtime val scrollChangeCollector: DataFlowCollector<Float>
+  runtime val zoomChangeCollector: DataFlowCollector<Triple<Float, Float, Float>>
   runtime var currentImage: MarsImage?
   <runtime stability> = Unstable
 }
