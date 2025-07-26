@@ -11,9 +11,9 @@ constraintlayoutCompose = "1.1.1"
 annotation = "1.9.1"
 # https://firebase.google.com/support/release-notes/android
 firebaseBom = "34.0.0"
-kotlin = "2.1.20"
+kotlin = "2.2.0"
 # https://github.com/Kotlin/kotlinx.serialization/releases
-kotlin-serialization = "1.8.1"
+kotlin-serialization = "1.9.0"
 
 # https://github.com/Kotlin/kotlinx.collections.immutable
 kotlin-collections-immutable = "0.4.0"
@@ -21,7 +21,7 @@ ktx = "1.16.0"
 # https://github.com/ktorio/ktor/releases
 ktor = "3.2.2"
 # https://github.com/google/ksp/releases
-ksp = "2.1.20-2.0.1"
+ksp = "2.2.0-2.0.2"
 # https://developer.android.com/jetpack/androidx/releases/lifecycle
 lifecycle = "2.9.2"
 # https://developer.android.com/jetpack/androidx/releases/compose
