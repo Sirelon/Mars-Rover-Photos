@@ -43,7 +43,7 @@ work = "2.10.2"
 zoomable = "2.8.1"
 # https://developer.android.com/jetpack/androidx/releases/navigation
 navigation = "2.9.2"
-androidGradlePlugin = "8.10.0"
+androidGradlePlugin = "8.11.1"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
