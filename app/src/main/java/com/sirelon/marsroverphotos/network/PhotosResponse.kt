@@ -31,6 +31,7 @@ class PerseverancePhotosResponse(
 @OptIn(ExperimentalSerializationApi::class)
 @Keep
 @Serializable
+@Suppress("LongParameterList")
 class PerseverancePhotoItemResponse(
     @SerialName(value = "imageid")
     val id: String,

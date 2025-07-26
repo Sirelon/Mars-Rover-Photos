@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.Flow
  * Created on 22.08.2020 17:42 for Mars-Rover-Photos.
  */
 @Dao
+@Suppress("TooManyFunctions")
 interface ImagesDao {
     // Emits the number of users added to the database.
     @Insert(onConflict = OnConflictStrategy.IGNORE)

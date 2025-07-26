@@ -30,6 +30,7 @@ interface RoverDao {
     suspend fun loadRoverById(id: Long): Rover?
 
     @Query("UPDATE rover SET landingDate = :landingDate, launchDate = :launchDate, maxSol = :maxSol, maxDate = :maxDate, totalPhotos = :totalPhotos WHERE name = :name")
+    @Suppress("LongParameterList")
     fun updateRover(
         name: String,
         landingDate: String,

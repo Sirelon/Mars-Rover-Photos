@@ -38,56 +38,7 @@ fun UkraineInfoScreen() {
                 textAlign = TextAlign.Center
             )
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(
-                    text = "Hello, I'm Oleksandr, a proud Ukrainian",
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleSmall,
-                )
-                Text(text = "As you may be aware, Ukraine is currently facing a severe and merciless war. Countless lives have been lost, and our cities endure daily missile strikes, with some territories occupied and the true extent of casualties unknown.")
-                Text(text = "In a world where Russia, without a shred of decency, prioritizes war over science, engaging in daily violence and propagating hatred, they've even birthed a new form of fascism called")
-
-                TextButton(
-                    onClick = {
-                        RoverApplication.APP.tracker.trackClick("Ukraine_wiki")
-                        uriHandler.openUri("https://en.wikipedia.org/wiki/Rashism")
-                    }) {
-                    Text(text = "rashism.")
-                }
-                Text(text = "The sheer brutality of it is unfathomable in the 21st century. Yet, Ukraine persists against this evil, despite being outgunned and outmanned by Russia. We're not just surviving; we're fighting tooth and nail to liberate our territory and people.")
-                Text(text = "This struggle is nothing short of incredible, fueled by the support of compassionate individuals worldwide. Massive thanks to those who stand with us in this desperate battle for survival.")
-                Text(
-                    text = "Thank you!",
-                    color = Color.Red,
-                    style = MaterialTheme.typography.titleSmall
-                )
-                Text(text = "Don't just scroll past this. Remember us. We need your unwavering support as the war rages on. We're fighting for democracy, for our lives, and for a better future for everyone.")
-                Text(text = "For more gritty details and stories of resilience from Ukrainian heroes, check out ")
-                TextButton(onClick = {
-                    RoverApplication.APP.tracker.trackClick("Ukraine_site")
-                    uriHandler.openUri("https://war.ukraine.ua/")
-                }) {
-                    Text(text = "https://war.ukraine.ua/")
-                }
-                Text(text = "If you have any question, reach me via email ")
-
-                TextButton(onClick = {
-                    RoverApplication.APP.tracker.trackClick("Ukraine_mail")
-                    uriHandler.openUri("mailto:sasha.sirelon@gmail.com")
-                }) {
-                    Text(text = "sasha.sirelon@gmail.com")
-                }
-                Text(
-                    text = "Thanks a bunch – we're all in this together!",
-                    color = Color.Red,
-                    style = MaterialTheme.typography.titleSmall
-                )
-            }
+            UkraineInfoContent(uriHandler)
         }
 
         UkraineBanner(title = "Glory to Ukraine") {
@@ -100,6 +51,60 @@ fun UkraineInfoScreen() {
             }
 
         }
+    }
+}
+
+@Composable
+private fun UkraineInfoContent(uriHandler: androidx.compose.ui.platform.UriHandler) {
+    Column(
+        modifier = Modifier
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            text = "Hello, I'm Oleksandr, a proud Ukrainian",
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.titleSmall,
+        )
+        Text(text = "As you may be aware, Ukraine is currently facing a severe and merciless war. Countless lives have been lost, and our cities endure daily missile strikes, with some territories occupied and the true extent of casualties unknown.")
+        Text(text = "In a world where Russia, without a shred of decency, prioritizes war over science, engaging in daily violence and propagating hatred, they've even birthed a new form of fascism called")
+
+        TextButton(
+            onClick = {
+                RoverApplication.APP.tracker.trackClick("Ukraine_wiki")
+                uriHandler.openUri("https://en.wikipedia.org/wiki/Rashism")
+            }) {
+            Text(text = "rashism.")
+        }
+        Text(text = "The sheer brutality of it is unfathomable in the 21st century. Yet, Ukraine persists against this evil, despite being outgunned and outmanned by Russia. We're not just surviving; we're fighting tooth and nail to liberate our territory and people.")
+        Text(text = "This struggle is nothing short of incredible, fueled by the support of compassionate individuals worldwide. Massive thanks to those who stand with us in this desperate battle for survival.")
+        Text(
+            text = "Thank you!",
+            color = Color.Red,
+            style = MaterialTheme.typography.titleSmall
+        )
+        Text(text = "Don't just scroll past this. Remember us. We need your unwavering support as the war rages on. We're fighting for democracy, for our lives, and for a better future for everyone.")
+        Text(text = "For more gritty details and stories of resilience from Ukrainian heroes, check out ")
+        TextButton(onClick = {
+            RoverApplication.APP.tracker.trackClick("Ukraine_site")
+            uriHandler.openUri("https://war.ukraine.ua/")
+        }) {
+            Text(text = "https://war.ukraine.ua/")
+        }
+        Text(text = "If you have any question, reach me via email ")
+
+        TextButton(onClick = {
+            RoverApplication.APP.tracker.trackClick("Ukraine_mail")
+            uriHandler.openUri("mailto:sasha.sirelon@gmail.com")
+        }) {
+            Text(text = "sasha.sirelon@gmail.com")
+        }
+        Text(
+            text = "Thanks a bunch – we're all in this together!",
+            color = Color.Red,
+            style = MaterialTheme.typography.titleSmall
+        )
     }
 }
 

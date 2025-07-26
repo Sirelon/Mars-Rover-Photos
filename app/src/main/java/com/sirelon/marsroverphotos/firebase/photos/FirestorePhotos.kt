@@ -17,6 +17,7 @@ import com.sirelon.marsroverphotos.utils.randomInt
 /**
  * Created on 11/25/17 17:56 for Mars-Rover-Photos.
  */
+@Suppress("TooManyFunctions")
 internal class FirestorePhotos : IFirebasePhotos {
 
     private fun roversCollection() =

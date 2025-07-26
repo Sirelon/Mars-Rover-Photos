@@ -54,6 +54,7 @@ private val fullscreenImageTracker = FullscreenImageTracker()
 /**
  * Created on 22.08.2020 18:59 for Mars-Rover-Photos.
  */
+@Suppress("TooManyFunctions")
 class ImageViewModel(app: Application) : AndroidViewModel(app),
     MultitouchDetectorCallback by fullscreenImageTracker {
 
