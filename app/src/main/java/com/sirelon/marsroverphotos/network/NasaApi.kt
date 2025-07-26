@@ -8,8 +8,8 @@ import io.ktor.client.request.parameter
 internal class NasaApi(private val ktor: HttpClient) {
 
     private companion object {
-        private val APIKEY = "zyVCPOCqaNBoEambV3n4awUf6TuaPZsHn1trst5E"
-        private val APIKEY_ARG = "api_key"
+        private const val APIKEY = "zyVCPOCqaNBoEambV3n4awUf6TuaPZsHn1trst5E"
+        private const val APIKEY_ARG = "api_key"
     }
 
     suspend fun getRoverInfo(

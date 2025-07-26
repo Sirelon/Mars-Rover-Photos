@@ -12,15 +12,15 @@ import com.sirelon.marsroverphotos.storage.MarsImage
  */
 
 fun List<MarsPhoto>.mapToUi(): List<MarsImage> {
-    return mapIndexed { index, it ->
+    return mapIndexed { index, marsPhoto ->
         // It's okay to use not correct data for favorite and popular with Stats, 'cause if these images already in database, we'll ignore replacing them.
         MarsImage(
-            id = it.id,
-            sol = it.sol,
-            name = it.name,
-            imageUrl = it.imageUrl,
-            earthDate = it.earthDate,
-            camera = it.camera,
+            id = marsPhoto.id,
+            sol = marsPhoto.sol,
+            name = marsPhoto.name,
+            imageUrl = marsPhoto.imageUrl,
+            earthDate = marsPhoto.earthDate,
+            camera = marsPhoto.camera,
             favorite = false,
             popular = false,
             order = index,
@@ -31,15 +31,15 @@ fun List<MarsPhoto>.mapToUi(): List<MarsImage> {
 
 
 fun List<PerseverancePhotoItemResponse>.preveranceToUI(): List<MarsImage> {
-    return mapIndexed { index, it ->
+    return mapIndexed { index, response ->
         // It's okay to use not correct data for favorite and popular with Stats, 'cause if these images already in database, we'll ignore replacing them.
         MarsImage(
-            id = it.id,
-            sol = it.sol,
-            name = it.name,
-            imageUrl = it.imageSourceResponse?.image() ?: "",
-            earthDate = it.earthDate ?: "",
-            camera = it.camera?.toUI(),
+            id = response.id,
+            sol = response.sol,
+            name = response.name,
+            imageUrl = response.imageSourceResponse?.image() ?: "",
+            earthDate = response.earthDate ?: "",
+            camera = response.camera?.toUI(),
             favorite = false,
             popular = false,
             order = index,
@@ -51,7 +51,7 @@ fun List<PerseverancePhotoItemResponse>.preveranceToUI(): List<MarsImage> {
 private fun defaultStats() = MarsImage.Stats(0, 0, 0, 0, 0)
 
 fun ImageSourceResponse.image(): String {
-    return medium ?: small ?: full_res ?: large ?: ""
+    return medium ?: small ?: fullRes ?: large ?: ""
 }
 
 fun PerseveranceCameraResponse.toUI(): RoverCamera {

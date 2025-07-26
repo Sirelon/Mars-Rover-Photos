@@ -24,7 +24,7 @@ object DataBaseProvider {
     fun init(context: Context) {
         dataBase =
             Room.databaseBuilder(context, AppDataBase::class.java, "mars-rover-photos-database")
-                 .fallbackToDestructiveMigration()
+                .fallbackToDestructiveMigration(false)
                 // From version 4, I've add favorite photos into database. So, I cannot use simple destructive Migration here.
                 .build()
     }

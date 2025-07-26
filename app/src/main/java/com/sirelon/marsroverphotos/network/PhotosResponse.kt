@@ -80,7 +80,7 @@ class ImageSourceResponse(
     @SerialName(value = "small")
     val small: String?,
     @SerialName(value = "full_res")
-    val full_res: String?,
+    val fullRes: String?,
 
     @SerialName(value = "large")
     val large: String?,

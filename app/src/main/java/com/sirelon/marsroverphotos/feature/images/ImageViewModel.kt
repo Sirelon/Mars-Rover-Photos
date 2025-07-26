@@ -58,7 +58,7 @@ private val fullscreenImageTracker = FullscreenImageTracker()
 class ImageViewModel(app: Application) : AndroidViewModel(app),
     MultitouchDetectorCallback by fullscreenImageTracker {
 
-    private val IO = Dispatchers.IO + exceptionHandler
+    private val io = Dispatchers.IO + exceptionHandler
 
     private val repository = ImagesRepository(app)
 
@@ -83,7 +83,7 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
             }
         }
         .mapLatest { it.toImmutableList() }
-        .flowOn(IO)
+        .flowOn(io)
 
     val screenState = combine(imagesFlow, hideUiEmitter, ::ImageScreenState)
         .stateIn(
@@ -97,7 +97,7 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
     }
 
     fun updateFavorite(image: MarsImage) {
-        viewModelScope.launch(IO) {
+        viewModelScope.launch(io) {
             repository.updateFavForImage(image)
         }
 
@@ -111,7 +111,7 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
     @Suppress("DEPRECATION")
     fun saveImage(photo: MarsImage) {
         val context = getApplication<RoverApplication>()
-        viewModelScope.launch(IO) {
+        viewModelScope.launch(io) {
             kotlin.runCatching {
                 val loader = ImageLoader(context)
                 val request = ImageRequest.Builder(context)
@@ -166,7 +166,7 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
         val dataManger = RoverApplication.APP.dataManger
         dataManger.trackEvent("photo_show", mapOf("page" to page))
 
-        viewModelScope.launch(IO) {
+        viewModelScope.launch(io) {
             dataManger.updatePhotoSeenCounter(marsPhoto)
         }
     }
@@ -197,7 +197,7 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
             application.tracker.trackClick("share")
         }
 
-        viewModelScope.launch(IO) {
+        viewModelScope.launch(io) {
             RoverApplication.APP.dataManger.updatePhotoShareCounter(marsImage, null)
         }
 
@@ -227,13 +227,13 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
      * Debug methods
      */
     internal fun makePopular(marsImage: MarsImage) {
-        viewModelScope.launch(IO) {
+        viewModelScope.launch(io) {
             repository.makePopular(marsImage)
         }
     }
 
     internal fun removePopular(marsImage: MarsImage) {
-        viewModelScope.launch(IO) {
+        viewModelScope.launch(io) {
             repository.removePopular(marsImage)
         }
     }

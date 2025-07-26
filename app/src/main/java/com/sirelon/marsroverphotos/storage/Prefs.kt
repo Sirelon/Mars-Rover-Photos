@@ -5,8 +5,8 @@ import android.content.SharedPreferences
 import androidx.core.content.edit
 import kotlinx.coroutines.flow.MutableStateFlow
 
-private const val THEME_KEY = "theme"
-private const val GRID_VIEW_KEY = "gridView"
+private const val ThemeKey = "theme"
+private const val GridViewKey = "gridView"
 
 /**
  * Created on 29.07.2021 23:54 for Mars-Rover-Photos.
@@ -23,21 +23,21 @@ object Prefs {
 
     var theme: Theme
         get() {
-            val ordinal = sharedPreferences.getInt(THEME_KEY, Theme.SYSTEM.ordinal)
+            val ordinal = sharedPreferences.getInt(ThemeKey, Theme.SYSTEM.ordinal)
             return Theme.entries[ordinal]
         }
         set(value) {
             themeLiveData.value = value
             sharedPreferences.edit {
-                putInt(THEME_KEY, value.ordinal)
+                putInt(ThemeKey, value.ordinal)
             }
         }
 
     var gridView: Boolean
-        get() = sharedPreferences.getBoolean(GRID_VIEW_KEY, false)
+        get() = sharedPreferences.getBoolean(GridViewKey, false)
         set(value) {
             sharedPreferences.edit {
-                putBoolean(GRID_VIEW_KEY, value)
+                putBoolean(GridViewKey, value)
             }
         }
 }

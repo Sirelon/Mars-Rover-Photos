@@ -2,11 +2,11 @@ package com.sirelon.marsroverphotos.network
 
 import com.sirelon.marsroverphotos.feature.photos.mapToUi
 import com.sirelon.marsroverphotos.feature.photos.preveranceToUI
-import com.sirelon.marsroverphotos.feature.rovers.Curiosity_ID
-import com.sirelon.marsroverphotos.feature.rovers.INSIGHT_ID
-import com.sirelon.marsroverphotos.feature.rovers.Opportunity_ID
-import com.sirelon.marsroverphotos.feature.rovers.PERSEVARANCE_ID
-import com.sirelon.marsroverphotos.feature.rovers.Spirit_ID
+import com.sirelon.marsroverphotos.feature.rovers.CuriosityId
+import com.sirelon.marsroverphotos.feature.rovers.InsightId
+import com.sirelon.marsroverphotos.feature.rovers.OpportunityId
+import com.sirelon.marsroverphotos.feature.rovers.PerserveranceId
+import com.sirelon.marsroverphotos.feature.rovers.SpiritId
 import com.sirelon.marsroverphotos.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.storage.MarsImage
 import io.ktor.client.HttpClient
@@ -67,22 +67,22 @@ class RestApi {
         // We should call another api if rover is insight
         val sol = query.sol
         val list = when (query.roverId) {
-            PERSEVARANCE_ID -> {
+            PerserveranceId -> {
                 return loadPerseverance(query)
             }
 
-            INSIGHT_ID -> {
+            InsightId -> {
                 nasaApi.getInsightRawImages(from = "$sol:sol", to = "$sol:sol").list.mapToUi()
             }
 
-            Curiosity_ID -> nasaApi.getRoverPhotos("Curiosity", sol, query.camera).list.mapToUi()
-            Opportunity_ID -> nasaApi.getRoverPhotos(
+            CuriosityId -> nasaApi.getRoverPhotos("Curiosity", sol, query.camera).list.mapToUi()
+            OpportunityId -> nasaApi.getRoverPhotos(
                 "Opportunity",
                 sol,
                 query.camera
             ).list.mapToUi()
 
-            Spirit_ID -> nasaApi.getRoverPhotos("Spirit", sol, query.camera).list.mapToUi()
+            SpiritId -> nasaApi.getRoverPhotos("Spirit", sol, query.camera).list.mapToUi()
             else -> throw IllegalArgumentException("Unsupported id")
         }
         return list

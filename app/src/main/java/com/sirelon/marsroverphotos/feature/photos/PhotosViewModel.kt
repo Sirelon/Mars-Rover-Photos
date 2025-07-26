@@ -9,7 +9,6 @@ import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.extensions.recordException
 import com.sirelon.marsroverphotos.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.models.RoverDateUtil
-import com.sirelon.marsroverphotos.storage.MarsImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -133,7 +132,7 @@ class PhotosViewModel(app: Application) : AndroidViewModel(app) {
         setPhotosQuery(queryUpdated)
     }
 
-    fun onPhotoClick(image: MarsImage) {
+    fun onPhotoClick() {
         GlobalScope.launch(Dispatchers.IO + exceptionHandler) {
             val photos = photosFlow.filterNot { it.isNullOrEmpty() }.first()
             photos.logD()

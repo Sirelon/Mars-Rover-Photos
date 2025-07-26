@@ -19,11 +19,11 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 
 
-const val Curiosity_ID = 5L
-const val Opportunity_ID = 6L
-const val Spirit_ID = 7L
-const val INSIGHT_ID = 4L
-const val PERSEVARANCE_ID = 3L
+const val CuriosityId = 5L
+const val OpportunityId = 6L
+const val SpiritId = 7L
+const val InsightId = 4L
+const val PerserveranceId = 3L
 
 /**
  * @author romanishin
@@ -41,7 +41,7 @@ class RoversRepository(context: Context, private val api: RestApi) {
         val currentTimeMillis = System.currentTimeMillis()
 
         val perseverance = Rover(
-            PERSEVARANCE_ID,
+            PerserveranceId,
             "Perseverance",
             "img_perseverance",
             "2021-02-18",
@@ -59,7 +59,7 @@ class RoversRepository(context: Context, private val api: RestApi) {
         perseverance.maxSol = dateUtilP.solFromDate(currentTimeMillis)
 
         val insight = Rover(
-            INSIGHT_ID,
+            InsightId,
             "Insight",
             "img_insight",
             "2018-11-26",
@@ -120,7 +120,7 @@ class RoversRepository(context: Context, private val api: RestApi) {
         GlobalScope.launch {
             kotlin.runCatching {
                 api.perseveranceTotalImages.collectLatest {
-                    roverDao.updateRoverCountPhotos(PERSEVARANCE_ID, it)
+                    roverDao.updateRoverCountPhotos(PerserveranceId, it)
                 }
             }.onFailure(::recordException)
         }

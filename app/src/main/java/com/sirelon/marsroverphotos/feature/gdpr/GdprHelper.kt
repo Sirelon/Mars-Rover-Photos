@@ -1,9 +1,12 @@
 package com.sirelon.marsroverphotos.feature.gdpr
 
 import android.app.Activity
-import androidx.annotation.Keep
-import androidx.core.app.ComponentActivity
-import com.google.android.ump.*
+import com.google.android.ump.ConsentDebugSettings
+import com.google.android.ump.ConsentForm
+import com.google.android.ump.ConsentInformation
+import com.google.android.ump.ConsentRequestParameters
+import com.google.android.ump.FormError
+import com.google.android.ump.UserMessagingPlatform
 import com.sirelon.marsroverphotos.extensions.recordException
 import kotlinx.coroutines.flow.MutableStateFlow
 import timber.log.Timber

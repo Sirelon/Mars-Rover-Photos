@@ -204,31 +204,13 @@ class RoversActivity : FragmentActivity() {
                         }
                     },
                     content = { paddingValues ->
-                        ConstraintLayout(
-                            modifier = Modifier
-                                .padding(paddingValues)
-                                .fillMaxSize()
-                        ) {
-                            val (content, ad) = createRefs()
-
-                            val contentModifier = Modifier.constrainAs(content) {
-                                height = Dimension.fillToConstraints
-                                bottom.linkTo(ad.top)
-                                top.linkTo(parent.top)
-                            }
-
-                            Box(modifier = contentModifier) {
-                                RoversNavHost(navController, onHideUi = {
-                                    hideUI = it
-                                })
-                            }
-                            val adModifier = Modifier.constrainAs(ad) {
-                                bottom.linkTo(parent.bottom)
-                                end.linkTo(parent.end)
-                                start.linkTo(parent.start)
-                            }
-                            ComposableBannerAd(adModifier)
-                        }
+                        MarsRoverContent(
+                            modifier = Modifier.padding(paddingValues),
+                            navController = navController,
+                            onHideUi = {
+                                hideUI = it
+                            },
+                        )
                     })
             }
         }
@@ -252,7 +234,6 @@ class RoversActivity : FragmentActivity() {
         adView.adUnitId = "ca-app-pub-7516059448019339/9309101894"
 //        adView.adUnitId = "ca-app-pub-7516059448019339/2257199658"
     }
-
 
     private fun clearCache() {
         track("Clear cache")
@@ -290,6 +271,35 @@ class RoversActivity : FragmentActivity() {
     }
 
     @Composable
+    private fun MarsRoverContent(
+        modifier: Modifier,
+        navController: NavHostController,
+        onHideUi: (Boolean) -> Unit,
+    ) {
+        ConstraintLayout(
+            modifier = modifier.fillMaxSize()
+        ) {
+            val (content, ad) = createRefs()
+
+            val contentModifier = Modifier.constrainAs(content) {
+                height = Dimension.fillToConstraints
+                bottom.linkTo(ad.top)
+                top.linkTo(parent.top)
+            }
+
+            Box(modifier = contentModifier) {
+                RoversNavHost(navController, onHideUi = onHideUi)
+            }
+            val adModifier = Modifier.constrainAs(ad) {
+                bottom.linkTo(parent.bottom)
+                end.linkTo(parent.end)
+                start.linkTo(parent.start)
+            }
+            ComposableBannerAd(adModifier)
+        }
+    }
+
+    @Composable
     private fun RoversBottomBar(
         navController: NavHostController,
         bottomItems: List<Screen>
@@ -306,7 +316,6 @@ class RoversActivity : FragmentActivity() {
                         )
                     },
                     selected = navDestination?.hierarchy?.any { it.route == screen.route } == true,
-                    // TODO:
 //                    colors = NavigationBarItemColors(),
 //                    selectedContentColor = MaterialTheme.colorScheme.secondary,
 //                    unselectedContentColor = Color.White.copy(alpha = ContentAlpha.medium),
@@ -361,7 +370,6 @@ class RoversActivity : FragmentActivity() {
             Timber.d("ComposableBannerAd called $personalized")
             // Start loading the ad in the background.
             adView.loadAd(adRequest)
-
         }
     }
 

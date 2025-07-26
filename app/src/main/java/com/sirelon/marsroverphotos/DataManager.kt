@@ -5,7 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import com.sirelon.marsroverphotos.feature.images.ImagesRepository
 import com.sirelon.marsroverphotos.feature.photos.PhotosRepository
-import com.sirelon.marsroverphotos.feature.rovers.INSIGHT_ID
+import com.sirelon.marsroverphotos.feature.rovers.InsightId
 import com.sirelon.marsroverphotos.feature.rovers.RoversRepository
 import com.sirelon.marsroverphotos.firebase.photos.FirebaseProvider.firebasePhotos
 import com.sirelon.marsroverphotos.network.RestApi
@@ -38,7 +38,7 @@ class DataManager(
     init {
         GlobalScope.launch(exceptionHandler) {
             val count = firebasePhotos.countOfInsightPhotos()
-            roverRepo.updateRoverCountPhotos(INSIGHT_ID, count)
+            roverRepo.updateRoverCountPhotos(InsightId, count)
         }
     }
 

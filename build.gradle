@@ -26,6 +26,7 @@ task clean(type: Delete) {
 
 detekt {
     config.setFrom(files("config/detekt/detekt.yml"))
+    autoCorrect = true
 }
 
 // To check perfomance run script

@@ -130,7 +130,7 @@ fun RoverPhotosScreen(
 
                 else -> {
                     PhotosList(modifier, it) { image ->
-                        viewModel.onPhotoClick(image)
+                        viewModel.onPhotoClick()
                         navHost.navigateToImages(image, it)
                     }
                 }
