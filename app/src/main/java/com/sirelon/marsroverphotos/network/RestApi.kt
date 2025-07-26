@@ -20,7 +20,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
-import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
 
 /**
@@ -43,14 +42,6 @@ class RestApi {
     private val ktor = HttpClient(OkHttp) {
         // default validation to throw exceptions for non-2xx responses
         expectSuccess = true
-        engine {
-            // add logging interceptor
-            addInterceptor(HttpLoggingInterceptor().apply {
-                setLevel(
-                    HttpLoggingInterceptor.Level.BODY
-                )
-            })
-        }
 
         // set default request parameters
         defaultRequest {

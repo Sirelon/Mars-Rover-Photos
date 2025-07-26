@@ -28,7 +28,6 @@ lifecycle = "2.9.2"
 compose = "1.8.3"
 # https://developer.android.com/jetpack/androidx/releases/compose-material3
 compose-material3 = "1.4.0-alpha18"
-loggingInterceptor = "5.1.0"
 mockito = "1.6.0"
 # https://developer.android.com/jetpack/androidx/releases/paging
 paging = "3.3.6"
@@ -82,7 +81,6 @@ ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serializatio
 
 androidx-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle" }
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
-logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "loggingInterceptor" }
 mockito-kotlin = { module = "com.nhaarman:mockito-kotlin", version.ref = "mockito" }
 
 compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "compose" }
