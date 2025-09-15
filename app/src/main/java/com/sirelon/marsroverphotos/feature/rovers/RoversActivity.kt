@@ -39,7 +39,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LocalFireDepartment
-import androidx.compose.material.icons.outlined.ViewCarousel
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -72,15 +71,16 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
+import androidx.navigation.hasRoute
+import androidx.navigation.toRoute
 import coil3.ImageLoader
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
@@ -188,8 +188,8 @@ class RoversActivity : FragmentActivity() {
                             UkraineBanner(modifier = Modifier.statusBarsPadding()) {
                                 RoverApplication.APP.tracker.trackClick("UkraineBanner_Top")
 
-                                navController.navigate(Screen.Ukraine.route) {
-                                    this.launchSingleTop = true
+                                navController.navigate(UkraineRoute) {
+                                    launchSingleTop = true
                                 }
                             }
                         }
@@ -315,19 +315,25 @@ class RoversActivity : FragmentActivity() {
                             contentDescription = null
                         )
                     },
-                    selected = navDestination?.hierarchy?.any { it.route == screen.route } == true,
+                    selected = when (screen) {
+                        Screen.Rovers -> navDestination.hasRouteInHierarchy<RoversRoute>()
+                        Screen.Favorite -> navDestination.hasRouteInHierarchy<FavoriteRoute>()
+                        Screen.Popular -> navDestination.hasRouteInHierarchy<PopularRoute>()
+                        Screen.About -> navDestination.hasRouteInHierarchy<AboutRoute>()
+                        Screen.Ukraine -> navDestination.hasRouteInHierarchy<UkraineRoute>()
+                    },
 //                    colors = NavigationBarItemColors(),
 //                    selectedContentColor = MaterialTheme.colorScheme.secondary,
 //                    unselectedContentColor = Color.White.copy(alpha = ContentAlpha.medium),
                     onClick = {
-                        track("bottom_${screen.route}")
+                        track("bottom_${screen.trackingName}")
 
                         // So ugly :(
                         while (navController.navigateUp()) {
                             // It's okay
                         }
 
-                        navController.navigate(screen.route) {
+                        navController.navigate(screen.destination) {
                             // Pop up to the start destination of the graph to
                             // avoid building up a large stack of destinations
                             // on the back stack as users select items
@@ -380,9 +386,9 @@ class RoversActivity : FragmentActivity() {
     ) {
         NavHost(
             navController = navController,
-            startDestination = Screen.Rovers.route
+            startDestination = RoversRoute
         ) {
-            composable(Screen.Rovers.route) {
+            composable<RoversRoute> {
                 val rovers by RoverApplication.APP.dataManger.rovers.collectAsStateWithLifecycle(
                     initialValue = emptyList()
                 )
@@ -391,59 +397,47 @@ class RoversActivity : FragmentActivity() {
                     rovers = rovers,
                     onClick = {
                         track("click_rover_${it.name}")
-                        navController.navigate("rover/${it.id}")
+                        navController.navigate(RoverRoute(it.id))
                     })
             }
-            composable(Screen.About.route) {
+            composable<AboutRoute> {
                 AboutAppContent(
                     onClearCache = ::clearCache,
                     onRateApp = ::goToMarket
                 )
             }
 
-            composable(Screen.Popular.route) {
+            composable<PopularRoute> {
                 PopularScreen(navController)
             }
 
-            composable(Screen.Favorite.route) {
+            composable<FavoriteRoute> {
                 FavoriteScreen(navController)
             }
 
-            composable(Screen.Ukraine.route) {
+            composable<UkraineRoute> {
                 UkraineInfoScreen()
             }
 
-            composable(
-                "rover/{roverId}",
-                arguments = listOf(navArgument("roverId") {
-                    type = NavType.LongType
-                })
-            ) {
-                val roverId = it.arguments?.getLong("roverId")
-                if (roverId != null) {
-                    RoverPhotosScreen(
-                        this@RoversActivity,
-                        roverId = roverId,
-                        navHost = navController
-                    )
-                }
+            composable<RoverRoute> { backStackEntry ->
+                val args = backStackEntry.toRoute<RoverRoute>()
+
+                RoverPhotosScreen(
+                    this@RoversActivity,
+                    roverId = args.roverId,
+                    navHost = navController
+                )
             }
 
 
-            composable(
-                route = "photos/{pid}?ids={ids}&shouldTrack={shouldTrack}",
-                arguments = listOf(
-                    navArgument("pid") { type = NavType.StringType },
-                    navArgument("ids") { type = NavType.StringType },
-                    navArgument("shouldTrack") { type = NavType.BoolType },
-                )
-            ) {
-                val ids = it.arguments?.getString("ids")?.split(", ")?.toList()
-                val selectedImage = it.arguments?.getString("pid")
-                val shouldTrack = it.arguments?.getBoolean("shouldTrack") ?: false
+            composable<ImageViewerRoute> { backStackEntry ->
+                val args = backStackEntry.toRoute<ImageViewerRoute>()
+                val ids = args.ids
+                val selectedImage = args.pid
+                val shouldTrack = args.shouldTrack
 
-                if (ids.isNullOrEmpty()) {
-                    recordException(IllegalArgumentException("Try to open ${it.id} with $ids and $selectedImage"))
+                if (ids.isEmpty()) {
+                    recordException(IllegalArgumentException("Try to open ImageViewerRoute with $ids and $selectedImage"))
                     navController.popBackStack()
                 } else {
                     ImageScreen(
@@ -455,6 +449,10 @@ class RoversActivity : FragmentActivity() {
                 }
             }
         }
+    }
+
+    private inline fun <reified T : Any> NavDestination?.hasRouteInHierarchy(): Boolean {
+        return this?.hierarchy?.any { it.hasRoute<T>() } == true
     }
 
     private fun track(track: String) {
@@ -477,18 +475,40 @@ class RoversActivity : FragmentActivity() {
     }
 }
 
-sealed class Screen(val route: String, val iconCreator: @Composable () -> ImageVector) {
-    data object Rovers : Screen("rovers", {
-        ImageVector.vectorResource(id = R.drawable.ic_rovers)
-    })
+sealed class Screen(
+    val destination: Any,
+    val trackingName: String,
+    val iconCreator: @Composable () -> ImageVector,
+) {
+    data object Rovers : Screen(
+        destination = RoversRoute,
+        trackingName = "rovers",
+        iconCreator = { ImageVector.vectorResource(id = R.drawable.ic_rovers) },
+    )
 
-    data object Favorite : Screen("favorite", { Icons.Outlined.Favorite })
-    data object Popular : Screen("popular", { Icons.Outlined.LocalFireDepartment })
-    data object About : Screen("about", { Icons.Outlined.Info })
+    data object Favorite : Screen(
+        destination = FavoriteRoute,
+        trackingName = "favorite",
+        iconCreator = { Icons.Outlined.Favorite },
+    )
 
-    class Rover(val id: Long) : Screen("rover", { Icons.Outlined.ViewCarousel })
+    data object Popular : Screen(
+        destination = PopularRoute,
+        trackingName = "popular",
+        iconCreator = { Icons.Outlined.LocalFireDepartment },
+    )
 
-    data object Ukraine : Screen("ukraine", { Icons.Outlined.Info })
+    data object About : Screen(
+        destination = AboutRoute,
+        trackingName = "about",
+        iconCreator = { Icons.Outlined.Info },
+    )
+
+    data object Ukraine : Screen(
+        destination = UkraineRoute,
+        trackingName = "ukraine",
+        iconCreator = { Icons.Outlined.Info },
+    )
 }
 
 @Composable

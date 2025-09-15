@@ -39,6 +39,7 @@ import com.sirelon.marsroverphotos.feature.MarsImageComposable
 import com.sirelon.marsroverphotos.feature.navigateToImages
 import com.sirelon.marsroverphotos.feature.photos.EmptyPhotos
 import com.sirelon.marsroverphotos.feature.popular.PopularPhotosViewModel
+import com.sirelon.marsroverphotos.feature.rovers.RoversRoute
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.storage.Prefs
 import com.sirelon.marsroverphotos.ui.CenteredProgress
@@ -71,7 +72,7 @@ fun FavoriteScreen(
                 btnTitle = stringResource(id = R.string.favorite_empty_btn)
             ) {
                 viewModel.track("click_empty_favorite")
-                navController.navigate("rovers")
+                navController.navigate(RoversRoute)
             }
         }
     )

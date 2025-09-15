@@ -1,6 +1,7 @@
 package com.sirelon.marsroverphotos.feature
 
 import androidx.navigation.NavController
+import com.sirelon.marsroverphotos.feature.rovers.ImageViewerRoute
 import com.sirelon.marsroverphotos.storage.MarsImage
 
 /**
@@ -12,5 +13,11 @@ fun NavController.navigateToImages(
     trackingEnabled: Boolean = true
 ) {
     val ids = allphotos.map { it.id }
-    navigate("photos/${image.id}?ids=${ids.joinToString()}&shouldTrack=$trackingEnabled")
+    navigate(
+        ImageViewerRoute(
+            pid = image.id,
+            ids = ids,
+            shouldTrack = trackingEnabled,
+        )
+    )
 }

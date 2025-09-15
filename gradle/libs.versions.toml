@@ -41,7 +41,7 @@ work = "2.10.4"
 # https://github.com/usuiat/Zoomable/releases
 zoomable = "2.8.1"
 # https://developer.android.com/jetpack/androidx/releases/navigation
-navigation = "2.9.4"
+navigation = "3.0.0"
 androidGradlePlugin = "8.13.0"
 
 [libraries]
