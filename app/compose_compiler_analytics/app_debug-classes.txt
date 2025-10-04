@@ -1,41 +1,79 @@
-unstable class ImagesDao_Impl {
+unstable class com.sirelon.marsroverphotos.storage.AppDataBase_Impl {
+  unstable val _roverDao: Lazy<RoverDao>
+  unstable val _imagesDao: Lazy<ImagesDao>
+  <runtime stability> = Unstable
+}
+unstable class com.sirelon.marsroverphotos.storage.ImagesDao_Impl {
   unstable val __db: RoomDatabase
   unstable val __insertAdapterOfMarsImage: EntityInsertAdapter<MarsImage>
   unstable val __updateAdapterOfMarsImage: EntityDeleteOrUpdateAdapter<MarsImage>
   unstable val __updateAdapterOfStatsUpdateAsMarsImage: EntityDeleteOrUpdateAdapter<StatsUpdate>
   <runtime stability> = Unstable
 }
-unstable class DataManager {
+unstable class com.sirelon.marsroverphotos.storage.RoverDao_Impl {
+  unstable val __db: RoomDatabase
+  unstable val __insertAdapterOfRover: EntityInsertAdapter<Rover>
+  <runtime stability> = Unstable
+}
+unstable class com.sirelon.marsroverphotos.DataManager {
   unstable val context: Context
   runtime val tracker: ITracker
-  runtime val roverRepo: RoversRepository
+  unstable val roverRepo: RoversRepository
   unstable val imagesRepo: ImagesRepository
-  runtime val photosRepo: PhotosRepository
+  unstable val photosRepo: PhotosRepository
   unstable val rovers: Flow<List<Rover>>
   unstable val exceptionHandler: CoroutineExceptionHandler
   <runtime stability> = Unstable
 }
-unstable class RoverApplication {
+unstable class com.sirelon.marsroverphotos.RoverApplication {
   stable val adEnabled: Boolean
   unstable val tracker$delegate: Lazy<FirebaseTracker>
   unstable val dataManger$delegate: Lazy<DataManager>
   <runtime stability> = Unstable
 }
-unstable class FavoriteImagesViewModel {
+unstable class com.sirelon.marsroverphotos.feature.favorite.FavoriteImagesViewModel {
   unstable val exceptionHandler: CoroutineExceptionHandler
   unstable val repository: ImagesRepository
   unstable val favoriteImagesFlow: Flow<PagingData<MarsImage>>
   <runtime stability> = Unstable
 }
-unstable class GdprHelper {
+stable class com.sirelon.marsroverphotos.feature.firebase.FirebaseConstants {
+  stable val PHOTOS_TABLE: String
+  stable val COLECTION_PHOTOS: String
+  stable val COLECTION_ROVERS: String
+  stable val DOCUMENT_INSIGHT: String
+  stable val PHOTO_ID: String
+  stable val PHOTO_SOL: String
+  stable val PHOTOS_IMAGE: String
+  stable val PHOTOS_EARTH_DATE: String
+  stable val PHOTOS_SEEN: String
+  stable val PHOTOS_SCALE: String
+  stable val PHOTOS_SAVE: String
+  stable val PHOTOS_SHARE: String
+  <runtime stability> = Stable
+}
+unstable class com.sirelon.marsroverphotos.feature.firebase.FirebasePhoto {
+  stable val id: String
+  stable val sol: Long
+  stable val name: String
+  stable val imageUrl: String
+  stable val earthDate: String
+  stable var seeCounter: Long
+  stable var favoriteCounter: Long
+  stable var scaleCounter: Long
+  stable var saveCounter: Long
+  stable var shareCounter: Long
+  <runtime stability> = Unstable
+}
+unstable class com.sirelon.marsroverphotos.feature.gdpr.GdprHelper {
   unstable val activity: Activity
   unstable val consentInformation$delegate: Lazy<@[FlexibleNullability] ConsentInformation?>
   unstable val acceptGdpr: MutableStateFlow<Boolean>
   <runtime stability> = Unstable
 }
-unstable class ImageViewModel {
+unstable class com.sirelon.marsroverphotos.feature.images.ImageViewModel {
   unstable var $$delegate_0: FullscreenImageTracker
-  unstable val IO: CoroutineContext
+  unstable val io: CoroutineContext
   unstable val repository: ImagesRepository
   unstable val idsEmitor: MutableStateFlow<List<String>>
   unstable val uiEventEmitter: Channel<UiEvent>
@@ -47,28 +85,32 @@ unstable class ImageViewModel {
   unstable val appUrl$delegate: Lazy<String>
   <runtime stability> = Unstable
 }
-stable class PhotoSaved {
+stable class com.sirelon.marsroverphotos.feature.images.UiEvent.PhotoSaved {
   stable val imagePath: String?
   <runtime stability> = Stable
 }
-stable class UiEvent {
+stable class com.sirelon.marsroverphotos.feature.images.UiEvent {
   <runtime stability> = Stable
 }
-runtime class ImageScreenState {
+stable class com.sirelon.marsroverphotos.feature.images.ImageScreenState {
   runtime val images: ImmutableList<MarsImage>
   stable val hideUi: Boolean
-  <runtime stability> = Runtime(MarsImage)
+  <runtime stability> = 
 }
-unstable class ImagesRepository {
+unstable class com.sirelon.marsroverphotos.feature.images.ImagesRepository {
   unstable val context: Context
   runtime val imagesDao: ImagesDao
   stable val firestorePhotos: FirestorePhotos
   <runtime stability> = Unstable
 }
-unstable class PhotosViewModel {
+unstable class com.sirelon.marsroverphotos.feature.photos.PhotosRepository {
+  unstable val api: RestApi
+  <runtime stability> = Unstable
+}
+unstable class com.sirelon.marsroverphotos.feature.photos.PhotosViewModel {
   unstable val dataManger: DataManager
-  runtime val roversRepository: RoversRepository
-  runtime val photosRepository: PhotosRepository
+  unstable val roversRepository: RoversRepository
+  unstable val photosRepository: PhotosRepository
   unstable val imagesRepository: ImagesRepository
   unstable val queryEmitter: MutableStateFlow<PhotosQueryRequest?>
   unstable val roverIdEmitter: MutableStateFlow<Long?>
@@ -78,50 +120,88 @@ unstable class PhotosViewModel {
   unstable val solFlow: Flow<Long>
   <runtime stability> = Unstable
 }
-unstable class PopularPhotosViewModel {
+unstable class com.sirelon.marsroverphotos.feature.popular.PopularRemoteMediator {
+  runtime val firebasePhotos: IFirebasePhotos
+  runtime val dao: ImagesDao
+  <runtime stability> = Unstable
+}
+unstable class com.sirelon.marsroverphotos.feature.popular.PopularPhotosViewModel {
   unstable val imagesRepository: ImagesRepository
   unstable val popularPhotos: Flow<PagingData<MarsImage>>
   <runtime stability> = Unstable
 }
-unstable class RoversActivity {
+unstable class com.sirelon.marsroverphotos.feature.rovers.RoversActivity {
   unstable val gdprHelper: GdprHelper
   unstable var adView: AdView
   <runtime stability> = Unstable
 }
-stable class Rovers {
+stable class com.sirelon.marsroverphotos.feature.rovers.RoversDestination.Rovers {
+  stable val analyticsTag: String
   <runtime stability> = Stable
 }
-stable class Favorite {
+stable class com.sirelon.marsroverphotos.feature.rovers.RoversDestination.Favorite {
+  stable val analyticsTag: String
   <runtime stability> = Stable
 }
-stable class Popular {
+stable class com.sirelon.marsroverphotos.feature.rovers.RoversDestination.Popular {
+  stable val analyticsTag: String
   <runtime stability> = Stable
 }
-stable class About {
+stable class com.sirelon.marsroverphotos.feature.rovers.RoversDestination.About {
+  stable val analyticsTag: String
   <runtime stability> = Stable
 }
-stable class Rover {
-  stable val id: Long
+stable class com.sirelon.marsroverphotos.feature.rovers.RoversDestination.Ukraine {
   <runtime stability> = Stable
 }
-stable class Ukraine {
+stable class com.sirelon.marsroverphotos.feature.rovers.RoversDestination.RoverDetail {
+  stable val roverId: Long
   <runtime stability> = Stable
 }
-stable class Screen {
-  stable val route: String
-  stable val iconCreator: Function2<Composer, Int, ImageVector>
-  <runtime stability> = Stable
+stable class com.sirelon.marsroverphotos.feature.rovers.RoversDestination.ImageGallery {
+  stable val ids: List<String>
+  stable val selectedId: String?
+  stable val shouldTrack: Boolean
+  <runtime stability> = 
 }
-runtime class RoversRepository {
-  runtime val api: RestApi
+unstable class com.sirelon.marsroverphotos.feature.rovers.RoversRepository {
+  unstable val api: RestApi
   runtime val roverDao: RoverDao
-  <runtime stability> = Runtime(RestApi)
+  <runtime stability> = Unstable
 }
-unstable class $serializer {
+unstable class com.sirelon.marsroverphotos.firebase.photos.FirebaseProvider {
+  unstable val firebasePhotos$delegate: Lazy<FirestorePhotos>
+  <runtime stability> = Unstable
+}
+stable class com.sirelon.marsroverphotos.firebase.photos.FirestorePhotos {
+  <runtime stability> = Stable
+}
+unstable class com.sirelon.marsroverphotos.models.MarsPhoto.$serializer {
   unstable val descriptor: SerialDescriptor
   <runtime stability> = Unstable
 }
-stable class Rover {
+stable class com.sirelon.marsroverphotos.models.MarsPhoto {
+  stable val id: String
+  stable val sol: Long
+  stable val name: String?
+  stable val imageUrl: String
+  stable val earthDate: String
+  runtime val camera: RoverCamera?
+  runtime var CREATOR: Creator<MarsPhoto>
+  <runtime stability> = 
+}
+runtime class com.sirelon.marsroverphotos.models.PhotosQueryRequest {
+  stable val roverId: Long
+  stable val sol: Long
+  stable val camera: String?
+  runtime var CREATOR: Creator<PhotosQueryRequest>
+  <runtime stability> = Uncertain(Creator)
+}
+unstable class com.sirelon.marsroverphotos.models.Rover.$serializer {
+  unstable val descriptor: SerialDescriptor
+  <runtime stability> = Unstable
+}
+stable class com.sirelon.marsroverphotos.models.Rover {
   stable val id: Long
   stable val name: String
   stable val drawableName: String
@@ -132,35 +212,162 @@ stable class Rover {
   stable var maxDate: String
   stable val totalPhotos: Int
 }
-unstable class RoverDateUtil {
+unstable class com.sirelon.marsroverphotos.models.RoverCamera.$serializer {
+  unstable val descriptor: SerialDescriptor
+  <runtime stability> = Unstable
+}
+runtime class com.sirelon.marsroverphotos.models.RoverCamera {
+  stable val id: Int
+  stable val name: String
+  stable val fullName: String
+  runtime var CREATOR: Creator<RoverCamera>
+  <runtime stability> = Uncertain(Creator)
+}
+unstable class com.sirelon.marsroverphotos.models.RoverDateUtil {
   stable val rover: Rover
   unstable val simpleDateFormat: SimpleDateFormat
-  stable val SOL_TO_DAY_OFFSET: Double
   unstable val _roverLastDate$delegate: Lazy<Long>
   unstable val _roverLandingDate$delegate: Lazy<Long>
   <runtime stability> = Unstable
 }
-unstable class AppDataBase {
+unstable class com.sirelon.marsroverphotos.network.NasaApi {
+  unstable val ktor: HttpClient
   <runtime stability> = Unstable
 }
-unstable class DataBaseProvider {
+unstable class com.sirelon.marsroverphotos.network.PhotosResponse.$serializer {
+  unstable val descriptor: SerialDescriptor
+  <runtime stability> = Unstable
+}
+stable class com.sirelon.marsroverphotos.network.PhotosResponse {
+  runtime val list: List<MarsPhoto>
+  <runtime stability> = 
+}
+unstable class com.sirelon.marsroverphotos.network.PerseverancePhotosResponse.$serializer {
+  unstable val descriptor: SerialDescriptor
+  <runtime stability> = Unstable
+}
+stable class com.sirelon.marsroverphotos.network.PerseverancePhotosResponse {
+  stable val photos: List<PerseverancePhotoItemResponse>
+  stable val totalImages: Long?
+  <runtime stability> = 
+}
+unstable class com.sirelon.marsroverphotos.network.PerseverancePhotoItemResponse.$serializer {
+  unstable val descriptor: SerialDescriptor
+  <runtime stability> = Unstable
+}
+stable class com.sirelon.marsroverphotos.network.PerseverancePhotoItemResponse {
+  stable val id: String
+  stable val sol: Long
+  stable val name: String?
+  stable val description: String?
+  stable val credit: String?
+  stable val imageSourceResponse: ImageSourceResponse?
+  stable val earthDate: String?
+  stable val camera: PerseveranceCameraResponse?
+  <runtime stability> = Stable
+}
+unstable class com.sirelon.marsroverphotos.network.PerseveranceCameraResponse.$serializer {
+  unstable val descriptor: SerialDescriptor
+  <runtime stability> = Unstable
+}
+stable class com.sirelon.marsroverphotos.network.PerseveranceCameraResponse {
+  stable val id: String
+  stable val name: String
+  stable val fullName: String
+  <runtime stability> = Stable
+}
+unstable class com.sirelon.marsroverphotos.network.ImageSourceResponse.$serializer {
+  unstable val descriptor: SerialDescriptor
+  <runtime stability> = Unstable
+}
+stable class com.sirelon.marsroverphotos.network.ImageSourceResponse {
+  stable val medium: String?
+  stable val small: String?
+  stable val fullRes: String?
+  stable val large: String?
+  <runtime stability> = Stable
+}
+unstable class com.sirelon.marsroverphotos.network.RestApi {
+  unstable val _perseveranceTotalImages: MutableStateFlow<Long?>
+  unstable val perseveranceTotalImages: Flow<Long>
+  unstable val json: Json
+  unstable val ktor: HttpClient
+  unstable val nasaApi: NasaApi
+  <runtime stability> = Unstable
+}
+unstable class com.sirelon.marsroverphotos.network.RoverResponse.$serializer {
+  unstable val descriptor: SerialDescriptor
+  <runtime stability> = Unstable
+}
+unstable class com.sirelon.marsroverphotos.network.RoverResponse {
+  unstable var roverInfo: RoverInfo
+  <runtime stability> = Unstable
+}
+unstable class com.sirelon.marsroverphotos.network.RoverInfo.$serializer {
+  unstable val descriptor: SerialDescriptor
+  <runtime stability> = Unstable
+}
+unstable class com.sirelon.marsroverphotos.network.RoverInfo {
+  stable var name: String
+  stable var landingDate: String
+  stable var launchDate: String
+  stable var status: String
+  stable var maxSol: Long
+  stable var maxDate: String
+  stable var totalPhotos: Int
+  <runtime stability> = Unstable
+}
+unstable class com.sirelon.marsroverphotos.storage.AppDataBase {
+  <runtime stability> = Unstable
+}
+unstable class com.sirelon.marsroverphotos.storage.DataBaseProvider {
   unstable var dataBase: AppDataBase
   <runtime stability> = Unstable
 }
-unstable class Prefs {
+stable class com.sirelon.marsroverphotos.storage.MarsImage.Stats {
+  stable val see: Long
+  stable val scale: Long
+  stable val save: Long
+  stable val share: Long
+  stable val favorite: Long
+  <runtime stability> = Stable
+}
+runtime class com.sirelon.marsroverphotos.storage.MarsImage {
+  stable val id: String
+  stable val order: Int
+  stable val sol: Long
+  stable val name: String?
+  stable val imageUrl: String
+  stable val earthDate: String
+  runtime val camera: RoverCamera?
+  stable val favorite: Boolean
+  stable val popular: Boolean
+  stable val stats: Stats
+  <runtime stability> = Uncertain(Creator)
+}
+stable class com.sirelon.marsroverphotos.storage.StatsUpdate {
+  stable val id: String
+  stable val stats: Stats
+  <runtime stability> = Stable
+}
+unstable class com.sirelon.marsroverphotos.storage.Prefs {
   unstable var sharedPreferences: SharedPreferences
   unstable val themeLiveData: MutableStateFlow<Theme>
   <runtime stability> = Unstable
 }
-unstable class FirebaseTracker {
+unstable class com.sirelon.marsroverphotos.tracker.DataFlowCollector {
+  unstable val flow: MutableStateFlow<T?>
+  <runtime stability> = Unstable
+}
+unstable class com.sirelon.marsroverphotos.tracker.FirebaseTracker {
   unstable val fb: FirebaseAnalytics
   <runtime stability> = Unstable
 }
-unstable class FullscreenImageTracker {
+unstable class com.sirelon.marsroverphotos.tracker.FullscreenImageTracker {
   runtime val tracker: ITracker
   unstable val dataManager: DataManager
-  runtime val scrollChangeCollector: DataFlowCollector<Float>
-  runtime val zoomChangeCollector: DataFlowCollector<Triple<Float, Float, Float>>
+  unstable val scrollChangeCollector: DataFlowCollector<Float>
+  unstable val zoomChangeCollector: DataFlowCollector<Triple<Float, Float, Float>>
   runtime var currentImage: MarsImage?
   <runtime stability> = Unstable
 }

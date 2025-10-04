@@ -54,10 +54,8 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.feature.NetworkImage
-import com.sirelon.marsroverphotos.feature.navigateToImages
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.ui.CenteredProgress
 import java.util.Calendar
@@ -71,8 +69,8 @@ import java.util.TimeZone
 fun RoverPhotosScreen(
     activity: FragmentActivity,
     modifier: Modifier = Modifier,
-    navHost: NavController,
     roverId: Long,
+    onNavigateToImages: (MarsImage, List<MarsImage>) -> Unit,
     viewModel: PhotosViewModel = viewModel()
 ) {
     viewModel.setRoverId(roverId)
@@ -131,7 +129,7 @@ fun RoverPhotosScreen(
                 else -> {
                     PhotosList(modifier, it) { image ->
                         viewModel.onPhotoClick()
-                        navHost.navigateToImages(image, it)
+                        onNavigateToImages(image, it)
                     }
                 }
 
