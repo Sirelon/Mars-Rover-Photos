@@ -55,6 +55,9 @@ fun ImageSourceResponse.image(): String {
 }
 
 fun PerseveranceCameraResponse.toUI(): RoverCamera {
-    // TODO: correct Id
-    return RoverCamera(id = this.id.hashCode(), name = this.name, fullName = this.fullName)
+    // Convert camera model type string to a stable positive integer ID
+    // Handle Int.MIN_VALUE edge case where abs() would overflow
+    val idHash = this.id.hashCode()
+    val positiveId = if (idHash == Int.MIN_VALUE) 0 else kotlin.math.abs(idHash)
+    return RoverCamera(id = positiveId, name = this.name, fullName = this.fullName)
 }
