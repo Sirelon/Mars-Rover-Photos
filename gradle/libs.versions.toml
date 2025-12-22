@@ -1,6 +1,6 @@
 [versions]
 # https://developer.android.com/jetpack/androidx/releases/activity
-activityCompose = "1.11.0"
+activityCompose = "1.12.2"
 # https://developer.android.com/jetpack/androidx/releases/appcompat
 appcompat = "1.7.1"
 # https://github.com/coil-kt/coil/blob/main/CHANGELOG.md
@@ -10,8 +10,8 @@ constraintlayoutCompose = "1.1.1"
 # https://developer.android.com/jetpack/androidx/releases/annotation
 annotation = "1.9.1"
 # https://firebase.google.com/support/release-notes/android
-firebaseBom = "34.3.0"
-kotlin = "2.2.20"
+firebaseBom = "34.7.0"
+kotlin = "2.3.0"
 # https://github.com/Kotlin/kotlinx.serialization/releases
 kotlin-serialization = "1.9.0"
 
@@ -19,31 +19,32 @@ kotlin-serialization = "1.9.0"
 kotlin-collections-immutable = "0.4.0"
 ktx = "1.17.0"
 # https://github.com/ktorio/ktor/releases
-ktor = "3.3.0"
+ktor = "3.3.3"
 # https://github.com/google/ksp/releases
-ksp = "2.2.20-2.0.3"
+ksp = "2.3.2"
 # https://developer.android.com/jetpack/androidx/releases/lifecycle
-lifecycle = "2.9.4"
+lifecycle = "2.10.0"
 # https://developer.android.com/jetpack/androidx/releases/compose
-compose = "1.9.2"
+compose = "1.10.0"
 # https://developer.android.com/jetpack/androidx/releases/compose-material3
 compose-material3 = "1.4.0"
 mockito = "1.6.0"
 # https://developer.android.com/jetpack/androidx/releases/paging
 paging = "3.3.6"
-playServicesAds = "24.6.0"
+playServicesAds = "24.9.0"
 # https://developer.android.com/jetpack/androidx/releases/room
-room = "2.8.1"
+room = "2.8.4"
 timber = "5.0.1"
-userMessagingPlatform = "3.2.0"
+# https://developers.google.com/admob/android/privacy/release-notes
+userMessagingPlatform = "4.0.0"
 # https://developer.android.com/jetpack/androidx/releases/work
-work = "2.10.5"
+work = "2.11.0"
 # https://github.com/usuiat/Zoomable/releases
-zoomable = "2.8.1"
-# https://developer.android.com/guide/navigation/navigation-3
-navigation3 = "1.0.0-alpha10"
-lifecycle-navigation3 = "1.0.0-alpha10"
-androidGradlePlugin = "8.13.0"
+zoomable = "2.9.0"
+# https://developer.android.com/jetpack/androidx/releases/navigation3
+navigation3 = "1.1.0-alpha01"
+lifecycle-navigation3 = "2.10.0"
+androidGradlePlugin = "8.13.2"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -104,9 +105,9 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-firebase-perf = { id = "com.google.firebase.firebase-perf", version = "2.0.1" }
+firebase-perf = { id = "com.google.firebase.firebase-perf", version = "2.0.2" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.6" }
-google-services = { id = "com.google.gms.google-services", version = "4.4.3" }
+google-services = { id = "com.google.gms.google-services", version = "4.4.4" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
 [bundles]
