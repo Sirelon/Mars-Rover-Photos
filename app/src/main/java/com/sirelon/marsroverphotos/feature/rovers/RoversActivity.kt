@@ -37,10 +37,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -59,6 +60,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.annotation.StringRes
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -102,6 +104,7 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 @ExperimentalAnimationApi
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 class RoversActivity : FragmentActivity() {
 
     private val gdprHelper = GdprHelper(this)
@@ -168,42 +171,74 @@ class RoversActivity : FragmentActivity() {
 
             MarsRoverPhotosTheme(isDark) {
                 val navController = rememberNavController()
+                val windowSizeClass = calculateWindowSizeClass(this@RoversActivity)
+                val navSuiteType = NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(
+                    currentWindowAdaptiveInfo()
+                )
 
-                Scaffold(
-                    topBar = {
+                NavigationSuiteScaffold(
+                    layoutType = navSuiteType,
+                    navigationSuiteItems = {
+                        val navBackStackEntry by navController.currentBackStackEntryAsState()
+                        val currentDestination = navBackStackEntry?.destination
+
                         AnimatedVisibility(
                             visible = !hideUI,
                             enter = fadeIn() + expandVertically(),
                             exit = fadeOut() + shrinkVertically(),
                         ) {
-
+                            bottomItems.forEach { screen ->
+                                item(
+                                    icon = { screen.Icon(contentDescription = null) },
+                                    label = {
+                                        screen.labelRes?.let { labelRes ->
+                                            Text(stringResource(labelRes))
+                                        }
+                                    },
+                                    selected = currentDestination?.hierarchy?.any {
+                                        it.route == screen.route
+                                    } == true,
+                                    onClick = {
+                                        track("bottom_${screen.route}")
+                                        while (navController.navigateUp()) {}
+                                        navController.navigate(screen.route) {
+                                            popUpTo(navController.graph.findStartDestination().id) {
+                                                saveState = true
+                                            }
+                                            launchSingleTop = true
+                                            restoreState = true
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                    }
+                ) {
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        // Ukraine banner
+                        AnimatedVisibility(
+                            visible = !hideUI,
+                            enter = fadeIn() + expandVertically(),
+                            exit = fadeOut() + shrinkVertically(),
+                        ) {
                             UkraineBanner(modifier = Modifier.statusBarsPadding()) {
                                 RoverApplication.APP.tracker.trackClick("UkraineBanner_Top")
-
                                 navController.navigate(Screen.Ukraine.route) {
                                     this.launchSingleTop = true
                                 }
                             }
                         }
-                    },
-                    bottomBar = {
-                        AnimatedVisibility(
-                            visible = !hideUI,
-                            enter = fadeIn() + expandVertically(),
-                            exit = fadeOut() + shrinkVertically(),
-                        ) {
-                            RoversBottomBar(navController, bottomItems)
+
+                        // Main content
+                        Box(modifier = Modifier.weight(1f)) {
+                            MarsRoverContent(
+                                modifier = Modifier.fillMaxSize(),
+                                navController = navController,
+                                onHideUi = { hideUI = it }
+                            )
                         }
-                    },
-                    content = { paddingValues ->
-                        MarsRoverContent(
-                            modifier = Modifier.padding(paddingValues),
-                            navController = navController,
-                            onHideUi = {
-                                hideUI = it
-                            },
-                        )
-                    })
+                    }
+                }
             }
         }
 
@@ -275,50 +310,6 @@ class RoversActivity : FragmentActivity() {
                 RoversNavHost(navController, onHideUi = onHideUi)
             }
             ComposableBannerAd(modifier = Modifier.fillMaxWidth())
-        }
-    }
-
-    @Composable
-    private fun RoversBottomBar(
-        navController: NavHostController,
-        bottomItems: List<Screen>
-    ) {
-        NavigationBar(modifier = Modifier.navigationBarsPadding()) {
-            val navBackStackEntry by navController.currentBackStackEntryAsState()
-            val navDestination = navBackStackEntry?.destination
-            bottomItems.forEach { screen ->
-                NavigationBarItem(
-                    icon = {
-                        screen.Icon(contentDescription = null)
-                    },
-                    selected = navDestination?.hierarchy?.any { it.route == screen.route } == true,
-//                    colors = NavigationBarItemColors(),
-//                    selectedContentColor = MaterialTheme.colorScheme.secondary,
-//                    unselectedContentColor = Color.White.copy(alpha = ContentAlpha.medium),
-                    onClick = {
-                        track("bottom_${screen.route}")
-
-                        // So ugly :(
-                        while (navController.navigateUp()) {
-                            // It's okay
-                        }
-
-                        navController.navigate(screen.route) {
-                            // Pop up to the start destination of the graph to
-                            // avoid building up a large stack of destinations
-                            // on the back stack as users select items
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                            // Avoid multiple copies of the same destination when
-                            // reselecting the same item
-                            launchSingleTop = true
-                            // Restore state when reselecting a previously selected item
-                            restoreState = true
-                        }
-                    }
-                )
-            }
         }
     }
 
@@ -456,21 +447,26 @@ class RoversActivity : FragmentActivity() {
 sealed class Screen(val route: String) {
     open val drawableRes: Int? = null
     open val symbol: MaterialSymbol? = null
+    @StringRes open val labelRes: Int? = null
 
     data object Rovers : Screen("rovers") {
         override val drawableRes = R.drawable.ic_rovers
+        override val labelRes = R.string.nav_rovers
     }
 
     data object Favorite : Screen("favorite") {
         override val symbol = MaterialSymbol.Favorite
+        override val labelRes = R.string.nav_favorite
     }
 
     data object Popular : Screen("popular") {
         override val symbol = MaterialSymbol.LocalFireDepartment
+        override val labelRes = R.string.nav_popular
     }
 
     data object About : Screen("about") {
         override val symbol = MaterialSymbol.Info
+        override val labelRes = R.string.nav_about
     }
 
     class Rover(val id: Long) : Screen("rover") {

@@ -40,6 +40,7 @@ import com.sirelon.marsroverphotos.storage.Prefs
 import com.sirelon.marsroverphotos.ui.CenteredProgress
 import com.sirelon.marsroverphotos.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.ui.MaterialSymbolIcon
+import com.sirelon.marsroverphotos.ui.calculateAdaptiveColumns
 import java.util.UUID
 
 /**
@@ -150,13 +151,14 @@ fun FavoritePhotosContent(
         }
 
         val spacedBy = Arrangement.spacedBy(16.dp)
+        val adaptiveColumns = calculateAdaptiveColumns(minColumnWidth = 160.dp)
         LazyVerticalStaggeredGrid(
             modifier = modifier
                 .weight(1f)
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
             contentPadding = PaddingValues(16.dp),
             columns = if (gridView) {
-                StaggeredGridCells.Fixed(2)
+                StaggeredGridCells.Fixed(adaptiveColumns)
             } else {
                 StaggeredGridCells.Fixed(1)
             },

@@ -26,6 +26,7 @@ lifecycle = "2.9.3"
 compose = "1.9.1"
 # https://developer.android.com/jetpack/androidx/releases/compose-material3
 compose-material3 = "1.4.0-rc01"
+compose-material3-adaptive-navigation-suite = "1.5.0-alpha11"
 mockito = "1.6.0"
 # https://developer.android.com/jetpack/androidx/releases/paging
 paging = "3.3.6"
@@ -85,6 +86,7 @@ compose-ui-util = { group = "androidx.compose.ui", name = "ui-util", version.ref
 compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "compose" }
 compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "compose" }
 compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "compose-material3" }
+compose-material3-adaptive-navigation-suite = { group = "androidx.compose.material3", name = "material3-adaptive-navigation-suite", version.ref = "compose-material3-adaptive-navigation-suite" }
 
 play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "playServicesAds" }
 user-messaging-platform = { module = "com.google.android.ump:user-messaging-platform", version.ref = "userMessagingPlatform" }
