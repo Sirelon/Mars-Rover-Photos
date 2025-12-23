@@ -36,11 +36,8 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Favorite
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -58,10 +55,12 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -72,8 +71,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
-import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
-import androidx.navigation3.scene.rememberSceneSetupNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import coil3.ImageLoader
 import com.google.android.gms.ads.AdRequest
@@ -85,8 +82,8 @@ import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
 import com.sirelon.marsroverphotos.feature.favorite.FavoriteScreen
 import com.sirelon.marsroverphotos.feature.favorite.PopularScreen
-import com.sirelon.marsroverphotos.feature.imageIds
 import com.sirelon.marsroverphotos.feature.gdpr.GdprHelper
+import com.sirelon.marsroverphotos.feature.imageIds
 import com.sirelon.marsroverphotos.feature.images.ImageScreen
 import com.sirelon.marsroverphotos.feature.photos.RoverPhotosScreen
 import com.sirelon.marsroverphotos.feature.settings.AboutAppContent
@@ -104,7 +101,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import java.util.LinkedHashMap
 
 @ExperimentalAnimationApi
 class RoversActivity : FragmentActivity() {
@@ -155,12 +151,13 @@ class RoversActivity : FragmentActivity() {
             }
 
             val navState = remember { RoversNavigationState(RoversDestination.Rovers) }
-            val sceneSetupDecorator = rememberSceneSetupNavEntryDecorator<RoversDestination>()
-            val savedStateDecorator = rememberSavedStateNavEntryDecorator<RoversDestination>()
-            val viewModelStoreDecorator = rememberViewModelStoreNavEntryDecorator<RoversDestination>()
-            val entryDecorators: List<NavEntryDecorator<RoversDestination>> = remember(sceneSetupDecorator, savedStateDecorator, viewModelStoreDecorator) {
-                listOf(sceneSetupDecorator, savedStateDecorator, viewModelStoreDecorator)
-            }
+
+            val viewModelStoreDecorator =
+                rememberViewModelStoreNavEntryDecorator<RoversDestination>()
+            val entryDecorators: List<NavEntryDecorator<RoversDestination>> =
+                remember(viewModelStoreDecorator) {
+                    listOf(viewModelStoreDecorator)
+                }
 
             val activity = this@RoversActivity
 
@@ -334,18 +331,19 @@ class RoversActivity : FragmentActivity() {
                                 contentDescription = null
                             )
 
-                            RoversDestination.Favorite -> Icon(
-                                imageVector = Icons.Outlined.Favorite,
+                            RoversDestination.Favorite -> MaterialSymbolIcon(
+                                symbol = MaterialSymbol.Favorite,
                                 contentDescription = null
                             )
 
-                            RoversDestination.Popular -> Icon(
-                                imageVector = Icons.Outlined.LocalFireDepartment,
+
+                            RoversDestination.Popular -> MaterialSymbolIcon(
+                                symbol = MaterialSymbol.ViewList,
                                 contentDescription = null
                             )
 
-                            RoversDestination.About -> Icon(
-                                imageVector = Icons.Outlined.Info,
+                            RoversDestination.About -> MaterialSymbolIcon(
+                                symbol = MaterialSymbol.Info,
                                 contentDescription = null
                             )
                         }
@@ -504,10 +502,21 @@ private sealed interface RoversDestination {
         val analyticsTag: String
     }
 
-    data object Rovers : TopLevel { override val analyticsTag: String = "rovers" }
-    data object Favorite : TopLevel { override val analyticsTag: String = "favorite" }
-    data object Popular : TopLevel { override val analyticsTag: String = "popular" }
-    data object About : TopLevel { override val analyticsTag: String = "about" }
+    data object Rovers : TopLevel {
+        override val analyticsTag: String = "rovers"
+    }
+
+    data object Favorite : TopLevel {
+        override val analyticsTag: String = "favorite"
+    }
+
+    data object Popular : TopLevel {
+        override val analyticsTag: String = "popular"
+    }
+
+    data object About : TopLevel {
+        override val analyticsTag: String = "about"
+    }
 
     data object Ukraine : RoversDestination
     data class RoverDetail(val roverId: Long) : RoversDestination
@@ -526,9 +535,10 @@ private class RoversNavigationState(start: RoversDestination.TopLevel) {
     var currentTopLevel by mutableStateOf(start)
         private set
 
-    val backStack: SnapshotStateList<RoversDestination> = mutableStateListOf<RoversDestination>().apply {
-        add(start)
-    }
+    val backStack: SnapshotStateList<RoversDestination> =
+        mutableStateListOf<RoversDestination>().apply {
+            add(start)
+        }
 
     private fun createStack(destination: RoversDestination.TopLevel) =
         mutableStateListOf<RoversDestination>().apply { add(destination) }

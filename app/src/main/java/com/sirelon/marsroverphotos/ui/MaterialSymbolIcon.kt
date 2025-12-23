@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontVariation
@@ -74,6 +75,7 @@ fun MaterialSymbolIcon(
     )
 }
 
+@OptIn(ExperimentalTextApi::class)
 @Composable
 private fun rememberMaterialSymbolsFont(
     filled: Boolean,
