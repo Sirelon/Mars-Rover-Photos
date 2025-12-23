@@ -9,7 +9,7 @@ coil = "3.3.0"
 annotation = "1.9.1"
 # https://firebase.google.com/support/release-notes/android
 firebaseBom = "34.2.0"
-kotlin = "2.2.20"
+kotlin = "2.2.10"
 # https://github.com/Kotlin/kotlinx.serialization/releases
 kotlin-serialization = "1.9.0"
 

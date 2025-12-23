@@ -170,4 +170,3 @@ class RoversRepository(context: Context, private val api: RestApi) {
         }.onFailure(Throwable::printStackTrace)
     }
 }
-
