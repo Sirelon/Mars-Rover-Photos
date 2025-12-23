@@ -41,8 +41,12 @@ import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
@@ -196,34 +200,53 @@ class RoversActivity : FragmentActivity() {
             }
 
             MarsRoverPhotosTheme(isDark) {
-                Scaffold(
-                    topBar = {
+                val windowSizeClass = calculateWindowSizeClass(activity)
+                val navSuiteType = NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(
+                    currentWindowAdaptiveInfo()
+                )
+
+                NavigationSuiteScaffold(
+                    layoutType = navSuiteType,
+                    navigationSuiteItems = {
                         AnimatedVisibility(
                             visible = !hideUI,
                             enter = fadeIn() + expandVertically(),
                             exit = fadeOut() + shrinkVertically(),
                         ) {
-                            bottomItems.forEach { screen ->
+                            bottomItems.forEach { destination ->
                                 item(
-                                    icon = { screen.Icon(contentDescription = null) },
-                                    label = {
-                                        screen.labelRes?.let { labelRes ->
-                                            Text(stringResource(labelRes))
+                                    icon = {
+                                        when (destination) {
+                                            RoversDestination.Rovers -> Icon(
+                                                imageVector = ImageVector.vectorResource(id = R.drawable.ic_rovers),
+                                                contentDescription = null
+                                            )
+                                            RoversDestination.Favorite -> Icon(
+                                                imageVector = Icons.Outlined.Favorite,
+                                                contentDescription = null
+                                            )
+                                            RoversDestination.Popular -> Icon(
+                                                imageVector = Icons.Outlined.LocalFireDepartment,
+                                                contentDescription = null
+                                            )
+                                            RoversDestination.About -> Icon(
+                                                imageVector = Icons.Outlined.Info,
+                                                contentDescription = null
+                                            )
                                         }
                                     },
-                                    selected = currentDestination?.hierarchy?.any {
-                                        it.route == screen.route
-                                    } == true,
-                                    onClick = {
-                                        track("bottom_${screen.route}")
-                                        while (navController.navigateUp()) {}
-                                        navController.navigate(screen.route) {
-                                            popUpTo(navController.graph.findStartDestination().id) {
-                                                saveState = true
-                                            }
-                                            launchSingleTop = true
-                                            restoreState = true
+                                    label = {
+                                        when (destination) {
+                                            RoversDestination.Rovers -> Text(stringResource(R.string.nav_rovers))
+                                            RoversDestination.Favorite -> Text(stringResource(R.string.nav_favorite))
+                                            RoversDestination.Popular -> Text(stringResource(R.string.nav_popular))
+                                            RoversDestination.About -> Text(stringResource(R.string.nav_about))
                                         }
+                                    },
+                                    selected = destination == navState.currentTopLevel,
+                                    onClick = {
+                                        track("bottom_${destination.analyticsTag}")
+                                        navState.selectTopLevel(destination, resetToTop = true)
                                     }
                                 )
                             }
@@ -242,35 +265,20 @@ class RoversActivity : FragmentActivity() {
                                 navState.push(RoversDestination.Ukraine, singleTop = true)
                             }
                         }
-                    },
-                    bottomBar = {
-                        AnimatedVisibility(
-                            visible = !hideUI,
-                            enter = fadeIn() + expandVertically(),
-                            exit = fadeOut() + shrinkVertically(),
-                        ) {
-                            RoversBottomBar(
-                                bottomItems = bottomItems,
-                                currentDestination = navState.currentTopLevel,
-                                onSelect = { destination ->
-                                    track("bottom_${destination.analyticsTag}")
-                                    navState.selectTopLevel(destination, resetToTop = true)
-                                }
+
+                        // Main content
+                        Box(modifier = Modifier.weight(1f)) {
+                            MarsRoverContent(
+                                modifier = Modifier.fillMaxSize(),
+                                activity = activity,
+                                navState = navState,
+                                entryDecorators = entryDecorators,
+                                onExit = { activity.finish() },
+                                onHideUi = { hideUI = it }
                             )
                         }
-                    },
-                    content = { paddingValues ->
-                        MarsRoverContent(
-                            modifier = Modifier.padding(paddingValues),
-                            activity = activity,
-                            navState = navState,
-                            entryDecorators = entryDecorators,
-                            onExit = { activity.finish() },
-                            onHideUi = {
-                                hideUI = it
-                            },
-                        )
-                    })
+                    }
+                }
             }
         }
 
