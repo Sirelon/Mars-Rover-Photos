@@ -248,8 +248,13 @@ class RoversActivity : FragmentActivity() {
                             }
                         }
                     }
-                ) {
-                    Column(modifier = Modifier.fillMaxSize()) {
+                ) { paddingValues ->
+                    val contentModifier = if (hideUI) {
+                        Modifier.fillMaxSize()
+                    } else {
+                        Modifier.fillMaxSize().padding(paddingValues)
+                    }
+                    Column(modifier = contentModifier) {
                         // Ukraine banner
                         AnimatedVisibility(
                             visible = !hideUI,
