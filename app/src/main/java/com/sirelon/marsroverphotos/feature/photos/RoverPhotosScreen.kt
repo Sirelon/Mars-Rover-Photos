@@ -57,6 +57,7 @@ import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.ui.CenteredProgress
 import com.sirelon.marsroverphotos.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.ui.MaterialSymbolIcon
+import com.sirelon.marsroverphotos.ui.adaptiveGridCells
 import java.util.Calendar
 import java.util.TimeZone
 
@@ -184,7 +185,7 @@ private fun PhotosList(
     onPhotoClick: (image: MarsImage) -> Unit
 ) {
 
-    LazyVerticalGrid(columns = GridCells.Fixed(2), modifier = modifier) {
+    LazyVerticalGrid(columns = adaptiveGridCells(minColumnWidth = 160.dp), modifier = modifier) {
         items(
             photos,
             key = { it.id },

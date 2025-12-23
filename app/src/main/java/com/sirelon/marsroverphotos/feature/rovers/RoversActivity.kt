@@ -39,10 +39,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -55,16 +59,15 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.annotation.StringRes
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -103,6 +106,7 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 @ExperimentalAnimationApi
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 class RoversActivity : FragmentActivity() {
 
     private val gdprHelper = GdprHelper(this)
@@ -190,48 +194,90 @@ class RoversActivity : FragmentActivity() {
             }
 
             MarsRoverPhotosTheme(isDark) {
-                Scaffold(
-                    topBar = {
+                val windowSizeClass = calculateWindowSizeClass(activity)
+                val navSuiteType = NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(
+                    currentWindowAdaptiveInfo()
+                )
+
+                NavigationSuiteScaffold(
+                    layoutType = navSuiteType,
+                    navigationSuiteItems = {
                         AnimatedVisibility(
                             visible = !hideUI,
                             enter = fadeIn() + expandVertically(),
                             exit = fadeOut() + shrinkVertically(),
                         ) {
-
+                            bottomItems.forEach { destination ->
+                                item(
+                                    icon = {
+                                        when (destination) {
+                                            RoversDestination.Rovers -> Icon(
+                                                imageVector = ImageVector.vectorResource(id = R.drawable.ic_rovers),
+                                                contentDescription = null
+                                            )
+                                            RoversDestination.Favorite -> MaterialSymbolIcon(
+                                                symbol = MaterialSymbol.Favorite,
+                                                contentDescription = null
+                                            )
+                                            RoversDestination.Popular -> MaterialSymbolIcon(
+                                                symbol = MaterialSymbol.LocalFireDepartment,
+                                                contentDescription = null
+                                            )
+                                            RoversDestination.About -> MaterialSymbolIcon(
+                                                symbol = MaterialSymbol.Info,
+                                                contentDescription = null
+                                            )
+                                        }
+                                    },
+                                    label = {
+                                        when (destination) {
+                                            RoversDestination.Rovers -> Text(stringResource(R.string.nav_rovers))
+                                            RoversDestination.Favorite -> Text(stringResource(R.string.nav_favorite))
+                                            RoversDestination.Popular -> Text(stringResource(R.string.nav_popular))
+                                            RoversDestination.About -> Text(stringResource(R.string.nav_about))
+                                        }
+                                    },
+                                    selected = destination == navState.currentTopLevel,
+                                    onClick = {
+                                        track("bottom_${destination.analyticsTag}")
+                                        navState.selectTopLevel(destination, resetToTop = true)
+                                    }
+                                )
+                            }
+                        }
+                    }
+                ) { paddingValues ->
+                    val contentModifier = if (hideUI) {
+                        Modifier.fillMaxSize()
+                    } else {
+                        Modifier.fillMaxSize().padding(paddingValues)
+                    }
+                    Column(modifier = contentModifier) {
+                        // Ukraine banner
+                        AnimatedVisibility(
+                            visible = !hideUI,
+                            enter = fadeIn() + expandVertically(),
+                            exit = fadeOut() + shrinkVertically(),
+                        ) {
                             UkraineBanner(modifier = Modifier.statusBarsPadding()) {
                                 RoverApplication.APP.tracker.trackClick("UkraineBanner_Top")
                                 navState.push(RoversDestination.Ukraine, singleTop = true)
                             }
                         }
-                    },
-                    bottomBar = {
-                        AnimatedVisibility(
-                            visible = !hideUI,
-                            enter = fadeIn() + expandVertically(),
-                            exit = fadeOut() + shrinkVertically(),
-                        ) {
-                            RoversBottomBar(
-                                bottomItems = bottomItems,
-                                currentDestination = navState.currentTopLevel,
-                                onSelect = { destination ->
-                                    track("bottom_${destination.analyticsTag}")
-                                    navState.selectTopLevel(destination, resetToTop = true)
-                                }
+
+                        // Main content
+                        Box(modifier = Modifier.weight(1f)) {
+                            MarsRoverContent(
+                                modifier = Modifier.fillMaxSize(),
+                                activity = activity,
+                                navState = navState,
+                                entryDecorators = entryDecorators,
+                                onExit = { activity.finish() },
+                                onHideUi = { hideUI = it }
                             )
                         }
-                    },
-                    content = { paddingValues ->
-                        MarsRoverContent(
-                            modifier = Modifier.padding(paddingValues),
-                            activity = activity,
-                            navState = navState,
-                            entryDecorators = entryDecorators,
-                            onExit = { activity.finish() },
-                            onHideUi = {
-                                hideUI = it
-                            },
-                        )
-                    })
+                    }
+                }
             }
         }
 

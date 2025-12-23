@@ -23,4 +23,10 @@
     <string name="no_photos_title">Rover didn\'t take any photos at this date.</string>
     <string name="favorite_empty_btn">Go to rovers</string>
     <string name="favorite_empty_title">No favourite photos yet. \nYou can save any photos which you like. \nJust mark them as "favourite".</string>
+
+    <!-- Navigation labels -->
+    <string name="nav_rovers">Rovers</string>
+    <string name="nav_favorite">Favorites</string>
+    <string name="nav_popular">Popular</string>
+    <string name="nav_about">About</string>
 </resources>
