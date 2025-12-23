@@ -12,6 +12,7 @@ firebaseBom = "34.7.0"
 kotlin = "2.3.0"
 # https://github.com/Kotlin/kotlinx.serialization/releases
 kotlin-serialization = "1.9.0"
+koin = "4.2.0-beta2"
 
 # https://github.com/Kotlin/kotlinx.collections.immutable
 kotlin-collections-immutable = "0.4.0"
@@ -73,6 +74,9 @@ kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlin-collections-immutable" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlin-serialization" }
 ksp = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "ksp" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
+koin-compose-navigation3 = { module = "io.insert-koin:koin-compose-navigation3", version.ref = "koin" }
 
 ktor-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
 ktor-client-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }

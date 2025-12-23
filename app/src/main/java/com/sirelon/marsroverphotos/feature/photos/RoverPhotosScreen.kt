@@ -50,7 +50,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
+import org.koin.androidx.compose.koinViewModel
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.feature.NetworkImage
 import com.sirelon.marsroverphotos.storage.MarsImage
@@ -71,7 +71,7 @@ fun RoverPhotosScreen(
     modifier: Modifier = Modifier,
     roverId: Long,
     onNavigateToImages: (MarsImage, List<MarsImage>) -> Unit,
-    viewModel: PhotosViewModel = viewModel()
+    viewModel: PhotosViewModel = koinViewModel()
 ) {
     viewModel.setRoverId(roverId)
 
