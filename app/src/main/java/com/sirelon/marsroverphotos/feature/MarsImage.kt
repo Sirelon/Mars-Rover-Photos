@@ -14,15 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Save
-import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.ZoomIn
 import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -31,8 +23,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -44,6 +34,8 @@ import coil3.request.placeholder
 import coil3.size.Scale
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.storage.MarsImage
+import com.sirelon.marsroverphotos.ui.MaterialSymbol
+import com.sirelon.marsroverphotos.ui.MaterialSymbolIcon
 
 /**
  * Created on 01.03.2021 22:33 for Mars-Rover-Photos.
@@ -106,10 +98,10 @@ fun PhotoStats(marsImage: MarsImage, onFavoriteClick: () -> Unit) {
         verticalArrangement = Arrangement.Center
     ) {
 
-        StatsInfoText(stats.see, Icons.Filled.Visibility, "counterSee")
-        StatsInfoText(stats.scale, Icons.Filled.ZoomIn, "counterScale")
-        StatsInfoText(stats.save, Icons.Filled.Save, "counterSave")
-        StatsInfoText(stats.share, Icons.Filled.Share, "counterShare")
+        StatsInfoText(stats.see, MaterialSymbol.Visibility, "counterSee")
+        StatsInfoText(stats.scale, MaterialSymbol.ZoomIn, "counterScale")
+        StatsInfoText(stats.save, MaterialSymbol.Save, "counterSave")
+        StatsInfoText(stats.share, MaterialSymbol.Share, "counterShare")
 
         MarsImageFavoriteToggle(
             modifier = Modifier.fillMaxWidth(),
@@ -130,9 +122,10 @@ fun MarsImageFavoriteToggle(
         checked = checked,
         onCheckedChange = onCheckedChange
     ) {
-        Icon(
-            imageVector = if (checked) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-            contentDescription = null // handled by click label of parent
+        MaterialSymbolIcon(
+            symbol = MaterialSymbol.Favorite,
+            contentDescription = null, // handled by click label of parent
+            filled = checked
         )
     }
 }
@@ -163,15 +156,15 @@ fun NetworkImage(
 }
 
 @Composable
-private fun StatsInfoText(counter: Long, image: ImageVector, desc: String) {
+private fun StatsInfoText(counter: Long, symbol: MaterialSymbol, desc: String) {
 
     if (counter <= 0) return
 
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(
-            modifier = Modifier.size(20.dp),
-            painter = rememberVectorPainter(image = image),
+        MaterialSymbolIcon(
+            symbol = symbol,
             contentDescription = desc,
+            size = 20.dp
         )
         Spacer(modifier = Modifier.width(6.dp))
         Text(

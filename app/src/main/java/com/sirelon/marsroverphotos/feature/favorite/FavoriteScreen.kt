@@ -9,11 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ViewList
-import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
@@ -42,6 +38,8 @@ import com.sirelon.marsroverphotos.feature.popular.PopularPhotosViewModel
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.storage.Prefs
 import com.sirelon.marsroverphotos.ui.CenteredProgress
+import com.sirelon.marsroverphotos.ui.MaterialSymbol
+import com.sirelon.marsroverphotos.ui.MaterialSymbolIcon
 import java.util.UUID
 
 /**
@@ -128,13 +126,13 @@ fun FavoritePhotosContent(
                     },
                 ) {
                     if (gridView) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ViewList,
+                        MaterialSymbolIcon(
+                            symbol = MaterialSymbol.ViewList,
                             contentDescription = "Change to List View",
                         )
                     } else {
-                        Icon(
-                            imageVector = Icons.Default.GridView,
+                        MaterialSymbolIcon(
+                            symbol = MaterialSymbol.GridView,
                             contentDescription = "Change to Grid View",
                         )
                     }
