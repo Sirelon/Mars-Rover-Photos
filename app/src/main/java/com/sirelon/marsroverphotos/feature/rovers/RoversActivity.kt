@@ -59,12 +59,10 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -217,16 +215,16 @@ class RoversActivity : FragmentActivity() {
                                                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_rovers),
                                                 contentDescription = null
                                             )
-                                            RoversDestination.Favorite -> Icon(
-                                                imageVector = Icons.Outlined.Favorite,
+                                            RoversDestination.Favorite -> MaterialSymbolIcon(
+                                                symbol = MaterialSymbol.Favorite,
                                                 contentDescription = null
                                             )
-                                            RoversDestination.Popular -> Icon(
-                                                imageVector = Icons.Outlined.LocalFireDepartment,
+                                            RoversDestination.Popular -> MaterialSymbolIcon(
+                                                symbol = MaterialSymbol.LocalFireDepartment,
                                                 contentDescription = null
                                             )
-                                            RoversDestination.About -> Icon(
-                                                imageVector = Icons.Outlined.Info,
+                                            RoversDestination.About -> MaterialSymbolIcon(
+                                                symbol = MaterialSymbol.Info,
                                                 contentDescription = null
                                             )
                                         }
