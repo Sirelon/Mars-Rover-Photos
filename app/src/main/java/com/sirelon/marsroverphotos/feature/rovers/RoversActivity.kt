@@ -67,8 +67,6 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -276,26 +274,13 @@ class RoversActivity : FragmentActivity() {
         navController: NavHostController,
         onHideUi: (Boolean) -> Unit,
     ) {
-        ConstraintLayout(
+        Column(
             modifier = modifier.fillMaxSize()
         ) {
-            val (content, ad) = createRefs()
-
-            val contentModifier = Modifier.constrainAs(content) {
-                height = Dimension.fillToConstraints
-                bottom.linkTo(ad.top)
-                top.linkTo(parent.top)
-            }
-
-            Box(modifier = contentModifier) {
+            Box(modifier = Modifier.weight(1f)) {
                 RoversNavHost(navController, onHideUi = onHideUi)
             }
-            val adModifier = Modifier.constrainAs(ad) {
-                bottom.linkTo(parent.bottom)
-                end.linkTo(parent.end)
-                start.linkTo(parent.start)
-            }
-            ComposableBannerAd(adModifier)
+            ComposableBannerAd(modifier = Modifier.fillMaxWidth())
         }
     }
 
