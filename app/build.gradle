@@ -85,6 +85,7 @@ dependencies {
     implementation(libs.androidx.ktx)
     implementation(libs.ksp)
     implementation(libs.androidx.compose)
+    implementation libs.androidx.material3.window.size.class1
 
     debugImplementation(libs.compose.ui.tooling)
     implementation(libs.compose.ui)

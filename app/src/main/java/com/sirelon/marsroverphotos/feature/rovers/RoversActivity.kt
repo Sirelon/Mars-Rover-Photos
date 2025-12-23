@@ -40,8 +40,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
@@ -59,15 +57,16 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.annotation.StringRes
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -202,82 +201,75 @@ class RoversActivity : FragmentActivity() {
                 NavigationSuiteScaffold(
                     layoutType = navSuiteType,
                     navigationSuiteItems = {
-                        AnimatedVisibility(
-                            visible = !hideUI,
-                            enter = fadeIn() + expandVertically(),
-                            exit = fadeOut() + shrinkVertically(),
-                        ) {
-                            bottomItems.forEach { destination ->
-                                item(
-                                    icon = {
-                                        when (destination) {
-                                            RoversDestination.Rovers -> Icon(
-                                                imageVector = ImageVector.vectorResource(id = R.drawable.ic_rovers),
-                                                contentDescription = null
-                                            )
-                                            RoversDestination.Favorite -> MaterialSymbolIcon(
-                                                symbol = MaterialSymbol.Favorite,
-                                                contentDescription = null
-                                            )
-                                            RoversDestination.Popular -> MaterialSymbolIcon(
-                                                symbol = MaterialSymbol.LocalFireDepartment,
-                                                contentDescription = null
-                                            )
-                                            RoversDestination.About -> MaterialSymbolIcon(
-                                                symbol = MaterialSymbol.Info,
-                                                contentDescription = null
-                                            )
-                                        }
-                                    },
-                                    label = {
-                                        when (destination) {
-                                            RoversDestination.Rovers -> Text(stringResource(R.string.nav_rovers))
-                                            RoversDestination.Favorite -> Text(stringResource(R.string.nav_favorite))
-                                            RoversDestination.Popular -> Text(stringResource(R.string.nav_popular))
-                                            RoversDestination.About -> Text(stringResource(R.string.nav_about))
-                                        }
-                                    },
-                                    selected = destination == navState.currentTopLevel,
-                                    onClick = {
-                                        track("bottom_${destination.analyticsTag}")
-                                        navState.selectTopLevel(destination, resetToTop = true)
+                        bottomItems.forEach { destination ->
+                            item(
+                                icon = {
+                                    when (destination) {
+                                        RoversDestination.Rovers -> Icon(
+                                            imageVector = ImageVector.vectorResource(id = R.drawable.ic_rovers),
+                                            contentDescription = null
+                                        )
+
+                                        RoversDestination.Favorite -> MaterialSymbolIcon(
+                                            symbol = MaterialSymbol.Favorite,
+                                            contentDescription = null
+                                        )
+
+                                        RoversDestination.Popular -> MaterialSymbolIcon(
+                                            symbol = MaterialSymbol.LocalFireDepartment,
+                                            contentDescription = null
+                                        )
+
+                                        RoversDestination.About -> MaterialSymbolIcon(
+                                            symbol = MaterialSymbol.Info,
+                                            contentDescription = null
+                                        )
                                     }
+                                },
+                                label = {
+                                    when (destination) {
+                                        RoversDestination.Rovers -> Text(stringResource(R.string.nav_rovers))
+                                        RoversDestination.Favorite -> Text(stringResource(R.string.nav_favorite))
+                                        RoversDestination.Popular -> Text(stringResource(R.string.nav_popular))
+                                        RoversDestination.About -> Text(stringResource(R.string.nav_about))
+                                    }
+                                },
+                                selected = destination == navState.currentTopLevel,
+                                onClick = {
+                                    track("bottom_${destination.analyticsTag}")
+                                    navState.selectTopLevel(destination, resetToTop = true)
+                                }
+                            )
+                        }
+                    },
+                    content = {
+                        Column(modifier = Modifier.fillMaxSize()) {
+                            // Ukraine banner
+                            AnimatedVisibility(
+                                visible = !hideUI,
+                                enter = fadeIn() + expandVertically(),
+                                exit = fadeOut() + shrinkVertically(),
+                            ) {
+                                UkraineBanner(modifier = Modifier.statusBarsPadding()) {
+                                    RoverApplication.APP.tracker.trackClick("UkraineBanner_Top")
+                                    navState.push(RoversDestination.Ukraine, singleTop = true)
+                                }
+                            }
+
+                            // Main content
+                            Box(modifier = Modifier.weight(1f)) {
+                                MarsRoverContent(
+                                    modifier = Modifier.fillMaxSize(),
+                                    activity = activity,
+                                    navState = navState,
+                                    entryDecorators = entryDecorators,
+                                    onExit = { activity.finish() },
+                                    onHideUi = { hideUI = it }
                                 )
                             }
                         }
-                    }
-                ) { paddingValues ->
-                    val contentModifier = if (hideUI) {
-                        Modifier.fillMaxSize()
-                    } else {
-                        Modifier.fillMaxSize().padding(paddingValues)
-                    }
-                    Column(modifier = contentModifier) {
-                        // Ukraine banner
-                        AnimatedVisibility(
-                            visible = !hideUI,
-                            enter = fadeIn() + expandVertically(),
-                            exit = fadeOut() + shrinkVertically(),
-                        ) {
-                            UkraineBanner(modifier = Modifier.statusBarsPadding()) {
-                                RoverApplication.APP.tracker.trackClick("UkraineBanner_Top")
-                                navState.push(RoversDestination.Ukraine, singleTop = true)
-                            }
-                        }
-
-                        // Main content
-                        Box(modifier = Modifier.weight(1f)) {
-                            MarsRoverContent(
-                                modifier = Modifier.fillMaxSize(),
-                                activity = activity,
-                                navState = navState,
-                                entryDecorators = entryDecorators,
-                                onExit = { activity.finish() },
-                                onHideUi = { hideUI = it }
-                            )
-                        }
-                    }
-                }
+                    },
+                )
             }
         }
 
@@ -361,45 +353,45 @@ class RoversActivity : FragmentActivity() {
         }
     }
 
-    @Composable
-    private fun RoversBottomBar(
-        bottomItems: List<RoversDestination.TopLevel>,
-        currentDestination: RoversDestination.TopLevel,
-        onSelect: (RoversDestination.TopLevel) -> Unit,
-    ) {
-        NavigationBar(modifier = Modifier.navigationBarsPadding()) {
-            bottomItems.forEach { destination ->
-                NavigationBarItem(
-                    icon = {
-                        when (destination) {
-                            RoversDestination.Rovers -> Icon(
-                                imageVector = ImageVector.vectorResource(id = R.drawable.ic_rovers),
-                                contentDescription = null
-                            )
-
-                            RoversDestination.Favorite -> MaterialSymbolIcon(
-                                symbol = MaterialSymbol.Favorite,
-                                contentDescription = null
-                            )
-
-
-                            RoversDestination.Popular -> MaterialSymbolIcon(
-                                symbol = MaterialSymbol.ViewList,
-                                contentDescription = null
-                            )
-
-                            RoversDestination.About -> MaterialSymbolIcon(
-                                symbol = MaterialSymbol.Info,
-                                contentDescription = null
-                            )
-                        }
-                    },
-                    selected = destination == currentDestination,
-                    onClick = { onSelect(destination) }
-                )
-            }
-        }
-    }
+//    @Composable
+//    private fun RoversBottomBar(
+//        bottomItems: List<RoversDestination.TopLevel>,
+//        currentDestination: RoversDestination.TopLevel,
+//        onSelect: (RoversDestination.TopLevel) -> Unit,
+//    ) {
+//        NavigationBar(modifier = Modifier.navigationBarsPadding()) {
+//            bottomItems.forEach { destination ->
+//                NavigationBarItem(
+//                    icon = {
+//                        when (destination) {
+//                            RoversDestination.Rovers -> Icon(
+//                                imageVector = ImageVector.vectorResource(id = R.drawable.ic_rovers),
+//                                contentDescription = null
+//                            )
+//
+//                            RoversDestination.Favorite -> MaterialSymbolIcon(
+//                                symbol = MaterialSymbol.Favorite,
+//                                contentDescription = null
+//                            )
+//
+//
+//                            RoversDestination.Popular -> MaterialSymbolIcon(
+//                                symbol = MaterialSymbol.ViewList,
+//                                contentDescription = null
+//                            )
+//
+//                            RoversDestination.About -> MaterialSymbolIcon(
+//                                symbol = MaterialSymbol.Info,
+//                                contentDescription = null
+//                            )
+//                        }
+//                    },
+//                    selected = destination == currentDestination,
+//                    onClick = { onSelect(destination) }
+//                )
+//            }
+//        }
+//    }
 
     @Composable
     private fun ComposableBannerAd(modifier: Modifier) {
