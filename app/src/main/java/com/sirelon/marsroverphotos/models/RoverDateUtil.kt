@@ -34,19 +34,19 @@ class RoverDateUtil(val rover: Rover) {
 
     private val _roverLastDate: Long by lazy {
         try {
-            simpleDateFormat.parse(rover.maxDate).time
+            simpleDateFormat.parse(rover.maxDate)?.time ?: 0L
         } catch (e: Exception) {
             e.printStackTrace()
-            0.toLong()
+            0L
         }
     }
 
     private val _roverLandingDate: Long by lazy {
         try {
-            simpleDateFormat.parse(rover.landingDate).time
+            simpleDateFormat.parse(rover.landingDate)?.time ?: 0L
         } catch (e: Exception) {
             e.printStackTrace()
-            0.toLong()
+            0L
         }
     }
 

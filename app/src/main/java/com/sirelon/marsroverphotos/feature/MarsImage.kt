@@ -27,9 +27,8 @@ import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -66,11 +65,8 @@ fun MarsImageComposable(
             }).build()
     )
 
-    val loading by remember {
-        derivedStateOf {
-            painter.state !is AsyncImagePainter.State.Success
-        }
-    }
+    val state by painter.state.collectAsState()
+    val showStats = state is AsyncImagePainter.State.Success
     Card(
         modifier = modifier
             .padding(vertical = 8.dp)
@@ -90,7 +86,7 @@ fun MarsImageComposable(
                 contentDescription = imageUrl
             )
 
-            if (!loading) {
+            if (showStats) {
                 PhotoStats(marsImage, onFavoriteClick)
             }
         }
