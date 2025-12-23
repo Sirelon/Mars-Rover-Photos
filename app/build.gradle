@@ -94,7 +94,6 @@ dependencies {
     implementation(libs.compose.ui.tooling)
 
     implementation libs.navigation.compose
-    implementation libs.androidx.constraintlayout.compose
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     testImplementation libs.kotlin.stdlib
