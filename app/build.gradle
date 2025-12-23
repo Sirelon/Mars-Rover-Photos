@@ -78,6 +78,7 @@ android {
 
 ksp {
     arg("room.generateKotlin", "true")
+    arg("room.schemaLocation", "$projectDir/schemas")
 }
 
 dependencies {
@@ -90,7 +91,6 @@ dependencies {
     implementation(libs.compose.ui.util)
     implementation(libs.compose.foundation)
     implementation(libs.compose.material3)
-    implementation(libs.compose.material.icons.extended)
     implementation(libs.compose.ui.tooling)
 
     implementation libs.navigation3.runtime
@@ -138,4 +138,10 @@ dependencies {
     implementation(libs.kotlinx.collections.immutable)
 
     implementation libs.zoomable
+}
+
+if (!file("$projectDir/google-services.json").exists()) {
+    tasks.matching { it.name == "processDebugGoogleServices" }.configureEach {
+        enabled = false
+    }
 }

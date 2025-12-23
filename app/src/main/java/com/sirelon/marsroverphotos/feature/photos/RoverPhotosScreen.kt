@@ -25,13 +25,10 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Autorenew
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
@@ -58,6 +55,8 @@ import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.feature.NetworkImage
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.ui.CenteredProgress
+import com.sirelon.marsroverphotos.ui.MaterialSymbol
+import com.sirelon.marsroverphotos.ui.MaterialSymbolIcon
 import java.util.Calendar
 import java.util.TimeZone
 
@@ -168,8 +167,8 @@ private fun RefreshButton(
                 modifier = Modifier.align(Alignment.BottomEnd),
                 onClick = onClick
             ) {
-                Icon(
-                    imageVector = Icons.Filled.Autorenew,
+                MaterialSymbolIcon(
+                    symbol = MaterialSymbol.Autorenew,
                     contentDescription = "refresh"
                 )
             }

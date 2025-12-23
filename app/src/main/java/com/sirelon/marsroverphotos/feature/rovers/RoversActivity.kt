@@ -41,7 +41,6 @@ import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -59,18 +58,14 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -102,6 +97,8 @@ import com.sirelon.marsroverphotos.models.drawableRes
 import com.sirelon.marsroverphotos.storage.Prefs
 import com.sirelon.marsroverphotos.storage.Theme
 import com.sirelon.marsroverphotos.ui.MarsRoverPhotosTheme
+import com.sirelon.marsroverphotos.ui.MaterialSymbol
+import com.sirelon.marsroverphotos.ui.MaterialSymbolIcon
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -305,18 +302,10 @@ class RoversActivity : FragmentActivity() {
         onExit: () -> Unit,
         onHideUi: (Boolean) -> Unit,
     ) {
-        ConstraintLayout(
+        Column(
             modifier = modifier.fillMaxSize()
         ) {
-            val (content, ad) = createRefs()
-
-            val contentModifier = Modifier.constrainAs(content) {
-                height = Dimension.fillToConstraints
-                bottom.linkTo(ad.top)
-                top.linkTo(parent.top)
-            }
-
-            Box(modifier = contentModifier) {
+            Box(modifier = Modifier.weight(1f)) {
                 RoversNavDisplay(
                     activity = activity,
                     navState = navState,
@@ -325,12 +314,7 @@ class RoversActivity : FragmentActivity() {
                     onHideUi = onHideUi,
                 )
             }
-            val adModifier = Modifier.constrainAs(ad) {
-                bottom.linkTo(parent.bottom)
-                end.linkTo(parent.end)
-                start.linkTo(parent.start)
-            }
-            ComposableBannerAd(adModifier)
+            ComposableBannerAd(modifier = Modifier.fillMaxWidth())
         }
     }
 

@@ -11,6 +11,8 @@
 # Generated files
 bin/
 gen/
+compose_compiler_analytics/
+app/compose_compiler_analytics/
 
 # Gradle files
 .gradle/
