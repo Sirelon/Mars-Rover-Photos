@@ -41,7 +41,7 @@ work = "2.11.0"
 # https://github.com/usuiat/Zoomable/releases
 zoomable = "2.9.0"
 # https://developer.android.com/jetpack/androidx/releases/navigation3
-navigation3 = "1.1.0-alpha01"
+navigation3 = "1.0.0"
 lifecycle-navigation3 = "2.10.0"
 androidGradlePlugin = "8.13.2"
 material3WindowSizeClass = "1.4.0"
@@ -92,6 +92,7 @@ compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", versi
 compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "compose" }
 compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "compose-material3" }
 compose-material3-adaptive-navigation-suite = { group = "androidx.compose.material3", name = "material3-adaptive-navigation-suite", version.ref = "compose-material3-adaptive-navigation-suite" }
+compose-material3-window-size = { group = "androidx.compose.material3", name = "material3-window-size-class", version.ref = "compose-material3" }
 
 play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "playServicesAds" }
 user-messaging-platform = { module = "com.google.android.ump:user-messaging-platform", version.ref = "userMessagingPlatform" }

@@ -15,6 +15,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -39,8 +42,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
@@ -57,22 +65,23 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.annotation.StringRes
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import coil3.ImageLoader
 import com.google.android.gms.ads.AdRequest
@@ -155,11 +164,13 @@ class RoversActivity : FragmentActivity() {
 
             val navState = remember { RoversNavigationState(RoversDestination.Rovers) }
 
+            val savedStateDecorator =
+                rememberSaveableStateHolderNavEntryDecorator<RoversDestination>()
             val viewModelStoreDecorator =
                 rememberViewModelStoreNavEntryDecorator<RoversDestination>()
             val entryDecorators: List<NavEntryDecorator<RoversDestination>> =
-                remember(viewModelStoreDecorator) {
-                    listOf(viewModelStoreDecorator)
+                remember(savedStateDecorator, viewModelStoreDecorator) {
+                    listOf(savedStateDecorator, viewModelStoreDecorator)
                 }
 
             val activity = this@RoversActivity
@@ -169,6 +180,13 @@ class RoversActivity : FragmentActivity() {
 
             var hideUI by remember {
                 mutableStateOf(false)
+            }
+            val navTransition = updateTransition(targetState = hideUI, label = "navSuiteVisibility")
+            val navAlpha by navTransition.animateFloat(label = "navAlpha") { hidden ->
+                if (hidden) 0f else 1f
+            }
+            val navScale by navTransition.animateFloat(label = "navScale") { hidden ->
+                if (hidden) 0.92f else 1f
             }
 
             BackHandler(enabled = navState.canGoBack()) {
@@ -198,28 +216,33 @@ class RoversActivity : FragmentActivity() {
                     currentWindowAdaptiveInfo()
                 )
 
+                val layoutType =
+                    if (hideUI && navAlpha <= 0.01f) NavigationSuiteType.None else navSuiteType
+
                 NavigationSuiteScaffold(
-                    layoutType = navSuiteType,
+                    layoutType = layoutType,
                     navigationSuiteItems = {
                         bottomItems.forEach { destination ->
                             item(
+                                modifier = Modifier.graphicsLayer {
+                                    alpha = navAlpha
+                                    scaleX = navScale
+                                    scaleY = navScale
+                                },
                                 icon = {
                                     when (destination) {
                                         RoversDestination.Rovers -> Icon(
                                             imageVector = ImageVector.vectorResource(id = R.drawable.ic_rovers),
                                             contentDescription = null
                                         )
-
                                         RoversDestination.Favorite -> MaterialSymbolIcon(
                                             symbol = MaterialSymbol.Favorite,
                                             contentDescription = null
                                         )
-
                                         RoversDestination.Popular -> MaterialSymbolIcon(
                                             symbol = MaterialSymbol.LocalFireDepartment,
                                             contentDescription = null
                                         )
-
                                         RoversDestination.About -> MaterialSymbolIcon(
                                             symbol = MaterialSymbol.Info,
                                             contentDescription = null
@@ -235,41 +258,41 @@ class RoversActivity : FragmentActivity() {
                                     }
                                 },
                                 selected = destination == navState.currentTopLevel,
+                                enabled = !hideUI,
                                 onClick = {
                                     track("bottom_${destination.analyticsTag}")
                                     navState.selectTopLevel(destination, resetToTop = true)
                                 }
                             )
                         }
-                    },
-                    content = {
-                        Column(modifier = Modifier.fillMaxSize()) {
-                            // Ukraine banner
-                            AnimatedVisibility(
-                                visible = !hideUI,
-                                enter = fadeIn() + expandVertically(),
-                                exit = fadeOut() + shrinkVertically(),
-                            ) {
-                                UkraineBanner(modifier = Modifier.statusBarsPadding()) {
-                                    RoverApplication.APP.tracker.trackClick("UkraineBanner_Top")
-                                    navState.push(RoversDestination.Ukraine, singleTop = true)
-                                }
-                            }
-
-                            // Main content
-                            Box(modifier = Modifier.weight(1f)) {
-                                MarsRoverContent(
-                                    modifier = Modifier.fillMaxSize(),
-                                    activity = activity,
-                                    navState = navState,
-                                    entryDecorators = entryDecorators,
-                                    onExit = { activity.finish() },
-                                    onHideUi = { hideUI = it }
-                                )
+                    }
+                ) {
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        // Ukraine banner
+                        AnimatedVisibility(
+                            visible = !hideUI,
+                            enter = fadeIn() + expandVertically(),
+                            exit = fadeOut() + shrinkVertically(),
+                        ) {
+                            UkraineBanner(modifier = Modifier.statusBarsPadding()) {
+                                RoverApplication.APP.tracker.trackClick("UkraineBanner_Top")
+                                navState.push(RoversDestination.Ukraine, singleTop = true)
                             }
                         }
-                    },
-                )
+
+                        // Main content
+                        Box(modifier = Modifier.weight(1f)) {
+                            MarsRoverContent(
+                                modifier = Modifier.fillMaxSize(),
+                                activity = activity,
+                                navState = navState,
+                                entryDecorators = entryDecorators,
+                                onExit = { activity.finish() },
+                                onHideUi = { hideUI = it }
+                            )
+                        }
+                    }
+                }
             }
         }
 
@@ -353,45 +376,45 @@ class RoversActivity : FragmentActivity() {
         }
     }
 
-//    @Composable
-//    private fun RoversBottomBar(
-//        bottomItems: List<RoversDestination.TopLevel>,
-//        currentDestination: RoversDestination.TopLevel,
-//        onSelect: (RoversDestination.TopLevel) -> Unit,
-//    ) {
-//        NavigationBar(modifier = Modifier.navigationBarsPadding()) {
-//            bottomItems.forEach { destination ->
-//                NavigationBarItem(
-//                    icon = {
-//                        when (destination) {
-//                            RoversDestination.Rovers -> Icon(
-//                                imageVector = ImageVector.vectorResource(id = R.drawable.ic_rovers),
-//                                contentDescription = null
-//                            )
-//
-//                            RoversDestination.Favorite -> MaterialSymbolIcon(
-//                                symbol = MaterialSymbol.Favorite,
-//                                contentDescription = null
-//                            )
-//
-//
-//                            RoversDestination.Popular -> MaterialSymbolIcon(
-//                                symbol = MaterialSymbol.ViewList,
-//                                contentDescription = null
-//                            )
-//
-//                            RoversDestination.About -> MaterialSymbolIcon(
-//                                symbol = MaterialSymbol.Info,
-//                                contentDescription = null
-//                            )
-//                        }
-//                    },
-//                    selected = destination == currentDestination,
-//                    onClick = { onSelect(destination) }
-//                )
-//            }
-//        }
-//    }
+    @Composable
+    private fun RoversBottomBar(
+        bottomItems: List<RoversDestination.TopLevel>,
+        currentDestination: RoversDestination.TopLevel,
+        onSelect: (RoversDestination.TopLevel) -> Unit,
+    ) {
+        NavigationBar(modifier = Modifier.navigationBarsPadding()) {
+            bottomItems.forEach { destination ->
+                NavigationBarItem(
+                    icon = {
+                        when (destination) {
+                            RoversDestination.Rovers -> Icon(
+                                imageVector = ImageVector.vectorResource(id = R.drawable.ic_rovers),
+                                contentDescription = null
+                            )
+
+                            RoversDestination.Favorite -> MaterialSymbolIcon(
+                                symbol = MaterialSymbol.Favorite,
+                                contentDescription = null
+                            )
+
+
+                            RoversDestination.Popular -> MaterialSymbolIcon(
+                                symbol = MaterialSymbol.ViewList,
+                                contentDescription = null
+                            )
+
+                            RoversDestination.About -> MaterialSymbolIcon(
+                                symbol = MaterialSymbol.Info,
+                                contentDescription = null
+                            )
+                        }
+                    },
+                    selected = destination == currentDestination,
+                    onClick = { onSelect(destination) }
+                )
+            }
+        }
+    }
 
     @Composable
     private fun ComposableBannerAd(modifier: Modifier) {
