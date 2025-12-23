@@ -35,13 +35,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Favorite
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.LocalFireDepartment
-import androidx.compose.material.icons.outlined.ViewCarousel
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -57,12 +51,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -103,6 +95,8 @@ import com.sirelon.marsroverphotos.models.drawableRes
 import com.sirelon.marsroverphotos.storage.Prefs
 import com.sirelon.marsroverphotos.storage.Theme
 import com.sirelon.marsroverphotos.ui.MarsRoverPhotosTheme
+import com.sirelon.marsroverphotos.ui.MaterialSymbol
+import com.sirelon.marsroverphotos.ui.MaterialSymbolIcon
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -310,10 +304,7 @@ class RoversActivity : FragmentActivity() {
             bottomItems.forEach { screen ->
                 NavigationBarItem(
                     icon = {
-                        Icon(
-                            screen.iconCreator.invoke(),
-                            contentDescription = null
-                        )
+                        screen.Icon(contentDescription = null)
                     },
                     selected = navDestination?.hierarchy?.any { it.route == screen.route } == true,
 //                    colors = NavigationBarItemColors(),
@@ -477,18 +468,49 @@ class RoversActivity : FragmentActivity() {
     }
 }
 
-sealed class Screen(val route: String, val iconCreator: @Composable () -> ImageVector) {
-    data object Rovers : Screen("rovers", {
-        ImageVector.vectorResource(id = R.drawable.ic_rovers)
-    })
+sealed class Screen(val route: String) {
+    open val drawableRes: Int? = null
+    open val symbol: MaterialSymbol? = null
 
-    data object Favorite : Screen("favorite", { Icons.Outlined.Favorite })
-    data object Popular : Screen("popular", { Icons.Outlined.LocalFireDepartment })
-    data object About : Screen("about", { Icons.Outlined.Info })
+    data object Rovers : Screen("rovers") {
+        override val drawableRes = R.drawable.ic_rovers
+    }
 
-    class Rover(val id: Long) : Screen("rover", { Icons.Outlined.ViewCarousel })
+    data object Favorite : Screen("favorite") {
+        override val symbol = MaterialSymbol.Favorite
+    }
 
-    data object Ukraine : Screen("ukraine", { Icons.Outlined.Info })
+    data object Popular : Screen("popular") {
+        override val symbol = MaterialSymbol.LocalFireDepartment
+    }
+
+    data object About : Screen("about") {
+        override val symbol = MaterialSymbol.Info
+    }
+
+    class Rover(val id: Long) : Screen("rover") {
+        override val symbol = MaterialSymbol.ViewCarousel
+    }
+
+    data object Ukraine : Screen("ukraine") {
+        override val symbol = MaterialSymbol.Info
+    }
+
+    @Composable
+    fun Icon(contentDescription: String? = null) {
+        drawableRes?.let {
+            androidx.compose.material3.Icon(
+                painter = painterResource(id = it),
+                contentDescription = contentDescription
+            )
+        }
+        symbol?.let {
+            MaterialSymbolIcon(
+                symbol = it,
+                contentDescription = contentDescription
+            )
+        }
+    }
 }
 
 @Composable

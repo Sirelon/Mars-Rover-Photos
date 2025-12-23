@@ -21,12 +21,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Save
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
@@ -45,7 +41,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -59,6 +54,8 @@ import com.sirelon.marsroverphotos.feature.NetworkImage
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.ui.CenteredProgress
 import com.sirelon.marsroverphotos.ui.MarsSnackbar
+import com.sirelon.marsroverphotos.ui.MaterialSymbol
+import com.sirelon.marsroverphotos.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.ui.NoScrollEffect
 import kotlinx.coroutines.launch
 import net.engawapg.lib.zoomable.rememberZoomState
@@ -231,8 +228,8 @@ private fun SaveIcon(
     onClick: () -> Unit
 ) {
     IconButton(onClick = onClick) {
-        Icon(
-            painter = rememberVectorPainter(image = Icons.Filled.Save),
+        MaterialSymbolIcon(
+            symbol = MaterialSymbol.Save,
             contentDescription = "Save"
         )
     }
@@ -241,8 +238,8 @@ private fun SaveIcon(
 @Composable
 private fun ShareIcon(onClick: () -> Unit) {
     IconButton(onClick = onClick) {
-        Icon(
-            painter = rememberVectorPainter(image = Icons.Filled.Share),
+        MaterialSymbolIcon(
+            symbol = MaterialSymbol.Share,
             contentDescription = "Share"
         )
     }
