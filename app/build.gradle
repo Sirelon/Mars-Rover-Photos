@@ -94,7 +94,9 @@ dependencies {
     implementation(libs.compose.material3.adaptive.navigation.suite)
     implementation(libs.compose.ui.tooling)
 
-    implementation libs.navigation.compose
+    implementation libs.navigation3.runtime
+    implementation libs.navigation3.ui
+    implementation libs.lifecycle.viewmodel.navigation3
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     testImplementation libs.kotlin.stdlib

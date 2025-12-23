@@ -26,13 +26,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.feature.MarsImageComposable
-import com.sirelon.marsroverphotos.feature.navigateToImages
 import com.sirelon.marsroverphotos.feature.photos.EmptyPhotos
 import com.sirelon.marsroverphotos.feature.popular.PopularPhotosViewModel
 import com.sirelon.marsroverphotos.storage.MarsImage
@@ -48,7 +46,8 @@ import java.util.UUID
  */
 @Composable
 fun FavoriteScreen(
-    navController: NavController,
+    onNavigateToImages: (MarsImage, List<MarsImage>, Boolean) -> Unit,
+    onNavigateToRovers: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: FavoriteImagesViewModel = viewModel()
 ) {
@@ -62,7 +61,7 @@ fun FavoriteScreen(
             viewModel.updateFavForImage(it)
         },
         onItemClick = { image ->
-            navController.navigateToImages(image, items.itemSnapshotList.items)
+            onNavigateToImages(image, items.itemSnapshotList.items.filterNotNull(), true)
         },
         emptyContent = {
             EmptyPhotos(
@@ -70,7 +69,7 @@ fun FavoriteScreen(
                 btnTitle = stringResource(id = R.string.favorite_empty_btn)
             ) {
                 viewModel.track("click_empty_favorite")
-                navController.navigate("rovers")
+                onNavigateToRovers()
             }
         }
     )
@@ -78,7 +77,7 @@ fun FavoriteScreen(
 
 @Composable
 fun PopularScreen(
-    navController: NavController,
+    onNavigateToImages: (MarsImage, List<MarsImage>) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: PopularPhotosViewModel = viewModel()
 ) {
@@ -89,11 +88,7 @@ fun PopularScreen(
         items = items,
         onFavoriteClick = viewModel::updateFavorite,
         onItemClick = { image ->
-            navController.navigateToImages(
-                image = image,
-                allphotos = items.itemSnapshotList.items,
-                trackingEnabled = false
-            )
+            onNavigateToImages(image, items.itemSnapshotList.items.filterNotNull())
         },
         emptyContent = {}
     )
