@@ -42,7 +42,7 @@ fun UkraineInfoScreen() {
         }
 
         UkraineBanner(title = "Glory to Ukraine") {
-            RoverApplication.APP.tracker.trackClick("UkraineBanner_Bottom")
+            RoverApplication.APP.dataManger.trackClick("UkraineBanner_Bottom")
             // Open twitter
             try {
                 uriHandler.openUri("twitter://search?query=%23StandWithUkraine")
@@ -72,7 +72,7 @@ private fun UkraineInfoContent(uriHandler: androidx.compose.ui.platform.UriHandl
 
         TextButton(
             onClick = {
-                RoverApplication.APP.tracker.trackClick("Ukraine_wiki")
+                RoverApplication.APP.dataManger.trackClick("Ukraine_wiki")
                 uriHandler.openUri("https://en.wikipedia.org/wiki/Rashism")
             }) {
             Text(text = "rashism.")
@@ -87,7 +87,7 @@ private fun UkraineInfoContent(uriHandler: androidx.compose.ui.platform.UriHandl
         Text(text = "Don't just scroll past this. Remember us. We need your unwavering support as the war rages on. We're fighting for democracy, for our lives, and for a better future for everyone.")
         Text(text = "For more gritty details and stories of resilience from Ukrainian heroes, check out ")
         TextButton(onClick = {
-            RoverApplication.APP.tracker.trackClick("Ukraine_site")
+            RoverApplication.APP.dataManger.trackClick("Ukraine_site")
             uriHandler.openUri("https://war.ukraine.ua/")
         }) {
             Text(text = "https://war.ukraine.ua/")
@@ -95,7 +95,7 @@ private fun UkraineInfoContent(uriHandler: androidx.compose.ui.platform.UriHandl
         Text(text = "If you have any question, reach me via email ")
 
         TextButton(onClick = {
-            RoverApplication.APP.tracker.trackClick("Ukraine_mail")
+            RoverApplication.APP.dataManger.trackClick("Ukraine_mail")
             uriHandler.openUri("mailto:sasha.sirelon@gmail.com")
         }) {
             Text(text = "sasha.sirelon@gmail.com")

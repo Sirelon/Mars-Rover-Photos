@@ -57,7 +57,7 @@ class FullscreenImageTracker : MultitouchDetectorCallback {
     override var currentImage: MarsImage? = null
     override fun onTap() {
         Timber.d("onTap() called")
-        tracker.trackClick("tap_fullscreen_photo")
+        dataManager.trackClick("tap_fullscreen_photo")
     }
 
     override fun onDoubleTap(zoomToChange: Float) {

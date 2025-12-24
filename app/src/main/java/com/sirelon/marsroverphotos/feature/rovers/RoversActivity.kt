@@ -269,7 +269,7 @@ class RoversActivity : FragmentActivity() {
                             exit = fadeOut() + shrinkVertically(),
                         ) {
                             UkraineBanner(modifier = Modifier.statusBarsPadding()) {
-                                RoverApplication.APP.tracker.trackClick("UkraineBanner_Top")
+                                RoverApplication.APP.dataManger.trackClick("UkraineBanner_Top")
                                 navState.push(RoversDestination.Ukraine, singleTop = true)
                             }
                         }
