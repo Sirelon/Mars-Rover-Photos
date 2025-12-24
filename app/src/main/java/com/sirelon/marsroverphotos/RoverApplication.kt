@@ -5,9 +5,12 @@ import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.firebase.firestore.PersistentCacheSettings
+import com.sirelon.marsroverphotos.di.appModule
 import com.sirelon.marsroverphotos.storage.Prefs
 import com.sirelon.marsroverphotos.tracker.FirebaseTracker
 import com.sirelon.marsroverphotos.tracker.ITracker
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 import timber.log.Timber
 
 /**
@@ -29,6 +32,11 @@ class RoverApplication : Application() {
         APP = this
 
         Prefs.init(this)
+
+        startKoin {
+            androidContext(this@RoverApplication)
+            modules(appModule)
+        }
 
 //        if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())

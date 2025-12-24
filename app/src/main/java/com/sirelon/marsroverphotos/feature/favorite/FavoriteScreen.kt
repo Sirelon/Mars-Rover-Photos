@@ -25,7 +25,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -39,6 +38,7 @@ import com.sirelon.marsroverphotos.ui.CenteredProgress
 import com.sirelon.marsroverphotos.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.ui.calculateAdaptiveColumns
+import org.koin.androidx.compose.koinViewModel
 import java.util.UUID
 
 /**
@@ -49,7 +49,7 @@ fun FavoriteScreen(
     onNavigateToImages: (MarsImage, List<MarsImage>, Boolean) -> Unit,
     onNavigateToRovers: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: FavoriteImagesViewModel = viewModel()
+    viewModel: FavoriteImagesViewModel = koinViewModel()
 ) {
     val items = viewModel.favoriteImagesFlow.collectAsLazyPagingItems()
     FavoritePhotosContent(
@@ -79,7 +79,7 @@ fun FavoriteScreen(
 fun PopularScreen(
     onNavigateToImages: (MarsImage, List<MarsImage>) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: PopularPhotosViewModel = viewModel()
+    viewModel: PopularPhotosViewModel = koinViewModel()
 ) {
     val items = viewModel.popularPhotos.collectAsLazyPagingItems()
     FavoritePhotosContent(
