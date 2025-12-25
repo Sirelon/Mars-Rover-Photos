@@ -10,9 +10,10 @@ import android.util.DisplayMetrics
 import android.view.View
 import android.widget.Toast
 import androidx.activity.SystemBarStyle
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateFloatAsState
@@ -106,6 +107,16 @@ import kotlinx.coroutines.withContext
 import org.koin.compose.navigation3.koinEntryProvider
 import org.koin.core.annotation.KoinExperimentalAPI
 import timber.log.Timber
+import androidx.navigationevent.NavigationEventInfo
+
+/**
+ * Info class for debugging navigation state during predictive back.
+ */
+internal data class RoversNavigationInfo(
+    val destination: RoversDestination
+) : NavigationEventInfo() {
+    override fun toString(): String = "RoversNavigationInfo(${destination::class.simpleName})"
+}
 
 @ExperimentalAnimationApi
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
@@ -183,11 +194,27 @@ class RoversActivity : FragmentActivity() {
                 if (hidden) 0.92f else 1f
             }
 
-            BackHandler(enabled = navState.canGoBack()) {
-                if (!navState.pop()) {
-                    activity.finish()
+            val navigationEventState = rememberNavigationEventState(
+                currentInfo = RoversNavigationInfo(navState.backStack.last()),
+                backInfo = if (navState.backStack.size > 1) {
+                    RoversNavigationInfo(navState.backStack[navState.backStack.lastIndex - 1])
+                } else {
+                    null
                 }
-            }
+            )
+
+            NavigationBackHandler(
+                state = navigationEventState,
+                isBackEnabled = navState.canGoBack(),
+                onBackCancelled = {
+                    // User cancelled the back gesture - no action needed
+                },
+                onBackCompleted = {
+                    if (!navState.pop()) {
+                        activity.finish()
+                    }
+                }
+            )
 
             DisposableEffect(isDark) {
                 enableEdgeToEdge(
