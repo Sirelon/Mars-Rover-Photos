@@ -197,9 +197,9 @@ class RoversActivity : FragmentActivity() {
             val navigationEventState = rememberNavigationEventState(
                 currentInfo = RoversNavigationInfo(navState.backStack.last()),
                 backInfo = if (navState.backStack.size > 1) {
-                    RoversNavigationInfo(navState.backStack[navState.backStack.lastIndex - 1])
+                    listOf(RoversNavigationInfo(navState.backStack[navState.backStack.lastIndex - 1]))
                 } else {
-                    null
+                    emptyList()
                 }
             )
 
