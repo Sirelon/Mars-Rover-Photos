@@ -2,7 +2,6 @@ package com.sirelon.marsroverphotos
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Bundle
 import com.sirelon.marsroverphotos.feature.images.ImagesRepository
 import com.sirelon.marsroverphotos.feature.photos.PhotosRepository
 import com.sirelon.marsroverphotos.feature.rovers.InsightId
@@ -11,6 +10,9 @@ import com.sirelon.marsroverphotos.firebase.photos.FirebaseProvider.firebasePhot
 import com.sirelon.marsroverphotos.network.RestApi
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.tracker.ITracker
+import com.sirelon.marsroverphotos.tracker.normalizeClickEventName
+import com.sirelon.marsroverphotos.tracker.normalizeEventName
+import com.sirelon.marsroverphotos.tracker.toAnalyticsBundle
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -63,16 +65,13 @@ class DataManager(
     }
 
     fun trackClick(event: String) {
-        tracker.trackClick("click_$event")
+        tracker.trackClick(normalizeClickEventName(event))
     }
 
     fun trackEvent(event: String, params: Map<String, Any?> = emptyMap()) {
-        Timber.d("trackEvent() called with: event = $event, params = $params")
-        val bundle = Bundle()
-
-        params.forEach { bundle.putString(it.key, it.value.toString()) }
-
-        tracker.trackEvent(event, bundle)
+        val normalizedEvent = normalizeEventName(event)
+        Timber.d("trackEvent() called with: event = $event, normalized = $normalizedEvent, params = $params")
+        tracker.trackEvent(normalizedEvent, params.toAnalyticsBundle())
     }
 
     suspend fun cacheImages(photos: List<MarsImage>) {

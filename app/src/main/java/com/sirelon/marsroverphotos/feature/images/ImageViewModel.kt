@@ -173,7 +173,7 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
 
     fun trackSaveClick() {
         if (shouldTrack) {
-            getApplication<RoverApplication>().tracker.trackClick("save")
+            RoverApplication.APP.dataManger.trackClick("save")
         }
     }
 
@@ -194,7 +194,7 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
     fun shareMarsImage(marsImage: MarsImage) {
         val application = getApplication<RoverApplication>()
         if (shouldTrack) {
-            application.tracker.trackClick("share")
+            RoverApplication.APP.dataManger.trackClick("share")
         }
 
         viewModelScope.launch(io) {

@@ -10,9 +10,10 @@ import android.util.DisplayMetrics
 import android.view.View
 import android.widget.Toast
 import androidx.activity.SystemBarStyle
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateFloatAsState
@@ -54,14 +55,13 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffo
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -80,7 +80,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavEntryDecorator
-import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import coil3.ImageLoader
@@ -91,15 +91,8 @@ import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.RequestConfiguration
 import com.sirelon.marsroverphotos.R
 import com.sirelon.marsroverphotos.RoverApplication
-import com.sirelon.marsroverphotos.feature.favorite.FavoriteScreen
-import com.sirelon.marsroverphotos.feature.favorite.PopularScreen
 import com.sirelon.marsroverphotos.feature.gdpr.GdprHelper
-import com.sirelon.marsroverphotos.feature.imageIds
-import com.sirelon.marsroverphotos.feature.images.ImageScreen
-import com.sirelon.marsroverphotos.feature.photos.RoverPhotosScreen
-import com.sirelon.marsroverphotos.feature.settings.AboutAppContent
 import com.sirelon.marsroverphotos.feature.ukraine.UkraineBanner
-import com.sirelon.marsroverphotos.feature.ukraine.UkraineInfoScreen
 import com.sirelon.marsroverphotos.models.Rover
 import com.sirelon.marsroverphotos.models.drawableRes
 import com.sirelon.marsroverphotos.storage.Prefs
@@ -111,7 +104,19 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.compose.navigation3.koinEntryProvider
+import org.koin.core.annotation.KoinExperimentalAPI
 import timber.log.Timber
+import androidx.navigationevent.NavigationEventInfo
+
+/**
+ * Info class for debugging navigation state during predictive back.
+ */
+internal data class RoversNavigationInfo(
+    val destination: RoversDestination
+) : NavigationEventInfo() {
+    override fun toString(): String = "RoversNavigationInfo(${destination::class.simpleName})"
+}
 
 @ExperimentalAnimationApi
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
@@ -189,11 +194,27 @@ class RoversActivity : FragmentActivity() {
                 if (hidden) 0.92f else 1f
             }
 
-            BackHandler(enabled = navState.canGoBack()) {
-                if (!navState.pop()) {
-                    activity.finish()
+            val navigationEventState = rememberNavigationEventState(
+                currentInfo = RoversNavigationInfo(navState.backStack.last()),
+                backInfo = if (navState.backStack.size > 1) {
+                    RoversNavigationInfo(navState.backStack[navState.backStack.lastIndex - 1])
+                } else {
+                    null
                 }
-            }
+            )
+
+            NavigationBackHandler(
+                state = navigationEventState,
+                isBackEnabled = navState.canGoBack(),
+                onBackCancelled = {
+                    // User cancelled the back gesture - no action needed
+                },
+                onBackCompleted = {
+                    if (!navState.pop()) {
+                        activity.finish()
+                    }
+                }
+            )
 
             DisposableEffect(isDark) {
                 enableEdgeToEdge(
@@ -275,7 +296,7 @@ class RoversActivity : FragmentActivity() {
                             exit = fadeOut() + shrinkVertically(),
                         ) {
                             UkraineBanner(modifier = Modifier.statusBarsPadding()) {
-                                RoverApplication.APP.tracker.trackClick("UkraineBanner_Top")
+                                RoverApplication.APP.dataManger.trackClick("UkraineBanner_Top")
                                 navState.push(RoversDestination.Ukraine, singleTop = true)
                             }
                         }
@@ -443,6 +464,7 @@ class RoversActivity : FragmentActivity() {
         }
     }
 
+    @OptIn(KoinExperimentalAPI::class)
     @Composable
     private fun RoversNavDisplay(
         activity: FragmentActivity,
@@ -451,91 +473,30 @@ class RoversActivity : FragmentActivity() {
         onExit: () -> Unit,
         onHideUi: (Boolean) -> Unit,
     ) {
-        NavDisplay(
-            backStack = navState.backStack,
-            onBack = {
-                if (!navState.pop()) {
-                    onExit()
-                }
-            },
-            entryDecorators = entryDecorators,
-            entryProvider = entryProvider {
-                entry<RoversDestination.Rovers> {
-                    val rovers by RoverApplication.APP.dataManger.rovers.collectAsStateWithLifecycle(
-                        initialValue = emptyList()
-                    )
+        val navActions = remember(activity, navState, onHideUi) {
+            RoversNavActions(
+                activity = activity,
+                navState = navState,
+                onHideUi = onHideUi,
+                onClearCache = ::clearCache,
+                onRateApp = ::goToMarket,
+            )
+        }
 
-                    RoversContent(
-                        rovers = rovers,
-                        onClick = {
-                            track("click_rover_${it.name}")
-                            navState.push(RoversDestination.RoverDetail(it.id))
-                        }
-                    )
-                }
-                entry<RoversDestination.About> {
-                    AboutAppContent(
-                        onClearCache = ::clearCache,
-                        onRateApp = ::goToMarket
-                    )
-                }
-                entry<RoversDestination.Popular> {
-                    PopularScreen(
-                        onNavigateToImages = { image, photos ->
-                            navState.push(
-                                RoversDestination.ImageGallery(
-                                    ids = photos.imageIds(),
-                                    selectedId = image.id,
-                                    shouldTrack = false
-                                )
-                            )
-                        }
-                    )
-                }
-                entry<RoversDestination.Favorite> {
-                    FavoriteScreen(
-                        onNavigateToImages = { image, photos, tracking ->
-                            navState.push(
-                                RoversDestination.ImageGallery(
-                                    ids = photos.imageIds(),
-                                    selectedId = image.id,
-                                    shouldTrack = tracking
-                                )
-                            )
-                        },
-                        onNavigateToRovers = {
-                            navState.selectTopLevel(RoversDestination.Rovers, resetToTop = true)
-                        }
-                    )
-                }
-                entry<RoversDestination.Ukraine> {
-                    UkraineInfoScreen()
-                }
-                entry<RoversDestination.RoverDetail> { destination ->
-                    RoverPhotosScreen(
-                        activity = activity,
-                        roverId = destination.roverId,
-                        onNavigateToImages = { image, photos ->
-                            navState.push(
-                                RoversDestination.ImageGallery(
-                                    ids = photos.imageIds(),
-                                    selectedId = image.id,
-                                    shouldTrack = true
-                                )
-                            )
-                        }
-                    )
-                }
-                entry<RoversDestination.ImageGallery> { gallery ->
-                    ImageScreen(
-                        trackingEnabled = gallery.shouldTrack,
-                        photoIds = gallery.ids,
-                        selectedId = gallery.selectedId,
-                        onHideUi = onHideUi,
-                    )
-                }
-            }
-        )
+        CompositionLocalProvider(LocalRoversNavActions provides navActions) {
+            @Suppress("UNCHECKED_CAST")
+            val entryProvider = koinEntryProvider() as (RoversDestination) -> NavEntry<RoversDestination>
+            NavDisplay(
+                backStack = navState.backStack,
+                onBack = {
+                    if (!navState.pop()) {
+                        onExit()
+                    }
+                },
+                entryDecorators = entryDecorators,
+                entryProvider = entryProvider
+            )
+        }
     }
 
     private fun track(track: String) {
@@ -558,114 +519,6 @@ class RoversActivity : FragmentActivity() {
     }
 }
 
-private sealed interface RoversDestination {
-    sealed interface TopLevel : RoversDestination {
-        val analyticsTag: String
-    }
-
-    data object Rovers : TopLevel {
-        override val analyticsTag: String = "rovers"
-    }
-
-    data object Favorite : TopLevel {
-        override val analyticsTag: String = "favorite"
-    }
-
-    data object Popular : TopLevel {
-        override val analyticsTag: String = "popular"
-    }
-
-    data object About : TopLevel {
-        override val analyticsTag: String = "about"
-    }
-
-    data object Ukraine : RoversDestination
-    data class RoverDetail(val roverId: Long) : RoversDestination
-    data class ImageGallery(
-        val ids: List<String>,
-        val selectedId: String?,
-        val shouldTrack: Boolean,
-    ) : RoversDestination
-}
-
-private class RoversNavigationState(start: RoversDestination.TopLevel) {
-
-    private val stacks: LinkedHashMap<RoversDestination.TopLevel, SnapshotStateList<RoversDestination>> =
-        linkedMapOf(start to mutableStateListOf<RoversDestination>().apply { add(start) })
-
-    var currentTopLevel by mutableStateOf(start)
-        private set
-
-    val backStack: SnapshotStateList<RoversDestination> =
-        mutableStateListOf<RoversDestination>().apply {
-            add(start)
-        }
-
-    private fun createStack(destination: RoversDestination.TopLevel) =
-        mutableStateListOf<RoversDestination>().apply { add(destination) }
-
-    private fun rebuildBackStack() {
-        backStack.clear()
-        stacks.values.forEach { stack ->
-            backStack.addAll(stack)
-        }
-    }
-
-    fun selectTopLevel(destination: RoversDestination.TopLevel, resetToTop: Boolean = false) {
-        val stack = stacks.remove(destination) ?: createStack(destination)
-        if (resetToTop) {
-            stack.clear()
-            stack.add(destination)
-        } else if (stack.isEmpty()) {
-            stack.add(destination)
-        }
-        stacks[destination] = stack
-        currentTopLevel = destination
-        rebuildBackStack()
-    }
-
-    fun push(destination: RoversDestination, singleTop: Boolean = false) {
-        if (destination is RoversDestination.TopLevel) {
-            selectTopLevel(destination, resetToTop = true)
-            return
-        }
-
-        val stack = stacks[currentTopLevel] ?: return
-        if (singleTop) {
-            removeFromStacks(destination)
-        } else {
-            stack.remove(destination)
-        }
-        stack.add(destination)
-        rebuildBackStack()
-    }
-
-    private fun removeFromStacks(destination: RoversDestination) {
-        stacks.values.forEach { stack ->
-            stack.remove(destination)
-        }
-    }
-
-    fun pop(): Boolean {
-        val stack = stacks[currentTopLevel] ?: return false
-        if (stack.size > 1) {
-            stack.removeAt(stack.lastIndex)
-            rebuildBackStack()
-            return true
-        }
-
-        if (stacks.size == 1) {
-            return false
-        }
-
-        stacks.remove(currentTopLevel)
-        currentTopLevel = stacks.keys.last()
-        rebuildBackStack()
-        return true
-    }
-
-    fun canGoBack(): Boolean = backStack.size > 1
-}
 
 @Composable
 fun RoversContent(

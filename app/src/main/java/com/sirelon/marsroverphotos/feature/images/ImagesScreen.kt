@@ -46,7 +46,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sirelon.marsroverphotos.BuildConfig
 import com.sirelon.marsroverphotos.feature.MarsImageFavoriteToggle
 import com.sirelon.marsroverphotos.feature.MultitouchDetectorCallback
@@ -60,6 +59,7 @@ import com.sirelon.marsroverphotos.ui.NoScrollEffect
 import kotlinx.coroutines.launch
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
+import org.koin.androidx.compose.koinViewModel
 
 /**
  * Created on 13.04.2021 22:52 for Mars-Rover-Photos.
@@ -67,7 +67,7 @@ import net.engawapg.lib.zoomable.zoomable
 
 @Composable
 fun ImageScreen(
-    viewModel: ImageViewModel = viewModel(),
+    viewModel: ImageViewModel = koinViewModel(),
     trackingEnabled: Boolean,
     photoIds: List<String>?,
     selectedId: String?,

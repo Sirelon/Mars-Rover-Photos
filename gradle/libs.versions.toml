@@ -12,6 +12,7 @@ firebaseBom = "34.7.0"
 kotlin = "2.3.0"
 # https://github.com/Kotlin/kotlinx.serialization/releases
 kotlin-serialization = "1.9.0"
+koin = "4.2.0-beta2"
 
 # https://github.com/Kotlin/kotlinx.collections.immutable
 kotlin-collections-immutable = "0.4.0"
@@ -43,6 +44,8 @@ zoomable = "2.9.0"
 # https://developer.android.com/jetpack/androidx/releases/navigation3
 navigation3 = "1.0.0"
 lifecycle-navigation3 = "2.10.0"
+# https://developer.android.com/jetpack/androidx/releases/navigationevent
+navigationevent = "1.0.1"
 androidGradlePlugin = "8.13.2"
 material3WindowSizeClass = "1.4.0"
 
@@ -74,6 +77,9 @@ kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlin-collections-immutable" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlin-serialization" }
 ksp = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "ksp" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
+koin-compose-navigation3 = { module = "io.insert-koin:koin-compose-navigation3", version.ref = "koin" }
 
 ktor-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
 ktor-client-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
@@ -84,6 +90,8 @@ androidx-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-com
 navigation3-runtime = { group = "androidx.navigation3", name = "navigation3-runtime", version.ref = "navigation3" }
 navigation3-ui = { group = "androidx.navigation3", name = "navigation3-ui", version.ref = "navigation3" }
 lifecycle-viewmodel-navigation3 = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-navigation3", version.ref = "lifecycle-navigation3" }
+navigationevent = { group = "androidx.navigationevent", name = "navigationevent", version.ref = "navigationevent" }
+navigationevent-compose = { group = "androidx.navigationevent", name = "navigationevent-compose", version.ref = "navigationevent" }
 mockito-kotlin = { module = "com.nhaarman:mockito-kotlin", version.ref = "mockito" }
 
 compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "compose" }
