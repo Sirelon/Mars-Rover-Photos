@@ -237,8 +237,8 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
 }
 
 sealed class UiEvent {
-    data class PhotoSaved(val imagePath: String?) : UiEvent()
-    data class PhotoSaveError(val errorMessage: String) : UiEvent()
+    class PhotoSaved(val imagePath: String?) : UiEvent()
+    class PhotoSaveError(val errorMessage: String) : UiEvent()
 }
 
 
