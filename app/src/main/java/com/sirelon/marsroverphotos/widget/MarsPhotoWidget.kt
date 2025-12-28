@@ -2,7 +2,15 @@ package com.sirelon.marsroverphotos.widget
 
 import android.content.Intent
 import android.graphics.BitmapFactory
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.glance.GlanceModifier
 import androidx.glance.Image
 import androidx.glance.ImageProvider
@@ -12,27 +20,21 @@ import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.SizeMode
-import androidx.glance.appwidget.state.PreferencesGlanceStateDefinition
+import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.background
 import androidx.glance.currentState
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
 import androidx.glance.layout.Column
 import androidx.glance.layout.ContentScale
-import androidx.glance.layout.align
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.padding
+import androidx.glance.state.PreferencesGlanceStateDefinition
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
-import androidx.glance.unit.DpSize
-import androidx.glance.unit.dp
-import androidx.glance.unit.sp
-import androidx.glance.state.Preferences
-import androidx.glance.state.longPreferencesKey
-import androidx.glance.state.stringPreferencesKey
 import com.sirelon.marsroverphotos.feature.rovers.CuriosityId
 import com.sirelon.marsroverphotos.feature.rovers.InsightId
 import com.sirelon.marsroverphotos.feature.rovers.OpportunityId
@@ -66,6 +68,7 @@ public class MarsPhotoWidget : GlanceAppWidget() {
         )
     )
 
+    @OptIn(ExperimentalAnimationApi::class)
     @Composable
     override fun Content() {
         val context = LocalContext.current
@@ -118,18 +121,18 @@ public class MarsPhotoWidget : GlanceAppWidget() {
                 Box(
                     modifier = GlanceModifier
                         .fillMaxSize()
-                        .background(ColorProvider(androidx.compose.ui.graphics.Color(0xFF1A283D)))
+                        .background(Color(0xFF1A283D))
                 ) {
                     Text(
                         text = if (hasConfiguredRover) "Updating photo" else "Select a rover",
                         modifier = GlanceModifier
                             .padding(12.dp)
                             .align(Alignment.Center),
-                        style = TextStyle(
-                            color = ColorProvider(androidx.compose.ui.graphics.Color.White),
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp
-                        )
+//                        style = TextStyle(
+//                            color = Color.White,
+//                            fontWeight = FontWeight.Bold,
+//                            fontSize = 14.sp
+//                        )
                     )
                 }
             }

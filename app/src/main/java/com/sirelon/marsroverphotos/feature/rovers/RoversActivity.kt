@@ -536,9 +536,8 @@ class RoversActivity : FragmentActivity() {
         outState.putString(WIDGET_IMAGE_ID_STATE_KEY, widgetImageIdState.value)
     }
 
-    override fun onNewIntent(intent: Intent?) {
+    override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        if (intent == null) return
         setIntent(intent)
         widgetImageIdState.value = intent.getStringExtra(WidgetExtraImageId)
     }
