@@ -1,0 +1,138 @@
+[
+  {
+    "id": "mars_red_planet",
+    "text": "Mars is called the Red Planet because iron minerals in its soil oxidize, giving it a rusty color."
+  },
+  {
+    "id": "mars_day_length",
+    "text": "A Martian day, called a sol, is about 24 hours and 39 minutes."
+  },
+  {
+    "id": "mars_moons",
+    "text": "Mars has two small moons: Phobos and Deimos."
+  },
+  {
+    "id": "mars_gravity",
+    "text": "Gravity on Mars is about 38 percent of Earth's gravity."
+  },
+  {
+    "id": "mars_size",
+    "text": "Mars is roughly half the diameter of Earth."
+  },
+  {
+    "id": "mars_atmosphere",
+    "text": "Mars has a thin atmosphere made mostly of carbon dioxide."
+  },
+  {
+    "id": "mars_polar_ice",
+    "text": "Mars has polar ice caps made of water ice and frozen carbon dioxide."
+  },
+  {
+    "id": "mars_seasons",
+    "text": "Mars has seasons because its axis is tilted, similar to Earth."
+  },
+  {
+    "id": "olympus_mons",
+    "text": "Olympus Mons is the largest volcano in the solar system."
+  },
+  {
+    "id": "valles_marineris",
+    "text": "Valles Marineris is a canyon system about 4,000 kilometers long."
+  },
+  {
+    "id": "mars_dust_storms",
+    "text": "Dust storms on Mars can grow large enough to cover the entire planet."
+  },
+  {
+    "id": "ancient_water",
+    "text": "Ancient river channels and lake beds suggest Mars once had liquid water on its surface."
+  },
+  {
+    "id": "sojourner_1997",
+    "text": "Sojourner, deployed by Mars Pathfinder in 1997, was the first rover to drive on Mars."
+  },
+  {
+    "id": "spirit_opportunity_2004",
+    "text": "Spirit and Opportunity landed in 2004 and explored opposite sides of Mars."
+  },
+  {
+    "id": "opportunity_long_life",
+    "text": "Opportunity operated for nearly 15 years and traveled over 45 kilometers."
+  },
+  {
+    "id": "curiosity_2012",
+    "text": "Curiosity landed in Gale Crater in 2012 to study Mars' habitability."
+  },
+  {
+    "id": "curiosity_sam",
+    "text": "Curiosity carries a chemistry lab called SAM to analyze rocks and gases."
+  },
+  {
+    "id": "perseverance_2021",
+    "text": "Perseverance landed in Jezero Crater in 2021 to collect rock samples for return to Earth."
+  },
+  {
+    "id": "perseverance_moxie",
+    "text": "Perseverance carries the MOXIE experiment, which demonstrated making oxygen from Mars' CO2 atmosphere."
+  },
+  {
+    "id": "ingenuity_first_flight",
+    "text": "Ingenuity achieved the first powered, controlled flight on another planet."
+  },
+  {
+    "id": "insight_interior",
+    "text": "InSight was a lander that studied Mars' interior using a seismometer."
+  },
+  {
+    "id": "rtg_power",
+    "text": "Curiosity and Perseverance use nuclear power sources called RTGs to keep working through dusty seasons."
+  },
+  {
+    "id": "solar_powered_rovers",
+    "text": "Spirit and Opportunity used solar panels for power."
+  },
+  {
+    "id": "cold_nights",
+    "text": "Mars is cold and dry; nighttime temperatures can drop below minus 100 degrees Celsius."
+  },
+  {
+    "id": "mars_sky",
+    "text": "Fine dust in the atmosphere gives the Martian sky a reddish tint."
+  },
+  {
+    "id": "largest_landforms",
+    "text": "Mars is home to the tallest mountain and some of the deepest canyons in the solar system."
+  },
+  {
+    "id": "tracks_last",
+    "text": "Rover tracks can persist for a long time because Mars has no rain to wash them away."
+  },
+  {
+    "id": "liquid_water_stability",
+    "text": "Mars' atmosphere is too thin for liquid water to remain stable on the surface for long."
+  },
+  {
+    "id": "mars_year",
+    "text": "A Mars year lasts about 687 Earth days."
+  },
+  {
+    "id": "stereo_cameras",
+    "text": "Many Mars rovers use stereo cameras to create 3D views of the terrain."
+  },
+  {
+    "id": "jezero_delta",
+    "text": "Jezero Crater contains an ancient river delta, making it a key site to search for past life."
+  },
+  {
+    "id": "gale_lake",
+    "text": "Curiosity found evidence that Gale Crater once held long-lived lakes."
+  },
+  {
+    "id": "opportunity_water_evidence",
+    "text": "Opportunity discovered evidence that water once flowed on the surface of Mars."
+  },
+  {
+    "id": "dust_devils",
+    "text": "Dust devils on Mars can clean solar panels and extend rover lifetimes."
+  }
+]
