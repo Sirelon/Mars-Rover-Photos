@@ -100,4 +100,14 @@ class RestApi {
 
     suspend fun getRoverInfo(roverName: String): RoverInfo =
         nasaApi.getRoverInfo(roverName).roverInfo
+
+    suspend fun getInsightLatestPhotos(): List<MarsImage> {
+        return nasaApi.getInsightRawImages().list.mapToUi()
+    }
+
+    suspend fun getPerseveranceLatestPhotos(count: Int = 1): List<MarsImage> {
+        val response = nasaApi.getPerseveranceRawImages(count = count)
+        _perseveranceTotalImages.value = response.totalImages
+        return response.photos.preveranceToUI()
+    }
 }
