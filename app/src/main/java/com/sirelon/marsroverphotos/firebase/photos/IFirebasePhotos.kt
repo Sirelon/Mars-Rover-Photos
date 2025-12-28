@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos.firebase.photos
 
+import com.sirelon.marsroverphotos.feature.facts.EducationalFact
 import com.sirelon.marsroverphotos.feature.firebase.FirebasePhoto
 import com.sirelon.marsroverphotos.storage.MarsImage
 
@@ -17,4 +18,5 @@ interface IFirebasePhotos {
         count: Int = 10,
         lastPhotoId: String? = null
     ): List<FirebasePhoto>
+    suspend fun loadEducationalFacts(): List<EducationalFact>
 }
