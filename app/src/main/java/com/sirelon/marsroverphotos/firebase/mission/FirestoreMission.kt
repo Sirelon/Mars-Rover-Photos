@@ -9,9 +9,10 @@ import timber.log.Timber
  * Collection: rover-missions
  * Document ID: Rover ID (e.g., "1" for Curiosity)
  */
-class FirestoreMission : IFirebaseMission {
+class FirestoreMission(
+    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+) : IFirebaseMission {
 
-    private val firestore = FirebaseFirestore.getInstance()
     private val missionCollection = firestore.collection("rover-missions")
 
     override suspend fun getRoverMissionFacts(roverId: Long): RoverMissionFacts? {
@@ -30,7 +31,7 @@ class FirestoreMission : IFirebaseMission {
             facts
         } catch (e: Exception) {
             Timber.e(e, "Error fetching mission facts for rover ID: $roverId")
-            null
+            throw e
         }
     }
 }
