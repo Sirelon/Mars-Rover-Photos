@@ -2,12 +2,14 @@ package com.sirelon.marsroverphotos
 
 import android.annotation.SuppressLint
 import android.content.Context
+import com.sirelon.marsroverphotos.feature.facts.FactsRepository
 import com.sirelon.marsroverphotos.feature.images.ImagesRepository
 import com.sirelon.marsroverphotos.feature.photos.PhotosRepository
 import com.sirelon.marsroverphotos.feature.rovers.InsightId
 import com.sirelon.marsroverphotos.feature.rovers.RoversRepository
 import com.sirelon.marsroverphotos.firebase.photos.FirebaseProvider.firebasePhotos
 import com.sirelon.marsroverphotos.network.RestApi
+import com.sirelon.marsroverphotos.storage.DataBaseProvider
 import com.sirelon.marsroverphotos.storage.MarsImage
 import com.sirelon.marsroverphotos.tracker.ITracker
 import com.sirelon.marsroverphotos.tracker.normalizeClickEventName
@@ -31,6 +33,10 @@ class DataManager(
     val roverRepo = RoversRepository(context, api)
     val imagesRepo = ImagesRepository(context)
     val photosRepo = PhotosRepository(api)
+    val factsRepo = FactsRepository(
+        firebasePhotos,
+        DataBaseProvider.dataBase.factDisplayDao()
+    )
 
     val rovers = roverRepo.getRovers()
 

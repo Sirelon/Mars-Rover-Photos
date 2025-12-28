@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 private const val ThemeKey = "theme"
 private const val GridViewKey = "gridView"
+private const val ShowFactsKey = "showFacts"
 
 /**
  * Created on 29.07.2021 23:54 for Mars-Rover-Photos.
@@ -17,9 +18,11 @@ object Prefs {
 
     fun init(context: Context) {
         sharedPreferences = context.getSharedPreferences("mars-rover-photos", Context.MODE_PRIVATE)
+        showFactsLiveData.value = sharedPreferences.getBoolean(ShowFactsKey, true)
     }
 
     val themeLiveData = MutableStateFlow<Theme>(Theme.SYSTEM)
+    val showFactsLiveData = MutableStateFlow(true)
 
     var theme: Theme
         get() {
@@ -38,6 +41,15 @@ object Prefs {
         set(value) {
             sharedPreferences.edit {
                 putBoolean(GridViewKey, value)
+            }
+        }
+
+    var showFacts: Boolean
+        get() = sharedPreferences.getBoolean(ShowFactsKey, true)
+        set(value) {
+            showFactsLiveData.value = value
+            sharedPreferences.edit {
+                putBoolean(ShowFactsKey, value)
             }
         }
 }

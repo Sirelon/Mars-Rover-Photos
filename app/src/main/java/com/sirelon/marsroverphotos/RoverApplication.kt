@@ -9,6 +9,10 @@ import com.sirelon.marsroverphotos.di.appModule
 import com.sirelon.marsroverphotos.storage.Prefs
 import com.sirelon.marsroverphotos.tracker.FirebaseTracker
 import com.sirelon.marsroverphotos.tracker.ITracker
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import timber.log.Timber
@@ -46,6 +50,15 @@ class RoverApplication : Application() {
             .setLocalCacheSettings(PersistentCacheSettings.newBuilder().build())
             .build()
         FirebaseFirestore.getInstance().firestoreSettings = settings
+
+        // Load educational facts from Firebase on app start
+        val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+            Timber.e(throwable, "Error during app initialization")
+        }
+        GlobalScope.launch(Dispatchers.IO + exceptionHandler) {
+            dataManger.factsRepo.loadFacts()
+            dataManger.factsRepo.cleanupOldDisplays()
+        }
     }
 
     val tracker: ITracker by lazy { FirebaseTracker(this) }

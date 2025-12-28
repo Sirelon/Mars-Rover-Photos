@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 8,
-    "identityHash": "a1d8def71ac4f4fe4066d87829ba6db4",
+    "version": 9,
+    "identityHash": "27377f4d30a9dc659a143916f4a1175a",
     "entities": [
       {
         "tableName": "Rover",
@@ -183,11 +183,47 @@
             "id"
           ]
         }
+      },
+      {
+        "tableName": "fact_displays",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `factId` TEXT NOT NULL, `displayTimestamp` INTEGER NOT NULL, `sessionId` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "factId",
+            "columnName": "factId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "displayTimestamp",
+            "columnName": "displayTimestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sessionId",
+            "columnName": "sessionId",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a1d8def71ac4f4fe4066d87829ba6db4')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '27377f4d30a9dc659a143916f4a1175a')"
     ]
   }
 }
