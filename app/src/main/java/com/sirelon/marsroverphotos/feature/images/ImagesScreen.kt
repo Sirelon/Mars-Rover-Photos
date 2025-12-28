@@ -4,6 +4,9 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +20,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
@@ -41,9 +45,11 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sirelon.marsroverphotos.BuildConfig
@@ -56,6 +62,7 @@ import com.sirelon.marsroverphotos.ui.MarsSnackbar
 import com.sirelon.marsroverphotos.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.ui.NoScrollEffect
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
@@ -195,11 +202,23 @@ private fun ImagesPagerContent(
 @Composable
 private fun BoxScope.OnEvent(uiEvent: UiEvent?) {
     val snackbarHostState = remember { SnackbarHostState() }
+    val haptic = LocalHapticFeedback.current
+    var showCheckmark by remember { mutableStateOf(false) }
 
     when (uiEvent) {
         is UiEvent.PhotoSaved -> {
             val context = LocalContext.current
             val imagePath = uiEvent.imagePath
+
+            LaunchedEffect(uiEvent) {
+                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                showCheckmark = true
+                delay(1500)
+                showCheckmark = false
+            }
+
+            SaveSuccessOverlay(visible = showCheckmark)
+
             MarsSnackbar(
                 snackbarHostState = snackbarHostState,
                 modifier = Modifier.align(Alignment.BottomCenter),
@@ -211,15 +230,51 @@ private fun BoxScope.OnEvent(uiEvent: UiEvent?) {
             )
             LaunchedEffect(key1 = uiEvent, block = {
                 snackbarHostState.showSnackbar(
-                    message = "File was saved on path $imagePath",
-                    actionLabel = "View"
+                    message = "Image saved successfully",
+                    actionLabel = "Open"
                 )
             })
+        }
+
+        is UiEvent.PhotoSaveError -> {
+            LaunchedEffect(uiEvent) {
+                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+            }
+
+            MarsSnackbar(
+                snackbarHostState = snackbarHostState,
+                modifier = Modifier.align(Alignment.BottomCenter),
+                actionClick = null
+            )
+            LaunchedEffect(key1 = uiEvent) {
+                snackbarHostState.showSnackbar(
+                    message = "Failed to save image: ${uiEvent.errorMessage}"
+                )
+            }
         }
 
         null -> {
 
         }
+    }
+}
+
+@Composable
+private fun BoxScope.SaveSuccessOverlay(visible: Boolean) {
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn(animationSpec = tween(durationMillis = 300)),
+        exit = fadeOut(animationSpec = tween(durationMillis = 300)),
+        modifier = Modifier.align(Alignment.TopEnd)
+    ) {
+        MaterialSymbolIcon(
+            symbol = MaterialSymbol.CheckCircle,
+            contentDescription = "Saved",
+            modifier = Modifier.padding(16.dp),
+            tint = MaterialTheme.colorScheme.primary,
+            size = 48.dp,
+            filled = true
+        )
     }
 }
 
