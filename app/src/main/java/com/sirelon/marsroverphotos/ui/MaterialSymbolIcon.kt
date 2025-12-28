@@ -34,7 +34,8 @@ enum class MaterialSymbol(val iconName: String) {
     LocalFireDepartment("local_fire_department"),
     ViewCarousel("view_carousel"),
     ViewList("view_list"),
-    GridView("grid_view")
+    GridView("grid_view"),
+    CheckCircle("check_circle")
 }
 
 /**

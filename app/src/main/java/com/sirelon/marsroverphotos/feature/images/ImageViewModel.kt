@@ -152,11 +152,8 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
                 .onSuccess { uiEventEmitter.send(UiEvent.PhotoSaved(it)) }
                 .onFailure {
                     recordException(it)
-                    withContext(Dispatchers.Main) {
-                        it.printStackTrace()
-                        Toast.makeText(context, "Error occurred ${it.message}", Toast.LENGTH_SHORT)
-                            .show()
-                    }
+                    it.printStackTrace()
+                    uiEventEmitter.send(UiEvent.PhotoSaveError(it.message ?: "Unknown error"))
                 }
         }
     }
@@ -240,7 +237,8 @@ class ImageViewModel(app: Application) : AndroidViewModel(app),
 }
 
 sealed class UiEvent {
-    class PhotoSaved(val imagePath: String?) : UiEvent()
+    data class PhotoSaved(val imagePath: String?) : UiEvent()
+    data class PhotoSaveError(val errorMessage: String) : UiEvent()
 }
 
 
