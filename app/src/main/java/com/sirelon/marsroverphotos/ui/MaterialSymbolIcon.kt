@@ -34,7 +34,14 @@ enum class MaterialSymbol(val iconName: String) {
     LocalFireDepartment("local_fire_department"),
     ViewCarousel("view_carousel"),
     ViewList("view_list"),
-    GridView("grid_view")
+    GridView("grid_view"),
+    ArrowBack("arrow_back"),
+    Rocket("rocket_launch"),
+    FlightLand("flight_land"),
+    Star("star"),
+    Flag("flag"),
+    CameraAlt("photo_camera"),
+    Error("error")
 }
 
 /**

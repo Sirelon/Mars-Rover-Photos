@@ -1,0 +1,34 @@
+{
+  "roverId": 7,
+  "roverName": "Spirit",
+  "objectives": [
+    "Search for and characterize rocks and soils that hold clues to past water activity on Mars",
+    "Determine the distribution and composition of minerals, rocks, and soils surrounding the landing site",
+    "Determine what geologic processes have shaped the local terrain",
+    "Perform calibration and validation of surface observations made by instruments on Mars orbiters",
+    "Search for iron-containing minerals that formed in water",
+    "Characterize the mineralogy and textures of rocks and soils"
+  ],
+  "funFacts": [
+    "Spirit operated for over 6 years (2,208 sols) from January 2004 to March 2010, far exceeding its 90-day mission design",
+    "The rover discovered evidence that ancient Mars was wet and possibly habitable, including silica-rich soil and sulfate deposits",
+    "It climbed Husband Hill (named after Columbia commander Rick Husband), which rises about 300 feet (90 meters) above the Gusev Crater floor",
+    "Spirit got stuck in soft soil called 'Troy' on May 1, 2009, and operated as a stationary science platform for nearly a year",
+    "The rover survived temperatures as low as -148°F (-100°C) at night during Martian winter",
+    "Spirit took over 124,550 images during its mission, including spectacular panoramas from hilltops",
+    "It traveled a total distance of 4.8 miles (7.73 km) on Mars before getting permanently stuck",
+    "The rover discovered nearly pure silica deposits (90% pure) suggesting past hot springs, geysers, or steam vents - prime locations for ancient microbial life",
+    "Spirit's twin rover, Opportunity, landed on the opposite side of Mars three weeks later on January 25, 2004",
+    "NASA's last communication with Spirit was on March 22, 2010, after it failed to survive its fourth Martian winter",
+    "Spirit weighed 384 pounds (174 kg) on Earth, identical to its twin Opportunity",
+    "The rover was powered by solar panels that initially generated about 140 watts, but dust accumulation reduced power over time",
+    "Spirit landed in Gusev Crater, chosen because it appeared to be an ancient lake bed, though the landing site turned out to be covered in volcanic rock",
+    "The rover's right front wheel stopped working in 2006, forcing it to drive backwards while dragging the broken wheel, which accidentally uncovered bright white silica soil",
+    "Spirit discovered evidence of past explosive volcanic eruptions by analyzing rocks in the Columbia Hills",
+    "The rover found carbonates, minerals that form in the presence of water and could preserve signs of past life",
+    "Spirit experienced several close calls, including nearly being blown over by dust devils and getting stuck on earlier occasions before the final Troy incident",
+    "The mission cost approximately $400 million for the rover, with additional yearly operational costs",
+    "Spirit's computer was a 20 MHz RAD6000 processor with 128 MB of RAM and 256 MB of flash memory",
+    "The rover was declared dead on May 25, 2011, after more than a year of no communication"
+  ]
+}

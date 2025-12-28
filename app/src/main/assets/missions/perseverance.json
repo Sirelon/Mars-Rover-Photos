@@ -1,0 +1,34 @@
+{
+  "roverId": 3,
+  "roverName": "Perseverance",
+  "objectives": [
+    "Search for signs of ancient microbial life and biosignatures",
+    "Collect and cache rock and soil samples for future return to Earth",
+    "Test oxygen production from the Martian atmosphere (ISRU demonstration)",
+    "Characterize Mars' geology and climate to prepare for human exploration",
+    "Demonstrate technology for future robotic and human exploration",
+    "Study the history and formation of Jezero Crater"
+  ],
+  "funFacts": [
+    "Perseverance carried the first helicopter to fly on another planet - Ingenuity, which has flown over 70 times, far exceeding its 5-flight mission",
+    "The rover is equipped with 23 cameras, more than any previous Mars mission, including 7 science cameras and 9 engineering cameras",
+    "It has a device called MOXIE (Mars Oxygen ISRU Experiment) that successfully produced oxygen from Mars' CO2 atmosphere multiple times, paving the way for future human missions",
+    "Perseverance is collecting samples in 43 titanium tubes that will be cached for a future Mars Sample Return mission planned for the 2030s",
+    "The rover landed on February 18, 2021, using a 'sky crane' maneuver with the help of a new terrain-relative navigation system",
+    "It carries a piece of Martian meteorite that fell to Earth as a calibration target for its SHERLOC instrument",
+    "Over 10.9 million names were etched onto three silicon microchips carried by Perseverance",
+    "The rover has a robotic arm that's 7 feet (2.1 meters) long and can drill into rocks to collect core samples",
+    "Perseverance recorded the first sounds ever captured on Mars using two microphones, including the sound of the Ingenuity helicopter flying",
+    "It landed in Jezero Crater, a 28-mile-wide ancient lake bed that existed 3.5 billion years ago and may preserve signs of ancient life",
+    "The rover can drive autonomously to avoid hazards using its advanced AutoNav AI system, covering up to 393 feet (120 meters) per day",
+    "Perseverance weighs 2,260 pounds (1,025 kg), slightly heavier than Curiosity",
+    "Its SuperCam instrument can analyze rocks and soil from up to 20 feet away using laser spectroscopy, camera imaging, and sound recording",
+    "The rover's wheels are slightly larger and more robust than Curiosity's, with thicker aluminum and new treads to prevent damage",
+    "Perseverance carries a radiation detector to help understand the radiation environment for future astronauts",
+    "The rover discovered organic molecules in multiple rock samples, though this doesn't confirm past life",
+    "It found rocks in Jezero Crater that have been altered by water multiple times, indicating a complex history",
+    "The mission cost approximately $2.7 billion, including development, launch, and operations",
+    "Perseverance's computers are RAD750 processors running at 200 MHz with 2 GB of flash memory and 256 MB of RAM",
+    "The rover can communicate with Earth at up to 2 Mbps during favorable orbital alignments via the Mars Reconnaissance Orbiter"
+  ]
+}

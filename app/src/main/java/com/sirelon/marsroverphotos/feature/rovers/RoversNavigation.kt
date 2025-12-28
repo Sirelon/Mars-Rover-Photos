@@ -48,6 +48,7 @@ internal sealed interface RoversDestination {
         val selectedId: String?,
         val shouldTrack: Boolean,
     ) : RoversDestination
+    data class MissionInfo(val roverId: Long) : RoversDestination
 }
 
 internal class RoversNavigationState(start: RoversDestination.TopLevel) {
