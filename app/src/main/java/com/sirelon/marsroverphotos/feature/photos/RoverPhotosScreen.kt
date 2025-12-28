@@ -75,7 +75,12 @@ fun RoverPhotosScreen(
 ) {
     viewModel.setRoverId(roverId)
 
-    val photos: List<MarsImage>? by viewModel.photosFlow.collectAsStateWithLifecycle(initialValue = null)
+    val gridItems: List<GridItem>? by viewModel.gridItemsFlow.collectAsStateWithLifecycle(initialValue = null)
+    val photos = remember(gridItems) {
+        gridItems?.mapNotNull { item ->
+            (item as? GridItem.PhotoItem)?.image
+        } ?: emptyList()
+    }
 
     val sol by viewModel.solFlow.collectAsStateWithLifecycle(initialValue = 0)
 
@@ -113,7 +118,7 @@ fun RoverPhotosScreen(
             }
         }
 
-        Crossfade(targetState = photos, label = "[Anim]:Progress") {
+        Crossfade(targetState = gridItems, label = "[Anim]:Progress") {
             when {
                 it == null -> CenteredProgress()
                 it.isEmpty() -> {
@@ -129,7 +134,7 @@ fun RoverPhotosScreen(
                 else -> {
                     PhotosList(modifier, it) { image ->
                         viewModel.onPhotoClick()
-                        onNavigateToImages(image, it)
+                        onNavigateToImages(image, photos)
                     }
                 }
 
@@ -137,9 +142,7 @@ fun RoverPhotosScreen(
         }
     }
 
-    val fabVisible = remember(photos?.size) {
-        photos?.isNotEmpty() == true
-    }
+    val fabVisible = photos.isNotEmpty()
 
     RefreshButton(
         fabVisible = fabVisible,
@@ -181,17 +184,39 @@ private fun RefreshButton(
 @Composable
 private fun PhotosList(
     modifier: Modifier,
-    photos: List<MarsImage>,
+    gridItems: List<GridItem>,
     onPhotoClick: (image: MarsImage) -> Unit
 ) {
 
-    LazyVerticalGrid(columns = adaptiveGridCells(minColumnWidth = 160.dp), modifier = modifier) {
+    LazyVerticalGrid(
+        columns = adaptiveGridCells(minColumnWidth = 160.dp),
+        modifier = modifier
+    ) {
         items(
-            photos,
-            key = { it.id },
-            contentType = { "MarsPhotoContentType" },
-        ) { image ->
-            PhotoCard(image = image, onPhotoClick = onPhotoClick)
+            items = gridItems,
+            key = { item ->
+                when (item) {
+                    is GridItem.PhotoItem -> item.id
+                    is GridItem.FactItem -> item.id
+                }
+            },
+            contentType = { item ->
+                when (item) {
+                    is GridItem.PhotoItem -> "MarsPhotoContentType"
+                    is GridItem.FactItem -> "FactCardContentType"
+                }
+            },
+            span = { item ->
+                when (item) {
+                    is GridItem.PhotoItem -> androidx.compose.foundation.lazy.grid.GridItemSpan(1)
+                    is GridItem.FactItem -> androidx.compose.foundation.lazy.grid.GridItemSpan(maxLineSpan)
+                }
+            }
+        ) { item ->
+            when (item) {
+                is GridItem.PhotoItem -> PhotoCard(image = item.image, onPhotoClick = onPhotoClick)
+                is GridItem.FactItem -> FactCard(fact = item.fact)
+            }
         }
     }
 }

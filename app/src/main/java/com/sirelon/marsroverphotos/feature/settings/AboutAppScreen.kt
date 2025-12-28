@@ -86,6 +86,8 @@ fun AboutAppContent(onClearCache: () -> Unit, onRateApp: () -> Unit) {
 
         ThemeChanger()
 
+        FactsToggle()
+
         OutlinedButton(onClick = onClearCache) {
             Text(text = stringResource(id = R.string.clear_cache))
         }
@@ -142,6 +144,52 @@ private fun ThemeChanger() {
             }
         }
     }
+}
+
+@Composable
+private fun FactsToggle() {
+    val showFacts by Prefs.showFactsLiveData.collectAsStateWithLifecycle()
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp)
+        ) {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = "Educational Facts",
+                style = MaterialTheme.typography.titleLarge.copy(textAlign = TextAlign.Center)
+            )
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                text = "Show \"Did You Know?\" fact cards while browsing photos",
+                style = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Center),
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                RadioButtonText(text = "Show Facts", selected = showFacts) {
+                    toggleFacts(true)
+                }
+                RadioButtonText(text = "Hide Facts", selected = !showFacts) {
+                    toggleFacts(false)
+                }
+            }
+        }
+    }
+}
+
+private fun toggleFacts(enabled: Boolean) {
+    Prefs.showFacts = enabled
+    RoverApplication.APP.dataManger.trackEvent("toggle_facts_$enabled")
 }
 
 private fun changeColor(theme: Theme) {

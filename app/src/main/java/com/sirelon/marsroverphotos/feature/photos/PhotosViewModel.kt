@@ -9,18 +9,24 @@ import com.sirelon.marsroverphotos.extensions.logD
 import com.sirelon.marsroverphotos.extensions.recordException
 import com.sirelon.marsroverphotos.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.models.RoverDateUtil
+import com.sirelon.marsroverphotos.storage.Prefs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import kotlin.random.Random
 
 /**
@@ -32,6 +38,7 @@ class PhotosViewModel(app: Application) : AndroidViewModel(app) {
     private val roversRepository = dataManger.roverRepo
     private val photosRepository = dataManger.photosRepo
     private val imagesRepository = dataManger.imagesRepo
+    private val factsRepository = dataManger.factsRepo
 
     private val queryEmitter = MutableStateFlow<PhotosQueryRequest?>(null)
     private val roverIdEmitter = MutableStateFlow<Long?>(null)
@@ -45,10 +52,53 @@ class PhotosViewModel(app: Application) : AndroidViewModel(app) {
         .flowOn(Dispatchers.IO)
 
     // null means that we are in loading process.
-    val photosFlow = queryEmitter
+    private val photosFlowInternal = queryEmitter
         .map {
             if (it != null) photosRepository.refreshImages(it)
             else null
+        }
+        .catch { recordException(it) }
+        .flowOn(Dispatchers.IO)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = null
+        )
+
+    val photosFlow = photosFlowInternal
+
+    /**
+     * Grid items flow that contains both photos and educational facts.
+     * Facts are inserted every 10 photos if the showFacts preference is enabled.
+     */
+    val gridItemsFlow = combine(photosFlowInternal, Prefs.showFactsLiveData) { photos, factsEnabled ->
+        photos to factsEnabled
+    }
+        .mapLatest { (photos, factsEnabled) ->
+            if (photos == null) {
+                null
+            } else if (!factsEnabled || photos.isEmpty()) {
+                // No facts, just convert photos to grid items
+                photos.map { GridItem.PhotoItem(it) }
+            } else {
+                // Calculate how many facts we need
+                val requiredFactCount = GridItemTransformer.calculateRequiredFacts(photos.size)
+
+                // Fetch required facts
+                val facts = mutableListOf<com.sirelon.marsroverphotos.feature.facts.EducationalFact>()
+                repeat(requiredFactCount) {
+                    val fact = factsRepository.getNextFact()
+                    if (fact != null) {
+                        factsRepository.markFactAsShown(fact)
+                        facts.add(fact)
+                    }
+                }
+
+                Timber.d("Creating grid items with ${photos.size} photos and ${facts.size} facts")
+
+                // Transform to mixed grid items
+                GridItemTransformer.createGridItems(photos, facts, true)
+            }
         }
         .catch { recordException(it) }
         .flowOn(Dispatchers.IO)

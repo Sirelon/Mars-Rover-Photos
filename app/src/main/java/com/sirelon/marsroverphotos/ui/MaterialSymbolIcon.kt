@@ -41,7 +41,8 @@ enum class MaterialSymbol(val iconName: String) {
     Star("star"),
     Flag("flag"),
     CameraAlt("photo_camera"),
-    Error("error")
+    Error("error"),
+    CheckCircle("check_circle")
 }
 
 /**

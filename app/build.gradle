@@ -127,6 +127,8 @@ dependencies {
     implementation(libs.coil.network)
     implementation libs.androidx.appcompat
 
+    implementation libs.androidx.glance.appwidget
+
     implementation libs.ktor.core
     implementation libs.ktor.client.okhttp
     implementation libs.ktor.client.content.negotiation

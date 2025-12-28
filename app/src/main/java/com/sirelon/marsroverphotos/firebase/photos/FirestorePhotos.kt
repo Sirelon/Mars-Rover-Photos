@@ -8,6 +8,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
+import com.sirelon.marsroverphotos.feature.facts.EducationalFact
 import com.sirelon.marsroverphotos.feature.firebase.FirebaseConstants
 import com.sirelon.marsroverphotos.feature.firebase.FirebasePhoto
 import com.sirelon.marsroverphotos.feature.firebase.toFireBase
@@ -156,6 +157,24 @@ internal class FirestorePhotos : IFirebasePhotos {
         val fireBasePhoto = photo.toFireBase()
         return photosCollection().document(photo.id)
             .setPhoto(fireBasePhoto)
+    }
+
+    override suspend fun loadEducationalFacts(): List<EducationalFact> {
+        val collection = FirebaseFirestore.getInstance()
+            .collection("educational_facts")
+
+        val snapshot = collection.get().await()
+        return snapshot.documents.mapNotNull { doc ->
+            val text = doc.getString("text")
+            if (text != null && text.isNotBlank()) {
+                EducationalFact(
+                    id = doc.id,
+                    text = text
+                )
+            } else {
+                null
+            }
+        }
     }
 }
 
