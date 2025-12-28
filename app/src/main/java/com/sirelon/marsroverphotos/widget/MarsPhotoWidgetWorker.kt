@@ -2,11 +2,10 @@ package com.sirelon.marsroverphotos.widget
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import androidx.glance.appwidget.GlanceAppWidgetManager
-import androidx.glance.appwidget.state.PreferencesGlanceStateDefinition
 import androidx.glance.appwidget.state.getAppWidgetState
 import androidx.glance.appwidget.state.updateAppWidgetState
+import androidx.glance.state.PreferencesGlanceStateDefinition
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -18,6 +17,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import coil3.ImageLoader
 import coil3.request.ImageRequest
+import coil3.toBitmap
 import com.sirelon.marsroverphotos.feature.images.ImagesRepository
 import com.sirelon.marsroverphotos.feature.rovers.CuriosityId
 import com.sirelon.marsroverphotos.feature.rovers.InsightId
@@ -54,7 +54,7 @@ public class MarsPhotoWidgetWorker(
         var hadFailure = false
 
         glanceIds.forEach { glanceId ->
-            val state = getAppWidgetState(applicationContext, glanceId, PreferencesGlanceStateDefinition)
+            val state = getAppWidgetState(applicationContext, PreferencesGlanceStateDefinition, glanceId)
             val roverId = state[MarsPhotoWidgetState.roverIdKey] ?: DefaultRoverId
 
             val latestPhoto = try {
@@ -78,7 +78,7 @@ public class MarsPhotoWidgetWorker(
                     hadFailure = true
                     return@forEach
                 }
-                updateAppWidgetState(applicationContext, glanceId, PreferencesGlanceStateDefinition) { prefs ->
+                updateAppWidgetState(applicationContext, glanceId) { prefs ->
                     prefs[MarsPhotoWidgetState.roverIdKey] = roverId
                     prefs[MarsPhotoWidgetState.roverNameKey] = roverNameForId(roverId)
                     prefs[MarsPhotoWidgetState.imageIdKey] = latestPhoto.id
@@ -141,11 +141,10 @@ public class MarsPhotoWidgetWorker(
         val loader = ImageLoader(context)
         val request = ImageRequest.Builder(context)
             .data(url)
-            .allowHardware(false)
             .size(640)
             .build()
         val result = loader.execute(request)
-        (result.drawable as? BitmapDrawable)?.bitmap
+        result.image?.toBitmap()
     }
 
     private fun saveBitmap(directory: File, key: String, bitmap: Bitmap): String? {

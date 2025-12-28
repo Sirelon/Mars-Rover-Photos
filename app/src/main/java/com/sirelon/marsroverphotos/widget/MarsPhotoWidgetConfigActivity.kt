@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.weight
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
@@ -36,9 +36,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.glance.appwidget.GlanceAppWidgetManager
-import androidx.glance.appwidget.state.PreferencesGlanceStateDefinition
 import androidx.glance.appwidget.state.getAppWidgetState
 import androidx.glance.appwidget.state.updateAppWidgetState
+import androidx.glance.state.PreferencesGlanceStateDefinition
 import androidx.lifecycle.lifecycleScope
 import com.sirelon.marsroverphotos.feature.rovers.CuriosityId
 import com.sirelon.marsroverphotos.feature.rovers.InsightId
@@ -84,7 +84,7 @@ public class MarsPhotoWidgetConfigActivity : ComponentActivity() {
             val manager = GlanceAppWidgetManager(this@MarsPhotoWidgetConfigActivity)
             val glanceId = manager.getGlanceIdBy(appWidgetId)
 
-            updateAppWidgetState(this@MarsPhotoWidgetConfigActivity, glanceId, PreferencesGlanceStateDefinition) { prefs ->
+            updateAppWidgetState(this@MarsPhotoWidgetConfigActivity, glanceId) { prefs ->
                 prefs[MarsPhotoWidgetState.roverIdKey] = roverId
                 prefs[MarsPhotoWidgetState.roverNameKey] = roverNameForId(roverId)
                 prefs.remove(MarsPhotoWidgetState.imagePathKey)
@@ -107,6 +107,7 @@ public class MarsPhotoWidgetConfigActivity : ComponentActivity() {
 }
 
 @Composable
+@OptIn(ExperimentalMaterial3Api::class)
 private fun WidgetConfigScreen(
     appWidgetId: Int,
     onConfirm: (Long) -> Unit
@@ -126,7 +127,7 @@ private fun WidgetConfigScreen(
     LaunchedEffect(appWidgetId) {
         val manager = GlanceAppWidgetManager(context)
         val glanceId = manager.getGlanceIdBy(appWidgetId)
-        val prefs = getAppWidgetState(context, glanceId, PreferencesGlanceStateDefinition)
+        val prefs = getAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId)
         selectedId = prefs[MarsPhotoWidgetState.roverIdKey] ?: DefaultRoverId
     }
 

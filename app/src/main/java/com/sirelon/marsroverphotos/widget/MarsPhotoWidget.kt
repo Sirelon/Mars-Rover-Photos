@@ -2,6 +2,7 @@ package com.sirelon.marsroverphotos.widget
 
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.content.Context
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -11,16 +12,17 @@ import androidx.compose.ui.unit.sp
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
 import androidx.glance.LocalSize
-import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.action.actionStartActivity
+import androidx.glance.appwidget.provideContent
 import androidx.glance.background
 import androidx.glance.currentState
 import androidx.glance.layout.Alignment
@@ -68,9 +70,15 @@ public class MarsPhotoWidget : GlanceAppWidget() {
         )
     )
 
+    override suspend fun provideGlance(context: Context, id: GlanceId) {
+        provideContent {
+            MarsPhotoWidgetContent()
+        }
+    }
+
     @OptIn(ExperimentalAnimationApi::class)
     @Composable
-    override fun Content() {
+    private fun MarsPhotoWidgetContent() {
         val context = LocalContext.current
         val state = currentState<Preferences>()
         val configuredRoverId = state[MarsPhotoWidgetState.roverIdKey]
@@ -121,13 +129,13 @@ public class MarsPhotoWidget : GlanceAppWidget() {
                 Box(
                     modifier = GlanceModifier
                         .fillMaxSize()
-                        .background(Color(0xFF1A283D))
+                        .background(Color(0xFF1A283D)),
+                    contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = if (hasConfiguredRover) "Updating photo" else "Select a rover",
                         modifier = GlanceModifier
-                            .padding(12.dp)
-                            .align(Alignment.Center),
+                            .padding(12.dp),
 //                        style = TextStyle(
 //                            color = Color.White,
 //                            fontWeight = FontWeight.Bold,
@@ -138,40 +146,45 @@ public class MarsPhotoWidget : GlanceAppWidget() {
             }
 
             if (showOverlay && imageProvider != null) {
-                Column(
+                Box(
                     modifier = GlanceModifier
-                        .fillMaxWidth()
-                        .align(Alignment.BottomStart)
-                        .background(ColorProvider(androidx.compose.ui.graphics.Color(0xAA000000)))
-                        .padding(horizontal = 10.dp, vertical = 8.dp)
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.BottomStart
                 ) {
-                    Text(
-                        text = roverName,
-                        style = TextStyle(
-                            color = ColorProvider(androidx.compose.ui.graphics.Color.White),
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp
-                        )
-                    )
-                    if (showDetails) {
-                        val detail = if (sol > 0 && earthDate.isNotBlank()) {
-                            "Sol $sol - $earthDate"
-                        } else if (earthDate.isNotBlank()) {
-                            earthDate
-                        } else if (sol > 0) {
-                            "Sol $sol"
-                        } else {
-                            ""
-                        }
-                        if (detail.isNotBlank()) {
-                            Text(
-                                text = detail,
-                                style = TextStyle(
-                                    color = ColorProvider(androidx.compose.ui.graphics.Color(0xFFE0E0E0)),
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 12.sp
-                                )
+                    Column(
+                        modifier = GlanceModifier
+                            .fillMaxWidth()
+                            .background(ColorProvider(androidx.compose.ui.graphics.Color(0xAA000000)))
+                            .padding(horizontal = 10.dp, vertical = 8.dp)
+                    ) {
+                        Text(
+                            text = roverName,
+                            style = TextStyle(
+                                color = ColorProvider(androidx.compose.ui.graphics.Color.White),
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp
                             )
+                        )
+                        if (showDetails) {
+                            val detail = if (sol > 0 && earthDate.isNotBlank()) {
+                                "Sol $sol - $earthDate"
+                            } else if (earthDate.isNotBlank()) {
+                                earthDate
+                            } else if (sol > 0) {
+                                "Sol $sol"
+                            } else {
+                                ""
+                            }
+                            if (detail.isNotBlank()) {
+                                Text(
+                                    text = detail,
+                                    style = TextStyle(
+                                        color = ColorProvider(androidx.compose.ui.graphics.Color(0xFFE0E0E0)),
+                                        fontWeight = FontWeight.Normal,
+                                        fontSize = 12.sp
+                                    )
+                                )
+                            }
                         }
                     }
                 }
