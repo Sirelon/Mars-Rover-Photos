@@ -100,6 +100,7 @@ import com.sirelon.marsroverphotos.storage.Theme
 import com.sirelon.marsroverphotos.ui.MarsRoverPhotosTheme
 import com.sirelon.marsroverphotos.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.ui.MaterialSymbolIcon
+import com.sirelon.marsroverphotos.widget.WidgetExtraImageId
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -122,7 +123,12 @@ internal data class RoversNavigationInfo(
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 class RoversActivity : FragmentActivity() {
 
+    private companion object {
+        private const val WIDGET_IMAGE_ID_STATE_KEY = "widget_image_id_state"
+    }
+
     private val gdprHelper = GdprHelper(this)
+    private val widgetImageIdState = mutableStateOf<String?>(null)
 
     // Determine the screen width (less decorations) to use for the ad width.
     // If the ad hasn't been laid out, default to the full screen width.
@@ -149,6 +155,8 @@ class RoversActivity : FragmentActivity() {
         window.decorView
 
         super.onCreate(savedInstanceState)
+        widgetImageIdState.value = savedInstanceState?.getString(WIDGET_IMAGE_ID_STATE_KEY)
+            ?: intent?.getStringExtra(WidgetExtraImageId)
 
         val bottomItems = listOf(
             RoversDestination.Rovers,
@@ -168,6 +176,21 @@ class RoversActivity : FragmentActivity() {
             }
 
             val navState = remember { RoversNavigationState(RoversDestination.Rovers) }
+
+            val widgetImageId = widgetImageIdState.value
+            LaunchedEffect(widgetImageId) {
+                if (!widgetImageId.isNullOrBlank()) {
+                    navState.push(
+                        RoversDestination.ImageGallery(
+                            ids = listOf(widgetImageId),
+                            selectedId = widgetImageId,
+                            shouldTrack = false
+                        ),
+                        singleTop = true
+                    )
+                    widgetImageIdState.value = null
+                }
+            }
 
             val savedStateDecorator =
                 rememberSaveableStateHolderNavEntryDecorator<RoversDestination>()
@@ -506,6 +529,18 @@ class RoversActivity : FragmentActivity() {
     override fun onResume() {
         super.onResume()
         adView.resume()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(WIDGET_IMAGE_ID_STATE_KEY, widgetImageIdState.value)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        if (intent == null) return
+        setIntent(intent)
+        widgetImageIdState.value = intent.getStringExtra(WidgetExtraImageId)
     }
 
     override fun onDestroy() {
