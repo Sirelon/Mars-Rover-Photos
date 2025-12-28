@@ -558,52 +558,74 @@ class RoversActivity : FragmentActivity() {
 @Composable
 fun RoversContent(
     rovers: List<Rover>,
-    onClick: (rover: Rover) -> Unit
+    onClick: (rover: Rover) -> Unit,
+    onMissionInfoClick: (rover: Rover) -> Unit
 ) {
     LazyColumn {
         items(rovers) { item ->
-            RoverItem(rover = item, onClick = onClick)
+            RoverItem(
+                rover = item,
+                onClick = onClick,
+                onMissionInfoClick = onMissionInfoClick
+            )
             HorizontalDivider()
         }
     }
 }
 
 @Composable
-fun RoverItem(rover: Rover, onClick: (rover: Rover) -> Unit) {
+fun RoverItem(
+    rover: Rover,
+    onClick: (rover: Rover) -> Unit,
+    onMissionInfoClick: (rover: Rover) -> Unit
+) {
     Timber.d("RoverItem() called with: rover = $rover")
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .padding(8.dp)
-            .clickable(onClick = { onClick(rover) })
-    ) {
-        TitleText(rover.name)
-        InfoText(label = "Status:", text = rover.status)
+    Box {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .padding(8.dp)
+                .clickable(onClick = { onClick(rover) })
+        ) {
+            TitleText(rover.name)
+            InfoText(label = "Status:", text = rover.status)
 
-        val height = Modifier.height(175.dp)
-        Row(modifier = Modifier.padding(8.dp)) {
-            val drawableRes = rover.drawableRes(LocalContext.current)
-            Image(
-                contentScale = ContentScale.FillHeight,
-                painter = painterResource(id = drawableRes),
-                modifier = height
-                    .weight(1f)
-                    .clip(shape = MaterialTheme.shapes.large),
-                contentDescription = rover.name
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Column(
-                modifier = height.weight(1f),
-                verticalArrangement = Arrangement.SpaceAround
-            ) {
-                InfoText(
-                    label = stringResource(id = R.string.label_photos_total),
-                    text = "${rover.totalPhotos}"
+            val height = Modifier.height(175.dp)
+            Row(modifier = Modifier.padding(8.dp)) {
+                val drawableRes = rover.drawableRes(LocalContext.current)
+                Image(
+                    contentScale = ContentScale.FillHeight,
+                    painter = painterResource(id = drawableRes),
+                    modifier = height
+                        .weight(1f)
+                        .clip(shape = MaterialTheme.shapes.large),
+                    contentDescription = rover.name
                 )
-                InfoText(label = "Last photo date:", text = rover.maxDate)
-                InfoText(label = "Launch date from Earth:", text = rover.launchDate)
-                InfoText(label = "Landing date on Mars:", text = rover.landingDate)
+                Spacer(modifier = Modifier.width(8.dp))
+                Column(
+                    modifier = height.weight(1f),
+                    verticalArrangement = Arrangement.SpaceAround
+                ) {
+                    InfoText(
+                        label = stringResource(id = R.string.label_photos_total),
+                        text = "${rover.totalPhotos}"
+                    )
+                    InfoText(label = "Last photo date:", text = rover.maxDate)
+                    InfoText(label = "Launch date from Earth:", text = rover.launchDate)
+                    InfoText(label = "Landing date on Mars:", text = rover.landingDate)
+                }
             }
+        }
+        androidx.compose.material3.IconButton(
+            onClick = { onMissionInfoClick(rover) },
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(8.dp)
+        ) {
+            MaterialSymbolIcon(
+                symbol = MaterialSymbol.Info,
+                contentDescription = "Mission Info"
+            )
         }
     }
 }

@@ -1,0 +1,34 @@
+{
+  "roverId": 5,
+  "roverName": "Curiosity",
+  "objectives": [
+    "Determine whether Mars ever supported microbial life",
+    "Characterize the climate of Mars",
+    "Characterize the geology of Mars",
+    "Prepare for human exploration",
+    "Study the habitability of Mars",
+    "Analyze the chemical composition of Martian soil and rocks"
+  ],
+  "funFacts": [
+    "Curiosity is about the size of a small SUV, measuring 10 feet long, 9 feet wide, and 7 feet tall, and weighs 1,982 pounds (899 kg)",
+    "The rover has 17 cameras including color cameras capable of taking HD video at 10 frames per second",
+    "It carries a laser called ChemCam that can vaporize rocks from up to 23 feet away, firing over 14 million laser shots since landing",
+    "Curiosity has its own built-in chemistry lab called SAM (Sample Analysis at Mars) that can detect organic molecules",
+    "The rover generates its own power using a radioisotope thermoelectric generator producing 110 watts, not solar panels, allowing it to work at night and through dust storms",
+    "It has driven over 20 miles (32 km) on Mars since landing in Gale Crater on August 6, 2012",
+    "The rover's wheels are made of aluminum and have a built-in Morse code pattern that spells 'JPL' in the tracks it leaves behind",
+    "Curiosity can climb slopes up to 45 degrees and cross obstacles up to 75 cm high",
+    "The rover once sang 'Happy Birthday' to itself on Mars on August 5, 2013, using its sample analysis vibrations to create musical tones",
+    "Landing Curiosity required a complex 'sky crane' maneuver - the first time this technique was used on Mars",
+    "The rover discovered that ancient Mars had the right chemistry to support microbial life, including water, key chemical ingredients, and energy sources",
+    "Curiosity found evidence that lakes and streams existed on Mars for millions of years, not just brief periods",
+    "The mission cost approximately $2.5 billion, making it one of the most expensive Mars missions",
+    "Curiosity's top speed is 0.09 mph (0.14 km/h), but autonomous navigation helps it avoid hazards",
+    "The rover carries a small piece of metal from the World Trade Center, recovered after the 9/11 attacks",
+    "Its robotic arm is 7 feet (2.1 meters) long and weighs 66 pounds (30 kg)",
+    "Curiosity can analyze rock and soil samples with its onboard X-ray diffraction and X-ray fluorescence spectrometers",
+    "The rover detected methane spikes in the Martian atmosphere, which could indicate geological or biological activity",
+    "Curiosity's computers are radiation-hardened PowerPC processors running at 200 MHz with 256 MB of RAM - less powerful than a smartphone",
+    "The rover uses its wheels as seismometers, detecting vibrations as it drives across different terrain"
+  ]
+}

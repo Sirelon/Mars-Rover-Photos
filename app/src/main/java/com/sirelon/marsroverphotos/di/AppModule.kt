@@ -11,6 +11,8 @@ import com.sirelon.marsroverphotos.feature.favorite.FavoriteScreen
 import com.sirelon.marsroverphotos.feature.imageIds
 import com.sirelon.marsroverphotos.feature.images.ImageScreen
 import com.sirelon.marsroverphotos.feature.images.ImageViewModel
+import com.sirelon.marsroverphotos.feature.mission.RoverMissionInfoScreen
+import com.sirelon.marsroverphotos.feature.mission.RoverMissionInfoViewModel
 import com.sirelon.marsroverphotos.feature.photos.PhotosViewModel
 import com.sirelon.marsroverphotos.feature.photos.RoverPhotosScreen
 import com.sirelon.marsroverphotos.feature.favorite.PopularScreen
@@ -31,6 +33,7 @@ val appModule = module {
     viewModel { FavoriteImagesViewModel(androidApplication()) }
     viewModel { PopularPhotosViewModel(androidApplication()) }
     viewModel { ImageViewModel(androidApplication()) }
+    viewModel { RoverMissionInfoViewModel(androidApplication()) }
 
     navigation<RoversDestination.Rovers> { _ ->
         val navActions = LocalRoversNavActions.current
@@ -43,6 +46,10 @@ val appModule = module {
             onClick = {
                 RoverApplication.APP.dataManger.trackClick("click_rover_${it.name}")
                 navActions.navState.push(RoversDestination.RoverDetail(it.id))
+            },
+            onMissionInfoClick = {
+                RoverApplication.APP.dataManger.trackClick("click_mission_info_${it.name}")
+                navActions.navState.push(RoversDestination.MissionInfo(it.id))
             }
         )
     }
@@ -116,6 +123,14 @@ val appModule = module {
             photoIds = gallery.ids,
             selectedId = gallery.selectedId,
             onHideUi = navActions.onHideUi,
+        )
+    }
+
+    navigation<RoversDestination.MissionInfo> { destination ->
+        val navActions = LocalRoversNavActions.current
+        RoverMissionInfoScreen(
+            roverId = destination.roverId,
+            onBack = { navActions.navState.pop() }
         )
     }
 }

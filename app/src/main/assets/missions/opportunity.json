@@ -1,0 +1,34 @@
+{
+  "roverId": 6,
+  "roverName": "Opportunity",
+  "objectives": [
+    "Search for and characterize a variety of rocks and soils that hold clues to past water activity",
+    "Determine the distribution and composition of minerals, rocks, and soils surrounding the landing site",
+    "Determine what geologic processes have shaped the local terrain",
+    "Perform calibration and validation of surface observations made by instruments on Mars orbiters",
+    "Search for iron-containing minerals that may have formed in water",
+    "Assess past environmental conditions for habitability"
+  ],
+  "funFacts": [
+    "Originally designed for a 90-day mission, Opportunity operated for almost 15 years (5,352 sols or 5,498 Earth days) from 2004-2018",
+    "The rover traveled 28.06 miles (45.16 km), holding the off-Earth roving distance record until 2024",
+    "It discovered strong evidence that Mars once had liquid water on its surface, including rocks formed in water and mineral deposits left by evaporating water",
+    "Opportunity survived multiple Martian dust storms before the final planet-encircling storm in June 2018 blocked sunlight to its solar panels",
+    "The rover's final transmission on June 10, 2018, indicated critically low power - its last message was interpreted as 'My battery is low and it's getting dark'",
+    "It took over 217,594 images during its mission, including numerous panoramas",
+    "The rover was named by Sofi Collis, a 9-year-old Russian-American girl, in a NASA essay contest",
+    "Opportunity discovered small spherical hematite concretions nicknamed 'blueberries' that formed in water billions of years ago",
+    "The rover operated through five brutal Martian winters, surviving temperatures as low as -148°F (-100°C) at night",
+    "Opportunity weighed 384 pounds (174 kg) on Earth and about 145 pounds (66 kg) on Mars",
+    "It was powered entirely by solar panels, generating about 140 watts at the start of the mission",
+    "The rover landed in Meridiani Planum using airbags, bouncing more than 26 times before coming to rest",
+    "Opportunity's twin, Spirit, landed on the opposite side of Mars three weeks earlier",
+    "The rover discovered clay minerals that form in neutral, watery conditions - evidence of potentially habitable ancient environments",
+    "It climbed out of Victoria Crater after spending nearly two years exploring its interior",
+    "Opportunity found evidence of ancient hot springs or steam vents through the discovery of gypsum veins",
+    "The mission cost approximately $400 million for the rover, plus about $20 million per year for operations",
+    "The rover's computer was a 20 MHz RAD6000 processor with 128 MB of RAM and 256 MB of flash storage",
+    "Opportunity experienced occasional 'senior moments' as flash memory degraded, requiring periodic reformatting",
+    "NASA made over 1,000 attempts to contact Opportunity after the 2018 dust storm before declaring the mission complete in February 2019"
+  ]
+}
