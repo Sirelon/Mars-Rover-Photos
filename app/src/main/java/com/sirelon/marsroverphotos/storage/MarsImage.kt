@@ -26,6 +26,10 @@ data class MarsImage(
     val popular: Boolean = false,
     @Embedded(prefix = "counter_")
     val stats: Stats,
+
+    // Perseverance-specific metadata
+    val description: String? = null,
+    val credit: String? = null,
 )  {
 
     class Stats(

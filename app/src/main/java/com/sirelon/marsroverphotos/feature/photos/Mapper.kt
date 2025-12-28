@@ -24,7 +24,9 @@ fun List<MarsPhoto>.mapToUi(): List<MarsImage> {
             favorite = false,
             popular = false,
             order = index,
-            stats = defaultStats()
+            stats = defaultStats(),
+            description = null,
+            credit = null
         )
     }
 }
@@ -43,7 +45,9 @@ fun List<PerseverancePhotoItemResponse>.preveranceToUI(): List<MarsImage> {
             favorite = false,
             popular = false,
             order = index,
-            stats = defaultStats()
+            stats = defaultStats(),
+            description = response.description,
+            credit = response.credit
         )
     }
 }

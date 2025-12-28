@@ -20,8 +20,8 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -134,6 +134,7 @@ private fun ImagesPagerContent(
     pagerState: PagerState
 ) {
     var titleState by remember { mutableStateOf("Mars rover photos") }
+    var showInfoSheet by remember { mutableStateOf(false) }
 
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
@@ -160,6 +161,9 @@ private fun ImagesPagerContent(
                     })
                     ShareIcon(onClick = {
                         viewModel.shareMarsImage(currentImage)
+                    })
+                    InfoIcon(onClick = {
+                        showInfoSheet = true
                     })
                 },
             )
@@ -196,6 +200,14 @@ private fun ImagesPagerContent(
 
             OnEvent(uiEvent = uiEvent)
         }
+    }
+
+    // Photo info bottom sheet
+    if (showInfoSheet) {
+        PhotoInfoBottomSheet(
+            image = currentImage,
+            onDismiss = { showInfoSheet = false }
+        )
     }
 }
 
@@ -296,6 +308,16 @@ private fun ShareIcon(onClick: () -> Unit) {
         MaterialSymbolIcon(
             symbol = MaterialSymbol.Share,
             contentDescription = "Share"
+        )
+    }
+}
+
+@Composable
+private fun InfoIcon(onClick: () -> Unit) {
+    IconButton(onClick = onClick) {
+        MaterialSymbolIcon(
+            symbol = MaterialSymbol.Info,
+            contentDescription = "Photo information"
         )
     }
 }
