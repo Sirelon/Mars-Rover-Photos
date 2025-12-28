@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.format.Formatter
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.SystemBarStyle
@@ -109,6 +110,8 @@ import org.koin.compose.navigation3.koinEntryProvider
 import org.koin.core.annotation.KoinExperimentalAPI
 import timber.log.Timber
 import androidx.navigationevent.NavigationEventInfo
+import com.sirelon.marsroverphotos.firebase.facts.EducationalFactsUploadDebugPanel
+import com.sirelon.marsroverphotos.firebase.mission.MissionDataUploader
 
 /**
  * Info class for debugging navigation state during predictive back.
@@ -417,46 +420,6 @@ class RoversActivity : FragmentActivity() {
                 )
             }
             ComposableBannerAd(modifier = Modifier.fillMaxWidth())
-        }
-    }
-
-    @Composable
-    private fun RoversBottomBar(
-        bottomItems: List<RoversDestination.TopLevel>,
-        currentDestination: RoversDestination.TopLevel,
-        onSelect: (RoversDestination.TopLevel) -> Unit,
-    ) {
-        NavigationBar(modifier = Modifier.navigationBarsPadding()) {
-            bottomItems.forEach { destination ->
-                NavigationBarItem(
-                    icon = {
-                        when (destination) {
-                            RoversDestination.Rovers -> Icon(
-                                imageVector = ImageVector.vectorResource(id = R.drawable.ic_rovers),
-                                contentDescription = null
-                            )
-
-                            RoversDestination.Favorite -> MaterialSymbolIcon(
-                                symbol = MaterialSymbol.Favorite,
-                                contentDescription = null
-                            )
-
-
-                            RoversDestination.Popular -> MaterialSymbolIcon(
-                                symbol = MaterialSymbol.ViewList,
-                                contentDescription = null
-                            )
-
-                            RoversDestination.About -> MaterialSymbolIcon(
-                                symbol = MaterialSymbol.Info,
-                                contentDescription = null
-                            )
-                        }
-                    },
-                    selected = destination == currentDestination,
-                    onClick = { onSelect(destination) }
-                )
-            }
         }
     }
 
