@@ -9,7 +9,6 @@ import android.text.format.Formatter
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -44,6 +43,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
@@ -99,11 +99,14 @@ import com.sirelon.marsroverphotos.models.drawableRes
 import com.sirelon.marsroverphotos.storage.Prefs
 import com.sirelon.marsroverphotos.storage.Theme
 import com.sirelon.marsroverphotos.ui.MarsRoverPhotosTheme
+import com.sirelon.marsroverphotos.ui.MarsSnackbar
 import com.sirelon.marsroverphotos.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.widget.WidgetExtraImageId
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.compose.navigation3.koinEntryProvider
@@ -132,6 +135,7 @@ class RoversActivity : FragmentActivity() {
 
     private val gdprHelper = GdprHelper(this)
     private val widgetImageIdState = mutableStateOf<String?>(null)
+    private val snackbarMessages = MutableSharedFlow<String>(extraBufferCapacity = 1)
 
     // Determine the screen width (less decorations) to use for the ad width.
     // If the ad hasn't been laid out, default to the full screen width.
@@ -258,6 +262,12 @@ class RoversActivity : FragmentActivity() {
             }
 
             MarsRoverPhotosTheme(isDark) {
+                val snackbarHostState = remember { SnackbarHostState() }
+                LaunchedEffect(snackbarHostState) {
+                    snackbarMessages.collectLatest { message ->
+                        snackbarHostState.showSnackbar(message)
+                    }
+                }
                 val windowSizeClass = calculateWindowSizeClass(activity)
                 val navSuiteType = NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(
                     currentWindowAdaptiveInfo()
@@ -266,79 +276,88 @@ class RoversActivity : FragmentActivity() {
                 val layoutType =
                     if (hideUI && navAlpha <= 0.01f) NavigationSuiteType.None else navSuiteType
 
-                NavigationSuiteScaffold(
-                    layoutType = layoutType,
-                    navigationSuiteItems = {
-                        bottomItems.forEach { destination ->
-                            item(
-                                modifier = Modifier.graphicsLayer {
-                                    alpha = navAlpha
-                                    scaleX = navScale
-                                    scaleY = navScale
-                                },
-                                icon = {
-                                    when (destination) {
-                                        RoversDestination.Rovers -> Icon(
-                                            imageVector = ImageVector.vectorResource(id = R.drawable.ic_rovers),
-                                            contentDescription = null
-                                        )
-                                        RoversDestination.Favorite -> MaterialSymbolIcon(
-                                            symbol = MaterialSymbol.Favorite,
-                                            contentDescription = null
-                                        )
-                                        RoversDestination.Popular -> MaterialSymbolIcon(
-                                            symbol = MaterialSymbol.LocalFireDepartment,
-                                            contentDescription = null
-                                        )
-                                        RoversDestination.About -> MaterialSymbolIcon(
-                                            symbol = MaterialSymbol.Info,
-                                            contentDescription = null
-                                        )
+                Box(modifier = Modifier.fillMaxSize()) {
+                    NavigationSuiteScaffold(
+                        layoutType = layoutType,
+                        navigationSuiteItems = {
+                            bottomItems.forEach { destination ->
+                                item(
+                                    modifier = Modifier.graphicsLayer {
+                                        alpha = navAlpha
+                                        scaleX = navScale
+                                        scaleY = navScale
+                                    },
+                                    icon = {
+                                        when (destination) {
+                                            RoversDestination.Rovers -> Icon(
+                                                imageVector = ImageVector.vectorResource(id = R.drawable.ic_rovers),
+                                                contentDescription = null
+                                            )
+                                            RoversDestination.Favorite -> MaterialSymbolIcon(
+                                                symbol = MaterialSymbol.Favorite,
+                                                contentDescription = null
+                                            )
+                                            RoversDestination.Popular -> MaterialSymbolIcon(
+                                                symbol = MaterialSymbol.LocalFireDepartment,
+                                                contentDescription = null
+                                            )
+                                            RoversDestination.About -> MaterialSymbolIcon(
+                                                symbol = MaterialSymbol.Info,
+                                                contentDescription = null
+                                            )
+                                        }
+                                    },
+                                    label = {
+                                        when (destination) {
+                                            RoversDestination.Rovers -> Text(stringResource(R.string.nav_rovers))
+                                            RoversDestination.Favorite -> Text(stringResource(R.string.nav_favorite))
+                                            RoversDestination.Popular -> Text(stringResource(R.string.nav_popular))
+                                            RoversDestination.About -> Text(stringResource(R.string.nav_about))
+                                        }
+                                    },
+                                    selected = destination == navState.currentTopLevel,
+                                    enabled = !hideUI,
+                                    onClick = {
+                                        track("bottom_${destination.analyticsTag}")
+                                        navState.selectTopLevel(destination, resetToTop = true)
                                     }
-                                },
-                                label = {
-                                    when (destination) {
-                                        RoversDestination.Rovers -> Text(stringResource(R.string.nav_rovers))
-                                        RoversDestination.Favorite -> Text(stringResource(R.string.nav_favorite))
-                                        RoversDestination.Popular -> Text(stringResource(R.string.nav_popular))
-                                        RoversDestination.About -> Text(stringResource(R.string.nav_about))
-                                    }
-                                },
-                                selected = destination == navState.currentTopLevel,
-                                enabled = !hideUI,
-                                onClick = {
-                                    track("bottom_${destination.analyticsTag}")
-                                    navState.selectTopLevel(destination, resetToTop = true)
-                                }
-                            )
-                        }
-                    }
-                ) {
-                    Column(modifier = Modifier.fillMaxSize()) {
-                        // Ukraine banner
-                        AnimatedVisibility(
-                            visible = !hideUI,
-                            enter = fadeIn() + expandVertically(),
-                            exit = fadeOut() + shrinkVertically(),
-                        ) {
-                            UkraineBanner(modifier = Modifier.statusBarsPadding()) {
-                                RoverApplication.APP.dataManger.trackClick("UkraineBanner_Top")
-                                navState.push(RoversDestination.Ukraine, singleTop = true)
+                                )
                             }
                         }
+                    ) {
+                        Column(modifier = Modifier.fillMaxSize()) {
+                            // Ukraine banner
+                            AnimatedVisibility(
+                                visible = !hideUI,
+                                enter = fadeIn() + expandVertically(),
+                                exit = fadeOut() + shrinkVertically(),
+                            ) {
+                                UkraineBanner(modifier = Modifier.statusBarsPadding()) {
+                                    RoverApplication.APP.dataManger.trackClick("UkraineBanner_Top")
+                                    navState.push(RoversDestination.Ukraine, singleTop = true)
+                                }
+                            }
 
-                        // Main content
-                        Box(modifier = Modifier.weight(1f)) {
-                            MarsRoverContent(
-                                modifier = Modifier.fillMaxSize(),
-                                activity = activity,
-                                navState = navState,
-                                entryDecorators = entryDecorators,
-                                onExit = { activity.finish() },
-                                onHideUi = { hideUI = it }
-                            )
+                            // Main content
+                            Box(modifier = Modifier.weight(1f)) {
+                                MarsRoverContent(
+                                    modifier = Modifier.fillMaxSize(),
+                                    activity = activity,
+                                    navState = navState,
+                                    entryDecorators = entryDecorators,
+                                    onExit = { activity.finish() },
+                                    onHideUi = { hideUI = it }
+                                )
+                            }
                         }
                     }
+                    MarsSnackbar(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(16.dp),
+                        snackbarHostState = snackbarHostState,
+                        actionClick = null
+                    )
                 }
             }
         }
@@ -375,7 +394,7 @@ class RoversActivity : FragmentActivity() {
             val sizeStr = Formatter.formatFileSize(ctx, coilSize)
             RoverApplication.APP.dataManger.trackEvent("cache_cleared", mapOf("Size" to sizeStr))
             withContext(Dispatchers.Main) {
-                Toast.makeText(ctx, "Cleared $sizeStr", Toast.LENGTH_SHORT).show()
+                snackbarMessages.tryEmit("Cleared $sizeStr")
             }
         }
     }

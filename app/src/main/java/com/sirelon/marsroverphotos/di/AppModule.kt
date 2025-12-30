@@ -102,7 +102,6 @@ val appModule = module {
     navigation<RoversDestination.RoverDetail> { destination ->
         val navActions = LocalRoversNavActions.current
         RoverPhotosScreen(
-            activity = navActions.activity,
             roverId = destination.roverId,
             onNavigateToImages = { image, photos ->
                 navActions.navState.push(
