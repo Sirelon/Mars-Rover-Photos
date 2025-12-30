@@ -1,55 +1,79 @@
 [versions]
+# Core
+kotlin = "2.3.0"
+androidGradlePlugin = "8.13.2"
+ksp = "2.3.0-1.0.29"
+
+# Compose Multiplatform
+compose-multiplatform = "1.7.3"
+
+# AndroidX
 # https://developer.android.com/jetpack/androidx/releases/activity
 activityCompose = "1.12.2"
 # https://developer.android.com/jetpack/androidx/releases/appcompat
 appcompat = "1.7.1"
-# https://github.com/coil-kt/coil/blob/main/CHANGELOG.md
-coil = "3.3.0"
 # https://developer.android.com/jetpack/androidx/releases/annotation
 annotation = "1.9.1"
-# https://firebase.google.com/support/release-notes/android
-firebaseBom = "34.7.0"
-kotlin = "2.3.0"
-# https://github.com/Kotlin/kotlinx.serialization/releases
-kotlin-serialization = "1.9.0"
-koin = "4.2.0-beta2"
-
-# https://github.com/Kotlin/kotlinx.collections.immutable
-kotlin-collections-immutable = "0.4.0"
 ktx = "1.17.0"
-# https://github.com/ktorio/ktor/releases
-ktor = "3.3.3"
-# https://github.com/google/ksp/releases
-ksp = "2.3.2"
 # https://developer.android.com/jetpack/androidx/releases/lifecycle
-lifecycle = "2.10.0"
+lifecycle = "2.8.3"
 # https://developer.android.com/jetpack/androidx/releases/compose
 compose = "1.10.0"
 # https://developer.android.com/jetpack/androidx/releases/compose-material3
 compose-material3 = "1.4.0"
 compose-material3-adaptive-navigation-suite = "1.4.0"
+material3WindowSizeClass = "1.4.0"
 # https://developer.android.com/jetpack/androidx/releases/glance
 glance = "1.2.0-rc01"
-mockito = "1.6.0"
 # https://developer.android.com/jetpack/androidx/releases/paging
 paging = "3.3.6"
-playServicesAds = "24.9.0"
+paging-kmp = "3.3.0-alpha02"
 # https://developer.android.com/jetpack/androidx/releases/room
-room = "2.8.4"
-timber = "5.0.1"
-# https://developers.google.com/admob/android/privacy/release-notes
-userMessagingPlatform = "4.0.0"
+room = "2.7.0-alpha13"
 # https://developer.android.com/jetpack/androidx/releases/work
 work = "2.11.0"
+
+# Multiplatform libraries
+# https://github.com/coil-kt/coil/blob/main/CHANGELOG.md
+coil = "3.0.4"
+# https://github.com/Kotlin/kotlinx.serialization/releases
+kotlin-serialization = "1.7.3"
+# https://github.com/Kotlin/kotlinx.collections.immutable
+kotlin-collections-immutable = "0.4.0"
+# https://github.com/Kotlin/kotlinx-datetime
+kotlinx-datetime = "0.6.1"
+# https://github.com/Kotlin/kotlinx.coroutines
+kotlinx-coroutines = "1.10.1"
+# https://github.com/ktorio/ktor/releases
+ktor = "3.0.0"
+# https://github.com/touchlab/Kermit
+kermit = "2.0.4"
+# https://github.com/InsertKoinIO/koin
+koin = "4.0.1"
+koin-compose = "4.0.1"
+
+# Navigation
+navigation-compose = "2.8.0-alpha10"
+
+# Firebase
+# https://firebase.google.com/support/release-notes/android
+firebaseBom = "34.7.0"
+
+# Testing
+mockito = "1.6.0"
+
+# Android-only libraries
+playServicesAds = "24.9.0"
+# https://developers.google.com/admob/android/privacy/release-notes
+userMessagingPlatform = "4.0.0"
 # https://github.com/usuiat/Zoomable/releases
 zoomable = "2.9.0"
-# https://developer.android.com/jetpack/androidx/releases/navigation3
+
+# Legacy (to be removed)
 navigation3 = "1.0.0"
 lifecycle-navigation3 = "2.10.0"
-# https://developer.android.com/jetpack/androidx/releases/navigationevent
 navigationevent = "1.0.1"
-androidGradlePlugin = "8.13.2"
-material3WindowSizeClass = "1.4.0"
+timber = "5.0.1"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -76,18 +100,45 @@ firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
 firebase-perf = { module = "com.google.firebase:firebase-perf" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+kotlin-test-annotations-common = { module = "org.jetbrains.kotlin:kotlin-test-annotations-common", version.ref = "kotlin" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlin-collections-immutable" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlin-serialization" }
 ksp = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "ksp" }
+
+# Koin Multiplatform
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin-compose" }
+koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin-compose" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
 koin-compose-navigation3 = { module = "io.insert-koin:koin-compose-navigation3", version.ref = "koin" }
 
+# Ktor Multiplatform
 ktor-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
 ktor-client-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
+ktor-client-darwin = { group = "io.ktor", name = "ktor-client-darwin", version.ref = "ktor" }
+ktor-client-js = { group = "io.ktor", name = "ktor-client-js", version.ref = "ktor" }
 ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+
+# Kermit Multiplatform Logging
+kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
+
+# Navigation Compose Multiplatform
+navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
+
+# Lifecycle Multiplatform
+lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel", version.ref = "lifecycle" }
+lifecycle-runtime-compose-multiplatform = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
+
+# Paging Multiplatform
+paging-common = { module = "androidx.paging:paging-common", version.ref = "paging-kmp" }
+paging-compose-common = { module = "androidx.paging:paging-compose-common", version.ref = "paging-kmp" }
 
 androidx-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle" }
 navigation3-runtime = { group = "androidx.navigation3", name = "navigation3-runtime", version.ref = "navigation3" }
@@ -112,8 +163,11 @@ zoomable = { module = "net.engawapg.lib:zoomable", version.ref = "zoomable" }
 androidx-material3-window-size-class1 = { group = "androidx.compose.material3", name = "material3-window-size-class", version.ref = "material3WindowSizeClass" }
 
 [plugins]
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
+android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
@@ -121,6 +175,7 @@ firebase-perf = { id = "com.google.firebase.firebase-perf", version = "2.0.2" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.6" }
 google-services = { id = "com.google.gms.google-services", version = "4.4.4" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+room = { id = "androidx.room", version.ref = "room" }
 
 [bundles]
 firebase = [
