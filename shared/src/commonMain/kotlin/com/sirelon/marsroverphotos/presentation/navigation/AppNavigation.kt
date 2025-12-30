@@ -2,6 +2,7 @@ package com.sirelon.marsroverphotos.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -47,7 +48,7 @@ fun AppNavigation(
                 navArgument("roverId") { type = NavType.LongType }
             )
         ) { backStackEntry ->
-            val roverId = backStackEntry.arguments?.getLong("roverId") ?: 0L
+            val roverId = backStackEntry.longArg("roverId")
             PhotosScreen(
                 roverId = roverId,
                 onNavigateToImages = {
@@ -83,7 +84,7 @@ fun AppNavigation(
                 navArgument("roverId") { type = NavType.LongType }
             )
         ) { backStackEntry ->
-            val roverId = backStackEntry.arguments?.getLong("roverId") ?: 0L
+            val roverId = backStackEntry.longArg("roverId")
             MissionInfoScreen(
                 roverId = roverId,
                 onBack = { navController.popBackStack() }
@@ -95,4 +96,9 @@ fun AppNavigation(
             AboutScreen()
         }
     }
+}
+
+private fun NavBackStackEntry.longArg(key: String): Long {
+    val args = arguments ?: return 0L
+    return runCatching { NavType.LongType.get(args, key) }.getOrNull() ?: 0L
 }

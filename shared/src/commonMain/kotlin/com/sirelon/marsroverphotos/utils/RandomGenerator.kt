@@ -25,7 +25,7 @@ object RandomGenerator {
             }
         }
 
-        return String(uuid)
+        return uuid.concatToString()
     }
 }
 

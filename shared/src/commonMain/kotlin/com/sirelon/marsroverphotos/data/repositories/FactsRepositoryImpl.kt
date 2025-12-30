@@ -7,7 +7,7 @@ import com.sirelon.marsroverphotos.domain.repositories.FactsRepository
 import com.sirelon.marsroverphotos.platform.IFirebasePhotos
 import com.sirelon.marsroverphotos.utils.Logger
 import com.sirelon.marsroverphotos.utils.RandomGenerator
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 
 /**
  * Implementation of FactsRepository.

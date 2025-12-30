@@ -2,7 +2,7 @@ package com.sirelon.marsroverphotos.data.database.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 
 /**
  * Tracks which educational facts have been shown to avoid repetition.

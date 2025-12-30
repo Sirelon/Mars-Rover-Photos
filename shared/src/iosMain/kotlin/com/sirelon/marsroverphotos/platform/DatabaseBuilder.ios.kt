@@ -11,6 +11,7 @@ import platform.Foundation.NSUserDomainMask
  * iOS database builder using file path.
  * Stores database in the app's Documents directory.
  */
+@OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
 actual fun getDatabaseBuilder(): RoomDatabase.Builder<AppDataBase> {
     val documentsDirectory = NSFileManager.defaultManager.URLForDirectory(
         directory = NSDocumentDirectory,

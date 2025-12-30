@@ -12,7 +12,7 @@ import com.sirelon.marsroverphotos.presentation.models.GridItem
 import com.sirelon.marsroverphotos.presentation.models.GridItemTransformer
 import com.sirelon.marsroverphotos.utils.Logger
 import com.sirelon.marsroverphotos.utils.RoverDateUtil
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
