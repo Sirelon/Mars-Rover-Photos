@@ -102,7 +102,7 @@ kotlin {
 
             // Paging (common)
             implementation(libs.paging.common)
-            // Room KMP (alpha)
+            // Room KMP
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.room.ktx)
         }
@@ -114,14 +114,14 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
 
-            // Room Paging (Android-only for now)
+            // Room Paging (Android-only)
             implementation(libs.androidx.room.paging)
 
             // Firebase (Android-only) - Latest stable versions
-            implementation("com.google.firebase:firebase-analytics:22.1.2")
-            implementation("com.google.firebase:firebase-crashlytics:19.2.1")
-            implementation("com.google.firebase:firebase-firestore:25.1.1")
-            implementation("com.google.firebase:firebase-messaging:24.1.0")
+            implementation("com.google.firebase:firebase-analytics:23.0.0")
+            implementation("com.google.firebase:firebase-crashlytics:20.0.3")
+            implementation("com.google.firebase:firebase-firestore:26.0.2")
+            implementation("com.google.firebase:firebase-messaging:25.0.1")
 
             // AndroidX
             implementation(libs.androidx.ktx)
@@ -183,7 +183,7 @@ room {
 }
 
 dependencies {
-    // KSP for Room - all platforms (Room 2.7.0-alpha12 supports KMP)
+    // KSP for Room - all platforms (Room 2.8.4 supports KMP)
     add("kspCommonMainMetadata", libs.androidx.room.compiler)
     add("kspAndroid", libs.androidx.room.compiler)
     add("kspIosX64", libs.androidx.room.compiler)

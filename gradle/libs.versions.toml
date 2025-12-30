@@ -2,10 +2,10 @@
 # Core
 kotlin = "2.3.0"
 androidGradlePlugin = "8.13.2"
-ksp = "2.3.0-1.0.29"
+ksp = "2.3.4"
 
 # Compose Multiplatform
-compose-multiplatform = "1.7.3"
+compose-multiplatform = "1.9.3"
 
 # AndroidX
 # https://developer.android.com/jetpack/androidx/releases/activity
@@ -16,7 +16,8 @@ appcompat = "1.7.1"
 annotation = "1.9.1"
 ktx = "1.17.0"
 # https://developer.android.com/jetpack/androidx/releases/lifecycle
-lifecycle = "2.8.3"
+lifecycle = "2.9.6"
+lifecycle-androidx = "2.10.0"
 # https://developer.android.com/jetpack/androidx/releases/compose
 compose = "1.10.0"
 # https://developer.android.com/jetpack/androidx/releases/compose-material3
@@ -27,33 +28,33 @@ material3WindowSizeClass = "1.4.0"
 glance = "1.2.0-rc01"
 # https://developer.android.com/jetpack/androidx/releases/paging
 paging = "3.3.6"
-paging-kmp = "3.3.0-alpha02"
+paging-kmp = "3.3.6"
 # https://developer.android.com/jetpack/androidx/releases/room
-room = "2.7.0-alpha13"
+room = "2.8.4"
 # https://developer.android.com/jetpack/androidx/releases/work
 work = "2.11.0"
 
 # Multiplatform libraries
 # https://github.com/coil-kt/coil/blob/main/CHANGELOG.md
-coil = "3.0.4"
+coil = "3.3.0"
 # https://github.com/Kotlin/kotlinx.serialization/releases
-kotlin-serialization = "1.7.3"
+kotlin-serialization = "1.9.0"
 # https://github.com/Kotlin/kotlinx.collections.immutable
 kotlin-collections-immutable = "0.4.0"
 # https://github.com/Kotlin/kotlinx-datetime
-kotlinx-datetime = "0.6.1"
+kotlinx-datetime = "0.7.1"
 # https://github.com/Kotlin/kotlinx.coroutines
-kotlinx-coroutines = "1.10.1"
+kotlinx-coroutines = "1.10.2"
 # https://github.com/ktorio/ktor/releases
-ktor = "3.0.0"
+ktor = "3.3.3"
 # https://github.com/touchlab/Kermit
-kermit = "2.0.4"
+kermit = "2.0.8"
 # https://github.com/InsertKoinIO/koin
-koin = "4.0.1"
-koin-compose = "4.0.1"
+koin = "4.2.0-beta2"
+koin-compose = "4.2.0-beta2"
 
 # Navigation
-navigation-compose = "2.8.0-alpha10"
+navigation-compose = "2.9.1"
 
 # Firebase
 # https://firebase.google.com/support/release-notes/android
@@ -140,7 +141,7 @@ lifecycle-runtime-compose-multiplatform = { module = "org.jetbrains.androidx.lif
 paging-common = { module = "androidx.paging:paging-common", version.ref = "paging-kmp" }
 paging-compose-common = { module = "androidx.paging:paging-compose-common", version.ref = "paging-kmp" }
 
-androidx-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle" }
+androidx-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle-androidx" }
 navigation3-runtime = { group = "androidx.navigation3", name = "navigation3-runtime", version.ref = "navigation3" }
 navigation3-ui = { group = "androidx.navigation3", name = "navigation3-ui", version.ref = "navigation3" }
 lifecycle-viewmodel-navigation3 = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-navigation3", version.ref = "lifecycle-navigation3" }

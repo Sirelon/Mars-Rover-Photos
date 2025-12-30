@@ -26,7 +26,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
+import coil3.compose.LocalPlatformContext
 import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -138,19 +140,19 @@ fun NetworkImage(
     placeholderRes: Int? = R.drawable.img_placeholder,
     imageUrl: String
 ) {
-    val painter = rememberAsyncImagePainter(
-        ImageRequest.Builder(LocalContext.current).data(data = imageUrl)
-            .apply(block = fun ImageRequest.Builder.() {
-                crossfade(true)
-                placeholderRes?.let {
-                    placeholder(placeholderRes)
-                }
-            }).build()
-    )
-    Image(
-        modifier = modifier,
-        painter = painter,
+    val request = ImageRequest.Builder(LocalPlatformContext.current)
+        .data(data = imageUrl)
+        .apply(block = fun ImageRequest.Builder.() {
+            crossfade(true)
+            placeholderRes?.let {
+                placeholder(placeholderRes)
+            }
+        })
+        .build()
+    AsyncImage(
+        model = request,
         contentDescription = imageUrl,
+        modifier = modifier,
         contentScale = contentScale
     )
 }
