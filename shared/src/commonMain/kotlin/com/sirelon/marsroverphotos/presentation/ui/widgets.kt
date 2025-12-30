@@ -36,10 +36,10 @@ fun MarsSnackbar(
         snackbar = {
             Snackbar(
                 action = {
-                    if (actionText != null && actionClick != null) {
+                    if (actionText != null) {
                         Button(onClick = {
-                            snackbarHostState.currentSnackbarData?.dismiss()
-                            actionClick()
+                            snackbarHostState.currentSnackbarData?.performAction()
+                            actionClick?.invoke()
                         }) {
                             Text(text = actionText)
                         }
