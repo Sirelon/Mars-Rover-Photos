@@ -61,6 +61,7 @@ class FactsRepositoryImpl(
 
     override suspend fun cleanupOldDisplays() {
         val thirtyDaysAgo = Clock.System.now().toEpochMilliseconds() - (30L * 24 * 60 * 60 * 1000)
+        val thirtyDaysAgo = Clock.System.now().toEpochMilliseconds() - (30L * 24 * 60 * 60 * 1000)
         factDisplayDao.cleanupOldDisplays(thirtyDaysAgo)
         Logger.d("FactsRepository") { "Cleaned up old fact display records" }
     }

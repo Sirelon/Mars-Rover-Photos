@@ -102,7 +102,6 @@ kotlin {
 
             // Paging (common)
             implementation(libs.paging.common)
-
             // Room KMP (alpha)
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.room.ktx)
@@ -158,6 +157,9 @@ kotlin {
     }
 }
 
+compose.resources {
+    packageOfResClass = "com.sirelon.marsroverphotos.shared.resources"
+}
 android {
     namespace = "com.sirelon.marsroverphotos.shared"
     compileSdk = 36

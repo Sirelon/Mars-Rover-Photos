@@ -7,10 +7,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sirelon.marsroverphotos.shared.resources.Res
+import kotlin.math.max
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.Font as ResourceFont
 
 /**
  * Material Symbols icon names used in the app.
@@ -51,7 +56,8 @@ enum class MaterialSymbol(val iconName: String) {
  * @param modifier Modifier to be applied to the icon
  * @param tint Color to tint the icon
  * @param size Size of the icon (default 24.dp)
- * @param filled Whether to show the filled variant (true) or outlined (false)
+ * @param filled Whether to show the filled variant (true) or outlined (false).
+ *               On platforms without font-variation support, this falls back to a heavier weight.
  * @param weight Font weight from 100 to 700 (default 400)
  */
 @Composable
@@ -64,7 +70,7 @@ fun MaterialSymbolIcon(
     filled: Boolean = false,
     weight: Int = 400
 ) {
-    val fontFamily = getMaterialSymbolsFont(filled = filled, weight = weight)
+    val fontFamily = materialSymbolsFontFamily(filled = filled, weight = weight)
 
     // Convert size to sp for font size
     val fontSize = (size.value * 1.5).sp // Adjust multiplier as needed for proper sizing
@@ -81,12 +87,21 @@ fun MaterialSymbolIcon(
 }
 
 /**
- * Get the Material Symbols font family with platform-specific configuration.
- * On platforms that support variable fonts, this will configure fill and weight.
- * On other platforms, it will use the default outlined variant.
+ * Resolve the Material Symbols font family from Compose resources.
  */
+@OptIn(ExperimentalResourceApi::class)
 @Composable
-expect fun getMaterialSymbolsFont(
+private fun materialSymbolsFontFamily(
     filled: Boolean,
     weight: Int
-): FontFamily
+): FontFamily {
+    val resolvedWeight = if (filled) max(weight, 600) else weight
+    val fontWeight = FontWeight(resolvedWeight.coerceIn(100, 700))
+
+    return FontFamily(
+        ResourceFont(
+            Res.font.material_symbols_outlined,
+            weight = fontWeight
+        )
+    )
+}

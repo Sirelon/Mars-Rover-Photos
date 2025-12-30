@@ -48,4 +48,5 @@ fun App() {
 @Composable
 private fun AppContent() {
     AppNavigation(modifier = Modifier.fillMaxSize())
+    AppNavigation(modifier = Modifier.fillMaxSize())
 }

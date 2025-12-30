@@ -206,6 +206,7 @@ class PhotosViewModel(
      * @return Earth time in milliseconds
      */
     fun earthTime(sol: Long = getSol()) = dateUtil?.dateFromSol(sol) ?: Clock.System.now().toEpochMilliseconds()
+    fun earthTime(sol: Long = getSol()) = dateUtil?.dateFromSol(sol) ?: Clock.System.now().toEpochMilliseconds()
 
     /**
      * Set the current sol from Earth time.

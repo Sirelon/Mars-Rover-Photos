@@ -14,5 +14,6 @@ data class FactDisplay(
     val id: Long = 0,
     val factId: String,                                  // References Firestore fact document ID
     val displayTimestamp: Long = Clock.System.now().toEpochMilliseconds(),
+    val displayTimestamp: Long = Clock.System.now().toEpochMilliseconds(),
     val sessionId: String                                 // Session UUID for tracking
 )
