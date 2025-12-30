@@ -1,12 +1,15 @@
 package com.sirelon.marsroverphotos.data.repositories
 
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.sirelon.marsroverphotos.data.database.dao.ImagesDao
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
+import com.sirelon.marsroverphotos.data.paging.PopularRemoteMediator
 import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
 import com.sirelon.marsroverphotos.platform.IFirebasePhotos
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 
@@ -29,8 +32,10 @@ class ImagesRepositoryImpl(
     }
 
     override fun loadFavoritePagedSource(): Flow<PagingData<MarsImage>> {
-        return imagesDao.loadFavoriteImages()
-            .map { images -> PagingData.from(images) }
+        return Pager(
+            config = PagingConfig(pageSize = 10, initialLoadSize = 10),
+            pagingSourceFactory = { imagesDao.loadFavoritePagedSource() }
+        ).flow
     }
 
     override suspend fun updateFavForImage(item: MarsImage) {
@@ -53,8 +58,12 @@ class ImagesRepositoryImpl(
         }
     }
 
+    @OptIn(ExperimentalPagingApi::class)
     override fun loadPopularPagedSource(): Flow<PagingData<MarsImage>> {
-        return imagesDao.loadPopularImages()
-            .map { images -> PagingData.from(images) }
+        return Pager(
+            config = PagingConfig(pageSize = 20, initialLoadSize = 20),
+            pagingSourceFactory = { imagesDao.loadPopularPagedSource() },
+            remoteMediator = PopularRemoteMediator(firebasePhotos, imagesDao)
+        ).flow
     }
 }

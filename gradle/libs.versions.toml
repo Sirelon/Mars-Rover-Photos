@@ -27,8 +27,8 @@ material3WindowSizeClass = "1.4.0"
 # https://developer.android.com/jetpack/androidx/releases/glance
 glance = "1.2.0-rc01"
 # https://developer.android.com/jetpack/androidx/releases/paging
-paging = "3.3.6"
-paging-kmp = "3.3.6"
+paging = "3.4.0-beta01"
+paging-kmp = "3.4.0-beta01"
 # https://developer.android.com/jetpack/androidx/releases/room
 room = "2.8.4"
 # https://developer.android.com/jetpack/androidx/releases/work
