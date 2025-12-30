@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sirelon.marsroverphotos.shared.resources.Res
+import com.sirelon.marsroverphotos.shared.resources.material_symbols_outlined
 import kotlin.math.max
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.Font as ResourceFont

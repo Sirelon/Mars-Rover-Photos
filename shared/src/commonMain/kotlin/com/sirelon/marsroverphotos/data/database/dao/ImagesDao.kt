@@ -1,6 +1,7 @@
 package com.sirelon.marsroverphotos.data.database.dao
 
 // import androidx.paging.PagingSource // TODO: Re-enable when Room KMP supports PagingSource
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -45,13 +46,11 @@ interface ImagesDao {
     @Query("SELECT * FROM images WHERE popular = 1 ORDER BY `order` ASC")
     fun loadPopularImages(): Flow<List<MarsImage>>
 
-    // TODO: Re-enable when Room KMP supports PagingSource
-    // Paging support - Room KMP alpha may have issues with PagingSource on some platforms
-    // @Query("SELECT * FROM images WHERE favorite = 1 ORDER BY `order` ASC")
-    // fun loadFavoritePagedSource(): PagingSource<Int, MarsImage>
-    //
-    // @Query("SELECT * FROM images WHERE popular = 1 ORDER BY `order` ASC")
-    // fun loadPopularPagedSource(): PagingSource<Int, MarsImage>
+    @Query("SELECT * FROM images WHERE favorite = 1 ORDER BY `order` ASC")
+    fun loadFavoritePagedSource(): PagingSource<Int, MarsImage>
+
+    @Query("SELECT * FROM images WHERE popular = 1 ORDER BY `order` ASC")
+    fun loadPopularPagedSource(): PagingSource<Int, MarsImage>
 
     @Query("DELETE FROM images WHERE popular = 1")
     suspend fun deleteAllPopular()

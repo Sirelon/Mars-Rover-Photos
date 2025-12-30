@@ -72,17 +72,14 @@ class PopularRemoteMediator(
                     firebasePhoto.toMarsImage(index + alreadyInDb)
                 }
 
-            // Insert into database with transaction
-            dao.withDaoTransaction {
-                val rowIds = dao.insertImages(list)
-                val indexedIds = rowIds.mapIndexed { index, rowId -> rowId to index }
-                val grouped = indexedIds.groupBy { it.first == -1L }
+            val rowIds = dao.insertImages(list)
+            val indexedIds = rowIds.mapIndexed { index, rowId -> rowId to index }
+            val grouped = indexedIds.groupBy { it.first == -1L }
 
-                // Update stats for photos that already exist (insert returned -1)
-                val toUpdate = grouped[true]?.map { list[it.second] }
-                toUpdate?.forEach { photo ->
-                    dao.updateStats(StatsUpdate(photo.id, photo.stats))
-                }
+            // Update stats for photos that already exist (insert returned -1)
+            val toUpdate = grouped[true]?.map { list[it.second] }
+            toUpdate?.forEach { photo ->
+                dao.updateStats(StatsUpdate(photo.id, photo.stats))
             }
 
             val endOfPaginationReached = list.isEmpty()
