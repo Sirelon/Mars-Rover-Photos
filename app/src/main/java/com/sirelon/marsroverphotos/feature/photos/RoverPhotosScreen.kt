@@ -173,7 +173,7 @@ private fun RefreshButton(
             ) {
                 MaterialSymbolIcon(
                     symbol = MaterialSymbol.Autorenew,
-                    contentDescription = "refresh"
+                    contentDescription = "Refresh"
                 )
             }
 
@@ -290,7 +290,7 @@ private fun SolDialog(
                         sol = maxSol
                         Toast.makeText(
                             context,
-                            "The max sol for this rover is $maxSol",
+                            "The maximum sol for this rover is $maxSol.",
                             Toast.LENGTH_SHORT
                         ).show()
                     } else {
