@@ -133,7 +133,7 @@ private fun ImagesPagerContent(
     hideUi: Boolean,
     pagerState: PagerState
 ) {
-    var titleState by remember { mutableStateOf("Mars rover photos") }
+    var titleState by remember { mutableStateOf("Mars Rover Photos") }
     var showInfoSheet by remember { mutableStateOf(false) }
 
     LaunchedEffect(pagerState) {
@@ -141,7 +141,7 @@ private fun ImagesPagerContent(
             val marsPhoto = list[page]
 
             viewModel.onShown(marsPhoto, page)
-            titleState = "Mars image id: ${marsPhoto.id}"
+            titleState = "Mars image ID: ${marsPhoto.id}"
         }
     }
 
@@ -177,11 +177,11 @@ private fun ImagesPagerContent(
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
                     Button(onClick = { viewModel.makePopular(currentImage) }) {
-                        Text(text = "Make popular")
+                        Text(text = "Mark as popular")
                     }
 
                     Button(onClick = { viewModel.removePopular(currentImage) }) {
-                        Text(text = "Remove popular")
+                        Text(text = "Remove from popular")
                     }
                 }
             }
