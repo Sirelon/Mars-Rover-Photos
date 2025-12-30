@@ -1,0 +1,48 @@
+package com.sirelon.marsroverphotos.domain.models
+
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+/**
+ * @author romanishin
+ * @since 31.10.16 on 15:14
+ */
+@Stable
+@Immutable
+@Entity
+@Serializable
+data class Rover(
+    @SerialName(value = "id")
+    @PrimaryKey
+    val id: Long,
+
+    @SerialName(value = "name")
+    val name: String,
+
+    val drawableName: String,
+
+    @SerialName(value = "landing_date")
+    val landingDate: String,
+
+    @SerialName(value = "launch_date")
+    val launchDate: String,
+
+    @SerialName(value = "status")
+    val status: String,
+
+    @SerialName(value = "max_sol")
+    var maxSol: Long,
+
+    @SerialName(value = "max_date")
+    var maxDate: String,
+
+    @SerialName(value = "total_photos")
+    val totalPhotos: Int
+)
+
+// Platform-specific drawable resolution will be handled via expect/actual
+expect fun Rover.getDrawableResourceId(): Int
