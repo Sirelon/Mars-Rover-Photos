@@ -39,10 +39,11 @@ subprojects {
     tasks.withType<KotlinCompile>().configureEach {
         val dirProperty = project.layout.projectDirectory.asFile
         val rootDirPath = dirProperty.absolutePath
+        val stabilityConfigPath = rootProject.file("shared/compose-stability-config.txt").absolutePath
 
         compilerOptions.freeCompilerArgs.addAll(
             "-P",
-            "plugin:androidx.compose.compiler.plugins.kotlin:stabilityConfigurationPath=$rootDirPath/compose-stability-config.txt"
+            "plugin:androidx.compose.compiler.plugins.kotlin:stabilityConfigurationPath=$stabilityConfigPath"
         )
 
         val composeAnalyticsDir = "$rootDirPath/compose_compiler_analytics"

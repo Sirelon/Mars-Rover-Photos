@@ -91,7 +91,7 @@ class RoversRepositoryImpl(
             val currentTimeMillis = Clock.System.now().toEpochMilliseconds()
 
             // Perseverance (active)
-            val perseverance = Rover(
+            val perseveranceBase = Rover(
                 id = PERSEVERANCE_ID,
                 name = "Perseverance",
                 drawableName = "img_perseverance",
@@ -102,12 +102,14 @@ class RoversRepositoryImpl(
                 maxDate = "2021-07-30",
                 totalPhotos = 74525
             )
-            val dateUtilP = RoverDateUtil(perseverance)
-            perseverance.maxDate = dateUtilP.parseTime(currentTimeMillis)
-            perseverance.maxSol = dateUtilP.solFromDate(currentTimeMillis)
+            val dateUtilP = RoverDateUtil(perseveranceBase)
+            val perseverance = perseveranceBase.copy(
+                maxDate = dateUtilP.parseTime(currentTimeMillis),
+                maxSol = dateUtilP.solFromDate(currentTimeMillis)
+            )
 
             // Insight (active)
-            val insight = Rover(
+            val insightBase = Rover(
                 id = INSIGHT_ID,
                 name = "Insight",
                 drawableName = "img_insight",
@@ -118,9 +120,11 @@ class RoversRepositoryImpl(
                 maxDate = "2021-05-26",
                 totalPhotos = 5731
             )
-            val dateUtil = RoverDateUtil(insight)
-            insight.maxDate = dateUtil.parseTime(currentTimeMillis)
-            insight.maxSol = dateUtil.solFromDate(currentTimeMillis)
+            val dateUtil = RoverDateUtil(insightBase)
+            val insight = insightBase.copy(
+                maxDate = dateUtil.parseTime(currentTimeMillis),
+                maxSol = dateUtil.solFromDate(currentTimeMillis)
+            )
 
             // Curiosity (active)
             val curiosity = Rover(

@@ -14,7 +14,7 @@ import platform.UIKit.UIScreen
 @Composable
 actual fun getScreenWidthDp(): Float {
     val density = LocalDensity.current
-    val screenBounds = UIScreen.mainScreen.bounds
+    val screenBounds = UIScreen.mainScreen.nativeBounds
     val widthPixels = screenBounds.useContents { size.width }
     return with(density) { widthPixels.toFloat().toDp().value }
 }
@@ -26,7 +26,7 @@ actual fun getScreenWidthDp(): Float {
 @Composable
 actual fun getScreenHeightDp(): Float {
     val density = LocalDensity.current
-    val screenBounds = UIScreen.mainScreen.bounds
+    val screenBounds = UIScreen.mainScreen.nativeBounds
     val heightPixels = screenBounds.useContents { size.height }
     return with(density) { heightPixels.toFloat().toDp().value }
 }

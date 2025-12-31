@@ -35,10 +35,10 @@ data class Rover(
     val status: String,
 
     @SerialName(value = "max_sol")
-    var maxSol: Long,
+    val maxSol: Long,
 
     @SerialName(value = "max_date")
-    var maxDate: String,
+    val maxDate: String,
 
     @SerialName(value = "total_photos")
     val totalPhotos: Int

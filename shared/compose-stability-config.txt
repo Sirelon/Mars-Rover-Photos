@@ -3,14 +3,12 @@
 // for better performance and recomposition optimization.
 
 // Mark immutable Kotlin classes as stable
-kotlin.collections.*
 kotlinx.collections.immutable.*
 
 // Mark kotlinx datetime as stable
 kotlinx.datetime.*
 
-// Mark domain models as stable
-com.sirelon.marsroverphotos.domain.models.*
+// Mark stable Room entities
 com.sirelon.marsroverphotos.data.database.entities.*
 
 // Mark data classes as stable (they're immutable by design)

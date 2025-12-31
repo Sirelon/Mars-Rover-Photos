@@ -10,29 +10,29 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class RoverResponse(
     @SerialName(value = "photo_manifest")
-    var roverInfo: RoverInfo
+    val roverInfo: RoverInfo
 )
 
 @Serializable
 data class RoverInfo(
     @SerialName(value = "name")
-    var name: String,
+    val name: String,
 
     @SerialName(value = "landing_date")
-    var landingDate: String,
+    val landingDate: String,
 
     @SerialName(value = "launch_date")
-    var launchDate: String,
+    val launchDate: String,
 
     @SerialName(value = "status")
-    var status: String,
+    val status: String,
 
     @SerialName(value = "max_sol")
-    var maxSol: Long,
+    val maxSol: Long,
 
     @SerialName(value = "max_date")
-    var maxDate: String,
+    val maxDate: String,
 
     @SerialName(value = "total_photos")
-    var totalPhotos: Int
+    val totalPhotos: Int
 )
