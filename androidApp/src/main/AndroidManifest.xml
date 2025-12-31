@@ -25,6 +25,43 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!-- Deep link support for Mars Rover Photos -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- marsrover://rover/{roverId} -->
+                <data
+                    android:scheme="marsrover"
+                    android:host="rover"
+                    android:pathPrefix="/" />
+
+                <!-- marsrover://photo/{photoId} -->
+                <data
+                    android:scheme="marsrover"
+                    android:host="photo"
+                    android:pathPrefix="/" />
+            </intent-filter>
+
+            <!-- Web deep links (optional - for future web app) -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- https://marsroverphotos.app/rover/{roverId} -->
+                <!-- https://marsroverphotos.app/photo/{photoId} -->
+                <data
+                    android:scheme="https"
+                    android:host="marsroverphotos.app"
+                    android:pathPrefix="/rover" />
+                <data
+                    android:scheme="https"
+                    android:host="marsroverphotos.app"
+                    android:pathPrefix="/photo" />
+            </intent-filter>
         </activity>
 
         <meta-data
