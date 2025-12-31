@@ -119,9 +119,24 @@ dependencies {
     testImplementation(libs.kotlin.test.junit)
 }
 
-// Disable Google Services if google-services.json doesn't exist
-if (!file("$projectDir/google-services.json").exists()) {
+// Validate google-services.json configuration
+val googleServicesFile = file("$projectDir/google-services.json")
+if (!googleServicesFile.exists()) {
+    logger.warn("WARNING: google-services.json not found. Firebase features will be disabled.")
+    logger.warn("Add google-services.json to enable Firebase Analytics, Crashlytics, and other services.")
+
+    // Disable Google Services plugin for debug builds
     tasks.matching { it.name == "processDebugGoogleServices" }.configureEach {
         enabled = false
+    }
+
+    // Fail release builds if google-services.json is missing
+    gradle.taskGraph.whenReady {
+        if (hasTask(":androidApp:assembleRelease") || hasTask(":androidApp:bundleRelease")) {
+            throw GradleException(
+                "google-services.json is required for release builds. " +
+                "Please add the file to androidApp/ directory."
+            )
+        }
     }
 }
