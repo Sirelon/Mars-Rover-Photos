@@ -11,6 +11,7 @@ import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.domain.models.EducationalFact
 import com.sirelon.marsroverphotos.domain.models.FirebasePhoto
 import com.sirelon.marsroverphotos.domain.models.toFirebasePhoto
+import java.util.concurrent.TimeUnit
 
 /**
  * Android implementation of IFirebasePhotos using Firebase Firestore SDK.
@@ -25,6 +26,7 @@ class AndroidFirebasePhotos : IFirebasePhotos {
         const val COLLECTION_ROVERS = "rovers"
         const val DOCUMENT_INSIGHT = "insight"
         const val COLLECTION_EDUCATIONAL_FACTS = "educational_facts"
+        const val FIRESTORE_TIMEOUT_SECONDS = 30L
     }
 
     private fun roversCollection() =
@@ -35,7 +37,7 @@ class AndroidFirebasePhotos : IFirebasePhotos {
 
     override suspend fun countOfInsightPhotos(): Long {
         val task = roversCollection().document(DOCUMENT_INSIGHT).get()
-        return Tasks.await(task).getLong("total_photos") ?: 0L
+        return Tasks.await(task, FIRESTORE_TIMEOUT_SECONDS, TimeUnit.SECONDS).getLong("total_photos") ?: 0L
     }
 
     override suspend fun updatePhotoShareCounter(photo: MarsImage): Long {
@@ -95,7 +97,11 @@ class AndroidFirebasePhotos : IFirebasePhotos {
             .limit(count.toLong())
 
         if (lastPhotoId != null) {
-            val documentSnapshot = Tasks.await(photosCollection().document(lastPhotoId).get())
+            val documentSnapshot = Tasks.await(
+                photosCollection().document(lastPhotoId).get(),
+                FIRESTORE_TIMEOUT_SECONDS,
+                TimeUnit.SECONDS
+            )
             query = query.startAfter(documentSnapshot)
         }
 
@@ -129,7 +135,7 @@ class AndroidFirebasePhotos : IFirebasePhotos {
 
     private suspend fun getOrCreate(image: MarsImage): FirebasePhoto {
         val task = photosCollection().document(image.id).get()
-        return Tasks.await(task).let {
+        return Tasks.await(task, FIRESTORE_TIMEOUT_SECONDS, TimeUnit.SECONDS).let {
             if (it.exists()) {
                 it.toFirebasePhoto()
             } else {
@@ -167,7 +173,12 @@ class AndroidFirebasePhotos : IFirebasePhotos {
 
 // Extension functions
 
-private suspend fun <TResult> Task<TResult>.await(): TResult = Tasks.await(this)
+/**
+ * Await a Firestore task with a timeout to prevent indefinite hangs.
+ * Defaults to 30 seconds timeout.
+ */
+private suspend fun <TResult> Task<TResult>.await(): TResult =
+    Tasks.await(this, AndroidFirebasePhotos.FIRESTORE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
 
 private fun DocumentSnapshot.toFirebasePhoto() = FirebasePhoto(
     id = this["id"].toString(),
