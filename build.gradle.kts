@@ -27,10 +27,6 @@ allprojects {
     }
 }
 
-tasks.register<Delete>("clean") {
-    delete(rootProject.layout.buildDirectory)
-}
-
 detekt {
     config.setFrom(files("config/detekt/detekt.yml"))
     autoCorrect = true

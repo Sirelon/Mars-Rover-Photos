@@ -33,12 +33,14 @@ kotlin {
     // Desktop (JVM) target
     jvm("desktop")
 
-    // Web (Wasm) target - Temporarily disabled for debugging
+    // Web (Wasm) target - TEMPORARILY DISABLED
+    // TODO: WASM support requires significant refactoring:
+    // - Room Database doesn't support WASM
+    // - Need to implement expect/actual for all database-dependent code
+    // - Or use alternative storage (IndexedDB) for web
     // @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
     // wasmJs {
-    //     moduleName = "marsRoverPhotosShared"
     //     browser()
-    //     binaries.executable()
     // }
 
     // Workaround for Room KMP alpha issue with coroutines-android on iOS
@@ -102,7 +104,8 @@ kotlin {
 
             // Paging (common)
             implementation(libs.paging.common)
-            // Room KMP
+
+            // Room KMP (Android, iOS, Desktop only - no WASM support)
             implementation(libs.androidx.room.runtime)
         }
 
@@ -113,7 +116,7 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
 
-            // Room extensions (Android-only for now)
+            // Room extensions (Android-only)
             implementation(libs.androidx.room.ktx)
             implementation(libs.androidx.room.paging)
 
@@ -141,7 +144,7 @@ kotlin {
             }
         }
 
-        // Web-specific dependencies - Temporarily disabled
+        // Web-specific dependencies (WASM disabled for now)
         // val wasmJsMain by getting {
         //     dependencies {
         //         implementation(libs.ktor.client.js)
@@ -183,7 +186,7 @@ room {
 }
 
 dependencies {
-    // KSP for Room - all platforms (Room 2.8.4 supports KMP)
+    // KSP for Room - all platforms with Room support (Android, iOS, Desktop)
     add("kspCommonMainMetadata", libs.androidx.room.compiler)
     add("kspAndroid", libs.androidx.room.compiler)
     add("kspIosX64", libs.androidx.room.compiler)
