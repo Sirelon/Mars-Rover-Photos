@@ -1,0 +1,25 @@
+# Podfile for Mars Rover Photos iOS app
+
+platform :ios, '15.0'
+
+target 'iosApp' do
+  use_frameworks!
+
+  # Firebase dependencies
+  pod 'FirebaseAnalytics'
+  pod 'FirebaseCrashlytics'
+  pod 'FirebaseFirestore'
+  pod 'FirebaseMessaging'
+
+  # Note: The shared KMP framework is linked via Xcode project settings,
+  # not via Cocoapods. It's built by Gradle and located at:
+  # ../shared/build/bin/iosSimulatorArm64/debugFramework/shared.framework
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
+    end
+  end
+end
