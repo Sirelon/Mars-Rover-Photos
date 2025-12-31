@@ -5,6 +5,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Instant
 import kotlin.time.Duration.Companion.days
 
 /**
@@ -52,7 +53,7 @@ class RoverDateUtil(private val rover: Rover) {
      */
     fun parseTime(time: Long): String {
         return try {
-            val instant = kotlinx.datetime.Instant.fromEpochMilliseconds(time)
+            val instant = Instant.fromEpochMilliseconds(time)
             val localDate = instant.toLocalDateTime(TimeZone.UTC).date
             localDate.toString() // Returns yyyy-MM-dd format
         } catch (e: Exception) {

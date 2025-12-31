@@ -13,6 +13,8 @@ import com.sirelon.marsroverphotos.domain.models.FirebasePhoto
 import com.sirelon.marsroverphotos.domain.models.toFirebasePhoto
 import java.util.concurrent.TimeUnit
 
+private const val FIRESTORE_TIMEOUT_SECONDS = 30L
+
 /**
  * Android implementation of IFirebasePhotos using Firebase Firestore SDK.
  * Provides analytics tracking and popular photo management via Firebase.
@@ -26,7 +28,6 @@ class AndroidFirebasePhotos : IFirebasePhotos {
         const val COLLECTION_ROVERS = "rovers"
         const val DOCUMENT_INSIGHT = "insight"
         const val COLLECTION_EDUCATIONAL_FACTS = "educational_facts"
-        const val FIRESTORE_TIMEOUT_SECONDS = 30L
     }
 
     private fun roversCollection() =
@@ -178,7 +179,7 @@ class AndroidFirebasePhotos : IFirebasePhotos {
  * Defaults to 30 seconds timeout.
  */
 private suspend fun <TResult> Task<TResult>.await(): TResult =
-    Tasks.await(this, AndroidFirebasePhotos.FIRESTORE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+    Tasks.await(this, FIRESTORE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
 
 private fun DocumentSnapshot.toFirebasePhoto() = FirebasePhoto(
     id = this["id"].toString(),

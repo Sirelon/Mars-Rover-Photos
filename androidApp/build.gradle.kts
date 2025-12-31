@@ -109,6 +109,7 @@ dependencies {
 
     // Firebase (already in shared, but needed for initialization)
     implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.crashlytics)
 
     // AdMob & GDPR
     implementation(libs.play.services.ads)

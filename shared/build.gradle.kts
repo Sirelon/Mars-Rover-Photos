@@ -167,6 +167,7 @@ kotlin {
 compose.resources {
     packageOfResClass = "com.sirelon.marsroverphotos.shared.resources"
 }
+
 android {
     namespace = "com.sirelon.marsroverphotos.shared"
     compileSdk = 36
