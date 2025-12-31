@@ -83,7 +83,7 @@ fun AppNavigation(
                 }
             )
         ) { backStackEntry ->
-            val photoId = backStackEntry.arguments?.getString("photoId")
+            val photoId = backStackEntry.stringArg("photoId")
             ImagesScreen(
                 photoId = photoId,
                 onBack = { navController.popBackStack() }
@@ -124,4 +124,9 @@ fun AppNavigation(
 private fun NavBackStackEntry.longArg(key: String): Long {
     val args = arguments ?: return 0L
     return runCatching { NavType.LongType.get(args, key) }.getOrNull() ?: 0L
+}
+
+private fun NavBackStackEntry.stringArg(key: String): String? {
+    val args = arguments ?: return null
+    return runCatching { NavType.StringType.get(args, key) }.getOrNull()
 }

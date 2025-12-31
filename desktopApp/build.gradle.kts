@@ -8,6 +8,13 @@ plugins {
 
 kotlin {
     jvmToolchain(17)
+
+    sourceSets {
+        main {
+            kotlin.srcDirs("src/jvmMain/kotlin")
+            resources.srcDirs("src/jvmMain/resources")
+        }
+    }
 }
 
 dependencies {
