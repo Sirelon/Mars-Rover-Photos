@@ -17,7 +17,6 @@ class IosPlatformPreferences(private val userDefaults: NSUserDefaults) : Platfor
 
     override fun setInt(key: String, value: Int) {
         userDefaults.setInteger(value.toLong(), key)
-        userDefaults.synchronize()
     }
 
     override fun getBoolean(key: String, defaultValue: Boolean): Boolean {
@@ -30,7 +29,6 @@ class IosPlatformPreferences(private val userDefaults: NSUserDefaults) : Platfor
 
     override fun setBoolean(key: String, value: Boolean) {
         userDefaults.setBool(value, key)
-        userDefaults.synchronize()
     }
 
     override fun getString(key: String, defaultValue: String): String {
@@ -39,7 +37,6 @@ class IosPlatformPreferences(private val userDefaults: NSUserDefaults) : Platfor
 
     override fun setString(key: String, value: String) {
         userDefaults.setObject(value, key)
-        userDefaults.synchronize()
     }
 
     override fun getLong(key: String, defaultValue: Long): Long {
@@ -52,12 +49,10 @@ class IosPlatformPreferences(private val userDefaults: NSUserDefaults) : Platfor
 
     override fun setLong(key: String, value: Long) {
         userDefaults.setInteger(value, key)
-        userDefaults.synchronize()
     }
 
     override fun remove(key: String) {
         userDefaults.removeObjectForKey(key)
-        userDefaults.synchronize()
     }
 
     override fun clear() {
@@ -65,7 +60,6 @@ class IosPlatformPreferences(private val userDefaults: NSUserDefaults) : Platfor
         domain.forEach { key ->
             userDefaults.removeObjectForKey(key.toString())
         }
-        userDefaults.synchronize()
     }
 
     override fun contains(key: String): Boolean {
