@@ -11,7 +11,6 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import kotlin.time.Clock
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
@@ -105,7 +104,7 @@ internal fun localDateToUtcMillis(date: LocalDate): Long =
     date.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
 
 internal fun utcMillisToLocalDate(utcMillis: Long): LocalDate =
-    Instant.fromEpochMilliseconds(utcMillis).toLocalDateTime(TimeZone.UTC).date
+    kotlinx.datetime.Instant.fromEpochMilliseconds(utcMillis).toLocalDateTime(TimeZone.UTC).date
 
 internal fun isDateWithinRange(
     date: LocalDate,

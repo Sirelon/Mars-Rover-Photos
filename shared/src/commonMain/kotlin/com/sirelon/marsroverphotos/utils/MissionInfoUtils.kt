@@ -21,7 +21,7 @@ internal fun calculateEarthDaysActive(landingDate: String, maxDate: String): Lon
         val landingEpoch = landing.toEpochDays()
         val maxEpoch = max.toEpochDays()
 
-        (abs(maxEpoch - landingEpoch) + 1).toLong()
+        abs(maxEpoch - landingEpoch) + 1
     } catch (e: Exception) {
         Logger.e("MissionInfoUtils", e) { "Error calculating Earth days active" }
         0L

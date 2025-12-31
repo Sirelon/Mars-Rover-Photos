@@ -10,6 +10,7 @@ import com.sirelon.marsroverphotos.utils.Logger
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -29,6 +30,7 @@ import kotlinx.coroutines.launch
  *
  * Created on 22.08.2020 18:59 for Mars-Rover-Photos.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 class ImageViewModel(
     private val imagesRepository: ImagesRepository,
     private val imageOperations: ImageOperations

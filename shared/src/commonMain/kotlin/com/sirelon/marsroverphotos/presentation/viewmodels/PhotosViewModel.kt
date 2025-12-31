@@ -13,6 +13,7 @@ import com.sirelon.marsroverphotos.presentation.models.GridItemTransformer
 import com.sirelon.marsroverphotos.utils.Logger
 import com.sirelon.marsroverphotos.utils.RoverDateUtil
 import kotlin.time.Clock
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
@@ -34,6 +35,7 @@ import kotlin.random.Random
  *
  * Created on 21.02.2021 20:25 for Mars-Rover-Photos.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 class PhotosViewModel(
     private val roversRepository: RoversRepository,
     private val photosRepository: PhotosRepository,

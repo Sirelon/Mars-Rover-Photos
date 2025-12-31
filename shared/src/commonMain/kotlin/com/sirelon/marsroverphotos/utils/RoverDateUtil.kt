@@ -1,7 +1,6 @@
 package com.sirelon.marsroverphotos.utils
 
 import com.sirelon.marsroverphotos.domain.models.Rover
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
@@ -53,7 +52,7 @@ class RoverDateUtil(private val rover: Rover) {
      */
     fun parseTime(time: Long): String {
         return try {
-            val instant = Instant.fromEpochMilliseconds(time)
+            val instant = kotlinx.datetime.Instant.fromEpochMilliseconds(time)
             val localDate = instant.toLocalDateTime(TimeZone.UTC).date
             localDate.toString() // Returns yyyy-MM-dd format
         } catch (e: Exception) {
