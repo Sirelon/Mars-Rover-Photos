@@ -2,11 +2,11 @@ package com.sirelon.marsroverphotos.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingData
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
 import com.sirelon.marsroverphotos.utils.Logger
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 
 /**
@@ -20,9 +20,10 @@ class PopularPhotosViewModel(
 ) : ViewModel() {
 
     /**
-     * Flow of popular photos with paging support.
+     * Flow of popular photos.
+     * TODO: Re-enable paging when room-paging supports all KMP targets
      */
-    val popularPhotos: Flow<PagingData<MarsImage>> = imagesRepository.loadPopularPagedSource()
+    val popularPhotos: Flow<List<MarsImage>> = emptyFlow() // imagesRepository.loadPopularImages()
 
     /**
      * Toggle favorite status for an image.

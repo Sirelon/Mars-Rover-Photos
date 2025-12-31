@@ -1,27 +1,23 @@
 package com.sirelon.marsroverphotos.desktop
 
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import androidx.compose.material3.Text
+import com.sirelon.marsroverphotos.di.initKoinDesktop
+import com.sirelon.marsroverphotos.presentation.App
 
-// Placeholder - will be replaced with actual App composable from shared module
-@Composable
-fun PlaceholderApp() {
-    Text("Mars Rover Photos - Desktop (Coming Soon)")
-}
-
+/**
+ * Desktop (JVM) entry point for Mars Rover Photos.
+ * Uses the shared Compose Multiplatform UI.
+ */
 fun main() = application {
+    // Initialize Koin dependency injection
+    initKoinDesktop()
+
     Window(
         onCloseRequest = ::exitApplication,
-        title = "Mars Rover Photos"
+        title = "Mars Rover Photos - Desktop"
     ) {
-        // TODO: Initialize Koin
-        // initKoin()
-
-        // TODO: Load App from shared module
-        // App()
-
-        PlaceholderApp()
+        // Load shared App composable
+        App()
     }
 }

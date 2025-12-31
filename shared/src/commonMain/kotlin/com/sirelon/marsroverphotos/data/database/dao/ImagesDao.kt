@@ -45,11 +45,13 @@ interface ImagesDao {
     @Query("SELECT * FROM images WHERE popular = 1 ORDER BY `order` ASC")
     fun loadPopularImages(): Flow<List<MarsImage>>
 
-    @Query("SELECT * FROM images WHERE favorite = 1 ORDER BY `order` ASC")
-    fun loadFavoritePagedSource(): PagingSource<Int, MarsImage>
-
-    @Query("SELECT * FROM images WHERE popular = 1 ORDER BY `order` ASC")
-    fun loadPopularPagedSource(): PagingSource<Int, MarsImage>
+    // TODO: PagingSource requires room-paging which is Android-only for now
+    // Uncomment when room-paging supports all KMP targets
+    // @Query("SELECT * FROM images WHERE favorite = 1 ORDER BY `order` ASC")
+    // fun loadFavoritePagedSource(): PagingSource<Int, MarsImage>
+    //
+    // @Query("SELECT * FROM images WHERE popular = 1 ORDER BY `order` ASC")
+    // fun loadPopularPagedSource(): PagingSource<Int, MarsImage>
 
     @Query("DELETE FROM images WHERE popular = 1")
     suspend fun deleteAllPopular()

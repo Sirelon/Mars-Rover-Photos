@@ -104,8 +104,6 @@ kotlin {
             implementation(libs.paging.common)
             // Room KMP
             implementation(libs.androidx.room.runtime)
-            implementation(libs.androidx.room.ktx)
-            implementation(libs.androidx.room.paging)
         }
 
         // Android-specific dependencies
@@ -114,6 +112,10 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
+
+            // Room extensions (Android-only for now)
+            implementation(libs.androidx.room.ktx)
+            implementation(libs.androidx.room.paging)
 
             // Firebase (Android-only) - Latest stable versions
             implementation("com.google.firebase:firebase-analytics:23.0.0")
