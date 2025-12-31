@@ -19,12 +19,15 @@ actual fun getDatabaseBuilder(): RoomDatabase.Builder<AppDataBase> {
         appropriateForURL = null,
         create = false,
         error = null
-    )?.path ?: error("Could not get documents directory")
+    )?.path ?: throw IllegalStateException(
+        "Could not access iOS documents directory. This may indicate a filesystem permissions issue."
+    )
 
     val dbPath = "$documentsDirectory/mars-rover-photos-database"
 
     return Room.databaseBuilder<AppDataBase>(
         name = dbPath
     )
+        .fallbackToDestructiveMigration(false)
         .addMigrations(AppDataBase.migration7To8, AppDataBase.migration8To9)
 }
