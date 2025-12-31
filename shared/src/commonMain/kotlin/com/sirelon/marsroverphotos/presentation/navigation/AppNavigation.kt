@@ -1,6 +1,7 @@
 package com.sirelon.marsroverphotos.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
@@ -25,8 +26,19 @@ import com.sirelon.marsroverphotos.presentation.screens.RoversScreen
 fun AppNavigation(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    startDestination: String = AppDestination.Rovers.route
+    startDestination: String = AppDestination.Rovers.route,
+    deepLink: DeepLink? = null,
+    onDeepLinkConsumed: (() -> Unit)? = null
 ) {
+    LaunchedEffect(deepLink) {
+        val target = deepLink ?: return@LaunchedEffect
+        when (target) {
+            is DeepLink.Rover -> navController.navigate(AppDestination.Photos.createRoute(target.id))
+            is DeepLink.Photo -> navController.navigate(AppDestination.Images.createRoute(target.id.toString()))
+        }
+        onDeepLinkConsumed?.invoke()
+    }
+
     NavHost(
         navController = navController,
         startDestination = startDestination,
@@ -61,8 +73,19 @@ fun AppNavigation(
         }
 
         // Images screen (fullscreen image viewer)
-        composable(AppDestination.Images.route) {
+        composable(
+            route = AppDestination.Images.route,
+            arguments = listOf(
+                navArgument("photoId") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                }
+            )
+        ) { backStackEntry ->
+            val photoId = backStackEntry.arguments?.getString("photoId")
             ImagesScreen(
+                photoId = photoId,
                 onBack = { navController.popBackStack() }
             )
         }

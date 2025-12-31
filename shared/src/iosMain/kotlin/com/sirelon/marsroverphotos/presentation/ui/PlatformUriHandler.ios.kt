@@ -1,14 +1,20 @@
 package com.sirelon.marsroverphotos.presentation.ui
 
 import androidx.compose.runtime.Composable
+import platform.Foundation.NSURL
+import platform.UIKit.UIApplication
 
 /**
  * iOS implementation - TODO: Implement with iOS native URL opening.
  */
 actual class PlatformUriHandler {
     actual fun openUri(uri: String) {
-        // TODO: Implement with iOS UIApplication.shared.open()
-        println("Open URI on iOS: $uri")
+        val url = NSURL.URLWithString(uri)
+        if (url == null) {
+            println("Invalid URI: $uri")
+            return
+        }
+        UIApplication.sharedApplication.openURL(url)
     }
 }
 

@@ -49,10 +49,16 @@ fun PhotosScreen(roverId: Long, onNavigateToImages: () -> Unit, onNavigateToMiss
 }
 
 @Composable
-fun ImagesScreen(onBack: () -> Unit) {
+fun ImagesScreen(photoId: String?, onBack: () -> Unit) {
     PlaceholderScreen(
         title = "Images",
-        description = "Fullscreen image viewer with zoom\n\n(Screen pending migration)"
+        description = buildString {
+            append("Fullscreen image viewer with zoom\n")
+            if (photoId != null) {
+                append("Photo ID: $photoId\n")
+            }
+            append("\n(Screen pending migration)")
+        }
     ) {
         Button(onClick = onBack) {
             Text("Back to Photos")

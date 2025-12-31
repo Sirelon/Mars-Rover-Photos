@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import com.sirelon.marsroverphotos.domain.settings.AppSettings
 import com.sirelon.marsroverphotos.domain.settings.Theme
 import com.sirelon.marsroverphotos.presentation.navigation.AppNavigation
+import com.sirelon.marsroverphotos.presentation.navigation.DeepLink
 import com.sirelon.marsroverphotos.presentation.theme.MarsRoverPhotosTheme
 import com.sirelon.marsroverphotos.presentation.ui.isSystemInDarkTheme
 import com.sirelon.marsroverphotos.presentation.ui.supportsDynamicColor
@@ -20,7 +21,10 @@ import org.koin.compose.koinInject
  * Root of the Compose UI hierarchy.
  */
 @Composable
-fun App() {
+fun App(
+    deepLink: DeepLink? = null,
+    onDeepLinkConsumed: (() -> Unit)? = null
+) {
     val appSettings: AppSettings = koinInject()
     val theme by appSettings.themeFlow.collectAsState()
     val systemDarkTheme = isSystemInDarkTheme()
@@ -40,13 +44,22 @@ fun App() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            AppContent()
+            AppContent(
+                deepLink = deepLink,
+                onDeepLinkConsumed = onDeepLinkConsumed
+            )
         }
     }
 }
 
 @Composable
-private fun AppContent() {
-    AppNavigation(modifier = Modifier.fillMaxSize())
-    AppNavigation(modifier = Modifier.fillMaxSize())
+private fun AppContent(
+    deepLink: DeepLink?,
+    onDeepLinkConsumed: (() -> Unit)?
+) {
+    AppNavigation(
+        modifier = Modifier.fillMaxSize(),
+        deepLink = deepLink,
+        onDeepLinkConsumed = onDeepLinkConsumed
+    )
 }

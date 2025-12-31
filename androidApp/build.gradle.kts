@@ -126,10 +126,13 @@ if (!googleServicesFile.exists()) {
     logger.warn("WARNING: google-services.json not found. Firebase features will be disabled.")
     logger.warn("Add google-services.json to enable Firebase Analytics, Crashlytics, and other services.")
 
-    // Disable Google Services plugin for debug builds
-    tasks.matching { it.name == "processDebugGoogleServices" }.configureEach {
-        enabled = false
-    }
+    // Disable Google Services tasks for non-release builds
+    tasks.matching { it.name.startsWith("process") && it.name.endsWith("GoogleServices") }
+        .configureEach {
+            if (!name.contains("Release")) {
+                enabled = false
+            }
+        }
 
     // Fail release builds if google-services.json is missing
     gradle.taskGraph.whenReady {

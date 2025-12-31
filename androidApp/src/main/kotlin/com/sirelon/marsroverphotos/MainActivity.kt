@@ -7,7 +7,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import com.sirelon.marsroverphotos.presentation.App
+import com.sirelon.marsroverphotos.presentation.navigation.DeepLink
 import com.sirelon.marsroverphotos.utils.Logger
 
 /**
@@ -15,6 +19,8 @@ import com.sirelon.marsroverphotos.utils.Logger
  * Hosts the Compose UI from the shared module.
  */
 class MainActivity : ComponentActivity() {
+    private var pendingDeepLink: DeepLink? by mutableStateOf(null)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         // Install Android 12+ splash screen
         installSplashScreen()
@@ -26,7 +32,10 @@ class MainActivity : ComponentActivity() {
         handleDeepLink(intent)
 
         setContent {
-            App()
+            App(
+                deepLink = pendingDeepLink,
+                onDeepLinkConsumed = { pendingDeepLink = null }
+            )
         }
     }
 
@@ -60,8 +69,9 @@ class MainActivity : ComponentActivity() {
                 // marsrover://rover/{roverId}
                 val roverId = pathSegments.firstOrNull()
                 if (roverId != null && roverId.toLongOrNull() != null) {
+                    val id = roverId.toLong()
                     Logger.d("MainActivity") { "Navigate to rover: $roverId" }
-                    // TODO: Navigate to rover screen with ID: $roverId
+                    pendingDeepLink = DeepLink.Rover(id)
                 } else {
                     Logger.w("MainActivity") { "Invalid rover ID in deep link: $roverId" }
                 }
@@ -70,8 +80,9 @@ class MainActivity : ComponentActivity() {
                 // marsrover://photo/{photoId}
                 val photoId = pathSegments.firstOrNull()
                 if (photoId != null && photoId.toLongOrNull() != null) {
+                    val id = photoId.toLong()
                     Logger.d("MainActivity") { "Navigate to photo: $photoId" }
-                    // TODO: Navigate to photo screen with ID: $photoId
+                    pendingDeepLink = DeepLink.Photo(id)
                 } else {
                     Logger.w("MainActivity") { "Invalid photo ID in deep link: $photoId" }
                 }
@@ -85,16 +96,18 @@ class MainActivity : ComponentActivity() {
                     when (type) {
                         "rover" -> {
                             if (id.toLongOrNull() != null) {
+                                val roverId = id.toLong()
                                 Logger.d("MainActivity") { "Navigate to rover (web): $id" }
-                                // TODO: Navigate to rover screen with ID: $id
+                                pendingDeepLink = DeepLink.Rover(roverId)
                             } else {
                                 Logger.w("MainActivity") { "Invalid rover ID in web deep link: $id" }
                             }
                         }
                         "photo" -> {
                             if (id.toLongOrNull() != null) {
+                                val photoId = id.toLong()
                                 Logger.d("MainActivity") { "Navigate to photo (web): $id" }
-                                // TODO: Navigate to photo screen with ID: $id
+                                pendingDeepLink = DeepLink.Photo(photoId)
                             } else {
                                 Logger.w("MainActivity") { "Invalid photo ID in web deep link: $id" }
                             }
