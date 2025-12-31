@@ -1,6 +1,7 @@
 package com.sirelon.marsroverphotos
 
 import android.app.Application
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sirelon.marsroverphotos.di.initKoin
 import com.sirelon.marsroverphotos.di.platformModule
 import com.sirelon.marsroverphotos.domain.repositories.RoversRepository
@@ -41,6 +42,14 @@ class MarsRoverApplication : Application() {
 
         Logger.d("MarsRoverApplication") { "App initialized" }
 
-        // TODO: Initialize Firebase Crashlytics
+        // Initialize Firebase Crashlytics
+        try {
+            val crashlytics = FirebaseCrashlytics.getInstance()
+            crashlytics.setCrashlyticsCollectionEnabled(true)
+            Logger.d("MarsRoverApplication") { "Firebase Crashlytics initialized" }
+        } catch (e: Exception) {
+            // Firebase not configured (google-services.json missing)
+            Logger.w("MarsRoverApplication") { "Firebase Crashlytics initialization failed: ${e.message}" }
+        }
     }
 }
