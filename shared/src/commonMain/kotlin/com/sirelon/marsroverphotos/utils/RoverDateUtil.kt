@@ -2,10 +2,10 @@ package com.sirelon.marsroverphotos.utils
 
 import com.sirelon.marsroverphotos.domain.models.Rover
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Instant
 import kotlin.time.Duration.Companion.days
 
 /**
