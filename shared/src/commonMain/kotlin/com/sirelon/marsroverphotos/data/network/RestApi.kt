@@ -62,6 +62,14 @@ class RestApi {
 
     private val nasaApi: NasaApi = NasaApi(ktor)
 
+    /**
+     * Fetch rover photos from NASA API for a specific query.
+     *
+     * @param query The photos query request containing rover ID, sol, and camera
+     * @return List of Mars images for the specified query
+     * @throws IllegalArgumentException if the rover ID is not supported.
+     *         Supported rover IDs: PERSEVERANCE_ID, INSIGHT_ID, CURIOSITY_ID, OPPORTUNITY_ID, SPIRIT_ID
+     */
     suspend fun getRoversPhotos(query: PhotosQueryRequest): List<MarsImage> {
         // We should call another api if rover is insight or perseverance
         val sol = query.sol
