@@ -199,7 +199,10 @@ class PhotosViewModel(
      */
     fun earthDateStr(sol: Long): String {
         val time = earthTime(sol)
-        return dateUtil?.parseTime(time) ?: ""
+        return dateUtil?.parseTime(time) ?: run {
+            Logger.w("PhotosViewModel") { "DateUtil not initialized, returning empty date string" }
+            ""
+        }
     }
 
     /**
@@ -207,14 +210,20 @@ class PhotosViewModel(
      * @param sol Mars sol number (defaults to current sol)
      * @return Earth time in milliseconds
      */
-    fun earthTime(sol: Long = getSol()) = dateUtil?.dateFromSol(sol) ?: Clock.System.now().toEpochMilliseconds()
+    fun earthTime(sol: Long = getSol()) = dateUtil?.dateFromSol(sol) ?: run {
+        Logger.w("PhotosViewModel") { "DateUtil not initialized, returning current time" }
+        Clock.System.now().toEpochMilliseconds()
+    }
 
     /**
      * Set the current sol from Earth time.
      * @param time Earth time in milliseconds
      */
     fun setEarthTime(time: Long) {
-        val sol = dateUtil?.solFromDate(time) ?: 1
+        val sol = dateUtil?.solFromDate(time) ?: run {
+            Logger.w("PhotosViewModel") { "DateUtil not initialized, defaulting to sol 1" }
+            1
+        }
         loadBySol(sol)
     }
 
@@ -222,7 +231,10 @@ class PhotosViewModel(
      * Get the maximum date for the current rover.
      * @return Maximum date in milliseconds
      */
-    fun maxDate() = dateUtil?.roverLastDate ?: Clock.System.now().toEpochMilliseconds()
+    fun maxDate() = dateUtil?.roverLastDate ?: run {
+        Logger.w("PhotosViewModel") { "DateUtil not initialized, returning current time for max date" }
+        Clock.System.now().toEpochMilliseconds()
+    }
 
     /**
      * Get the maximum sol for the current rover.
@@ -234,13 +246,19 @@ class PhotosViewModel(
      * Get the minimum date (landing date) for the current rover.
      * @return Landing date in milliseconds
      */
-    fun minDate() = dateUtil?.roverLandingDate ?: Clock.System.now().toEpochMilliseconds()
+    fun minDate() = dateUtil?.roverLandingDate ?: run {
+        Logger.w("PhotosViewModel") { "DateUtil not initialized, returning current time for min date" }
+        Clock.System.now().toEpochMilliseconds()
+    }
 
     /**
      * Get Earth date from current sol.
      * @return Earth date in milliseconds
      */
-    fun dateFromSol() = dateUtil?.dateFromSol(getSol()) ?: Clock.System.now().toEpochMilliseconds()
+    fun dateFromSol() = dateUtil?.dateFromSol(getSol()) ?: run {
+        Logger.w("PhotosViewModel") { "DateUtil not initialized, returning current time" }
+        Clock.System.now().toEpochMilliseconds()
+    }
 
     /**
      * Handle photo click - save photos to local database for caching.
