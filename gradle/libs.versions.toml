@@ -61,6 +61,10 @@ navigation-compose = "2.9.1"
 # Firebase
 # https://firebase.google.com/support/release-notes/android
 firebaseBom = "34.7.0"
+firebaseAnalyticsVersion = "23.0.0"
+firebaseCrashlyticsVersion = "20.0.3"
+firebaseFirestoreVersion = "26.0.2"
+firebaseMessagingVersion = "25.0.1"
 
 # Testing
 mockito = "1.6.0"
@@ -103,6 +107,11 @@ firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
 firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
 firebase-perf = { module = "com.google.firebase:firebase-perf" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
+# Firebase with explicit versions (for shared module without BOM)
+firebase-analytics-versioned = { module = "com.google.firebase:firebase-analytics", version.ref = "firebaseAnalyticsVersion" }
+firebase-crashlytics-versioned = { module = "com.google.firebase:firebase-crashlytics", version.ref = "firebaseCrashlyticsVersion" }
+firebase-firestore-versioned = { module = "com.google.firebase:firebase-firestore", version.ref = "firebaseFirestoreVersion" }
+firebase-messaging-versioned = { module = "com.google.firebase:firebase-messaging", version.ref = "firebaseMessagingVersion" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
@@ -170,6 +179,7 @@ androidx-material3-window-size-class1 = { group = "androidx.compose.material3", 
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
+android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.library)
+    alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.kotlin.serialization)
@@ -11,6 +11,10 @@ plugins {
 kotlin {
     // JVM toolchain for all JVM targets
     jvmToolchain(17)
+
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
 
     // Android target
     androidTarget()
@@ -120,11 +124,11 @@ kotlin {
             implementation(libs.androidx.room.ktx)
             implementation(libs.androidx.room.paging)
 
-            // Firebase (Android-only) - Latest stable versions
-            implementation("com.google.firebase:firebase-analytics:23.0.0")
-            implementation("com.google.firebase:firebase-crashlytics:20.0.3")
-            implementation("com.google.firebase:firebase-firestore:26.0.2")
-            implementation("com.google.firebase:firebase-messaging:25.0.1")
+            // Firebase (Android-only)
+            implementation(libs.firebase.analytics.versioned)
+            implementation(libs.firebase.crashlytics.versioned)
+            implementation(libs.firebase.firestore.versioned)
+            implementation(libs.firebase.messaging.versioned)
 
             // AndroidX
             implementation(libs.androidx.ktx)
