@@ -36,13 +36,13 @@
                 <data
                     android:scheme="marsrover"
                     android:host="rover"
-                    android:pathPrefix="/" />
+                    android:pathPattern="/.*" />
 
                 <!-- marsrover://photo/{photoId} -->
                 <data
                     android:scheme="marsrover"
                     android:host="photo"
-                    android:pathPrefix="/" />
+                    android:pathPattern="/.*" />
             </intent-filter>
 
             <!-- Web deep links (optional - for future web app) -->
@@ -56,11 +56,11 @@
                 <data
                     android:scheme="https"
                     android:host="marsroverphotos.app"
-                    android:pathPrefix="/rover" />
+                    android:pathPattern="/rover/.*" />
                 <data
                     android:scheme="https"
                     android:host="marsroverphotos.app"
-                    android:pathPrefix="/photo" />
+                    android:pathPattern="/photo/.*" />
             </intent-filter>
         </activity>
 
