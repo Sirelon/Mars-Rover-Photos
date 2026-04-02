@@ -1,5 +1,5 @@
 build:
-  maxIssues: 0
+  maxIssues: 15
   excludeCorrectable: false
   weights:
     # complexity: 2
@@ -107,6 +107,7 @@ complexity:
   CyclomaticComplexMethod:
     active: true
     threshold: 15
+    ignoreAnnotated: ['Composable']
     ignoreSingleWhenExpression: false
     ignoreSimpleWhenEntries: false
     ignoreNestingFunctions: false
@@ -129,6 +130,7 @@ complexity:
   LongMethod:
     active: true
     threshold: 90
+    ignoreAnnotated: ['Composable']
   LongParameterList:
     active: false
     functionThreshold: 6

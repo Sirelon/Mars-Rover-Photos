@@ -1,26 +1,25 @@
 [versions]
 # https://developer.android.com/jetpack/androidx/releases/activity
-activityCompose = "1.12.2"
+activityCompose = "1.13.0"
 # https://developer.android.com/jetpack/androidx/releases/appcompat
 appcompat = "1.7.1"
-# https://github.com/coil-kt/coil/blob/main/CHANGELOG.md
-coil = "3.3.0"
+coil = "3.4.0"
 # https://developer.android.com/jetpack/androidx/releases/annotation
 annotation = "1.9.1"
 # https://firebase.google.com/support/release-notes/android
-firebaseBom = "34.7.0"
+firebaseBom = "34.11.0"
 kotlin = "2.3.0"
 # https://github.com/Kotlin/kotlinx.serialization/releases
-kotlin-serialization = "1.9.0"
-koin = "4.2.0-beta2"
+kotlin-serialization = "1.10.0"
+koin = "4.2.0"
 
 # https://github.com/Kotlin/kotlinx.collections.immutable
 kotlin-collections-immutable = "0.4.0"
-ktx = "1.17.0"
+ktx = "1.18.0"
 # https://github.com/ktorio/ktor/releases
-ktor = "3.3.3"
+ktor = "3.4.2"
 # https://github.com/google/ksp/releases
-ksp = "2.3.2"
+ksp = "2.3.6"
 # https://developer.android.com/jetpack/androidx/releases/lifecycle
 lifecycle = "2.10.0"
 # https://developer.android.com/jetpack/androidx/releases/compose
@@ -33,16 +32,16 @@ glance = "1.2.0-rc01"
 mockito = "1.6.0"
 # https://developer.android.com/jetpack/androidx/releases/paging
 paging = "3.3.6"
-playServicesAds = "24.9.0"
+playServicesAds = "25.1.0"
 # https://developer.android.com/jetpack/androidx/releases/room
 room = "2.8.4"
 timber = "5.0.1"
 # https://developers.google.com/admob/android/privacy/release-notes
 userMessagingPlatform = "4.0.0"
 # https://developer.android.com/jetpack/androidx/releases/work
-work = "2.11.0"
+work = "2.11.2"
 # https://github.com/usuiat/Zoomable/releases
-zoomable = "2.9.0"
+zoomable = "2.11.1"
 # https://developer.android.com/jetpack/androidx/releases/navigation3
 navigation3 = "1.0.0"
 lifecycle-navigation3 = "2.10.0"
