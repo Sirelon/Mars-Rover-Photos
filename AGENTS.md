@@ -1,7 +1,18 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-The Android application lives in `app/`. Feature screens and view models sit in `app/src/main/java/com/sirelon/marsroverphotos/feature` with reusable UI in `ui`, data access in `network` and `storage`, and shared models/helpers in `models`, `utils`, and `extensions`. Resources for Compose themes, drawables, and icons reside in `app/src/main/res`. Static-analysis configuration is stored under `config/detekt/`.
+The project is migrating from the legacy Android-only `app/` module to Kotlin Multiplatform. The active KMP structure is `shared/` for common code, `androidApp/` for the Android shell, `desktopApp/` for Desktop, and `iosApp/` for iOS setup. The legacy `app/` module remains the reference for screen behavior while migration is in progress. Feature screens and view models being migrated should land under `shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation`, with Android-specific implementations in `shared/src/androidMain` or `androidApp`. Static-analysis configuration is stored under `config/detekt/`.
+
+## KMP Migration Rules for AI Agents
+The current Linear project is `Mars Rover Photos`, milestone `Migration to KMP`. This milestone targets Android, iOS, and Desktop. WASM/Web is deliberately deferred to the separate `Web/WASM support` milestone because Room does not support the current WASM setup.
+
+Migrate screen-by-screen instead of doing a broad platform-abstraction refactor first. Start with the shared UI ticket, move the screen into `shared/src/commonMain`, compile the smallest useful slice, and only solve Android-only blockers encountered by that screen. Preserve Android behavior while making the migrated code usable by Android, iOS, and Desktop.
+
+Screen migration order: Rovers home, Rover photos, Image gallery/photo info sheet, Favorites, Popular photos, Mission info, About/settings, Ukraine route decision, then Android widget adaptation.
+
+Do not move these into `commonMain` as-is: `Application`, `Activity`, `ComponentActivity`, manifests, Android intents, splash/edge-to-edge setup, `R.string`/`R.drawable`, Android `painterResource`/`stringResource`, `AndroidViewModel`, `Application` injection, `koin-android`, Firebase Android SDKs, Google Play services/AdMob/UMP, Glance widgets, WorkManager, `room-ktx`, `room-paging`, Android `Room.databaseBuilder(context, ...)`, `SharedPreferences`, `Context`, `Bitmap`, `MediaStore`, `ContentResolver`, Android system UI/theme APIs, platform Ktor engines, AndroidX Navigation 3, `Parcelable`/`@Parcelize`, AndroidX annotations like `@DrawableRes`, and Timber.
+
+Use common-safe replacements instead: KMP `ViewModel`, injected repositories/settings, Compose Multiplatform resources, common interfaces with platform actuals or callbacks, Koin core/Compose/ViewModel APIs in common, Kermit for logging, Ktor core in common with engines in platform source sets, and Room runtime only for the enabled Android/iOS/Desktop targets.
 
 ## Build, Test, and Development Commands
 - `./gradlew assembleDebug` — build the debuggable APK with the repository Compose compiler flags.
