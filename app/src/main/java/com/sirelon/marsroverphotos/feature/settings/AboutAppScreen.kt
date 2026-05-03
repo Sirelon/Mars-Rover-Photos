@@ -64,7 +64,7 @@ fun AboutAppContent(onClearCache: () -> Unit, onRateApp: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(painter = painterResource(id = R.drawable.alien_icon), contentDescription = "logo")
-        Text(text = "Mars rover photos", style = typography.headlineSmall)
+        Text(text = "Mars Rover Photos", style = typography.headlineSmall)
         Text(
             text = stringResource(id = R.string.about_description),
             style = typography.bodyLarge,
@@ -124,7 +124,7 @@ private fun ThemeChanger() {
         ) {
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = "Change theme of application",
+                text = "Change the app theme",
                 style = MaterialTheme.typography.titleLarge.copy(textAlign = TextAlign.Center)
             )
             Row(
@@ -168,7 +168,7 @@ private fun FactsToggle() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
-                text = "Show \"Did You Know?\" fact cards while browsing photos",
+                text = "Show \"Did You Know?\" fact cards while browsing photos.",
                 style = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Center),
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

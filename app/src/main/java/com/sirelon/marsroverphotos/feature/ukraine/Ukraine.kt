@@ -68,7 +68,7 @@ private fun UkraineInfoContent(uriHandler: androidx.compose.ui.platform.UriHandl
             style = MaterialTheme.typography.titleSmall,
         )
         Text(text = "As you may be aware, Ukraine is currently facing a severe and merciless war. Countless lives have been lost, and our cities endure daily missile strikes, with some territories occupied and the true extent of casualties unknown.")
-        Text(text = "In a world where Russia, without a shred of decency, prioritizes war over science, engaging in daily violence and propagating hatred, they've even birthed a new form of fascism called")
+        Text(text = "In a world where Russia, without a shred of decency, prioritizes war over science, engages in daily violence, and propagates hatred, it has even spawned a new form of fascism called")
 
         TextButton(
             onClick = {
@@ -92,7 +92,7 @@ private fun UkraineInfoContent(uriHandler: androidx.compose.ui.platform.UriHandl
         }) {
             Text(text = "https://war.ukraine.ua/")
         }
-        Text(text = "If you have any question, reach me via email ")
+        Text(text = "If you have any questions, reach me via email ")
 
         TextButton(onClick = {
             RoverApplication.APP.dataManger.trackClick("Ukraine_mail")

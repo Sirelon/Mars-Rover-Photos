@@ -490,7 +490,7 @@ class RoversActivity : FragmentActivity() {
 
         CompositionLocalProvider(LocalRoversNavActions provides navActions) {
             @Suppress("UNCHECKED_CAST")
-            val entryProvider = koinEntryProvider() as (RoversDestination) -> NavEntry<RoversDestination>
+            val entryProvider = koinEntryProvider<RoversDestination>() as (RoversDestination) -> NavEntry<RoversDestination>
             NavDisplay(
                 backStack = navState.backStack,
                 onBack = {
