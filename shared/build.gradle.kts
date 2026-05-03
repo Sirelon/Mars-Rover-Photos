@@ -88,6 +88,7 @@ kotlin {
             api(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
+            implementation(libs.koin.compose.navigation3)
 
             // Image loading (Coil KMP)
             implementation(libs.coil)
@@ -100,8 +101,9 @@ kotlin {
             implementation(libs.lifecycle.viewmodel)
             implementation(libs.lifecycle.runtime.compose.multiplatform)
 
-            // Navigation Compose KMP
-            implementation(libs.navigation.compose)
+            // Navigation 3
+            implementation(libs.navigation3.runtime)
+            implementation(libs.navigation3.ui)
 
             // Kermit logging
             implementation(libs.kermit)
@@ -119,6 +121,7 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
+            implementation(libs.lifecycle.viewmodel.navigation3)
 
             // Room extensions (Android-only)
             implementation(libs.androidx.room.ktx)
