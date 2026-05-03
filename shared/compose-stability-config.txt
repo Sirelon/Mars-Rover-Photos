@@ -1,0 +1,15 @@
+// Compose Compiler Stability Configuration
+// This file helps the Compose compiler understand which classes should be considered stable
+// for better performance and recomposition optimization.
+
+// Mark immutable Kotlin classes as stable
+kotlinx.collections.immutable.*
+
+// Mark kotlinx datetime as stable
+kotlinx.datetime.*
+
+// Mark stable Room entities
+com.sirelon.marsroverphotos.data.database.entities.*
+
+// Mark data classes as stable (they're immutable by design)
+com.sirelon.marsroverphotos.data.network.models.*
