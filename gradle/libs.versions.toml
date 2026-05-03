@@ -1,8 +1,8 @@
 [versions]
 # Core
-kotlin = "2.3.0"
-androidGradlePlugin = "8.13.2"
-ksp = "2.3.4"
+kotlin = "2.3.21"
+androidGradlePlugin = "9.2.0"
+ksp = "2.3.6"
 
 # Compose Multiplatform
 compose-multiplatform = "1.9.3"
@@ -14,7 +14,7 @@ activityCompose = "1.12.2"
 appcompat = "1.7.1"
 # https://developer.android.com/jetpack/androidx/releases/annotation
 annotation = "1.9.1"
-ktx = "1.17.0"
+ktx = "1.18.0"
 # https://developer.android.com/jetpack/androidx/releases/lifecycle
 lifecycle = "2.9.6"
 lifecycle-androidx = "2.10.0"
@@ -27,8 +27,8 @@ material3WindowSizeClass = "1.4.0"
 # https://developer.android.com/jetpack/androidx/releases/glance
 glance = "1.2.0-rc01"
 # https://developer.android.com/jetpack/androidx/releases/paging
-paging = "3.4.0-beta01"
-paging-kmp = "3.4.0-beta01"
+paging = "3.4.2"
+paging-kmp = "3.4.2"
 # https://developer.android.com/jetpack/androidx/releases/room
 room = "2.8.4"
 # https://developer.android.com/jetpack/androidx/releases/work
@@ -40,7 +40,7 @@ core-splashscreen = "1.2.0-beta02"
 # https://github.com/coil-kt/coil/blob/main/CHANGELOG.md
 coil = "3.3.0"
 # https://github.com/Kotlin/kotlinx.serialization/releases
-kotlin-serialization = "1.9.0"
+kotlin-serialization = "1.10.0"
 # https://github.com/Kotlin/kotlinx.collections.immutable
 kotlin-collections-immutable = "0.4.0"
 # https://github.com/Kotlin/kotlinx-datetime
@@ -48,19 +48,19 @@ kotlinx-datetime = "0.7.1"
 # https://github.com/Kotlin/kotlinx.coroutines
 kotlinx-coroutines = "1.10.2"
 # https://github.com/ktorio/ktor/releases
-ktor = "3.3.3"
+ktor = "3.4.3"
 # https://github.com/touchlab/Kermit
 kermit = "2.0.8"
 # https://github.com/InsertKoinIO/koin
-koin = "4.2.0-beta2"
-koin-compose = "4.2.0-beta2"
+koin = "4.2.0"
+koin-compose = "4.2.0"
 
 # Navigation
 navigation-compose = "2.9.1"
 
 # Firebase
 # https://firebase.google.com/support/release-notes/android
-firebaseBom = "34.7.0"
+firebaseBom = "34.12.0"
 firebaseAnalyticsVersion = "23.0.0"
 firebaseCrashlyticsVersion = "20.0.3"
 firebaseFirestoreVersion = "26.0.2"
@@ -70,7 +70,7 @@ firebaseMessagingVersion = "25.0.1"
 mockito = "1.6.0"
 
 # Android-only libraries
-playServicesAds = "24.9.0"
+playServicesAds = "25.1.0"
 # https://developers.google.com/admob/android/privacy/release-notes
 userMessagingPlatform = "4.0.0"
 # https://github.com/usuiat/Zoomable/releases
@@ -186,7 +186,7 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 firebase-perf = { id = "com.google.firebase.firebase-perf", version = "2.0.2" }
-firebase-crashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.6" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.7" }
 google-services = { id = "com.google.gms.google-services", version = "4.4.4" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 room = { id = "androidx.room", version.ref = "room" }

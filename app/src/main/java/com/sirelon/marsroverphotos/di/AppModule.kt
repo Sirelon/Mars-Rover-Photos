@@ -23,7 +23,7 @@ import com.sirelon.marsroverphotos.feature.rovers.RoversDestination
 import com.sirelon.marsroverphotos.feature.settings.AboutAppContent
 import com.sirelon.marsroverphotos.feature.ukraine.UkraineInfoScreen
 import org.koin.android.ext.koin.androidApplication
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.dsl.navigation3.navigation
 import org.koin.dsl.module

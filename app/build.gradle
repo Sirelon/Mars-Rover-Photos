@@ -1,7 +1,6 @@
 //@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     id 'kotlin-parcelize'
@@ -44,28 +43,24 @@ android {
     }
     buildTypes {
         release {
-            postprocessing {
-                removeUnusedCode true
-                removeUnusedResources true
-                obfuscate true
-                optimizeCode true
-                proguardFile 'proguard-rules.pro'
-            }
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
         }
     }
 
-    configurations{
-        all*.exclude group: 'com.google.guava', module: 'listenablefuture'
+    configurations.all {
+        exclude group: 'com.google.guava', module: 'listenablefuture'
     }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = '17'
+    kotlin {
+        jvmToolchain(17)
     }
     buildFeatures {
         // Enables Jetpack Compose for this module
