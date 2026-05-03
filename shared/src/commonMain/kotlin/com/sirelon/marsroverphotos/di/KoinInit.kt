@@ -23,7 +23,8 @@ fun initKoin(
             databaseModule,      // Room database and DAOs
             networkModule,       // Ktor and REST API
             repositoryModule,    // Repository implementations
-            viewModelModule      // ViewModels
+            viewModelModule,     // ViewModels
+            navigationModule     // Navigation 3 entries
         )
     }
 }
@@ -35,5 +36,6 @@ val commonModules = listOf(
     databaseModule,
     networkModule,
     repositoryModule,
-    viewModelModule
+    viewModelModule,
+    navigationModule
 )

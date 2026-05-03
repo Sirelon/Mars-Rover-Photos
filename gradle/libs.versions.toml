@@ -77,7 +77,7 @@ userMessagingPlatform = "4.0.0"
 zoomable = "2.9.0"
 
 # Legacy (to be removed)
-navigation3 = "1.0.0"
+navigation3 = "1.1.0"
 lifecycle-navigation3 = "2.10.0"
 navigationevent = "1.0.1"
 timber = "5.0.1"
@@ -155,7 +155,7 @@ paging-compose-common = { module = "androidx.paging:paging-compose-common", vers
 
 androidx-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle-androidx" }
 navigation3-runtime = { group = "androidx.navigation3", name = "navigation3-runtime", version.ref = "navigation3" }
-navigation3-ui = { group = "androidx.navigation3", name = "navigation3-ui", version.ref = "navigation3" }
+navigation3-ui = { group = "org.jetbrains.androidx.navigation3", name = "navigation3-ui", version.ref = "navigation3" }
 lifecycle-viewmodel-navigation3 = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-navigation3", version.ref = "lifecycle-navigation3" }
 navigationevent = { group = "androidx.navigationevent", name = "navigationevent", version.ref = "navigationevent" }
 navigationevent-compose = { group = "androidx.navigationevent", name = "navigationevent-compose", version.ref = "navigationevent" }
