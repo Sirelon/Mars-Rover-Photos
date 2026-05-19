@@ -121,3 +121,4 @@ actual fun createImageOperations(): ImageOperations {
         ?: throw IllegalStateException("Android context not initialized. Call initAndroidImageOperations() first.")
     return AndroidImageOperations(context)
 }
+

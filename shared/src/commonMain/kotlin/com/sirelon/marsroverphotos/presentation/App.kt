@@ -4,13 +4,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.sirelon.marsroverphotos.domain.settings.AppSettings
 import com.sirelon.marsroverphotos.domain.settings.Theme
+import com.sirelon.marsroverphotos.presentation.navigation.AboutCallbacks
 import com.sirelon.marsroverphotos.presentation.navigation.AppNavigation
 import com.sirelon.marsroverphotos.presentation.navigation.DeepLink
+import com.sirelon.marsroverphotos.presentation.navigation.LocalAboutCallbacks
 import com.sirelon.marsroverphotos.presentation.theme.MarsRoverPhotosTheme
 import com.sirelon.marsroverphotos.presentation.ui.isSystemInDarkTheme
 import com.sirelon.marsroverphotos.presentation.ui.supportsDynamicColor
@@ -23,7 +26,10 @@ import org.koin.compose.koinInject
 @Composable
 fun App(
     deepLink: DeepLink? = null,
-    onDeepLinkConsumed: (() -> Unit)? = null
+    onDeepLinkConsumed: (() -> Unit)? = null,
+    onRateApp: () -> Unit = {},
+    appVersion: String = "",
+    rateAppUrl: String = ""
 ) {
     val appSettings: AppSettings = koinInject()
     val theme by appSettings.themeFlow.collectAsState()
@@ -44,10 +50,18 @@ fun App(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            AppContent(
-                deepLink = deepLink,
-                onDeepLinkConsumed = onDeepLinkConsumed
-            )
+            CompositionLocalProvider(
+                LocalAboutCallbacks provides AboutCallbacks(
+                    onRateApp = onRateApp,
+                    appVersion = appVersion,
+                    rateAppUrl = rateAppUrl
+                )
+            ) {
+                AppContent(
+                    deepLink = deepLink,
+                    onDeepLinkConsumed = onDeepLinkConsumed
+                )
+            }
         }
     }
 }

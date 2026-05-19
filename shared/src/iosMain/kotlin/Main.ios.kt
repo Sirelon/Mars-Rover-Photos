@@ -8,6 +8,6 @@ import platform.UIKit.UIViewController
  */
 fun MainViewController(): UIViewController {
     return ComposeUIViewController {
-        App()
+        App(rateAppUrl = "https://apps.apple.com/app/mars-rover-photos")
     }
 }

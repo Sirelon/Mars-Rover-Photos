@@ -95,14 +95,6 @@ fun MissionInfoScreen(roverId: Long, onBack: () -> Unit) {
 }
 
 @Composable
-fun AboutScreen() {
-    PlaceholderScreen(
-        title = "About",
-        description = "App settings and information\n\n(Screen pending migration)"
-    )
-}
-
-@Composable
 private fun PlaceholderScreen(
     title: String,
     description: String,

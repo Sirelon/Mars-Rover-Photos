@@ -34,8 +34,19 @@ class MainActivity : ComponentActivity() {
         setContent {
             App(
                 deepLink = pendingDeepLink,
-                onDeepLinkConsumed = { pendingDeepLink = null }
+                onDeepLinkConsumed = { pendingDeepLink = null },
+                onRateApp = ::openStoreListing,
+                appVersion = BuildConfig.VERSION_NAME
             )
+        }
+    }
+
+    private fun openStoreListing() {
+        val packageName = applicationContext.packageName
+        try {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$packageName")))
+        } catch (_: Exception) {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$packageName")))
         }
     }
 
