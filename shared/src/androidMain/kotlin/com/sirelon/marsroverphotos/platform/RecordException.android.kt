@@ -1,10 +1,11 @@
 package com.sirelon.marsroverphotos.platform
 
-import com.google.firebase.crashlytics.FirebaseCrashlytics
+import dev.gitlive.firebase.Firebase
+import dev.gitlive.firebase.crashlytics.crashlytics
 
 actual fun recordException(t: Throwable) {
     try {
-        FirebaseCrashlytics.getInstance().recordException(t)
+        Firebase.crashlytics.recordException(t)
     } catch (e: Exception) {
         // Firebase not configured
     }

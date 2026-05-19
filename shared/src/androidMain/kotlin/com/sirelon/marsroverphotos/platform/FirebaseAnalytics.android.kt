@@ -1,27 +1,25 @@
 package com.sirelon.marsroverphotos.platform
 
-import android.os.Bundle
-import com.google.firebase.analytics.FirebaseAnalytics as GoogleFirebaseAnalytics
+import dev.gitlive.firebase.Firebase
+import dev.gitlive.firebase.analytics.analytics
+import dev.gitlive.firebase.analytics.logEvent
 
 /**
- * Android implementation of FirebaseAnalytics.
+ * Android implementation of FirebaseAnalytics using GitLive KMP SDK.
  */
-actual class FirebaseAnalytics(
-    private val analytics: GoogleFirebaseAnalytics
-) {
+actual class FirebaseAnalytics {
     actual fun logEvent(event: String, parameters: Map<String, Any>) {
-        val bundle = Bundle().apply {
+        Firebase.analytics.logEvent(event) {
             parameters.forEach { (key, value) ->
                 when (value) {
-                    is String -> putString(key, value)
-                    is Int -> putInt(key, value)
-                    is Long -> putLong(key, value)
-                    is Double -> putDouble(key, value)
-                    is Boolean -> putBoolean(key, value)
-                    else -> putString(key, value.toString())
+                    is String -> param(key, value)
+                    is Long -> param(key, value)
+                    is Int -> param(key, value.toLong())
+                    is Double -> param(key, value)
+                    is Boolean -> param(key, if (value) 1L else 0L)
+                    else -> param(key, value.toString())
                 }
             }
         }
-        analytics.logEvent(event, bundle)
     }
 }

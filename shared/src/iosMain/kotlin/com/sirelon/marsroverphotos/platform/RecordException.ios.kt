@@ -1,7 +1,12 @@
 package com.sirelon.marsroverphotos.platform
 
-import co.touchlab.kermit.Logger
+import dev.gitlive.firebase.Firebase
+import dev.gitlive.firebase.crashlytics.crashlytics
 
 actual fun recordException(t: Throwable) {
-    Logger.e("RecordException", t) { "Exception recorded: ${t.message}" }
+    try {
+        Firebase.crashlytics.recordException(t)
+    } catch (e: Exception) {
+        // Firebase not configured
+    }
 }

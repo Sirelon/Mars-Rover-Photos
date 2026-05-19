@@ -4,9 +4,9 @@ import com.sirelon.marsroverphotos.data.repositories.MissionRepositoryImpl
 import com.sirelon.marsroverphotos.domain.repositories.MissionRepository
 import com.sirelon.marsroverphotos.domain.settings.AppSettings
 import com.sirelon.marsroverphotos.platform.FirebaseAnalytics
+import com.sirelon.marsroverphotos.platform.FirebasePhotosImpl
 import com.sirelon.marsroverphotos.platform.IFirebasePhotos
 import com.sirelon.marsroverphotos.platform.ImageOperations
-import com.sirelon.marsroverphotos.platform.IosFirebasePhotos
 import com.sirelon.marsroverphotos.platform.IosTracker
 import com.sirelon.marsroverphotos.platform.PlatformPreferences
 import com.sirelon.marsroverphotos.platform.Tracker
@@ -32,9 +32,9 @@ val platformModule = module {
         FirebaseAnalytics()
     }
 
-    // Firebase Photos (Firestore stub)
+    // Firebase Photos (Firestore — GitLive KMP)
     single<IFirebasePhotos> {
-        IosFirebasePhotos()
+        FirebasePhotosImpl()
     }
 
     // Image Operations (Photos framework)

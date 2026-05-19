@@ -58,6 +58,9 @@ koin-compose = "4.2.1"
 # Navigation
 navigation-compose = "2.9.2"
 
+# GitLive Firebase KMP SDK
+gitliveFirebase = "2.4.0"
+
 # Firebase
 # https://firebase.google.com/support/release-notes/android
 firebaseBom = "34.12.0"
@@ -107,6 +110,10 @@ firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
 firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
 firebase-perf = { module = "com.google.firebase:firebase-perf" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
+# GitLive Firebase KMP libraries
+gitlive-firebase-analytics = { module = "dev.gitlive:firebase-analytics", version.ref = "gitliveFirebase" }
+gitlive-firebase-crashlytics = { module = "dev.gitlive:firebase-crashlytics", version.ref = "gitliveFirebase" }
+gitlive-firebase-firestore = { module = "dev.gitlive:firebase-firestore", version.ref = "gitliveFirebase" }
 # Firebase with explicit versions (for shared module without BOM)
 firebase-analytics-versioned = { module = "com.google.firebase:firebase-analytics", version.ref = "firebaseAnalyticsVersion" }
 firebase-crashlytics-versioned = { module = "com.google.firebase:firebase-crashlytics", version.ref = "firebaseCrashlyticsVersion" }
