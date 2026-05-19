@@ -284,6 +284,7 @@ ViewModels ← Repositories ← Database + Network
 - User needs to open Xcode and complete project setup
 - Follow step-by-step guide in `iosApp/SETUP.md`
 - Implement Firebase iOS SDK integration
+- Implement native in-app review flow for About `Rate App` action (Linear: `SIR-68`)
 
 **For Web/WASM** (Future):
 - Choose implementation strategy from `WASM_WEB_SUPPORT.md`

@@ -57,7 +57,8 @@ fun AboutScreen() {
             loader.memoryCache?.clear()
         },
         onRateApp = callbacks.onRateApp,
-        appVersion = callbacks.appVersion
+        appVersion = callbacks.appVersion,
+        rateAppUrl = callbacks.rateAppUrl
     )
 }
 
@@ -66,9 +67,11 @@ private fun AboutContent(
     viewModel: AboutViewModel,
     onClearCache: () -> Unit,
     onRateApp: () -> Unit,
-    appVersion: String
+    appVersion: String,
+    rateAppUrl: String
 ) {
     val typography = MaterialTheme.typography
+    val uriHandler = rememberPlatformUriHandler()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -110,7 +113,15 @@ private fun AboutContent(
             Text(text = "Clear Cache")
         }
 
-        Button(onClick = onRateApp) {
+        Button(
+            onClick = {
+                if (rateAppUrl.isNotBlank()) {
+                    uriHandler.openUri(rateAppUrl)
+                } else {
+                    onRateApp()
+                }
+            }
+        ) {
             Text(text = "Rate App")
         }
 

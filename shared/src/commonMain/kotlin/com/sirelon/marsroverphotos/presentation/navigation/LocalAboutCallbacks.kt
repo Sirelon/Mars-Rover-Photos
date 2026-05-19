@@ -4,7 +4,8 @@ import androidx.compose.runtime.staticCompositionLocalOf
 
 data class AboutCallbacks(
     val onRateApp: () -> Unit = {},
-    val appVersion: String = ""
+    val appVersion: String = "",
+    val rateAppUrl: String = ""
 )
 
 val LocalAboutCallbacks = staticCompositionLocalOf { AboutCallbacks() }

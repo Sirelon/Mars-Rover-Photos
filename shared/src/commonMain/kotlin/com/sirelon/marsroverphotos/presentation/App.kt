@@ -28,7 +28,8 @@ fun App(
     deepLink: DeepLink? = null,
     onDeepLinkConsumed: (() -> Unit)? = null,
     onRateApp: () -> Unit = {},
-    appVersion: String = ""
+    appVersion: String = "",
+    rateAppUrl: String = ""
 ) {
     val appSettings: AppSettings = koinInject()
     val theme by appSettings.themeFlow.collectAsState()
@@ -52,7 +53,8 @@ fun App(
             CompositionLocalProvider(
                 LocalAboutCallbacks provides AboutCallbacks(
                     onRateApp = onRateApp,
-                    appVersion = appVersion
+                    appVersion = appVersion,
+                    rateAppUrl = rateAppUrl
                 )
             ) {
                 AppContent(

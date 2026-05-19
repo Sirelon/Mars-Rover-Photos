@@ -18,6 +18,6 @@ fun main() = application {
         title = "Mars Rover Photos - Desktop"
     ) {
         // Load shared App composable
-        App()
+        App(rateAppUrl = "https://play.google.com/store/apps/details?id=com.sirelon.marsroverphotos")
     }
 }
