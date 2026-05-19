@@ -5,6 +5,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sirelon.marsroverphotos.di.initKoin
 import com.sirelon.marsroverphotos.di.platformModule
 import com.sirelon.marsroverphotos.domain.repositories.RoversRepository
+import com.sirelon.marsroverphotos.platform.BuildInfo
 import com.sirelon.marsroverphotos.platform.initAndroidDatabase
 import com.sirelon.marsroverphotos.utils.Logger
 import org.koin.android.ext.android.inject
@@ -24,6 +25,13 @@ class MarsRoverApplication : Application() {
         super.onCreate()
 
         Logger.d("MarsRoverApplication") { "App starting" }
+
+        // Initialize BuildInfo
+        BuildInfo.init(
+            versionName = BuildConfig.VERSION_NAME,
+            isDebug = BuildConfig.DEBUG,
+            packageName = BuildConfig.APPLICATION_ID
+        )
 
         // Initialize Android platform contexts
         initAndroidDatabase(this)

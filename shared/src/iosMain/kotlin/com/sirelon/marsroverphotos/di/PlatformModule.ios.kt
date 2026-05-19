@@ -7,7 +7,9 @@ import com.sirelon.marsroverphotos.platform.FirebaseAnalytics
 import com.sirelon.marsroverphotos.platform.IFirebasePhotos
 import com.sirelon.marsroverphotos.platform.ImageOperations
 import com.sirelon.marsroverphotos.platform.IosFirebasePhotos
+import com.sirelon.marsroverphotos.platform.IosTracker
 import com.sirelon.marsroverphotos.platform.PlatformPreferences
+import com.sirelon.marsroverphotos.platform.Tracker
 import com.sirelon.marsroverphotos.platform.createImageOperations
 import com.sirelon.marsroverphotos.platform.createPlatformPreferences
 import org.koin.dsl.module
@@ -39,6 +41,9 @@ val platformModule = module {
     single<ImageOperations> {
         createImageOperations()
     }
+
+    // Tracker
+    single<Tracker> { IosTracker() }
 
     // Mission Repository (stub)
     single<MissionRepository> {

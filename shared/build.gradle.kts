@@ -110,6 +110,7 @@ kotlin {
 
             // Paging (common)
             implementation(libs.paging.common)
+            implementation("androidx.paging:paging-compose:3.4.2")
 
             // Room KMP (Android, iOS, Desktop only - no WASM support)
             implementation(libs.androidx.room.runtime)

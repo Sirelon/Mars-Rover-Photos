@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos.di
 
+import com.sirelon.marsroverphotos.platform.BuildInfo
 import org.koin.core.context.startKoin
 
 /**
@@ -7,6 +8,12 @@ import org.koin.core.context.startKoin
  * Called from the desktop app's main function.
  */
 fun initKoinDesktop() {
+    BuildInfo.init(
+        versionName = System.getProperty("app.version") ?: "unknown",
+        isDebug = System.getProperty("app.debug") == "true",
+        packageName = "com.sirelon.marsroverphotos"
+    )
+
     startKoin {
         modules(
             platformModule,      // Desktop-specific dependencies
