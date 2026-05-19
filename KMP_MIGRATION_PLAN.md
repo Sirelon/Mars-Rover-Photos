@@ -339,21 +339,22 @@ Stays in `androidApp/` (not migrated):
 Order follows `AGENTS.md`'s "screen migration order" rule and goes smallest-blast-radius first.
 Each ticket lists files to port, Android-only blockers to swap, DI/expect work, and Definition of Done.
 
-### Ticket S0 — Cross-cutting prerequisites (do FIRST)
+### ~~Ticket S0 — Cross-cutting prerequisites (do FIRST)~~ ✅
 
 Land everything in §4 that the first screen will touch. Concretely:
-- Compose Resources port: `strings.xml` + `ic_rovers`, `alien_icon`, `img_placeholder`, and rover JPEGs.
-- `Tracker` interface + Android/iOS/desktop actuals + Koin bindings.
-- `BuildInfo` expect (BuildKonfig or hand-rolled).
-- `recordException` expect.
-- Add `paging-compose` multiplatform to `commonMain` deps.
-- Ship `Modifier.zoomable` in `presentation/ui/`.
-- Port `feature/MarsImage.kt` content (`MarsImageComposable`, `PhotoStats`,
-  `MarsImageFavoriteToggle`, `NetworkImage`) into `presentation/ui/MarsImage.kt`
-  using `Res.drawable.img_placeholder` instead of `R.drawable.img_placeholder`.
+- ✅ Compose Resources port: `strings.xml` + `ic_rovers`, `alien_icon`, `img_placeholder`, and rover JPEGs → `shared/src/commonMain/composeResources/`.
+- ✅ `Tracker` interface + Android/iOS/desktop actuals + Koin bindings.
+- ✅ `BuildInfo` hand-rolled singleton initialized from each platform entry point.
+- ✅ `recordException` expect/actual (Crashlytics on Android, Kermit on iOS/desktop).
+- ✅ Add `androidx.paging:paging-compose:3.4.2` to `commonMain` deps (raw coordinate — TOML alias `paging-compose-common` maps to a non-existent artifact).
+- ✅ Ship `Modifier.zoomable` in `presentation/ui/Zoomable.kt`.
+- ✅ Port `feature/MarsImage.kt` content (`MarsImageComposable`, `PhotoStats`, `MarsImageFavoriteToggle`, `NetworkImage`) into `presentation/ui/MarsImage.kt`.
+- ✅ `AdSlot` expect composable added (Box stub on all platforms; real AdMob stays in androidApp).
 
-**DoD:** App still builds on Android, iOS framework still links, desktop runs;
+**DoD:** ✅ App still builds on Android, iOS framework still links, desktop runs;
 all placeholder screens still render; new abstractions are wired through Koin.
+
+*Note: `paging-compose-common` artifact doesn't exist on Maven Central — the correct KMP artifact is `androidx.paging:paging-compose:3.4.2` (added as raw coordinate).*
 
 ---
 
