@@ -7,7 +7,7 @@ import com.sirelon.marsroverphotos.presentation.navigation.LocalAppNavigator
 import com.sirelon.marsroverphotos.presentation.screens.AboutScreen
 import com.sirelon.marsroverphotos.presentation.screens.FavoriteScreen
 import com.sirelon.marsroverphotos.presentation.screens.ImagesScreen
-import com.sirelon.marsroverphotos.presentation.screens.MissionInfoScreen
+import com.sirelon.marsroverphotos.presentation.screens.RoverMissionInfoScreen
 import com.sirelon.marsroverphotos.presentation.screens.PhotosScreen
 import com.sirelon.marsroverphotos.presentation.screens.PopularScreen
 import com.sirelon.marsroverphotos.presentation.screens.RoversScreen
@@ -73,7 +73,7 @@ val navigationModule = module {
 
     navigation<AppDestination.Mission> { destination ->
         val navigator = LocalAppNavigator.current
-        MissionInfoScreen(
+        RoverMissionInfoScreen(
             roverId = destination.roverId,
             onBack = { navigator.goBack() }
         )
