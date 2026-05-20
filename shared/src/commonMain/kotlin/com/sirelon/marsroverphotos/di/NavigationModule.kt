@@ -33,7 +33,12 @@ val navigationModule = module {
         PhotosScreen(
             roverId = destination.roverId,
             onNavigateToImages = { photoId ->
-                navigator.navigate(AppDestination.Images(photoId))
+                navigator.navigate(
+                    AppDestination.Images(
+                        photoIds = listOf(photoId),
+                        selectedId = photoId
+                    )
+                )
             }
         )
     }
@@ -41,7 +46,8 @@ val navigationModule = module {
     navigation<AppDestination.Images> { destination ->
         val navigator = LocalAppNavigator.current
         ImagesScreen(
-            photoId = destination.photoId,
+            photoIds = destination.photoIds,
+            selectedId = destination.selectedId,
             onBack = { navigator.goBack() }
         )
     }

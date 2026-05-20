@@ -19,7 +19,8 @@ technical reference notes are at the bottom.
 - ✅ Ticket S0 is done.
 - ✅ Ticket S1, Rovers home, is done.
 - ✅ Ticket S2 is done.
-- ⏭️ Next main ticket: **S3 — Image gallery + photo info sheet**.
+- ✅ Ticket S3 is done.
+- ⏭️ Next main ticket: **S4 — Favorites**.
 - ⚠️ iOS still needs Firebase, save/share, an Xcode project, and deep links before the app
   is fully useful there.
 - 🚫 Web/WASM remains out of scope for this milestone.
@@ -42,7 +43,7 @@ technical reference notes are at the bottom.
 | S0 — Cross-cutting prerequisites | ✅ Done | Shared resources, tracker, BuildInfo, Crashlytics hook, paging-compose, zoom, image UI helpers, ad slot |
 | S1 — Rovers home | ✅ Done | Real shared rover list, rover images, bottom navigation, mission/photos navigation |
 | S2 — Rover photos grid | ✅ Done | Real rover photos screen with sol/date filters |
-| S3 — Image gallery + photo info sheet | Pending | Fullscreen gallery, zoom, photo info sheet, save/share hooks |
+| S3 — Image gallery + photo info sheet | ✅ Done | Fullscreen gallery, zoom, photo info sheet, save/share hooks |
 | S4 — Favorites | Pending | Shared favorites grid backed by Room/Paging |
 | S5 — Popular photos | Pending | Shared popular tab backed by Firebase data on Android |
 | S6 — Mission info | Pending | Shared rover mission detail screen |
@@ -141,7 +142,7 @@ and the old placeholders still render before real screens replace them.
 
 ---
 
-### Ticket S3 — Image Gallery + Photo Info Sheet
+### ~~Ticket S3 — Image Gallery + Photo Info Sheet~~ ✅
 
 **Goal:** replace the shared `ImagesScreen` placeholder with the real fullscreen gallery.
 
@@ -162,12 +163,16 @@ and the old placeholders still render before real screens replace them.
 - `LocalHapticFeedback` can stay if it compiles in CMP
 
 **Definition of Done:**
-- Fullscreen image paging works.
-- Zoom and pan work.
-- Tap-to-toggle controls work.
-- Photo info sheet works.
-- Android share/save still works.
-- iOS renders the screen; Save/Share can remain limited until ticket `6.2`.
+- ✅ Fullscreen image paging works.
+- ✅ Zoom and pan work (`Zoomable.kt` redesigned with proper `ZoomableState`; resets on page swipe).
+- ✅ Tap-to-toggle controls work.
+- ✅ Photo info sheet works (`String.format` replaced with KMP-safe `formatStatValue()`).
+- ✅ Android share/save works; `Intent.ACTION_VIEW` replaced with `LocalUriHandler.openUri`.
+- ✅ iOS renders the screen; Save/Share show an error snackbar until ticket `6.2`.
+- ✅ `AppDestination.Images` updated: `photoId` → `photoIds: List<String>` + `selectedId`.
+
+*Note: `makePopular`/`removePopular` debug buttons are no-ops — `ImagesRepository` common
+interface doesn't expose those Firebase methods. Wire up when `6.1` (Firebase iOS) lands.*
 
 ---
 
