@@ -11,6 +11,7 @@ import com.sirelon.marsroverphotos.presentation.screens.RoverMissionInfoScreen
 import com.sirelon.marsroverphotos.presentation.screens.PhotosScreen
 import com.sirelon.marsroverphotos.presentation.screens.PopularScreen
 import com.sirelon.marsroverphotos.presentation.screens.RoversScreen
+import com.sirelon.marsroverphotos.presentation.screens.UkraineScreen
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.dsl.module
 import org.koin.dsl.navigation3.navigation
@@ -81,5 +82,9 @@ val navigationModule = module {
 
     navigation<AppDestination.About> {
         AboutScreen()
+    }
+
+    navigation<AppDestination.Ukraine> {
+        UkraineScreen()
     }
 }

@@ -50,7 +50,7 @@ technical reference notes are at the bottom.
 | S5 — Popular photos | Pending | Shared popular tab backed by Firebase data on Android |
 | S6 — Mission info | ✅ Done | Shared rover mission detail screen |
 | S7 — About/settings | ✅ Done | Shared settings UI: theme, facts, cache, rate app |
-| S8 — Ukraine route decision | Pending | Shared Ukraine banner and Ukraine screen |
+| S8 — Ukraine route decision | ✅ Done | Shared Ukraine banner and Ukraine screen |
 | S9 — Android widget adaptation | Pending | Keep widget Android-only, but wire it to shared repositories/settings/tracker |
 | 6.1 — Firebase iOS | ✅ Done | Popular data, analytics, Crashlytics on iOS |
 | 6.2 — iOS image save/share | Pending | Save to Photos and native share sheet |
@@ -280,7 +280,7 @@ interface doesn't expose those Firebase methods. Wire up when `6.1` (Firebase iO
 
 ---
 
-### Ticket S8 — Ukraine Route Decision
+### ~~Ticket S8 — Ukraine Route Decision~~ ✅
 
 **Goal:** decide and implement the shared Ukraine banner/screen flow.
 
@@ -297,10 +297,12 @@ interface doesn't expose those Firebase methods. Wire up when `6.1` (Firebase iO
 - Existing CMP URI handler for outbound links
 
 **Definition of Done:**
-- Ukraine banner appears in the intended root location.
-- Tapping the banner opens `UkraineScreen`.
-- Outbound links work or degrade safely on all platforms.
-- Android, iOS framework, and Desktop compile.
+- ✅ Ukraine banner appears in the intended root location.
+- ✅ Tapping the banner opens `UkraineScreen`.
+- ✅ Outbound links work or degrade safely on all platforms.
+- ✅ Android, iOS framework, and Desktop compile.
+
+*Note: `UkraineBanner` is inserted into `AppNavigation` between the main content and the ad slot; it is hidden when already on `UkraineScreen` to avoid redundancy. `LocalUriHandler`/`RoverApplication` replaced with `rememberPlatformUriHandler()` and Koin-injected `Tracker`. `UkraineScreen` wraps all links in try/catch with `recordException` so link failures degrade safely on Desktop and iOS.*
 
 ---
 
