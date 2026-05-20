@@ -1,10 +1,10 @@
 package com.sirelon.marsroverphotos.data.database
 
-import androidx.room.ConstructedBy
-import androidx.room.Database
-import androidx.room.RoomDatabase
-import androidx.room.RoomDatabaseConstructor
-import androidx.room.migration.Migration
+import androidx.room3.ConstructedBy
+import androidx.room3.Database
+import androidx.room3.RoomDatabase
+import androidx.room3.RoomDatabaseConstructor
+import androidx.room3.migration.Migration
 import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.execSQL
 import com.sirelon.marsroverphotos.data.database.dao.FactDisplayDao
@@ -38,14 +38,14 @@ abstract class AppDataBase : RoomDatabase() {
 
     companion object {
         val migration7To8 = object : Migration(7, 8) {
-            override fun migrate(connection: SQLiteConnection) {
+            override suspend fun migrate(connection: SQLiteConnection) {
                 connection.execSQL("ALTER TABLE images ADD COLUMN description TEXT")
                 connection.execSQL("ALTER TABLE images ADD COLUMN credit TEXT")
             }
         }
 
         val migration8To9 = object : Migration(8, 9) {
-            override fun migrate(connection: SQLiteConnection) {
+            override suspend fun migrate(connection: SQLiteConnection) {
                 connection.execSQL(
                     "CREATE TABLE IF NOT EXISTS `fact_displays` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `factId` TEXT NOT NULL, `displayTimestamp` INTEGER NOT NULL, `sessionId` TEXT NOT NULL)"
                 )

@@ -1,8 +1,8 @@
 package com.sirelon.marsroverphotos.data.database.entities
 
-import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room3.Embedded
+import androidx.room3.Entity
+import androidx.room3.PrimaryKey
 import com.sirelon.marsroverphotos.domain.models.RoverCamera
 
 /**

@@ -14,7 +14,6 @@ import com.sirelon.marsroverphotos.utils.Logger
 import com.sirelon.marsroverphotos.utils.RoverDateUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -51,7 +50,7 @@ class RoversRepositoryImpl(
             return
         }
 
-        initializationJob = applicationScope.launch(SupervisorJob()) {
+        initializationJob = applicationScope.launch {
             try {
                 // Seed initial rover data
                 seedRovers()

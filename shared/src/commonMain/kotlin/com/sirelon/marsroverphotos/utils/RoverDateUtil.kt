@@ -2,7 +2,7 @@ package com.sirelon.marsroverphotos.utils
 
 import com.sirelon.marsroverphotos.domain.models.Rover
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toLocalDateTime
