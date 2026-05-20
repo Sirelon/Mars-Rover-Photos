@@ -79,6 +79,12 @@ fun ImagesScreen(
     onBack: () -> Unit,
     viewModel: ImageViewModel = koinViewModel(),
 ) {
+    // Guard: nothing to show → pop immediately instead of hanging on the loader.
+    if (photoIds.isEmpty()) {
+        LaunchedEffect(Unit) { onBack() }
+        return
+    }
+
     LaunchedEffect(photoIds) {
         viewModel.setIdsToShow(photoIds)
     }

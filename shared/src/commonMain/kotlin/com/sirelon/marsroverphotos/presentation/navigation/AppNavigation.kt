@@ -46,7 +46,12 @@ fun AppNavigation(
         val target = deepLink ?: return@LaunchedEffect
         when (target) {
             is DeepLink.Rover -> navigator.navigate(AppDestination.Photos(target.id))
-            is DeepLink.Photo -> navigator.navigate(AppDestination.Images(selectedId = target.id.toString()))
+            is DeepLink.Photo -> navigator.navigate(
+                AppDestination.Images(
+                    photoIds = listOf(target.id.toString()),
+                    selectedId = target.id.toString()
+                )
+            )
         }
         onDeepLinkConsumed?.invoke()
     }
