@@ -22,6 +22,12 @@ interface ImagesRepository {
      */
     fun loadImages(ids: List<String>): Flow<List<MarsImage>>
 
+    /**
+     * Load favorite images.
+     * @return Flow of favorite images
+     */
+    fun loadFavoriteImages(): Flow<List<MarsImage>>
+
     // TODO: Re-enable when room-paging supports all KMP targets
     // /**
     //  * Load favorite images with paging support.

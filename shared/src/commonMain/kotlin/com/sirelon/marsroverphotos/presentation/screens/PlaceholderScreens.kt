@@ -20,14 +20,6 @@ import androidx.compose.ui.unit.dp
  */
 
 @Composable
-fun FavoriteScreen() {
-    PlaceholderScreen(
-        title = "Favorite Photos",
-        description = "Your favorite Mars photos\n\n(Screen pending migration)"
-    )
-}
-
-@Composable
 fun PopularScreen() {
     PlaceholderScreen(
         title = "Popular Photos",

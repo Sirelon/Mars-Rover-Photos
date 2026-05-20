@@ -115,7 +115,7 @@ kotlin {
             implementation(libs.koin.androidx.compose)
             implementation(libs.lifecycle.viewmodel.navigation3)
 
-            // Room paging (Android-only)
+            // Room paging (Android-only — confirmed: KSP does not support PagingSource on non-Android targets)
             implementation(libs.androidx.room.paging)
 
             // Firebase native (Android-only — GitLive wraps these, still needed for Android init)

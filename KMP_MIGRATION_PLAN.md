@@ -20,8 +20,9 @@ technical reference notes are at the bottom.
 - ✅ Ticket S1, Rovers home, is done.
 - ✅ Ticket S2 is done.
 - ✅ Ticket S3 is done.
+- ✅ Ticket S4 is done.
 - ✅ Ticket S6, Mission info, is done.
-- ⏭️ Next main ticket: **S4 — Favorites**.
+- ⏭️ Next main ticket: **S5 — Popular Photos**.
 - ⚠️ iOS still needs Firebase, save/share, an Xcode project, and deep links before the app
   is fully useful there.
 - 🚫 Web/WASM remains out of scope for this milestone.
@@ -45,7 +46,7 @@ technical reference notes are at the bottom.
 | S1 — Rovers home | ✅ Done | Real shared rover list, rover images, bottom navigation, mission/photos navigation |
 | S2 — Rover photos grid | ✅ Done | Real rover photos screen with sol/date filters |
 | S3 — Image gallery + photo info sheet | ✅ Done | Fullscreen gallery, zoom, photo info sheet, save/share hooks |
-| S4 — Favorites | Pending | Shared favorites grid backed by Room/Paging |
+| S4 — Favorites | ✅ Done | Shared favorites grid backed by Room/Paging |
 | S5 — Popular photos | Pending | Shared popular tab backed by Firebase data on Android |
 | S6 — Mission info | ✅ Done | Shared rover mission detail screen |
 | S7 — About/settings | ✅ Done | Shared settings UI: theme, facts, cache, rate app |
@@ -177,7 +178,7 @@ interface doesn't expose those Firebase methods. Wire up when `6.1` (Firebase iO
 
 ---
 
-### Ticket S4 — Favorites
+### ~~Ticket S4 — Favorites~~ ✅
 
 **Goal:** replace the shared `FavoriteScreen` placeholder with the real favorites grid.
 
@@ -196,10 +197,10 @@ interface doesn't expose those Firebase methods. Wire up when `6.1` (Firebase iO
 - Direct `Prefs` access → `AppSettings` through Koin
 
 **Definition of Done:**
-- Favorites grid loads from Room.
-- Favorite/unfavorite behavior still works.
-- Empty state works.
-- Android, iOS framework, and Desktop compile.
+- ✅ Favorites grid loads from Room.
+- ✅ Favorite/unfavorite behavior still works.
+- ✅ Empty state works.
+- ✅ Android, iOS framework, and Desktop compile.
 
 ---
 

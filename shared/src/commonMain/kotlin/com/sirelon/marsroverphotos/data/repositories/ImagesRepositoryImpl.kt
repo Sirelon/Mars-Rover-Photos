@@ -31,6 +31,8 @@ class ImagesRepositoryImpl(
         return imagesDao.getImagesByIds(ids)
     }
 
+    override fun loadFavoriteImages(): Flow<List<MarsImage>> = imagesDao.loadFavoriteImages()
+
     // TODO: Re-enable when room-paging supports all KMP targets
     // override fun loadFavoritePagedSource(): Flow<PagingData<MarsImage>> {
     //     return Pager(
