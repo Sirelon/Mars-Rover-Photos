@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,18 +33,6 @@ fun PopularScreen() {
         title = "Popular Photos",
         description = "Most popular photos from the community\n\n(Screen pending migration)"
     )
-}
-
-@Composable
-fun MissionInfoScreen(roverId: Long, onBack: () -> Unit) {
-    PlaceholderScreen(
-        title = "Mission Info",
-        description = "Rover ID: $roverId\nMission details, timeline, and cameras\n\n(Screen pending migration)"
-    ) {
-        Button(onClick = onBack) {
-            Text("Back to Photos")
-        }
-    }
 }
 
 @Composable

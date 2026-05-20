@@ -20,6 +20,7 @@ technical reference notes are at the bottom.
 - ✅ Ticket S1, Rovers home, is done.
 - ✅ Ticket S2 is done.
 - ✅ Ticket S3 is done.
+- ✅ Ticket S6, Mission info, is done.
 - ⏭️ Next main ticket: **S4 — Favorites**.
 - ⚠️ iOS still needs Firebase, save/share, an Xcode project, and deep links before the app
   is fully useful there.
@@ -46,7 +47,7 @@ technical reference notes are at the bottom.
 | S3 — Image gallery + photo info sheet | ✅ Done | Fullscreen gallery, zoom, photo info sheet, save/share hooks |
 | S4 — Favorites | Pending | Shared favorites grid backed by Room/Paging |
 | S5 — Popular photos | Pending | Shared popular tab backed by Firebase data on Android |
-| S6 — Mission info | Pending | Shared rover mission detail screen |
+| S6 — Mission info | ✅ Done | Shared rover mission detail screen |
 | S7 — About/settings | Pending | Shared settings UI: theme, facts, cache, rate app |
 | S8 — Ukraine route decision | Pending | Shared Ukraine banner and Ukraine screen |
 | S9 — Android widget adaptation | Pending | Keep widget Android-only, but wire it to shared repositories/settings/tracker |
@@ -225,7 +226,7 @@ interface doesn't expose those Firebase methods. Wire up when `6.1` (Firebase iO
 
 ---
 
-### Ticket S6 — Mission Info
+### ~~Ticket S6 — Mission Info~~ ✅
 
 **Goal:** replace the shared mission placeholder with the real rover mission detail screen.
 
@@ -245,10 +246,12 @@ interface doesn't expose those Firebase methods. Wire up when `6.1` (Firebase iO
 - `coil3.compose.AsyncImage` can stay
 
 **Definition of Done:**
-- Rover header renders.
-- Mission stats render.
-- Camera grid renders.
-- Android, iOS framework, and Desktop compile.
+- ✅ Rover header renders.
+- ✅ Mission stats render.
+- ✅ Camera grid renders.
+- ✅ Android, iOS framework, and Desktop compile.
+
+*Note: `java.text.NumberFormat` replaced with a KMP-safe `Int.abbreviate()` helper (e.g. `4.3M`, `471.0K`) — more readable in compact stat cards than thousands separators. `LazyVerticalGrid` inside `LazyColumn` replaced with two plain `Row`s to avoid nested-scroll issues.*
 
 ---
 
