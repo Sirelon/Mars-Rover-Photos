@@ -418,7 +418,7 @@ dialog and earth-date picker working on both platforms.
 
 ---
 
-### Ticket S3 — Image gallery + photo info sheet
+### ~~Ticket S3 — Image gallery + photo info sheet~~ ✅
 
 **Files:**
 - `feature/images/ImagesScreen.kt` → `presentation/screens/ImagesScreen.kt`.
@@ -429,17 +429,26 @@ dialog and earth-date picker working on both platforms.
 **Blockers:**
 | Blocker | Replacement |
 |---|---|
-| `net.engawapg.lib.zoomable` (`rememberZoomState`, `Modifier.zoomable`) | Custom `Modifier.zoomable(state)` shipped in S0 |
-| `BuildConfig.DEBUG` | `BuildInfo.isDebug` (S0) |
-| `Intent.ACTION_VIEW` to open saved image | `openLocalImage(uri)` expect (S0) |
-| `LocalHapticFeedback` | Works in CMP — keep |
+| `net.engawapg.lib.zoomable` (`rememberZoomState`, `Modifier.zoomable`) | ✅ `Zoomable.kt` redesigned in S3 with proper `ZoomableState` (observable `scale`, `reset()`). |
+| `BuildConfig.DEBUG` | ✅ `BuildInfo.isDebug` |
+| `Intent.ACTION_VIEW` to open saved image | ✅ `LocalUriHandler.current.openUri(uri)` (CMP-native, works on Android content URIs) |
+| `LocalHapticFeedback` | ✅ Works in CMP — kept |
 
 **iOS gap unblocked here:** `IosImageOperations.saveImage` / `shareImage` must be
 implemented before this screen is useful on iOS — see §6.2. Until then the screen still
 renders and pages through images on iOS, but Save/Share show an error snackbar.
 
-**DoD:** Fullscreen swipeable gallery with zoom and tap-to-toggle UI works on both
-platforms. Share works on Android via `UIActivityViewController` on iOS (after §6.2).
+**DoD:**
+- ✅ `ImagesScreen.kt` and `PhotoInfoBottomSheet.kt` in `commonMain`, zero Android-only imports.
+- ✅ `AppDestination.Images` updated to carry `photoIds: List<String>` + `selectedId: String?`.
+- ✅ Horizontal pager with pinch-to-zoom and tap-to-toggle works; zoom resets on page change.
+- ✅ Save/share/info toolbar actions wired through `ImageViewModel`.
+- ✅ `UiEvent.ShareError` handled in the common screen (addition over legacy).
+- ✅ `String.format("%.1fK")` replaced with KMP-safe `formatStatValue()` in `PhotoInfoBottomSheet`.
+- ✅ `:androidApp:assembleDebug` and `:shared:linkDebugFrameworkIosSimulatorArm64` pass.
+
+*Note: `makePopular`/`removePopular` debug buttons are present but are no-ops — `ImagesRepository`
+common interface doesn't expose those Firebase methods. Wire them up when §6.1 (Firebase iOS) lands.*
 
 ---
 

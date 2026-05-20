@@ -41,7 +41,8 @@ val navigationModule = module {
     navigation<AppDestination.Images> { destination ->
         val navigator = LocalAppNavigator.current
         ImagesScreen(
-            photoId = destination.photoId,
+            photoIds = destination.photoIds,
+            selectedId = destination.selectedId,
             onBack = { navigator.goBack() }
         )
     }

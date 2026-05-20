@@ -15,7 +15,10 @@ sealed interface AppDestination : NavKey {
     data class Photos(val roverId: Long) : AppDestination
 
     @Serializable
-    data class Images(val photoId: String? = null) : AppDestination
+    data class Images(
+        val photoIds: List<String> = emptyList(),
+        val selectedId: String? = null
+    ) : AppDestination
 
     @Serializable
     data object Favorite : AppDestination
