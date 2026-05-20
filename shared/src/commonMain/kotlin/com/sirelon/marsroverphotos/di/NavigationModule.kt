@@ -21,6 +21,9 @@ val navigationModule = module {
         RoversScreen(
             onNavigateToPhotos = { roverId ->
                 navigator.navigate(AppDestination.Photos(roverId))
+            },
+            onMissionInfoClick = { roverId ->
+                navigator.navigate(AppDestination.Mission(roverId))
             }
         )
     }

@@ -21,18 +21,6 @@ import androidx.compose.ui.unit.dp
  */
 
 @Composable
-fun RoversScreen(onNavigateToPhotos: (Long) -> Unit) {
-    PlaceholderScreen(
-        title = "Rovers",
-        description = "Browse available Mars rovers\n\n(Screen pending migration)"
-    ) {
-        Button(onClick = { onNavigateToPhotos(5) }) {
-            Text("View Curiosity Photos")
-        }
-    }
-}
-
-@Composable
 fun ImagesScreen(photoId: String?, onBack: () -> Unit) {
     PlaceholderScreen(
         title = "Images",
