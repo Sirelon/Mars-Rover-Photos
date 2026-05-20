@@ -1,0 +1,57 @@
+{
+  "project_info": {
+    "project_number": "947086751944",
+    "firebase_url": "https://mars-rover-photos.firebaseio.com",
+    "project_id": "mars-rover-photos",
+    "storage_bucket": "mars-rover-photos.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:947086751944:android:c96a933297fcdc16",
+        "android_client_info": {
+          "package_name": "com.sirelon.marsroverphotos"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "947086751944-0m52jnokktfaqv804uf2pntuajbopm1q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sirelon.marsroverphotos",
+            "certificate_hash": "c0b7de92d5758d933104d41d8ae46d4f5aafd5d2"
+          }
+        },
+        {
+          "client_id": "947086751944-um9vc295cnk0ltanke4frqn0pcpcssbn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sirelon.marsroverphotos",
+            "certificate_hash": "7f31ee4ae98ae7afed766a32c298a51b60bb00b0"
+          }
+        },
+        {
+          "client_id": "947086751944-sgq8qbgp1fi7bc0iueu2tu4a7mq6dogf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQtKGkug6YiqzEUxjjfV-Jh8K4KwIfEgs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "947086751944-nbu98m35rocicov7vvuf70sd18p07abu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      },
+      "admob_app_id": "ca-app-pub-7516059448019339~6607949007"
+    }
+  ],
+  "configuration_version": "1"
+}
