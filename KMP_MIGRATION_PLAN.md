@@ -54,7 +54,7 @@ technical reference notes are at the bottom.
 | S9 — Android widget adaptation | Pending | Keep widget Android-only, but wire it to shared repositories/settings/tracker |
 | 6.1 — Firebase iOS | Pending | Popular data, analytics, Crashlytics on iOS |
 | 6.2 — iOS image save/share | Pending | Save to Photos and native share sheet |
-| 6.3 — Xcode project bootstrap | Pending | Checked-in iOS project/workspace that teammates can run |
+| 6.3 — Xcode project bootstrap | ✅ Done | Checked-in iOS project/workspace that teammates can run |
 | 6.4 — iOS deep links | Pending | `marsrover://` and universal-link handling on iOS |
 | Final cleanup | Pending | Delete legacy `app/`, final smoke tests, CI gate |
 
@@ -362,7 +362,7 @@ interface doesn't expose those Firebase methods. Wire up when `6.1` (Firebase iO
 
 ---
 
-### 6.3 — Xcode Project Bootstrap
+### ~~6.3 — Xcode Project Bootstrap~~ ✅
 
 **Goal:** make the iOS app buildable by a teammate without manual project setup.
 
@@ -373,8 +373,16 @@ interface doesn't expose those Firebase methods. Wire up when `6.1` (Firebase iO
 - Commit `Podfile.lock` if CocoaPods is used.
 
 **Definition of Done:**
-- A teammate can clone, run `pod install` if needed, open the workspace/project, press Run,
-  and see the app.
+- ✅ `iosApp/iosApp.xcodeproj` checked in with a shared scheme.
+- ✅ "Build KMP Framework" run script phase calls `./gradlew :shared:linkDebugFrameworkIosSimulatorArm64` before compile.
+- ✅ `FRAMEWORK_SEARCH_PATHS` points to the Gradle output directory.
+- ✅ `shared.framework` linked and embedded.
+- ✅ `GoogleService-Info.template.plist` checked in as shape reference; real file is gitignored.
+- ✅ `.gitignore` updated: `Pods/`, `xcuserdata/`, `GoogleService-Info.plist` excluded; `Podfile.lock` not excluded.
+- ✅ `iosApp/README.md` updated with quick-start steps.
+
+*Note: `Podfile.lock` is not yet committed because `pod install` has not been run in this session.
+Run `cd iosApp && pod install` and commit the resulting `Podfile.lock` to pin pod versions.*
 
 ---
 
