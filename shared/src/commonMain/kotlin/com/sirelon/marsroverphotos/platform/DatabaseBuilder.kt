@@ -1,6 +1,6 @@
 package com.sirelon.marsroverphotos.platform
 
-import androidx.room.RoomDatabase
+import androidx.room3.RoomDatabase
 import com.sirelon.marsroverphotos.data.database.AppDataBase
 
 /**

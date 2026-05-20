@@ -2,8 +2,8 @@ package com.sirelon.marsroverphotos.domain.models
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room3.Entity
+import androidx.room3.PrimaryKey
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

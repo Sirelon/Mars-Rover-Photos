@@ -47,18 +47,6 @@ kotlin {
     //     browser()
     // }
 
-    // Workaround for Room KMP alpha issue with coroutines-android on iOS
-    configurations.all {
-        resolutionStrategy {
-            eachDependency {
-                if (requested.group == "org.jetbrains.kotlinx" && requested.name == "kotlinx-coroutines-android") {
-                    useTarget("org.jetbrains.kotlinx:kotlinx-coroutines-core:${requested.version}")
-                    because("Room KMP uses coroutines-android which is not compatible with iOS")
-                }
-            }
-        }
-    }
-
     sourceSets {
         // Common source set - shared across all platforms
         commonMain.dependencies {
@@ -127,8 +115,7 @@ kotlin {
             implementation(libs.koin.androidx.compose)
             implementation(libs.lifecycle.viewmodel.navigation3)
 
-            // Room extensions (Android-only)
-            implementation(libs.androidx.room.ktx)
+            // Room paging (Android-only)
             implementation(libs.androidx.room.paging)
 
             // Firebase native (Android-only — GitLive wraps these, still needed for Android init)
@@ -201,7 +188,7 @@ android {
     }
 }
 
-room {
+room3 {
     schemaDirectory("$projectDir/schemas")
 }
 
