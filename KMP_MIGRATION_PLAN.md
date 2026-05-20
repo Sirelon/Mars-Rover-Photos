@@ -333,7 +333,7 @@ interface doesn't expose those Firebase methods. Wire up when `6.1` (Firebase iO
 **Goal:** make Firebase-backed features work on iOS.
 
 **Work:**
-- Add Firebase dependencies to `iosApp/Podfile`.
+- Add Firebase dependencies to the Xcode project.
 - Keep `GoogleService-Info.plist` local/gitignored and provide a template if needed.
 - Prefer GitLive Firebase KMP if it reduces platform-specific wrapper code.
 - Replace the current iOS no-op Firebase implementations.
@@ -374,8 +374,7 @@ file must be provided locally. `IosTracker` now mirrors `AndroidTracker` using `
 **Work:**
 - Check in an iOS Xcode project/workspace.
 - Wire the shared framework build step.
-- Prefer a CocoaPods-based setup if it makes framework integration cleaner.
-- Commit `Podfile.lock` if CocoaPods is used.
+- Use Swift Package Manager for all iOS dependencies.
 
 **Definition of Done:**
 - ✅ `iosApp/iosApp.xcodeproj` checked in with a shared scheme.
@@ -383,11 +382,8 @@ file must be provided locally. `IosTracker` now mirrors `AndroidTracker` using `
 - ✅ `FRAMEWORK_SEARCH_PATHS` points to the Gradle output directory.
 - ✅ `shared.framework` linked and embedded.
 - ✅ `GoogleService-Info.template.plist` checked in as shape reference; real file is gitignored.
-- ✅ `.gitignore` updated: `Pods/`, `xcuserdata/`, `GoogleService-Info.plist` excluded; `Podfile.lock` not excluded.
-- ✅ `iosApp/README.md` updated with quick-start steps.
-
-*Note: `Podfile.lock` is not yet committed because `pod install` has not been run in this session.
-Run `cd iosApp && pod install` and commit the resulting `Podfile.lock` to pin pod versions.*
+- ✅ `.gitignore` updated: `xcuserdata/`, `GoogleService-Info.plist` excluded.
+- ✅ `iosApp/README.md` updated with quick-start steps (SPM, no pod install).
 
 ---
 
