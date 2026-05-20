@@ -42,8 +42,8 @@ val platformModule = module {
         createImageOperations()
     }
 
-    // Tracker
-    single<Tracker> { IosTracker() }
+    // Tracker (backed by FirebaseAnalytics — same pattern as AndroidTracker)
+    single<Tracker> { IosTracker(get()) }
 
     // Mission Repository (stub)
     single<MissionRepository> {
