@@ -358,7 +358,7 @@ all placeholder screens still render; new abstractions are wired through Koin.
 
 ---
 
-### Ticket S1 — Rovers home
+### ~~Ticket S1 — Rovers home~~ ✅
 
 **Goal:** real list of rovers in `commonMain`, replacing `RoversScreen` placeholder.
 
@@ -386,11 +386,13 @@ exposing `StateFlow<List<Rover>>` via `roversRepository.loadAllRovers()`. Bind i
 `viewModelModule`.
 
 **DoD:**
-- `RoversScreen(onNavigateToPhotos, onMissionInfoClick)` is fully in `commonMain`,
+- ✅ `RoversScreen(onNavigateToPhotos, onMissionInfoClick)` is fully in `commonMain`,
   shows real rovers on Android + iOS simulator + desktop.
-- Bottom-nav (Rovers / Favorite / Popular / About) still works on Android.
-- Navigation suite logic moves to `commonMain` as `MarsBottomBar` (it's CMP-compatible)
+- ✅ Bottom-nav (Rovers / Favorite / Popular / About) still works on Android.
+- ✅ Navigation suite logic moves to `commonMain` as `MarsBottomBar` (it's CMP-compatible)
   with `AdSlot` rendered only on Android.
+
+*Note: `androidx.compose.material3:material3-adaptive-navigation-suite` is not available for the enabled iOS targets, so `MarsBottomBar` uses common Material3 `NavigationBar` instead of `NavigationSuiteScaffold` for now.*
 
 ---
 

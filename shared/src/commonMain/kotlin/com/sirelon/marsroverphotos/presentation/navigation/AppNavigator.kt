@@ -19,6 +19,17 @@ class AppNavigator(
         }
     }
 
+    fun selectTopLevel(destination: AppDestination) {
+        while (backStack.size > 1) {
+            backStack.removeLastOrNull()
+        }
+        if (backStack.isEmpty()) {
+            backStack.add(destination)
+        } else {
+            backStack[0] = destination
+        }
+    }
+
     fun goBack(): Boolean {
         if (backStack.size <= 1) {
             return false
