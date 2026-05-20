@@ -53,6 +53,12 @@ fun AppNavigation(
                     selectedId = target.id.toString()
                 )
             )
+            is DeepLink.Image -> navigator.navigate(
+                AppDestination.Images(
+                    photoIds = listOf(target.id),
+                    selectedId = target.id
+                )
+            )
         }
         onDeepLinkConsumed?.invoke()
     }
