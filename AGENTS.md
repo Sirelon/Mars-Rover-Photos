@@ -14,6 +14,8 @@ Do not move these into `commonMain` as-is: `Application`, `Activity`, `Component
 
 Use common-safe replacements instead: KMP `ViewModel`, injected repositories/settings, Compose Multiplatform resources, common interfaces with platform actuals or callbacks, Koin core/Compose/ViewModel APIs in common, Kermit for logging, Ktor core in common with engines in platform source sets, and Room runtime only for the enabled Android/iOS/Desktop targets.
 
+Prefer existing KMP-compatible components and libraries over platform-specific mirrors. Use `expect`/`actual` only for real platform gaps; do not introduce platform-specific abstractions when Compose Multiplatform or another KMP dependency already provides the component in shared code. For example, use the shared Material3/Compose Multiplatform `DatePicker` instead of native platform date pickers unless there is a proven blocker.
+
 ## Build, Test, and Development Commands
 - `./gradlew assembleDebug` — build the debuggable APK with the repository Compose compiler flags.
 - `./gradlew testDebugUnitTest` — run JVM unit tests; execute before every commit.

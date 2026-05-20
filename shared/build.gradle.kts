@@ -19,9 +19,9 @@ kotlin {
     // Android target
     androidTarget()
 
-    // iOS targets
+    // iOS targets (iosX64 dropped — CMP 1.11.0 no longer publishes iosX64 klibs;
+    // use iosSimulatorArm64 for Apple Silicon simulators)
     listOf(
-        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { target ->
@@ -196,7 +196,6 @@ dependencies {
     // KSP for Room - all platforms with Room support (Android, iOS, Desktop)
     add("kspCommonMainMetadata", libs.androidx.room.compiler)
     add("kspAndroid", libs.androidx.room.compiler)
-    add("kspIosX64", libs.androidx.room.compiler)
     add("kspIosArm64", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
     add("kspDesktop", libs.androidx.room.compiler)
