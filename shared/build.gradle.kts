@@ -110,9 +110,13 @@ kotlin {
 
             // Paging (common)
             implementation(libs.paging.common)
+            implementation("androidx.paging:paging-compose:3.4.2")
 
             // Room KMP (Android, iOS, Desktop only - no WASM support)
             implementation(libs.androidx.room.runtime)
+
+            // GitLive Firebase KMP (Firestore supports all platforms)
+            implementation(libs.gitlive.firebase.firestore)
         }
 
         // Android-specific dependencies
@@ -127,11 +131,15 @@ kotlin {
             implementation(libs.androidx.room.ktx)
             implementation(libs.androidx.room.paging)
 
-            // Firebase (Android-only)
+            // Firebase native (Android-only — GitLive wraps these, still needed for Android init)
             implementation(libs.firebase.analytics.versioned)
             implementation(libs.firebase.crashlytics.versioned)
             implementation(libs.firebase.firestore.versioned)
             implementation(libs.firebase.messaging.versioned)
+
+            // GitLive Firebase KMP (analytics + crashlytics — Android + iOS only)
+            implementation(libs.gitlive.firebase.analytics)
+            implementation(libs.gitlive.firebase.crashlytics)
 
             // AndroidX
             implementation(libs.androidx.ktx)
@@ -140,6 +148,10 @@ kotlin {
         // iOS-specific dependencies
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
+
+            // GitLive Firebase KMP (analytics + crashlytics — Android + iOS only)
+            implementation(libs.gitlive.firebase.analytics)
+            implementation(libs.gitlive.firebase.crashlytics)
         }
 
         // Desktop-specific dependencies
