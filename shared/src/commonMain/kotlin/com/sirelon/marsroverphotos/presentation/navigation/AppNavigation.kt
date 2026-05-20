@@ -14,6 +14,7 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.sirelon.marsroverphotos.platform.Tracker
 import com.sirelon.marsroverphotos.presentation.ui.AdSlot
+import com.sirelon.marsroverphotos.presentation.ui.UkraineBanner
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
@@ -72,6 +73,15 @@ fun AppNavigation(
                     entryProvider = entryProvider
                 )
             }
+            if (currentDestination !is AppDestination.Ukraine) {
+                UkraineBanner(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        tracker.trackClick("UkraineBanner_Root")
+                        navigator.navigate(AppDestination.Ukraine)
+                    },
+                )
+            }
             AdSlot(modifier = Modifier.fillMaxWidth())
             MarsBottomBar(
                 selectedDestination = currentDestination.topLevelDestination(),
@@ -89,7 +99,8 @@ private fun AppDestination.topLevelDestination(): AppDestination {
         AppDestination.Rovers,
         is AppDestination.Photos,
         is AppDestination.Images,
-        is AppDestination.Mission -> AppDestination.Rovers
+        is AppDestination.Mission,
+        AppDestination.Ukraine -> AppDestination.Rovers
         AppDestination.Favorite -> AppDestination.Favorite
         AppDestination.Popular -> AppDestination.Popular
         AppDestination.About -> AppDestination.About
@@ -102,6 +113,7 @@ private val AppDestination.analyticsTag: String
         AppDestination.Favorite -> "favorite"
         AppDestination.Popular -> "popular"
         AppDestination.About -> "about"
+        AppDestination.Ukraine -> "ukraine"
         else -> "other"
     }
 
@@ -115,6 +127,7 @@ private val navBackStackConfiguration = SavedStateConfiguration {
             subclass(AppDestination.Popular::class, AppDestination.Popular.serializer())
             subclass(AppDestination.Mission::class, AppDestination.Mission.serializer())
             subclass(AppDestination.About::class, AppDestination.About.serializer())
+            subclass(AppDestination.Ukraine::class, AppDestination.Ukraine.serializer())
         }
     }
 }
