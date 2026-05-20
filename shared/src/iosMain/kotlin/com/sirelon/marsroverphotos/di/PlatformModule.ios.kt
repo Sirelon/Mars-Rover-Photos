@@ -5,9 +5,9 @@ import com.sirelon.marsroverphotos.domain.repositories.MissionRepository
 import com.sirelon.marsroverphotos.domain.settings.AppSettings
 import com.sirelon.marsroverphotos.platform.FirebaseAnalytics
 import com.sirelon.marsroverphotos.platform.FirebasePhotosImpl
+import com.sirelon.marsroverphotos.platform.FirebaseTracker
 import com.sirelon.marsroverphotos.platform.IFirebasePhotos
 import com.sirelon.marsroverphotos.platform.ImageOperations
-import com.sirelon.marsroverphotos.platform.IosTracker
 import com.sirelon.marsroverphotos.platform.PlatformPreferences
 import com.sirelon.marsroverphotos.platform.Tracker
 import com.sirelon.marsroverphotos.platform.createImageOperations
@@ -42,8 +42,8 @@ val platformModule = module {
         createImageOperations()
     }
 
-    // Tracker
-    single<Tracker> { IosTracker() }
+    // Tracker (backed by FirebaseAnalytics — shared FirebaseTracker from commonMain)
+    single<Tracker> { FirebaseTracker(get()) }
 
     // Mission Repository (stub)
     single<MissionRepository> {

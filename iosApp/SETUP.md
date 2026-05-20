@@ -1,165 +1,81 @@
 # iOS App Setup Guide
 
-## Overview
-
-The iOS app structure has been created with Kotlin 2.3.0 and all necessary files. You now need to create the Xcode project and configure it.
-
 ## Current Status
 
-✅ iOS framework builds successfully with Kotlin 2.3.0
-✅ Swift source files created (MarsRoverApp.swift, ContentView.swift)
-✅ Main.ios.kt created for Compose UI integration
-✅ Info.plist configured
-✅ Podfile created for Firebase dependencies
+✅ Xcode project checked in (`iosApp.xcodeproj`)
+✅ Swift source files in place (`MarsRoverApp.swift`, `ContentView.swift`)
+✅ Shared KMP framework linked and build script wired
+✅ Firebase iOS SDK declared via SPM (auto-resolved by Xcode)
 ✅ iOS platform Koin modules set up
+✅ `GoogleService-Info.plist` gitignored; template checked in
 
-## Steps to Complete Setup
+## Quick Start (fresh clone)
 
-### 1. Create Xcode Project
-
-Open Xcode and create a new project:
-
-1. **File → New → Project**
-2. Select **iOS → App**
-3. Configure the project:
-   - **Product Name**: `iosApp`
-   - **Organization Identifier**: `com.sirelon.marsroverphotos`
-   - **Bundle Identifier**: `com.sirelon.marsroverphotos.iosApp`
-   - **Interface**: SwiftUI
-   - **Language**: Swift
-   - **Use Core Data**: NO
-   - **Include Tests**: YES (optional)
-4. Save location: Choose `iosApp/` directory (replace existing)
-
-### 2. Add Existing Swift Files
-
-1. In Xcode, delete the default Swift files
-2. **Right-click on iosApp folder → Add Files to "iosApp"**
-3. Select:
-   - `MarsRoverApp.swift`
-   - `ContentView.swift`
-4. Ensure **"Copy items if needed"** is UNCHECKED (files are already in place)
-
-### 3. Link Shared Framework
-
-1. In Xcode, select the **iosApp project** in navigator
-2. Select the **iosApp target**
-3. Go to **General tab**
-4. Scroll to **Frameworks, Libraries, and Embedded Content**
-5. Click **+** button
-6. Click **Add Other → Add Files**
-7. Navigate to: `../shared/build/bin/iosSimulatorArm64/debugFramework/shared.framework`
-8. Set **Embed & Sign**
-
-**Important**: Add a **Run Script Phase** to build the framework before compilation:
-
-1. Go to **Build Phases tab**
-2. Click **+** → **New Run Script Phase**
-3. Drag it **above "Compile Sources"**
-4. Name it: **"Build Shared Framework"**
-5. Add script:
 ```bash
-cd "$SRCROOT/.."
+# 1. Build the shared KMP framework
 ./gradlew :shared:linkDebugFrameworkIosSimulatorArm64
+
+# 2. Open the project — Xcode resolves Firebase via SPM automatically
+open iosApp/iosApp.xcodeproj
+
+# 3. Add your GoogleService-Info.plist (see Firebase section below)
+
+# 4. Run (⌘R)
 ```
 
-### 4. Configure Framework Search Paths
+## Firebase Setup
 
-1. Select **iosApp target → Build Settings**
-2. Search for **"Framework Search Paths"**
-3. Add:
-```
-$(SRCROOT)/../shared/build/bin/iosSimulatorArm64/debugFramework
-```
+Firebase packages (FirebaseCore, FirebaseAnalytics, FirebaseCrashlytics, FirebaseFirestore)
+are declared as Swift Package Manager dependencies in `iosApp.xcodeproj`. Xcode resolves
+them automatically when you open the project — no manual steps needed.
 
-### 5. Install Firebase via CocoaPods
+You must supply `iosApp/iosApp/GoogleService-Info.plist` (gitignored):
 
-```bash
-cd iosApp
-pod install
-```
+1. Go to Firebase Console → Project Settings → iOS apps.
+2. Download `GoogleService-Info.plist` for bundle ID `com.sirelon.marsroverphotos`.
+3. Place it at `iosApp/iosApp/GoogleService-Info.plist`.
 
-After installation:
-- Close Xcode if open
-- Open `iosApp.xcworkspace` (NOT .xcodeproj)
+A `GoogleService-Info.template.plist` is checked in as a shape reference.
 
-### 6. Build for Different Configurations
+## Build for Different Configurations
 
-For **Release builds** on real devices:
-1. Change the framework path in Build Settings to use:
-   - Simulator: `.../iosSimulatorArm64/debugFramework/`
-   - Device: `.../iosArm64/releaseFramework/`
-2. Update Run Script to build appropriate target
-
-### 7. Test the Build
-
-1. Select **iPhone 15 Pro simulator** (or any iOS 15+ simulator)
-2. Click **Run** (⌘R)
-3. The app should launch with the Compose UI
+For **device builds**, update the framework search path in Build Settings:
+- Simulator Debug: `$(SRCROOT)/../shared/build/bin/iosSimulatorArm64/debugFramework`
+- Device Release: `$(SRCROOT)/../shared/build/bin/iosArm64/releaseFramework`
 
 ## Troubleshooting
 
 ### Framework Not Found
 
-Ensure you've built the framework first:
+Build the framework manually first:
 ```bash
 ./gradlew :shared:linkDebugFrameworkIosSimulatorArm64
 ```
 
+### SPM Packages Not Resolving
+
+In Xcode: **File → Packages → Resolve Package Versions**
+
 ### Swift Linker Errors
 
-Make sure the framework is:
-1. Added to **Frameworks, Libraries, and Embedded Content**
-2. Set to **Embed & Sign**
-3. Framework Search Path is configured
-
-### Cocoapods Issues
-
-```bash
-cd iosApp
-pod deintegrate
-pod install
-```
-
-## Framework Locations
-
-- **Simulator (Debug)**: `shared/build/bin/iosSimulatorArm64/debugFramework/shared.framework`
-- **Simulator (Release)**: `shared/build/bin/iosSimulatorArm64/releaseFramework/shared.framework`
-- **Device (Debug)**: `shared/build/bin/iosArm64/debugFramework/shared.framework`
-- **Device (Release)**: `shared/build/bin/iosArm64/releaseFramework/shared.framework`
-
-## Next Steps
-
-After successful build:
-1. Implement actual Firebase iOS SDK in `FirebaseAnalytics.ios.kt`
-2. Implement actual Firebase Firestore in `IosFirebasePhotos`
-3. Test all features on iOS
-4. Configure app icons and launch screen
-5. Setup Firebase project for iOS
-6. Add GoogleService-Info.plist
+Ensure `shared.framework` is set to **Embed & Sign** in  
+Target → General → Frameworks, Libraries, and Embedded Content.
 
 ## Architecture
 
 ```
-iosApp (SwiftUI)
-    ↓
-MarsRoverApp.swift → initKoinIos()
-    ↓
-ContentView.swift → ComposeView
-    ↓
-Main_iosKt.MainViewController()
-    ↓
-shared.framework (Compose UI)
-    ↓
-App.kt (commonMain)
+MarsRoverApp.swift  →  FirebaseApp.configure()
+                    →  initKoinIos()
+ContentView.swift   →  Main_iosKt.MainViewController()
+                    →  shared.framework (Compose Multiplatform)
+                    →  App.kt (commonMain)
 ```
 
-## Current Versions
+## Framework Locations
 
-- **Kotlin**: 2.3.0
-- **Compose Multiplatform**: 1.9.3
-- **Room**: 2.8.4 (KMP stable)
-- **Ktor**: 3.3.3
-- **Koin**: 4.2.0-beta2
-
-All dependencies are at their latest compatible versions! 🎉
+| Config | Path |
+|---|---|
+| Simulator Debug | `shared/build/bin/iosSimulatorArm64/debugFramework/shared.framework` |
+| Simulator Release | `shared/build/bin/iosSimulatorArm64/releaseFramework/shared.framework` |
+| Device Debug | `shared/build/bin/iosArm64/debugFramework/shared.framework` |
+| Device Release | `shared/build/bin/iosArm64/releaseFramework/shared.framework` |

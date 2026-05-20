@@ -2,7 +2,11 @@ package com.sirelon.marsroverphotos.platform
 
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 
-class AndroidTracker(private val analytics: FirebaseAnalytics) : Tracker {
+/**
+ * Tracker implementation backed by FirebaseAnalytics.
+ * Shared by Android and iOS — platform differences are handled inside FirebaseAnalytics itself.
+ */
+class FirebaseTracker(private val analytics: FirebaseAnalytics) : Tracker {
 
     override fun trackClick(event: String) {
         analytics.logEvent(event, emptyMap())

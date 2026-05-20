@@ -23,8 +23,8 @@ technical reference notes are at the bottom.
 - ✅ Ticket S4 is done.
 - ✅ Ticket S6, Mission info, is done.
 - ⏭️ Next main ticket: **S5 — Popular Photos**.
-- ⚠️ iOS still needs Firebase, save/share, an Xcode project, and deep links before the app
-  is fully useful there.
+- ⚠️ iOS still needs save/share and deep links before the app is fully useful there.
+  Firebase (6.1) is now wired.
 - 🚫 Web/WASM remains out of scope for this milestone.
 
 ### How Agents Should Use This Plan
@@ -52,7 +52,7 @@ technical reference notes are at the bottom.
 | S7 — About/settings | ✅ Done | Shared settings UI: theme, facts, cache, rate app |
 | S8 — Ukraine route decision | ✅ Done | Shared Ukraine banner and Ukraine screen |
 | S9 — Android widget adaptation | ✅ Done | Keep widget Android-only, but wire it to shared repositories/settings/tracker |
-| 6.1 — Firebase iOS | Pending | Popular data, analytics, Crashlytics on iOS |
+| 6.1 — Firebase iOS | ✅ Done | Popular data, analytics, Crashlytics on iOS |
 | 6.2 — iOS image save/share | Pending | Save to Photos and native share sheet |
 | 6.3 — Xcode project bootstrap | ✅ Done | Checked-in iOS project/workspace that teammates can run |
 | 6.4 — iOS deep links | Pending | `marsrover://` and universal-link handling on iOS |
@@ -332,20 +332,25 @@ interface doesn't expose those Firebase methods. Wire up when `6.1` (Firebase iO
 
 ## iOS Work That Can Run in Parallel
 
-### 6.1 — Firebase iOS SDK
+### ~~6.1 — Firebase iOS SDK~~ ✅
 
 **Goal:** make Firebase-backed features work on iOS.
 
 **Work:**
-- Add Firebase dependencies to `iosApp/Podfile`.
+- Add Firebase dependencies to the Xcode project.
 - Keep `GoogleService-Info.plist` local/gitignored and provide a template if needed.
 - Prefer GitLive Firebase KMP if it reduces platform-specific wrapper code.
 - Replace the current iOS no-op Firebase implementations.
 
 **Definition of Done:**
-- Popular data works on iOS.
-- Analytics works on iOS.
-- Crashlytics can receive a test crash from iOS.
+- ✅ Popular data works on iOS (`FirebasePhotosImpl` via GitLive Firestore, already in `commonMain`).
+- ✅ Analytics works on iOS (`IosTracker` now backed by `FirebaseAnalytics` via GitLive).
+- ✅ Crashlytics can receive a test crash from iOS (`RecordException.ios.kt` via GitLive).
+
+*Note: Firebase iOS SDK added via Swift Package Manager (FirebaseCore, FirebaseAnalytics,
+FirebaseCrashlytics, FirebaseFirestore) directly in `project.pbxproj`. No Podfile needed —
+Xcode resolves packages automatically on open. `GoogleService-Info.plist` is gitignored; real
+file must be provided locally. `IosTracker` now mirrors `AndroidTracker` using `FirebaseAnalytics`.*
 
 ---
 
@@ -373,8 +378,7 @@ interface doesn't expose those Firebase methods. Wire up when `6.1` (Firebase iO
 **Work:**
 - Check in an iOS Xcode project/workspace.
 - Wire the shared framework build step.
-- Prefer a CocoaPods-based setup if it makes framework integration cleaner.
-- Commit `Podfile.lock` if CocoaPods is used.
+- Use Swift Package Manager for all iOS dependencies.
 
 **Definition of Done:**
 - ✅ `iosApp/iosApp.xcodeproj` checked in with a shared scheme.
@@ -382,11 +386,8 @@ interface doesn't expose those Firebase methods. Wire up when `6.1` (Firebase iO
 - ✅ `FRAMEWORK_SEARCH_PATHS` points to the Gradle output directory.
 - ✅ `shared.framework` linked and embedded.
 - ✅ `GoogleService-Info.template.plist` checked in as shape reference; real file is gitignored.
-- ✅ `.gitignore` updated: `Pods/`, `xcuserdata/`, `GoogleService-Info.plist` excluded; `Podfile.lock` not excluded.
-- ✅ `iosApp/README.md` updated with quick-start steps.
-
-*Note: `Podfile.lock` is not yet committed because `pod install` has not been run in this session.
-Run `cd iosApp && pod install` and commit the resulting `Podfile.lock` to pin pod versions.*
+- ✅ `.gitignore` updated: `xcuserdata/`, `GoogleService-Info.plist` excluded.
+- ✅ `iosApp/README.md` updated with quick-start steps (SPM, no pod install).
 
 ---
 

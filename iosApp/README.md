@@ -8,52 +8,56 @@ SwiftUI shell that hosts the shared Compose Multiplatform UI from the `shared` K
 # 1. Build the shared KMP framework
 ./gradlew :shared:linkDebugFrameworkIosSimulatorArm64
 
-# 2. Install Firebase pods
-cd iosApp
-pod install
-
-# 3. Open the workspace (NOT the .xcodeproj)
-open iosApp.xcworkspace
+# 2. Open the project in Xcode — Firebase packages resolve automatically via SPM
+open iosApp/iosApp.xcodeproj
 ```
 
 Press **⌘R** to run on a simulator.
 
 > **Note:** The "Build KMP Framework" run script phase in Xcode calls Gradle automatically before
 > compiling, so after the first manual build you can just press Run from Xcode.
+>
+> On first open, Xcode will resolve the Firebase iOS SDK via Swift Package Manager.
+> This requires an internet connection and may take a few minutes.
 
-## Firebase setup (ticket 6.1)
+## Firebase setup (ticket 6.1 ✅)
 
-The app will launch and show the Compose UI without Firebase. Popular photos will show an empty
-state until Firebase is configured.
+Firebase is wired end-to-end via Swift Package Manager:
 
-To enable Firebase:
+- **FirebaseCore, FirebaseAnalytics, FirebaseCrashlytics, FirebaseFirestore** are declared as
+  SPM dependencies in `iosApp.xcodeproj` — Xcode resolves them automatically.
+- `MarsRoverApp.swift` calls `FirebaseApp.configure()` on launch.
+- `GoogleService-Info.plist` must be present at `iosApp/iosApp/GoogleService-Info.plist`
+  (gitignored — never commit the real file).
+- `GoogleService-Info.template.plist` is checked in as a shape reference.
+
+To configure Firebase for a fresh clone:
 
 1. Download `GoogleService-Info.plist` from the Firebase Console  
-   (Project Settings → iOS app, bundle ID `com.sirelon.marsroverphotos.iosApp`).
-2. Place it at `iosApp/iosApp/GoogleService-Info.plist`  
-   (this path is gitignored — never commit the real file).
-3. A `GoogleService-Info.template.plist` is checked in at the repo root as a shape reference.
-4. Add `FirebaseApp.configure()` to `MarsRoverApp.swift` (ticket 6.1 work).
+   (Project Settings → iOS app, bundle ID `com.sirelon.marsroverphotos`).
+2. Place it at `iosApp/iosApp/GoogleService-Info.plist`.
+3. Open the project and run — Firebase resolves via SPM on first open.
 
 ## Structure
 
 ```
 iosApp/
-├── Podfile                          # CocoaPods: Firebase pods
 ├── GoogleService-Info.template.plist  # Shape reference — fill in & rename for Firebase
-├── iosApp.xcodeproj/               # Xcode project (checked in)
+├── iosApp.xcodeproj/                  # Xcode project (Firebase added via SPM)
 │   ├── project.pbxproj
 │   └── xcshareddata/xcschemes/iosApp.xcscheme
 └── iosApp/
-    ├── MarsRoverApp.swift           # @main entry — calls initKoinIos()
+    ├── MarsRoverApp.swift           # @main entry — FirebaseApp.configure() + initKoinIos()
     ├── ContentView.swift            # Wraps MainViewController from shared framework
+    ├── GoogleService-Info.plist     # Real Firebase config (gitignored)
     └── Info.plist
 ```
 
 ## Architecture
 
 ```
-MarsRoverApp.swift  →  initKoinIos()
+MarsRoverApp.swift  →  FirebaseApp.configure()
+                    →  initKoinIos()
 ContentView.swift   →  Main_iosKt.MainViewController()
                     →  shared.framework (Compose Multiplatform)
                     →  App.kt (commonMain)

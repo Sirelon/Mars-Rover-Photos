@@ -109,6 +109,15 @@
 			dependencies = (
 			);
 			name = iosApp;
+			packageProductDependencies = (
+				BA2278132FBE0E6B00AF0A32 /* FirebaseAnalytics */,
+				BA2278152FBE0E6B00AF0A32 /* FirebaseAnalyticsCore */,
+				BA2278172FBE0E6B00AF0A32 /* FirebaseCore */,
+				BA2278192FBE0E6B00AF0A32 /* FirebaseCrashlytics */,
+				BA22781B2FBE0E6B00AF0A32 /* FirebaseFirestore */,
+				BA22781D2FBE0E6B00AF0A32 /* FirebasePerformance */,
+				BA22781F2FBE0E6B00AF0A32 /* FirebaseStorage */,
+			);
 			productName = iosApp;
 			productReference = 9E2B4A252B8F3D0100C4A5E2 /* iosApp.app */;
 			productType = "com.apple.product-type.application";
