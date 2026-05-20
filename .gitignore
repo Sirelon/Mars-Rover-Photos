@@ -130,7 +130,8 @@ Cloud/
 xcuserdata/
 *.xcuserstate
 *.xcworkspace/xcuserdata/
-# CocoaPods generated folder (Podfile.lock IS committed per migration plan)
+# CocoaPods (not used — project uses SPM)
 Pods/
+Podfile.lock
 # Firebase config — copy from GoogleService-Info.template.plist and fill in real values
 iosApp/iosApp/GoogleService-Info.plist
