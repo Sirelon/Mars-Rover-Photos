@@ -18,7 +18,8 @@ technical reference notes are at the bottom.
   shared image UI helpers, zoom support, and ad slots are in place.
 - ✅ Ticket S0 is done.
 - ✅ Ticket S1, Rovers home, is done.
-- ⏭️ Next main ticket: **S2 — Rover photos grid**.
+- ✅ Ticket S2 is done.
+- ⏭️ Next main ticket: **S3 — Image gallery + photo info sheet**.
 - ⚠️ iOS still needs Firebase, save/share, an Xcode project, and deep links before the app
   is fully useful there.
 - 🚫 Web/WASM remains out of scope for this milestone.
@@ -40,7 +41,7 @@ technical reference notes are at the bottom.
 |---|---|---|
 | S0 — Cross-cutting prerequisites | ✅ Done | Shared resources, tracker, BuildInfo, Crashlytics hook, paging-compose, zoom, image UI helpers, ad slot |
 | S1 — Rovers home | ✅ Done | Real shared rover list, rover images, bottom navigation, mission/photos navigation |
-| S2 — Rover photos grid | Next | Real rover photos screen with sol/date filters |
+| S2 — Rover photos grid | ✅ Done | Real rover photos screen with sol/date filters |
 | S3 — Image gallery + photo info sheet | Pending | Fullscreen gallery, zoom, photo info sheet, save/share hooks |
 | S4 — Favorites | Pending | Shared favorites grid backed by Room/Paging |
 | S5 — Popular photos | Pending | Shared popular tab backed by Firebase data on Android |
@@ -103,7 +104,7 @@ and the old placeholders still render before real screens replace them.
 
 ---
 
-### Ticket S2 — Rover Photos Grid
+### ~~Ticket S2 — Rover Photos Grid~~ ✅
 
 **Goal:** replace the shared `PhotosScreen` placeholder with the real rover photo browser.
 
@@ -129,11 +130,14 @@ and the old placeholders still render before real screens replace them.
 - `rememberSaveable` local state is fine to keep
 
 **Definition of Done:**
-- `PhotosScreen(roverId, ...)` is fully in `commonMain`.
-- Photos load for the selected rover.
-- Sol filtering works.
-- Earth-date picking works.
-- Android, iOS framework, and Desktop compile.
+- ✅ `PhotosScreen(roverId, ...)` is fully in `commonMain`.
+- ✅ Photos load for the selected rover.
+- ✅ Sol filtering works.
+- ✅ Earth-date picking works.
+- ✅ Android, iOS framework, and Desktop compile.
+
+*Note: uses the shared CMP Material3 date picker wrapper, not native platform pickers.
+`Mapper.kt` was not duplicated — shared `data/network/Mappers.kt` already covers the mapping.*
 
 ---
 
