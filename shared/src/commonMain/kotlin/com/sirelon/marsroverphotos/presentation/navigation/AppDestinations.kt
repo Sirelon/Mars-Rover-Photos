@@ -31,4 +31,7 @@ sealed interface AppDestination : NavKey {
 
     @Serializable
     data object About : AppDestination
+
+    @Serializable
+    data object Ukraine : AppDestination
 }
