@@ -394,7 +394,7 @@ exposing `StateFlow<List<Rover>>` via `roversRepository.loadAllRovers()`. Bind i
 
 ---
 
-### Ticket S2 — Rover photos (grid)
+### ~~Ticket S2 — Rover photos (grid)~~ ✅
 
 **Files to port:**
 - `feature/photos/RoverPhotosScreen.kt` →
@@ -413,8 +413,12 @@ exposing `StateFlow<List<Rover>>` via `roversRepository.loadAllRovers()`. Bind i
 | `androidx.compose.material3.DatePicker` directly | Use `PlatformDatePickerDialog` (already in `presentation/ui`). |
 | `rememberSaveable { mutableStateOf(false) }` | OK in CMP — keep. |
 
-**DoD:** `PhotosScreen(roverId, …)` shows real photos for the rover, with the sol slider
+**DoD:** ✅ `PhotosScreen(roverId, …)` shows real photos for the rover, with the sol slider
 dialog and earth-date picker working on both platforms.
+
+*Note: S2 uses the shared Compose Multiplatform Material3 date picker wrapper, not native
+platform pickers. `Mapper.kt` was not duplicated because shared `data/network/Mappers.kt`
+already covers the migrated network-to-UI mapping.*
 
 ---
 
