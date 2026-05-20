@@ -101,6 +101,13 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
 
+    // Compose UI (Material3 + foundation needed by widget config activity)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.foundation)
+
+    // Coil image loading (used by widget worker to download photos)
+    implementation(libs.coil)
+
     // Glance App Widgets
     implementation(libs.androidx.glance.appwidget)
 
