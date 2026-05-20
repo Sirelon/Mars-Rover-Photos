@@ -51,7 +51,7 @@ technical reference notes are at the bottom.
 | S6 — Mission info | ✅ Done | Shared rover mission detail screen |
 | S7 — About/settings | ✅ Done | Shared settings UI: theme, facts, cache, rate app |
 | S8 — Ukraine route decision | Pending | Shared Ukraine banner and Ukraine screen |
-| S9 — Android widget adaptation | Pending | Keep widget Android-only, but wire it to shared repositories/settings/tracker |
+| S9 — Android widget adaptation | ✅ Done | Keep widget Android-only, but wire it to shared repositories/settings/tracker |
 | 6.1 — Firebase iOS | Pending | Popular data, analytics, Crashlytics on iOS |
 | 6.2 — iOS image save/share | Pending | Save to Photos and native share sheet |
 | 6.3 — Xcode project bootstrap | ✅ Done | Checked-in iOS project/workspace that teammates can run |
@@ -304,7 +304,7 @@ interface doesn't expose those Firebase methods. Wire up when `6.1` (Firebase iO
 
 ---
 
-### Ticket S9 — Android Widget Adaptation
+### ~~Ticket S9 — Android Widget Adaptation~~ ✅
 
 **Goal:** keep the widget Android-only, but make it use shared data contracts.
 
@@ -320,9 +320,11 @@ interface doesn't expose those Firebase methods. Wire up when `6.1` (Firebase iO
 - Replace `RoverApplication.APP.tracker` with shared `Tracker`.
 
 **Definition of Done:**
-- Widget builds from `androidApp`.
-- Widget reads shared settings/repositories.
-- Widget can still deep link into the app through `WidgetExtraImageId`.
+- ✅ Widget builds from `androidApp`.
+- ✅ Widget reads shared settings/repositories.
+- ✅ Widget can still deep link into the app through `WidgetExtraImageId`.
+
+*Note: `ImagesRepository` and `RestApi` are injected via Koin (`KoinComponent` in `CoroutineWorker`). `Timber` replaced with shared `Logger` (Kermit). Legacy `feature/rovers/*Id` constants replaced with shared `domain.models.*_ID`. `RoversActivity` replaced with `MainActivity`. Added `DeepLink.Image(id: String)` to handle widget photo taps; handled in `MainActivity.handleDeepLink` by checking `WidgetExtraImageId` extra before processing URI deep links. `initialLayout` uses a local placeholder layout — `@layout/glance_default_loading` from the Glance library was not resolvable in this setup.*
 
 ---
 
