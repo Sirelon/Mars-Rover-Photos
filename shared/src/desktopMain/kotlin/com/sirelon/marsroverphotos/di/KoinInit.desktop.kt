@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos.di
 
+import com.sirelon.marsroverphotos.domain.repositories.RoversRepository
 import com.sirelon.marsroverphotos.platform.BuildInfo
 import org.koin.core.context.startKoin
 
@@ -14,13 +15,15 @@ fun initKoinDesktop() {
         packageName = "com.sirelon.marsroverphotos"
     )
 
-    startKoin {
+    val koinApplication = startKoin {
         modules(
             platformModule,      // Desktop-specific dependencies
             databaseModule,      // Room database and DAOs
             networkModule,       // Ktor and REST API
             repositoryModule,    // Repository implementations
-            viewModelModule      // ViewModels
+            viewModelModule,     // ViewModels
+            navigationModule     // Navigation 3 entries
         )
     }
+    koinApplication.koin.get<RoversRepository>().initialize()
 }
