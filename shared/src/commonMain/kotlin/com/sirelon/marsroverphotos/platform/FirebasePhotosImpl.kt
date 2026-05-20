@@ -87,22 +87,17 @@ class FirebasePhotosImpl : IFirebasePhotos {
     }
 
     override suspend fun loadPopularPhotos(count: Int, lastPhotoId: String?): List<FirebasePhoto> {
-        return try {
-            var query = photosCollection()
-                .orderBy("shareCounter", Direction.DESCENDING)
-                .orderBy("saveCounter", Direction.DESCENDING)
-                .orderBy("scaleCounter", Direction.DESCENDING)
-                .orderBy("seeCounter", Direction.DESCENDING)
-                .limit(count)
-            if (lastPhotoId != null) {
-                val lastDoc = photosCollection().document(lastPhotoId).get()
-                query = query.startAfter(lastDoc)
-            }
-            query.get().documents.map { it.toFirebasePhoto() }
-        } catch (e: Exception) {
-            Logger.e("FirebasePhotosImpl", e) { "loadPopularPhotos failed" }
-            emptyList()
+        var query = photosCollection()
+            .orderBy("shareCounter", Direction.DESCENDING)
+            .orderBy("saveCounter", Direction.DESCENDING)
+            .orderBy("scaleCounter", Direction.DESCENDING)
+            .orderBy("seeCounter", Direction.DESCENDING)
+            .limit(count)
+        if (lastPhotoId != null) {
+            val lastDoc = photosCollection().document(lastPhotoId).get()
+            query = query.startAfter(lastDoc)
         }
+        return query.get().documents.map { it.toFirebasePhoto() }
     }
 
     override suspend fun loadEducationalFacts(): List<EducationalFact> {

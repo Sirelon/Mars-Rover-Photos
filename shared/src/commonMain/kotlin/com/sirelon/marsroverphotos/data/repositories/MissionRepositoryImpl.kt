@@ -29,7 +29,7 @@ class MissionRepositoryImpl : MissionRepository {
             facts
         } catch (e: Exception) {
             Logger.e("MissionRepository", e) { "Error fetching mission facts for rover ID: $roverId" }
-            null
+            throw e
         }
     }
 
