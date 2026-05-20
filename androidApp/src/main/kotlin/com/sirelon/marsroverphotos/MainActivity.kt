@@ -13,6 +13,7 @@ import androidx.compose.runtime.setValue
 import com.sirelon.marsroverphotos.presentation.App
 import com.sirelon.marsroverphotos.presentation.navigation.DeepLink
 import com.sirelon.marsroverphotos.utils.Logger
+import com.sirelon.marsroverphotos.widget.WidgetExtraImageId
 
 /**
  * Main activity for the Mars Rover Photos app.
@@ -64,6 +65,14 @@ class MainActivity : ComponentActivity() {
      * - https://marsroverphotos.app/photo/{photoId}
      */
     private fun handleDeepLink(intent: Intent?) {
+        // Check for widget photo extra first
+        val widgetImageId = intent?.getStringExtra(WidgetExtraImageId)
+        if (!widgetImageId.isNullOrBlank()) {
+            Logger.d("MainActivity") { "Widget deep link received: $widgetImageId" }
+            pendingDeepLink = DeepLink.Image(widgetImageId)
+            return
+        }
+
         val data: Uri? = intent?.data
         if (data == null) {
             Logger.d("MainActivity") { "No deep link data" }
