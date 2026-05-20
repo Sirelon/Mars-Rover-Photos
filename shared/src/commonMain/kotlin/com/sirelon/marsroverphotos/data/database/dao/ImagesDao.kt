@@ -45,8 +45,8 @@ interface ImagesDao {
     @Query("SELECT * FROM images WHERE popular = 1 ORDER BY `order` ASC")
     fun loadPopularImages(): Flow<List<MarsImage>>
 
-    // TODO: PagingSource requires room-paging which is Android-only for now
-    // Uncomment when room-paging supports all KMP targets
+    // TODO: PagingSource requires room-paging which is Android-only for now.
+    // Confirmed: Room KSP does not support PagingSource return type on non-Android targets.
     // @Query("SELECT * FROM images WHERE favorite = 1 ORDER BY `order` ASC")
     // fun loadFavoritePagedSource(): PagingSource<Int, MarsImage>
     //

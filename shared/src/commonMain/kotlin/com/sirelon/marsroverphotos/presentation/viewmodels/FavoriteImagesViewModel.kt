@@ -4,9 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
+import com.sirelon.marsroverphotos.platform.Tracker
 import com.sirelon.marsroverphotos.utils.Logger
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 
 /**
@@ -16,14 +16,22 @@ import kotlinx.coroutines.launch
  * Created on 25.08.2020 12:13 for Mars-Rover-Photos.
  */
 class FavoriteImagesViewModel(
-    private val imagesRepository: ImagesRepository
+    private val imagesRepository: ImagesRepository,
+    private val tracker: Tracker
 ) : ViewModel() {
 
     /**
      * Flow of favorite images.
-     * TODO: Re-enable paging when room-paging supports all KMP targets
      */
-    val favoriteImagesFlow: Flow<List<MarsImage>> = emptyFlow() // imagesRepository.loadFavoriteImages()
+    val favoriteImagesFlow: Flow<List<MarsImage>> = imagesRepository.loadFavoriteImages()
+
+    /**
+     * Track an analytics event.
+     * @param event Event name to track
+     */
+    fun track(event: String) {
+        tracker.trackClick(event)
+    }
 
     /**
      * Toggle favorite status for an image.

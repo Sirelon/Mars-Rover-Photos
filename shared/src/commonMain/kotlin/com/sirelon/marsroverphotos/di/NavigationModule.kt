@@ -53,7 +53,18 @@ val navigationModule = module {
     }
 
     navigation<AppDestination.Favorite> {
-        FavoriteScreen()
+        val navigator = LocalAppNavigator.current
+        FavoriteScreen(
+            onNavigateToImages = { image, allImages ->
+                navigator.navigate(
+                    AppDestination.Images(
+                        photoIds = allImages.map { it.id },
+                        selectedId = image.id
+                    )
+                )
+            },
+            onNavigateToRovers = { navigator.selectTopLevel(AppDestination.Rovers) }
+        )
     }
 
     navigation<AppDestination.Popular> {
