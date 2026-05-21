@@ -115,22 +115,24 @@ private fun FavoritePhotosContent(
             title = { Text(text = title) },
             windowInsets = WindowInsets(0, 0, 0, 0),
             actions = {
-                IconButton(
-                    onClick = {
-                        gridView = !gridView
-                        appSettings.gridView = gridView
-                    },
-                ) {
-                    if (gridView) {
-                        MaterialSymbolIcon(
-                            symbol = MaterialSymbol.ViewList,
-                            contentDescription = "Change to List View",
-                        )
-                    } else {
-                        MaterialSymbolIcon(
-                            symbol = MaterialSymbol.GridView,
-                            contentDescription = "Change to Grid View",
-                        )
+                if (items.isNotEmpty()) {
+                    IconButton(
+                        onClick = {
+                            gridView = !gridView
+                            appSettings.gridView = gridView
+                        },
+                    ) {
+                        if (gridView) {
+                            MaterialSymbolIcon(
+                                symbol = MaterialSymbol.ViewList,
+                                contentDescription = "Change to List View",
+                            )
+                        } else {
+                            MaterialSymbolIcon(
+                                symbol = MaterialSymbol.GridView,
+                                contentDescription = "Change to Grid View",
+                            )
+                        }
                     }
                 }
             },

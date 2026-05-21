@@ -10,6 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -29,13 +31,16 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -70,7 +75,6 @@ import com.sirelon.marsroverphotos.shared.resources.did_you_know
 import com.sirelon.marsroverphotos.shared.resources.earth_date_fmt
 import com.sirelon.marsroverphotos.shared.resources.educational_fact
 import com.sirelon.marsroverphotos.shared.resources.no_photos_title
-import com.sirelon.marsroverphotos.shared.resources.photo_refresh
 import com.sirelon.marsroverphotos.shared.resources.select
 import com.sirelon.marsroverphotos.shared.resources.select_date
 import com.sirelon.marsroverphotos.shared.resources.sol_date_fmt
@@ -87,10 +91,12 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PhotosScreen(
     roverId: Long,
     onNavigateToImages: (String) -> Unit,
+    onBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: PhotosViewModel = koinViewModel()
 ) {
@@ -108,6 +114,7 @@ fun PhotosScreen(
         }.orEmpty()
     }
     val sol by viewModel.solFlow.collectAsState(initial = 0L)
+    val roverName by viewModel.roverNameFlow.collectAsState(initial = "")
 
     var openSolDialog by rememberSaveable { mutableStateOf(false) }
     var openEarthDateDialog by rememberSaveable { mutableStateOf(false) }
@@ -125,6 +132,17 @@ fun PhotosScreen(
 
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
+            TopAppBar(
+                title = { Text(text = roverName) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        MaterialSymbolIcon(
+                            symbol = MaterialSymbol.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                }
+            )
             Row(modifier = Modifier.height(IntrinsicSize.Min)) {
                 HeaderButton(stringResource(Res.string.sol_date_fmt, sol)) {
                     openSolDialog = true
@@ -191,14 +209,16 @@ private fun RefreshButton(
 ) {
     AnimatedVisibility(
         visible = visible,
-        modifier = modifier.padding(16.dp),
+        modifier = modifier
+            .navigationBarsPadding()
+            .padding(16.dp),
         enter = fadeIn(),
         exit = fadeOut()
     ) {
         FloatingActionButton(onClick = onClick) {
             MaterialSymbolIcon(
                 symbol = MaterialSymbol.Autorenew,
-                contentDescription = stringResource(Res.string.photo_refresh)
+                contentDescription = "Reload random Sol"
             )
         }
     }
@@ -211,7 +231,8 @@ private fun PhotosList(
 ) {
     LazyVerticalGrid(
         columns = adaptiveGridCells(minColumnWidth = 160.dp),
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(bottom = 88.dp)
     ) {
         items(
             items = gridItems,
@@ -262,7 +283,7 @@ private fun PhotoCard(
                 imageUrl = image.imageUrl
             )
             Text(
-                text = image.name.orEmpty(),
+                text = shortCaption(image.name.orEmpty()),
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(4.dp).fillMaxWidth(),
                 textAlign = TextAlign.Center
@@ -443,3 +464,6 @@ private fun millisToUtcLocalDate(timeMillis: Long): LocalDate =
 
 private fun LocalDate.toUtcMillis(): Long =
     atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
+
+private fun shortCaption(full: String): String =
+    full.substringAfter(": ", missingDelimiterValue = full).trim()

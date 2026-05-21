@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -16,6 +17,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format.MonthNames
+import kotlinx.datetime.toLocalDateTime
 
 /**
  * Bottom sheet displaying detailed information about a Mars rover photo.
@@ -39,6 +44,7 @@ fun PhotoInfoBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .navigationBarsPadding()
                 .padding(horizontal = 24.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -76,7 +82,7 @@ fun PhotoInfoBottomSheet(
                     InfoSection(title = "Sol", content = image.sol.toString())
                 }
                 Column(modifier = Modifier.weight(1f)) {
-                    InfoSection(title = "Earth Date", content = image.earthDate)
+                    InfoSection(title = "Earth Date", content = formatEarthDate(image.earthDate))
                 }
             }
 
@@ -148,4 +154,19 @@ private fun formatStatValue(value: Long): String {
     val thousands = value / 1000
     val tenths = (value % 1000) / 100
     return "${thousands}.${tenths}K"
+}
+
+/**
+ * Formats an ISO-8601 timestamp (e.g. `2025-03-16T22:11:53Z`) as a human-friendly
+ * date+time in UTC. Falls back to the raw input if parsing fails so the UI never crashes.
+ *
+ * Example: `2025-03-16T22:11:53Z` → `Mar 16, 2025 · 22:11 UTC`
+ */
+internal fun formatEarthDate(iso: String): String {
+    val instant = runCatching { Instant.parse(iso) }.getOrNull() ?: return iso
+    val ldt = instant.toLocalDateTime(TimeZone.UTC)
+    val month = MonthNames.ENGLISH_ABBREVIATED.names[ldt.monthNumber - 1]
+    val hh = ldt.hour.toString().padStart(2, '0')
+    val mm = ldt.minute.toString().padStart(2, '0')
+    return "$month ${ldt.dayOfMonth}, ${ldt.year} · $hh:$mm UTC"
 }

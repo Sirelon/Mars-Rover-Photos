@@ -49,6 +49,7 @@ import com.sirelon.marsroverphotos.presentation.viewmodels.MilestoneType
 import com.sirelon.marsroverphotos.presentation.viewmodels.MissionInfoState
 import com.sirelon.marsroverphotos.presentation.viewmodels.RoverMissionInfoViewModel
 import com.sirelon.marsroverphotos.presentation.viewmodels.TimelineMilestone
+import com.sirelon.marsroverphotos.utils.formatThousands
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -171,11 +172,9 @@ private fun MissionInfoContent(state: MissionInfoState) {
                 }
             }
 
-            state.factsError != null -> item {
-                SectionHeader("Mission Info")
-                Spacer(modifier = Modifier.height(8.dp))
-                ErrorMessage(state.factsError)
-            }
+            // When facts fail to load we intentionally render nothing here —
+            // hiding the section avoids showing a broken-looking error banner
+            // on first run.
         }
     }
 }
@@ -314,12 +313,12 @@ private fun MissionStatistics(
         ) {
             StatCard(
                 label = "Total Photos",
-                value = totalPhotos.abbreviate(),
+                value = formatThousands(totalPhotos),
                 modifier = Modifier.weight(1f)
             )
             StatCard(
                 label = "Days on Mars",
-                value = "${daysActive.abbreviate()} sols",
+                value = "${formatThousands(daysActive)} sols",
                 modifier = Modifier.weight(1f)
             )
         }
@@ -329,7 +328,7 @@ private fun MissionStatistics(
         ) {
             StatCard(
                 label = "Earth Days",
-                value = "${earthDaysActive.abbreviate()} days",
+                value = "${formatThousands(earthDaysActive)} days",
                 modifier = Modifier.weight(1f)
             )
             StatCard(
@@ -479,53 +478,3 @@ private fun FunFacts(facts: List<String>) {
     }
 }
 
-@Composable
-private fun ErrorMessage(message: String) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.errorContainer
-        )
-    ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            MaterialSymbolIcon(
-                symbol = MaterialSymbol.Error,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.error,
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(modifier = Modifier.width(12.dp))
-            Text(
-                text = message,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onErrorContainer
-            )
-        }
-    }
-}
-
-// ── Number formatting ─────────────────────────────────────────────────────────
-
-/**
- * KMP-safe compact number formatter. No java.text.NumberFormat, no Locale.
- *
- * Examples: 999 → "999", 1_500 → "1.5K", 471_091 → "471.0K", 4_345_812 → "4.3M"
- */
-private fun Int.abbreviate(): String = when {
-    this >= 1_000_000 -> {
-        val whole = this / 1_000_000
-        val tenths = (this % 1_000_000) / 100_000
-        "${whole}.${tenths}M"
-    }
-    this >= 1_000 -> {
-        val whole = this / 1_000
-        val tenths = (this % 1_000) / 100
-        "${whole}.${tenths}K"
-    }
-    else -> "$this"
-}
-
-private fun Long.abbreviate(): String = toInt().abbreviate()

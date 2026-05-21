@@ -97,16 +97,42 @@ fun PhotoStats(marsImage: MarsImage, onFavoriteClick: () -> Unit) {
         verticalArrangement = Arrangement.Center
     ) {
 
-        StatsInfoText(stats.see, MaterialSymbol.Visibility, "counterSee")
-        StatsInfoText(stats.scale, MaterialSymbol.ZoomIn, "counterScale")
-        StatsInfoText(stats.save, MaterialSymbol.Save, "counterSave")
-        StatsInfoText(stats.share, MaterialSymbol.Share, "counterShare")
-
-        MarsImageFavoriteToggle(
-            modifier = Modifier.fillMaxWidth(),
+        StatsInfoText(stats.see, MaterialSymbol.Visibility, "Views")
+        StatsInfoText(stats.scale, MaterialSymbol.ZoomIn, "Zooms")
+        StatsInfoText(stats.save, MaterialSymbol.Save, "Saves")
+        StatsInfoText(stats.share, MaterialSymbol.Share, "Shares")
+        FavoriteStat(
+            count = stats.favorite,
             checked = marsImage.favorite,
             onCheckedChange = { onFavoriteClick() }
         )
+    }
+}
+
+@Composable
+private fun FavoriteStat(
+    count: Long,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        IconToggleButton(
+            checked = checked,
+            onCheckedChange = onCheckedChange
+        ) {
+            MaterialSymbolIcon(
+                symbol = MaterialSymbol.Favorite,
+                contentDescription = "Favorites",
+                filled = checked,
+                size = 20.dp
+            )
+        }
+        if (count > 0) {
+            Text(
+                text = count.toString(),
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
     }
 }
 
@@ -123,7 +149,7 @@ fun MarsImageFavoriteToggle(
     ) {
         MaterialSymbolIcon(
             symbol = MaterialSymbol.Favorite,
-            contentDescription = null, // handled by click label of parent
+            contentDescription = "Favorites",
             filled = checked
         )
     }
