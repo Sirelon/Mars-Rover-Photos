@@ -20,9 +20,17 @@ private val pendingDeepLink = MutableStateFlow<DeepLink?>(null)
  *   marsrover://photo/{photoId}   — navigate directly to a photo in the gallery
  */
 fun pushDeepLink(urlString: String) {
-    if (!urlString.startsWith("marsrover://")) return
-    val path = urlString.removePrefix("marsrover://")
-    val parts = path.split("/")
+    val parts = when {
+        urlString.startsWith("marsrover://") -> {
+            urlString.removePrefix("marsrover://").split("/")
+        }
+
+        urlString.startsWith("https://marsroverphotos.app/") -> {
+            urlString.removePrefix("https://marsroverphotos.app/").split("/")
+        }
+
+        else -> return
+    }
     if (parts.size < 2) return
     val host = parts[0]
     val idStr = parts[1]
