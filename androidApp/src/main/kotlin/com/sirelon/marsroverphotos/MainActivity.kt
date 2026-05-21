@@ -2,6 +2,7 @@ package com.sirelon.marsroverphotos
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -28,6 +29,11 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        // Prevent the system from adding a translucent scrim over the NavigationBar —
+        // the app's NavigationBar background provides the necessary contrast.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            window.isNavigationBarContrastEnforced = false
+        }
 
         // Handle deep link if present
         handleDeepLink(intent)
