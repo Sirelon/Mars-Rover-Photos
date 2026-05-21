@@ -15,8 +15,8 @@ import com.sirelon.marsroverphotos.presentation.navigation.AppNavigation
 import com.sirelon.marsroverphotos.presentation.navigation.DeepLink
 import com.sirelon.marsroverphotos.presentation.navigation.LocalAboutCallbacks
 import com.sirelon.marsroverphotos.presentation.theme.MarsRoverPhotosTheme
-import com.sirelon.marsroverphotos.presentation.ui.isSystemInDarkTheme
-import com.sirelon.marsroverphotos.presentation.ui.supportsDynamicColor
+import com.sirelon.marsroverphotos.presentation.theme.isSystemInDarkTheme
+import com.sirelon.marsroverphotos.presentation.theme.supportsDynamicColor
 import org.koin.compose.koinInject
 
 /**
