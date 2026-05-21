@@ -31,6 +31,8 @@
 	<true/>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Mars Rover Photos needs access to save rover photos to your Photos library.</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>We use this to show you relevant ads and improve the app experience.</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

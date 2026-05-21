@@ -40,7 +40,8 @@ val navigationModule = module {
                         selectedId = photoId
                     )
                 )
-            }
+            },
+            onBack = { navigator.goBack() }
         )
     }
 
@@ -95,6 +96,7 @@ val navigationModule = module {
     }
 
     navigation<AppDestination.Ukraine> {
-        UkraineScreen()
+        val navigator = LocalAppNavigator.current
+        UkraineScreen(onBack = { navigator.goBack() })
     }
 }

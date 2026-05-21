@@ -57,6 +57,11 @@ class PhotosViewModel(
         }
 
     /**
+     * Flow of the current rover's display name. Emits null while the rover is loading.
+     */
+    val roverNameFlow = roverFlow.map { it.name }
+
+    /**
      * Flow of photos loaded from the API.
      * Null indicates loading state.
      */

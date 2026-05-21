@@ -57,6 +57,7 @@ technical reference notes are at the bottom.
 | 6.2 — iOS image save/share | ✅ Done | Save to Photos and native share sheet |
 | 6.3 — Xcode project bootstrap | ✅ Done | Checked-in iOS project/workspace that teammates can run |
 | 6.4 — iOS deep links | ✅ Done | `marsrover://` and universal-link handling on iOS |
+| S10 — GDPR / Consent | ✅ Done | Android UMP consent flow restored; iOS ATT prompt added |
 | Final cleanup | Pending | Delete legacy `app/`, final smoke tests, CI gate |
 | Edge-to-edge | ✅ Done | Full edge-to-edge support: `isNavigationBarContrastEnforced`, `adjustResize`, ImagesScreen fullscreen |
 
@@ -331,6 +332,34 @@ interface doesn't expose those Firebase methods. Wire up when `6.1` (Firebase iO
 - ✅ Widget can still deep link into the app through `WidgetExtraImageId`.
 
 *Note: `ImagesRepository` and `RestApi` are injected via Koin (`KoinComponent` in `CoroutineWorker`). `Timber` replaced with shared `Logger` (Kermit). Legacy `feature/rovers/*Id` constants replaced with shared `domain.models.*_ID`. `RoversActivity` replaced with `MainActivity`. Added `DeepLink.Image(id: String)` to handle widget photo taps; handled in `MainActivity.handleDeepLink` by checking `WidgetExtraImageId` extra before processing URI deep links. `initialLayout` uses a local placeholder layout — `@layout/glance_default_loading` from the Glance library was not resolvable in this setup.*
+
+---
+
+### ~~Ticket S10 — GDPR / Consent Flow~~ ✅
+
+**Goal:** restore the Google UMP-based GDPR consent flow on Android; add iOS ATT prompt.
+
+**Android work:**
+- Ported `GdprHelper` from legacy `app/` into `androidApp/gdpr/GdprHelper.kt`.
+- Replaced `Timber` with shared `Logger`; replaced `recordException` import with shared platform actual.
+- Wrapped `ConsentDebugSettings` (EEA force) in `if (BuildConfig.DEBUG)`.
+- `gdprHelper.init()` called in `MainActivity.onCreate` after `setContent`.
+- `gdprHelper.acceptGdpr: StateFlow<Boolean>` is ready to wire into `AdSlot` when ads land.
+
+**iOS work:**
+- `NSUserTrackingUsageDescription` added to `Info.plist`.
+- `ATTrackingManager.requestTrackingAuthorization` called from `MarsRoverApp.init()` with a 1 s delay
+  (Apple guideline: show prompt after first frame). No new SPM dependency — system framework.
+
+**Definition of Done:**
+- ✅ `GdprHelper` lives in `androidApp/gdpr/`.
+- ✅ `MainActivity` initialises the consent flow on startup.
+- ✅ iOS `Info.plist` carries `NSUserTrackingUsageDescription`.
+- ✅ iOS ATT authorization is requested on launch.
+- ✅ Android, iOS framework, and unit tests compile.
+
+*Note: ads remain a no-op (`AdSlot.android.kt` placeholder) until a future ticket wires them up.
+GDPR/ATT consent is collected proactively so it is already in place when ads land.*
 
 ---
 

@@ -11,7 +11,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import com.sirelon.marsroverphotos.feature.gdpr.GdprHelper
+import com.sirelon.marsroverphotos.gdpr.GdprHelper
 import com.sirelon.marsroverphotos.presentation.App
 import com.sirelon.marsroverphotos.presentation.navigation.DeepLink
 import com.sirelon.marsroverphotos.utils.Logger
@@ -23,7 +23,7 @@ import com.sirelon.marsroverphotos.widget.WidgetExtraImageId
  */
 class MainActivity : ComponentActivity() {
     private var pendingDeepLink: DeepLink? by mutableStateOf(null)
-    private val gdprHelper by lazy { GdprHelper(this) }
+    private val gdprHelper = GdprHelper(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Install Android 12+ splash screen
@@ -50,6 +50,7 @@ class MainActivity : ComponentActivity() {
                 appVersion = BuildConfig.VERSION_NAME
             )
         }
+
     }
 
     private fun openStoreListing() {

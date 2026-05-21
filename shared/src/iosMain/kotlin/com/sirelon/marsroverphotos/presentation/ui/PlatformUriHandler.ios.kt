@@ -5,7 +5,7 @@ import platform.Foundation.NSURL
 import platform.UIKit.UIApplication
 
 /**
- * iOS implementation - TODO: Implement with iOS native URL opening.
+ * iOS implementation using UIApplication to open URLs natively.
  */
 actual class PlatformUriHandler {
     actual fun openUri(uri: String) {

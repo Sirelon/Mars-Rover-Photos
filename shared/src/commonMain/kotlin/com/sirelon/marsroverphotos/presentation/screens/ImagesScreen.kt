@@ -44,6 +44,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
@@ -149,7 +150,13 @@ private fun ImagesPagerContent(
     Column(modifier = Modifier.fillMaxSize()) {
         AnimatedVisibility(visible = !hideUi) {
             TopAppBar(
-                title = { Text(text = titleState) },
+                title = {
+                    Text(
+                        text = titleState,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         MaterialSymbolIcon(

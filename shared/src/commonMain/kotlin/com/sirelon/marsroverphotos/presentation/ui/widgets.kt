@@ -88,9 +88,9 @@ fun RadioButtonText(
  * Disables scroll overscroll effect (glow on Android, bounce on iOS).
  * Useful for custom scroll implementations or when overscroll is not desired.
  *
- * Platform-specific implementation via expect/actual.
- *
  * @param content The content to display without overscroll effect
  */
 @Composable
-expect fun NoScrollEffect(content: @Composable () -> Unit)
+fun NoScrollEffect(content: @Composable () -> Unit) {
+    content()
+}

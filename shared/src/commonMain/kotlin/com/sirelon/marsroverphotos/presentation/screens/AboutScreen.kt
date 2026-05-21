@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +15,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -97,7 +99,11 @@ private fun AboutContent(
                 .fillMaxWidth()
         ) {
             LinkifyText(text = "API provided by ", link = "https://api.nasa.gov/")
-            LinkifyText(text = "Email: ", link = "mailto:sasha.sirelon@gmail.com")
+            LinkifyText(
+                text = "Email: ",
+                link = "mailto:sasha.sirelon@gmail.com",
+                displayLink = "sasha.sirelon@gmail.com"
+            )
             if (appVersion.isNotEmpty()) {
                 Text(
                     text = "Version: $appVersion",
@@ -153,7 +159,7 @@ private fun ThemeChanger(viewModel: AboutViewModel) {
                 text = "Change the app theme",
                 style = MaterialTheme.typography.titleLarge.copy(textAlign = TextAlign.Center)
             )
-            Row(
+            FlowRow(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -179,41 +185,33 @@ private fun FactsToggle(viewModel: AboutViewModel) {
             .fillMaxWidth()
             .padding(horizontal = 8.dp)
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 16.dp)
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = "Educational Facts",
-                style = MaterialTheme.typography.titleLarge.copy(textAlign = TextAlign.Center)
-            )
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                text = "Show \"Did You Know?\" fact cards while browsing photos.",
-                style = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Center),
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                RadioButtonText(text = "Show Facts", selected = showFacts) {
-                    viewModel.toggleFacts(true)
-                }
-                RadioButtonText(text = "Hide Facts", selected = !showFacts) {
-                    viewModel.toggleFacts(false)
-                }
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Educational Facts",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    text = "Show \"Did You Know?\" fact cards while browsing photos.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
+            Switch(
+                checked = showFacts,
+                onCheckedChange = { viewModel.toggleFacts(it) }
+            )
         }
     }
 }
 
 @Composable
-private fun LinkifyText(text: String, link: String) {
+private fun LinkifyText(text: String, link: String, displayLink: String = link) {
     val uriHandler = rememberPlatformUriHandler()
     val layoutResult = remember { mutableStateOf<TextLayoutResult?>(null) }
     val colors = MaterialTheme.colorScheme
@@ -226,12 +224,12 @@ private fun LinkifyText(text: String, link: String) {
                 textDecoration = TextDecoration.Underline
             )
         )
-        append(link)
+        append(displayLink)
         addStringAnnotation(
             tag = "URL",
             annotation = link,
             start = text.length,
-            end = text.length + link.length
+            end = text.length + displayLink.length
         )
     }.toAnnotatedString()
 

@@ -6,10 +6,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
@@ -19,6 +23,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.sirelon.marsroverphotos.platform.Tracker
 import com.sirelon.marsroverphotos.platform.recordException
+import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
+import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.presentation.ui.UkraineBanner
 import com.sirelon.marsroverphotos.presentation.ui.rememberPlatformUriHandler
 import org.koin.compose.koinInject
@@ -27,8 +33,9 @@ import org.koin.compose.koinInject
  * Full-screen Ukraine info screen. Describes the current situation in Ukraine and
  * provides outbound links to external resources.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UkraineScreen() {
+fun UkraineScreen(onBack: () -> Unit) {
     val uriHandler = rememberPlatformUriHandler()
     val tracker: Tracker = koinInject()
 
@@ -40,26 +47,46 @@ fun UkraineScreen() {
         }
     }
 
-    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-        CompositionLocalProvider(
-            LocalTextStyle provides MaterialTheme.typography.titleMedium.copy(
-                textAlign = TextAlign.Center,
-            ),
-        ) {
-            UkraineInfoContent(
-                onTrackClick = { event -> tracker.trackClick(event) },
-                onOpenUri = ::openUri,
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Ukraine") },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        MaterialSymbolIcon(
+                            symbol = MaterialSymbol.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                }
             )
         }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
+        ) {
+            CompositionLocalProvider(
+                LocalTextStyle provides MaterialTheme.typography.titleMedium.copy(
+                    textAlign = TextAlign.Center,
+                ),
+            ) {
+                UkraineInfoContent(
+                    onTrackClick = { event -> tracker.trackClick(event) },
+                    onOpenUri = ::openUri,
+                )
+            }
 
-        UkraineBanner(
-            modifier = Modifier.fillMaxWidth(),
-            title = "Glory to Ukraine",
-            onClick = {
-                tracker.trackClick("UkraineBanner_Bottom")
-                openUri("https://twitter.com/search?q=%23StandWithUkraine")
-            },
-        )
+            UkraineBanner(
+                modifier = Modifier.fillMaxWidth(),
+                title = "Glory to Ukraine",
+                onClick = {
+                    tracker.trackClick("UkraineBanner_Bottom")
+                    openUri("https://twitter.com/search?q=%23StandWithUkraine")
+                },
+            )
+        }
     }
 }
 
@@ -76,7 +103,7 @@ private fun UkraineInfoContent(
         Text(
             text = "Hello, I'm Oleksandr, a proud Ukrainian",
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.titleSmall,
+            style = MaterialTheme.typography.headlineSmall,
         )
         Text(
             text = "As you may be aware, Ukraine is currently facing a severe and merciless war. " +
