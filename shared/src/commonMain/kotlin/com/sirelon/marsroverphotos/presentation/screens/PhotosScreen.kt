@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -124,8 +125,10 @@ fun PhotosScreen(
 
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
-            Row(modifier = Modifier.height(52.dp)) {
-                HeaderButton(stringResource(Res.string.sol_date_fmt, sol)) {
+            Row(modifier = Modifier.height(IntrinsicSize.Min)) {
+                HeaderButton(
+                    stringResource(Res.string.sol_date_fmt).replace("%d", sol.toString())
+                ) {
                     openSolDialog = true
                 }
                 HorizontalDivider(
@@ -133,7 +136,9 @@ fun PhotosScreen(
                         .width(1.dp)
                         .fillMaxHeight()
                 )
-                HeaderButton(stringResource(Res.string.earth_date_fmt, viewModel.earthDateStr(sol))) {
+                HeaderButton(
+                    stringResource(Res.string.earth_date_fmt).replace("%s", viewModel.earthDateStr(sol))
+                ) {
                     openEarthDateDialog = true
                 }
             }
