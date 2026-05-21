@@ -4,6 +4,7 @@ import androidx.compose.ui.window.ComposeUIViewController
 import com.sirelon.marsroverphotos.presentation.App
 import com.sirelon.marsroverphotos.presentation.navigation.DeepLink
 import kotlinx.coroutines.flow.MutableStateFlow
+import platform.Foundation.NSURL
 import platform.UIKit.UIViewController
 
 /**
@@ -20,21 +21,24 @@ private val pendingDeepLink = MutableStateFlow<DeepLink?>(null)
  *   marsrover://photo/{photoId}   — navigate directly to a photo in the gallery
  */
 fun pushDeepLink(urlString: String) {
-    val parts = when {
-        urlString.startsWith("marsrover://") -> {
-            urlString.removePrefix("marsrover://").split("/")
+    val url = NSURL.URLWithString(urlString) ?: return
+    val host = url.host ?: return
+    val pathSegments = url.pathComponents
+        ?.mapNotNull { it as? String }
+        ?.filter { it != "/" && it.isNotBlank() }
+        .orEmpty()
+    if (pathSegments.isEmpty()) return
+
+    val (kind, idStr) = when (host.lowercase()) {
+        "marsroverphotos.app" -> {
+            if (pathSegments.size < 2) return
+            pathSegments[0] to pathSegments[1]
         }
 
-        urlString.startsWith("https://marsroverphotos.app/") -> {
-            urlString.removePrefix("https://marsroverphotos.app/").split("/")
-        }
-
+        "rover", "photo" -> host.lowercase() to pathSegments[0]
         else -> return
     }
-    if (parts.size < 2) return
-    val host = parts[0]
-    val idStr = parts[1]
-    val deepLink = when (host) {
+    val deepLink = when (kind) {
         "rover" -> idStr.toLongOrNull()?.let { DeepLink.Rover(it) }
         "photo" -> idStr.toLongOrNull()?.let { DeepLink.Photo(it) }
         else -> null
