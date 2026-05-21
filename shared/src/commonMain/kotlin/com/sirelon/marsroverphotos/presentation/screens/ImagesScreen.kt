@@ -5,28 +5,29 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -48,7 +49,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
-import com.sirelon.marsroverphotos.platform.BuildInfo
 import com.sirelon.marsroverphotos.presentation.ui.CenteredProgress
 import com.sirelon.marsroverphotos.presentation.ui.MarsImageFavoriteToggle
 import com.sirelon.marsroverphotos.presentation.ui.MarsSnackbar
@@ -147,67 +147,61 @@ private fun ImagesPagerContent(
         list.getOrNull(pagerState.currentPage)
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        AnimatedVisibility(visible = !hideUi) {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = titleState,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        MaterialSymbolIcon(
-                            symbol = MaterialSymbol.ArrowBack,
-                            contentDescription = "Back"
+    Box(modifier = Modifier.fillMaxSize()) {
+        ImagesPager(
+            pagerState = pagerState,
+            images = list,
+            hideUi = hideUi,
+            onTap = { viewModel.onTap() },
+            onFavoriteClick = { marsImage -> viewModel.updateFavorite(marsImage) },
+        )
+
+        val uiEvent by viewModel.uiEvent.collectAsStateWithLifecycle(initialValue = null)
+        OnEvent(uiEvent = uiEvent)
+
+        // Translucent TopAppBar overlay + (debug-only) action row.
+        AnimatedVisibility(
+            visible = !hideUi,
+            enter = fadeIn() + slideInVertically(initialOffsetY = { -it }),
+            exit = fadeOut() + slideOutVertically(targetOffsetY = { -it }),
+            modifier = Modifier.align(Alignment.TopCenter),
+        ) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                TopAppBar(
+                    modifier = Modifier.statusBarsPadding(),
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.55f),
+                    ),
+                    title = {
+                        Text(
+                            text = titleState,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
                         )
-                    }
-                },
-                actions = {
-                    if (currentImage != null) {
-                        SaveIcon(onClick = {
-                            viewModel.saveImage(currentImage)
-                        })
-                        ShareIcon(onClick = {
-                            viewModel.shareMarsImage(currentImage)
-                        })
-                        InfoIcon(onClick = {
-                            showInfoSheet = true
-                        })
-                    }
-                },
-            )
-        }
-
-        // Debug buttons — shown only on debug builds
-        if (BuildInfo.isDebug) {
-            AnimatedVisibility(visible = !hideUi) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    Button(onClick = { /* makePopular — requires repo extension; noop in shared */ }) {
-                        Text(text = "Mark as popular")
-                    }
-                    Button(onClick = { /* removePopular — noop in shared */ }) {
-                        Text(text = "Remove from popular")
-                    }
-                }
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = onBack) {
+                            MaterialSymbolIcon(
+                                symbol = MaterialSymbol.ArrowBack,
+                                contentDescription = "Back"
+                            )
+                        }
+                    },
+                    actions = {
+                        if (currentImage != null) {
+                            SaveIcon(onClick = {
+                                viewModel.saveImage(currentImage)
+                            })
+                            ShareIcon(onClick = {
+                                viewModel.shareMarsImage(currentImage)
+                            })
+                            InfoIcon(onClick = {
+                                showInfoSheet = true
+                            })
+                        }
+                    },
+                )
             }
-        }
-
-        Box(modifier = Modifier.weight(1f)) {
-            ImagesPager(
-                pagerState = pagerState,
-                images = list,
-                onTap = { viewModel.onTap() },
-                onFavoriteClick = { marsImage -> viewModel.updateFavorite(marsImage) },
-            )
-
-            val uiEvent by viewModel.uiEvent.collectAsStateWithLifecycle(initialValue = null)
-            OnEvent(uiEvent = uiEvent)
         }
     }
 
@@ -340,6 +334,7 @@ private fun InfoIcon(onClick: () -> Unit) {
 private fun ImagesPager(
     pagerState: PagerState,
     images: List<MarsImage>,
+    hideUi: Boolean,
     onTap: () -> Unit,
     onFavoriteClick: (MarsImage) -> Unit,
 ) {
@@ -381,13 +376,18 @@ private fun ImagesPager(
                         .fillMaxSize()
                         .navigationBarsPadding()
                 ) {
-                    MarsImageFavoriteToggle(
-                        modifier = Modifier
-                            .size(64.dp)
-                            .align(Alignment.BottomCenter),
-                        checked = marsImage.favorite,
-                        onCheckedChange = { onFavoriteClick(marsImage) }
-                    )
+                    AnimatedVisibility(
+                        visible = !hideUi,
+                        enter = fadeIn() + slideInVertically(initialOffsetY = { it }),
+                        exit = fadeOut() + slideOutVertically(targetOffsetY = { it }),
+                        modifier = Modifier.align(Alignment.BottomCenter),
+                    ) {
+                        MarsImageFavoriteToggle(
+                            modifier = Modifier.size(64.dp),
+                            checked = marsImage.favorite,
+                            onCheckedChange = { onFavoriteClick(marsImage) }
+                        )
+                    }
                 }
 
                 // Reset zoom when this page scrolls off-screen

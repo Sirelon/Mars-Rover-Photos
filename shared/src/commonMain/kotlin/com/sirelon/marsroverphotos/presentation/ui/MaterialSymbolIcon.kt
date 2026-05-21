@@ -47,7 +47,8 @@ enum class MaterialSymbol(val iconName: String) {
     Flag("flag"),
     CameraAlt("photo_camera"),
     Error("error"),
-    CheckCircle("check_circle")
+    CheckCircle("check_circle"),
+    Close("close")
 }
 
 /**

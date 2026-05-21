@@ -29,6 +29,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -98,6 +100,8 @@ fun PhotosScreen(
     onNavigateToImages: (String) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    cameraFilter: String? = null,
+    onClearCameraFilter: () -> Unit = {},
     viewModel: PhotosViewModel = koinViewModel()
 ) {
     var maxSol by remember { mutableLongStateOf(1L) }
@@ -105,6 +109,10 @@ fun PhotosScreen(
     LaunchedEffect(roverId) {
         viewModel.setRoverId(roverId)
         maxSol = viewModel.maxSol().coerceAtLeast(1L)
+    }
+
+    LaunchedEffect(cameraFilter) {
+        viewModel.setCameraFilter(cameraFilter)
     }
 
     val gridItems by viewModel.gridItemsFlow.collectAsState(initial = null)
@@ -157,6 +165,16 @@ fun PhotosScreen(
                 }
             }
 
+            if (!cameraFilter.isNullOrBlank()) {
+                CameraFilterChip(
+                    camera = cameraFilter,
+                    onClear = {
+                        viewModel.setCameraFilter(null)
+                        onClearCameraFilter()
+                    }
+                )
+            }
+
             if (openEarthDateDialog) {
                 PlatformDatePickerDialog(
                     selectedDate = millisToUtcLocalDate(viewModel.dateFromSol()),
@@ -177,11 +195,19 @@ fun PhotosScreen(
                 when {
                     items == null -> CenteredProgress()
                     items.isEmpty() -> {
-                        EmptyPhotos(
-                            title = stringResource(Res.string.no_photos_title),
-                            btnTitle = stringResource(Res.string.tap_to_retry),
-                            callback = { viewModel.randomize() }
-                        )
+                        if (!cameraFilter.isNullOrBlank()) {
+                            EmptyPhotos(
+                                title = "No $cameraFilter photos on Sol $sol. Try another Sol.",
+                                btnTitle = stringResource(Res.string.tap_to_retry),
+                                callback = { viewModel.randomize() }
+                            )
+                        } else {
+                            EmptyPhotos(
+                                title = stringResource(Res.string.no_photos_title),
+                                btnTitle = stringResource(Res.string.tap_to_retry),
+                                callback = { viewModel.randomize() }
+                            )
+                        }
                     }
                     else -> {
                         PhotosList(items) { image ->
@@ -230,9 +256,16 @@ private fun PhotosList(
     onPhotoClick: (image: MarsImage) -> Unit
 ) {
     LazyVerticalGrid(
-        columns = adaptiveGridCells(minColumnWidth = 160.dp),
+        columns = adaptiveGridCells(minColumnWidth = 180.dp),
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(bottom = 88.dp)
+        contentPadding = PaddingValues(
+            start = 12.dp,
+            end = 12.dp,
+            top = 8.dp,
+            bottom = 88.dp
+        ),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(
             items = gridItems,
@@ -467,3 +500,22 @@ private fun LocalDate.toUtcMillis(): Long =
 
 private fun shortCaption(full: String): String =
     full.substringAfter(": ", missingDelimiterValue = full).trim()
+
+@Composable
+private fun CameraFilterChip(camera: String, onClear: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        AssistChip(
+            onClick = onClear,
+            label = { Text("Camera: $camera ×") },
+            colors = AssistChipDefaults.assistChipColors(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                labelColor = MaterialTheme.colorScheme.onSecondaryContainer
+            )
+        )
+    }
+}

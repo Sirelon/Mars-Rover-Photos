@@ -9,12 +9,15 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
+import com.sirelon.marsroverphotos.domain.settings.AppSettings
 import com.sirelon.marsroverphotos.platform.Tracker
 import com.sirelon.marsroverphotos.presentation.ui.AdSlot
 import com.sirelon.marsroverphotos.presentation.ui.UkraineBanner
@@ -44,6 +47,8 @@ fun AppNavigation(
     val entryDecorators = rememberAppNavEntryDecorators()
     val entryProvider = koinEntryProvider<NavKey>()
     val tracker: Tracker = koinInject()
+    val appSettings: AppSettings = koinInject()
+    val ukraineBannerDismissed by appSettings.ukraineBannerDismissedFlow.collectAsStateWithLifecycle()
     val currentDestination = backStack.lastOrNull() as? AppDestination ?: startDestination
     val isImages = currentDestination is AppDestination.Images
 
@@ -72,12 +77,16 @@ fun AppNavigation(
         Column(
             modifier = if (isImages) modifier else modifier.windowInsetsPadding(WindowInsets.statusBars)
         ) {
-            if (!isImages && currentDestination !is AppDestination.Ukraine) {
+            if (!isImages && currentDestination !is AppDestination.Ukraine && !ukraineBannerDismissed) {
                 UkraineBanner(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
                         tracker.trackClick("UkraineBanner_Root")
                         navigator.navigate(AppDestination.Ukraine)
+                    },
+                    onDismiss = {
+                        tracker.trackClick("UkraineBanner_Dismiss")
+                        appSettings.ukraineBannerDismissed = true
                     },
                 )
             }

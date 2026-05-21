@@ -12,7 +12,7 @@ sealed interface AppDestination : NavKey {
     data object Rovers : AppDestination
 
     @Serializable
-    data class Photos(val roverId: Long) : AppDestination
+    data class Photos(val roverId: Long, val camera: String? = null) : AppDestination
 
     @Serializable
     data class Images(

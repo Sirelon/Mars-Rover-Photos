@@ -1,13 +1,17 @@
 package com.sirelon.marsroverphotos.presentation.screens
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,6 +20,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -57,6 +65,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun RoverMissionInfoScreen(
     roverId: Long,
     onBack: () -> Unit,
+    onCameraClick: (String) -> Unit = {},
     viewModel: RoverMissionInfoViewModel = koinViewModel()
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
@@ -93,7 +102,10 @@ fun RoverMissionInfoScreen(
         ) { currentState ->
             when {
                 currentState == null -> CenteredProgress()
-                else -> MissionInfoContent(state = currentState)
+                else -> MissionInfoContent(
+                    state = currentState,
+                    onCameraClick = onCameraClick
+                )
             }
         }
     }
@@ -112,7 +124,10 @@ private fun CenteredProgress() {
 }
 
 @Composable
-private fun MissionInfoContent(state: MissionInfoState) {
+private fun MissionInfoContent(
+    state: MissionInfoState,
+    onCameraClick: (String) -> Unit = {}
+) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -145,7 +160,10 @@ private fun MissionInfoContent(state: MissionInfoState) {
         item {
             SectionHeader("Cameras")
             Spacer(modifier = Modifier.height(8.dp))
-            CamerasList(cameras = state.cameras)
+            CamerasList(
+                cameras = state.cameras,
+                onCameraClick = onCameraClick
+            )
         }
 
         when {
@@ -223,11 +241,24 @@ private fun SectionHeader(title: String) {
 
 @Composable
 private fun MissionTimeline(milestones: List<TimelineMilestone>, status: String) {
-    val milestoneColor = if (status.equals("active", ignoreCase = true)) {
+    val isActive = status.equals("active", ignoreCase = true)
+    val milestoneColor = if (isActive) {
         MaterialTheme.colorScheme.primary
     } else {
         MaterialTheme.colorScheme.secondary
     }
+
+    // Animate the Landing→Current segment from 0f → 1f on first composition for
+    // active rovers. Completed rovers go straight to 1f (mission ended).
+    var animationStarted by remember { mutableStateOf(false) }
+    LaunchedEffect(milestones.firstOrNull()?.date) {
+        animationStarted = true
+    }
+    val landingToCurrentProgress by animateFloatAsState(
+        targetValue = if (animationStarted) 1f else 0f,
+        animationSpec = tween(durationMillis = 600),
+        label = "LandingToCurrentProgress"
+    )
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -282,16 +313,44 @@ private fun MissionTimeline(milestones: List<TimelineMilestone>, status: String)
             }
 
             if (index < milestones.size - 1) {
-                Box(
+                // First connector (Launch → Landing) is always 100% — that
+                // journey is complete once the rover has landed.
+                // Second connector (Landing → Current/End) is animated for
+                // active rovers and fully filled for completed missions.
+                val segmentProgress = when {
+                    index == 0 -> 1f
+                    !isActive -> 1f
+                    else -> landingToCurrentProgress
+                }
+                TimelineSegment(
+                    progress = segmentProgress,
                     modifier = Modifier
                         .weight(0.5f)
-                        .height(2.dp)
                         .align(Alignment.CenterVertically)
                         .padding(horizontal = 4.dp)
-                        .background(milestoneColor)
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun TimelineSegment(progress: Float, modifier: Modifier = Modifier) {
+    val shape = RoundedCornerShape(3.dp)
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(6.dp)
+            .clip(shape)
+            .background(MaterialTheme.colorScheme.outlineVariant)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(progress.coerceIn(0f, 1f))
+                .fillMaxHeight()
+                .clip(shape)
+                .background(MaterialTheme.colorScheme.primary)
+        )
     }
 }
 
@@ -370,7 +429,10 @@ private fun StatCard(label: String, value: String, modifier: Modifier = Modifier
 }
 
 @Composable
-private fun CamerasList(cameras: List<CameraSpec>) {
+private fun CamerasList(
+    cameras: List<CameraSpec>,
+    onCameraClick: (String) -> Unit = {}
+) {
     if (cameras.isEmpty()) {
         Text(
             text = "No camera information available",
@@ -385,7 +447,10 @@ private fun CamerasList(cameras: List<CameraSpec>) {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             cameras.forEachIndexed { index, camera ->
-                CameraItem(camera)
+                CameraItem(
+                    camera = camera,
+                    onClick = { onCameraClick(camera.name) }
+                )
                 if (index < cameras.size - 1) {
                     HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
                 }
@@ -395,8 +460,11 @@ private fun CamerasList(cameras: List<CameraSpec>) {
 }
 
 @Composable
-private fun CameraItem(camera: CameraSpec) {
-    Column {
+private fun CameraItem(
+    camera: CameraSpec,
+    onClick: () -> Unit = {}
+) {
+    Column(modifier = Modifier.clickable(onClick = onClick)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically

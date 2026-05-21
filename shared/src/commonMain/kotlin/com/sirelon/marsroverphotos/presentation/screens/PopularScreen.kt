@@ -34,7 +34,6 @@ import com.sirelon.marsroverphotos.presentation.ui.CenteredColumn
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.presentation.ui.MarsImageComposable
-import com.sirelon.marsroverphotos.presentation.ui.calculateAdaptiveColumns
 import com.sirelon.marsroverphotos.presentation.viewmodels.PopularPhotosViewModel
 import com.sirelon.marsroverphotos.shared.resources.Res
 import com.sirelon.marsroverphotos.shared.resources.popular_empty_title
@@ -133,19 +132,18 @@ private fun PopularPhotosContent(
             }
 
             else -> {
-                val spacedBy = Arrangement.spacedBy(16.dp)
-                val adaptiveColumns = calculateAdaptiveColumns(minColumnWidth = 160.dp)
+                val spacedBy = Arrangement.spacedBy(8.dp)
                 LazyVerticalStaggeredGrid(
                     modifier = modifier
                         .weight(1f)
                         .nestedScroll(scrollBehavior.nestedScrollConnection),
-                    contentPadding = PaddingValues(16.dp),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
                     columns = if (gridView) {
-                        StaggeredGridCells.Fixed(adaptiveColumns)
+                        StaggeredGridCells.Adaptive(minSize = 180.dp)
                     } else {
                         StaggeredGridCells.Fixed(1)
                     },
-                    verticalItemSpacing = 16.dp,
+                    verticalItemSpacing = 8.dp,
                     horizontalArrangement = spacedBy,
                     content = {
                         items(
