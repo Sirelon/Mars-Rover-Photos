@@ -14,6 +14,11 @@ struct MarsRoverApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                // Deep link handling (ticket 6.4)
+                // Forwards marsrover:// URLs to Kotlin for parsing and navigation.
+                .onOpenURL { url in
+                    Main_iosKt.pushDeepLink(urlString: url.absoluteString)
+                }
         }
     }
 }

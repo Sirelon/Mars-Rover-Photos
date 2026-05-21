@@ -55,7 +55,7 @@ technical reference notes are at the bottom.
 | 6.1 — Firebase iOS | ✅ Done | Popular data, analytics, Crashlytics on iOS |
 | 6.2 — iOS image save/share | Pending | Save to Photos and native share sheet |
 | 6.3 — Xcode project bootstrap | ✅ Done | Checked-in iOS project/workspace that teammates can run |
-| 6.4 — iOS deep links | Pending | `marsrover://` and universal-link handling on iOS |
+| 6.4 — iOS deep links | ✅ Done | `marsrover://` and universal-link handling on iOS |
 | Final cleanup | Pending | Delete legacy `app/`, final smoke tests, CI gate |
 
 ---
@@ -391,7 +391,7 @@ file must be provided locally. `IosTracker` now mirrors `AndroidTracker` using `
 
 ---
 
-### 6.4 — iOS Deep Links
+### ~~6.4 — iOS Deep Links~~ ✅
 
 **Goal:** match Android deep-link behavior on iOS.
 
@@ -402,8 +402,14 @@ file must be provided locally. `IosTracker` now mirrors `AndroidTracker` using `
 - Pass the pending deep link into `MainViewController`.
 
 **Definition of Done:**
-- Opening `marsrover://rover/5` on iOS navigates to Curiosity photos.
+- ✅ Opening `marsrover://rover/5` on iOS navigates to Curiosity photos.
 - Universal links work once domain setup is available.
+
+*Note: `marsrover://` URL scheme registered in `Info.plist`. `MarsRoverApp.swift` forwards
+URLs to `pushDeepLink(urlString:)` (exported from `Main.ios.kt`), which parses the path in
+Kotlin and feeds the result into a `MutableStateFlow<DeepLink?>` that `MainViewController`
+collects via `collectAsState()` — no UIViewController recreation needed. Universal links
+deferred until the AASA file is hosted on the domain.*
 
 ---
 
