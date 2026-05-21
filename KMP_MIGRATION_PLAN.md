@@ -450,6 +450,35 @@ extend behind the nav bar while interactive controls remain tappable above it.*
 
 ---
 
+### ~~Ticket S10 — Restore AdMob banner on Android~~ ✅
+
+**Goal:** restore the legacy AdMob banner that was dropped during migration —
+the shared `AdSlot` Android actual was left as a placeholder `Box(modifier)`,
+so users saw no ad.
+
+**Done:**
+- ✅ `shared/src/androidMain/.../AdSlot.android.kt` renders an adaptive AdMob
+  banner via `AndroidView`; lifecycle pause/resume/destroy is handled in a
+  `DisposableEffect` against `LocalLifecycleOwner` so the AdView survives
+  recomposition and is cleaned up on dispose.
+- ✅ `play-services-ads` added to `shared/build.gradle.kts` `androidMain`
+  dependencies (mirrors the existing entry in `androidApp/build.gradle.kts`).
+- ✅ `MobileAds.initialize(...)` called from `MarsRoverApplication.onCreate`
+  inside a try/catch, matching the existing Crashlytics init pattern.
+- ✅ `GdprHelper` ported to `androidApp/.../feature/gdpr/GdprHelper.kt`
+  (Timber → shared `Logger`, `recordException` from `platform/`).
+- ✅ `MainActivity.onCreate` instantiates `GdprHelper` and calls `init()`.
+- ✅ `android.adservices.AD_SERVICES_CONFIG` `<property>` + matching
+  `res/xml/custom_ad_services_config.xml` added to androidApp.
+
+*Note: banner ad unit ID is a private const in `AdSlot.android.kt` because the
+shared module's androidMain can't see androidApp's R class. iOS keeps its
+no-op `AdSlot.ios.kt`; the legacy app had no iOS counterpart.
+`GdprHelper.acceptGdpr` is exposed but not yet wired to an ad request NPA
+bundle — legacy code had that gating commented out, so parity is preserved.*
+
+---
+
 ## Verification
 
 Before declaring a ticket done, run:
