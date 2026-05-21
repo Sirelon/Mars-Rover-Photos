@@ -58,6 +58,7 @@ technical reference notes are at the bottom.
 | 6.3 — Xcode project bootstrap | ✅ Done | Checked-in iOS project/workspace that teammates can run |
 | 6.4 — iOS deep links | ✅ Done | `marsrover://` and universal-link handling on iOS |
 | Final cleanup | Pending | Delete legacy `app/`, final smoke tests, CI gate |
+| Edge-to-edge | ✅ Done | Full edge-to-edge support: `isNavigationBarContrastEnforced`, `adjustResize`, ImagesScreen fullscreen |
 
 ---
 
@@ -422,6 +423,30 @@ URLs to `pushDeepLink(urlString:)` (exported from `Main.ios.kt`), which parses t
 Kotlin and feeds the result into a `MutableStateFlow<DeepLink?>` that `MainViewController`
 collects via `collectAsState()` — no UIViewController recreation needed. Universal links
 deferred until the AASA file is hosted on the domain.*
+
+---
+
+---
+
+### Edge-to-Edge ✅
+
+**Goal:** Make the app truly edge-to-edge so content draws behind system bars.
+
+**Done:**
+- ✅ `window.isNavigationBarContrastEnforced = false` in `MainActivity` (API 29+) — prevents unwanted
+  translucent scrim over the nav bar when using M3 `NavigationBar`.
+- ✅ `android:windowSoftInputMode="adjustResize"` added to `MainActivity` in the manifest.
+- ✅ `AppNavigation`: when on `AppDestination.Images`, status-bar insets are removed from the root
+  Column and the bottom chrome (AdSlot + MarsBottomBar) is hidden, giving `ImagesScreen` the full window.
+- ✅ `ImagesScreen`: `TopAppBar` now uses its default window insets (handles status bar itself);
+  overlay controls Box uses `navigationBarsPadding()` so the favorite toggle stays above the nav bar;
+  all `MarsSnackbar` instances in `OnEvent` also use `navigationBarsPadding()`.
+- ✅ `MaterialSymbolIcon`: removed `PlatformTextStyle(includeFontPadding = false)` which was
+  Android-only and broke the iOS framework compile; `platformStyle = null` leaves the Box-centered
+  glyph layout from the prior commit intact.
+
+*Note: The Box-wrapping approach for `MarsImageFavoriteToggle` and `MarsSnackbar` ensures images
+extend behind the nav bar while interactive controls remain tappable above it.*
 
 ---
 

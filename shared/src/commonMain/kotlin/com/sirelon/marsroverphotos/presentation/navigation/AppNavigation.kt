@@ -45,6 +45,7 @@ fun AppNavigation(
     val entryProvider = koinEntryProvider<NavKey>()
     val tracker: Tracker = koinInject()
     val currentDestination = backStack.lastOrNull() as? AppDestination ?: startDestination
+    val isImages = currentDestination is AppDestination.Images
 
     LaunchedEffect(deepLink) {
         val target = deepLink ?: return@LaunchedEffect
@@ -67,8 +68,11 @@ fun AppNavigation(
     }
 
     CompositionLocalProvider(LocalAppNavigator provides navigator) {
-        Column(modifier = modifier.windowInsetsPadding(WindowInsets.statusBars)) {
-            if (currentDestination !is AppDestination.Ukraine) {
+        // Images screen goes fully edge-to-edge: no status-bar inset, no bottom chrome.
+        Column(
+            modifier = if (isImages) modifier else modifier.windowInsetsPadding(WindowInsets.statusBars)
+        ) {
+            if (!isImages && currentDestination !is AppDestination.Ukraine) {
                 UkraineBanner(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
@@ -85,14 +89,16 @@ fun AppNavigation(
                     entryProvider = entryProvider
                 )
             }
-            AdSlot(modifier = Modifier.fillMaxWidth())
-            MarsBottomBar(
-                selectedDestination = currentDestination.topLevelDestination(),
-                onDestinationClick = { destination ->
-                    tracker.trackClick("bottom_${destination.analyticsTag}")
-                    navigator.selectTopLevel(destination)
-                }
-            )
+            if (!isImages) {
+                AdSlot(modifier = Modifier.fillMaxWidth())
+                MarsBottomBar(
+                    selectedDestination = currentDestination.topLevelDestination(),
+                    onDestinationClick = { destination ->
+                        tracker.trackClick("bottom_${destination.analyticsTag}")
+                        navigator.selectTopLevel(destination)
+                    }
+                )
+            }
         }
     }
 }

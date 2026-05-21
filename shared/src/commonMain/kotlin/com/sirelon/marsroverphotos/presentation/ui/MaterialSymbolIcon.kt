@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -94,7 +93,7 @@ fun MaterialSymbolIcon(
             textAlign = TextAlign.Center,
             maxLines = 1,
             style = LocalTextStyle.current.copy(
-                platformStyle = PlatformTextStyle(includeFontPadding = false)
+                platformStyle = null
             ),
         )
     }
