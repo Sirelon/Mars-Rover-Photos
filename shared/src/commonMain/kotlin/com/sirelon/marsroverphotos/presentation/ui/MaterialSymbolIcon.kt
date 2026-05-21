@@ -73,8 +73,7 @@ fun MaterialSymbolIcon(
 ) {
     val fontFamily = materialSymbolsFontFamily(filled = filled, weight = weight)
 
-    // Convert size to sp for font size
-    val fontSize = (size.value * 1.5).sp // Adjust multiplier as needed for proper sizing
+    val fontSize = size.value.sp
 
     Text(
         text = symbol.iconName,

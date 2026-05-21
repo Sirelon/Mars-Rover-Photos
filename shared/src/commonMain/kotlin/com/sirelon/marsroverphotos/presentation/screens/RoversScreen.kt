@@ -7,10 +7,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
@@ -64,7 +67,9 @@ fun RoversContent(
     onClick: (rover: Rover) -> Unit,
     onMissionInfoClick: (rover: Rover) -> Unit
 ) {
-    LazyColumn {
+    LazyColumn(
+        modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars)
+    ) {
         items(rovers, key = { it.id }) { item ->
             RoverItem(
                 rover = item,
@@ -92,19 +97,19 @@ fun RoverItem(
             TitleText(rover.name)
             InfoText(label = "Status:", text = rover.status)
 
-            val imageHeight = Modifier.height(175.dp)
             Row(modifier = Modifier.padding(8.dp)) {
                 Image(
                     contentScale = ContentScale.FillHeight,
                     painter = rover.painter(),
-                    modifier = imageHeight
+                    modifier = Modifier
+                        .height(175.dp)
                         .weight(1f)
                         .clip(shape = MaterialTheme.shapes.large),
                     contentDescription = rover.name
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Column(
-                    modifier = imageHeight.weight(1f),
+                    modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.SpaceAround
                 ) {
                     InfoText(
