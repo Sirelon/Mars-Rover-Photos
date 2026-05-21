@@ -47,7 +47,7 @@ class GdprHelper(private val activity: Activity) {
                 if (consentInformation.isConsentFormAvailable) {
                     loadForm()
                 } else {
-                    acceptGdpr.value = true
+                    updateAcceptanceFromConsentState()
                 }
             },
             ::onError
@@ -57,8 +57,7 @@ class GdprHelper(private val activity: Activity) {
     private fun onError(error: FormError) {
         Logger.w(TAG) { "UMP error ${error.errorCode}: ${error.message}" }
         recordException(RuntimeException("UMP ${error.errorCode}: ${error.message}"))
-        // Treat errors as consent not required so the app remains functional.
-        acceptGdpr.value = true
+        updateAcceptanceFromConsentState()
     }
 
     private fun loadForm() {
@@ -72,14 +71,23 @@ class GdprHelper(private val activity: Activity) {
     private fun showConsentForm(consentForm: ConsentForm) {
         Logger.d(TAG) { "showConsentForm status=${consentInformation.consentStatus}" }
         if (consentInformation.consentStatus == ConsentInformation.ConsentStatus.REQUIRED) {
-            consentForm.show(activity) {
+            consentForm.show(activity) { formError ->
+                if (formError != null) {
+                    Logger.w(TAG) { "Consent form dismissed with error ${formError.errorCode}: ${formError.message}" }
+                    recordException(RuntimeException("UMP form dismiss ${formError.errorCode}: ${formError.message}"))
+                }
                 // Reload form after dismissal so it is ready for future re-requests.
                 loadForm()
-                acceptGdpr.value = true
+                updateAcceptanceFromConsentState()
             }
         } else {
-            acceptGdpr.value = true
+            updateAcceptanceFromConsentState()
         }
+    }
+
+    private fun updateAcceptanceFromConsentState() {
+        // UMP source of truth: only true when ad requests are currently allowed.
+        acceptGdpr.value = consentInformation.canRequestAds()
     }
 
     private companion object {
