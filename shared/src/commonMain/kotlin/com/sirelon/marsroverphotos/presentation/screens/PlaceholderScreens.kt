@@ -17,15 +17,8 @@ import androidx.compose.ui.unit.dp
 /**
  * Placeholder screens for navigation testing.
  * These will be replaced with actual screens once the UI components are migrated.
+ * Note: PopularScreen has been migrated to PopularScreen.kt (S5).
  */
-
-@Composable
-fun PopularScreen() {
-    PlaceholderScreen(
-        title = "Popular Photos",
-        description = "Most popular photos from the community\n\n(Screen pending migration)"
-    )
-}
 
 @Composable
 private fun PlaceholderScreen(
