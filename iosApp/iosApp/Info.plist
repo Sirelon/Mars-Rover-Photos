@@ -29,6 +29,8 @@
 	</dict>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Mars Rover Photos needs access to save rover photos to your Photos library.</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -38,7 +40,7 @@
 			<array>
 				<string>marsrover</string>
 			</array>
-		</dict>
+			</dict>
 	</array>
 	<key>UILaunchScreen</key>
 	<dict/>
