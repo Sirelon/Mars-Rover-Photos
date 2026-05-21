@@ -2,6 +2,7 @@ package com.sirelon.marsroverphotos.presentation.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
@@ -85,6 +86,7 @@ fun MaterialSymbolIcon(
     ) {
         Text(
             text = symbol.iconName,
+            modifier = Modifier.wrapContentSize(unbounded = true),
             color = tint,
             fontFamily = fontFamily,
             fontSize = fontSize,
