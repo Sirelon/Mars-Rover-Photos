@@ -212,10 +212,17 @@ class IosImageOperations : ImageOperations {
             return false
         }
         return try {
-            bytes.usePinned { pinned ->
+            val written = bytes.usePinned { pinned ->
                 fwrite(pinned.addressOf(0), 1uL, bytes.size.toULong(), file)
             }
-            true
+            if (written != bytes.size.toULong()) {
+                Logger.e("IosImageOperations", null) {
+                    "Partial write for $path: expected=${bytes.size}, written=$written"
+                }
+                false
+            } else {
+                true
+            }
         } catch (e: Exception) {
             Logger.e("IosImageOperations", e) { "fwrite failed for $path" }
             false
