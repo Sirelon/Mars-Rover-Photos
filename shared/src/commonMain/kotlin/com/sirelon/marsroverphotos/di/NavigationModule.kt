@@ -69,7 +69,17 @@ val navigationModule = module {
     }
 
     navigation<AppDestination.Popular> {
-        PopularScreen()
+        val navigator = LocalAppNavigator.current
+        PopularScreen(
+            onNavigateToImages = { image, allImages ->
+                navigator.navigate(
+                    AppDestination.Images(
+                        photoIds = allImages.map { it.id },
+                        selectedId = image.id
+                    )
+                )
+            }
+        )
     }
 
     navigation<AppDestination.Mission> { destination ->

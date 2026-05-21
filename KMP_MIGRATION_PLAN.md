@@ -22,9 +22,10 @@ technical reference notes are at the bottom.
 - ✅ Ticket S3 is done.
 - ✅ Ticket S4 is done.
 - ✅ Ticket S6, Mission info, is done.
-- ⏭️ Next main ticket: **S5 — Popular Photos**.
-- ⚠️ iOS still needs deep links (6.4) before the app is fully useful there.
-  Firebase (6.1) and save/share (6.2) are now wired.
+- ✅ Ticket S5, Popular Photos, is done.
+- ⏭️ Next work: **Final cleanup** (legacy `app/` removal, full smoke tests, CI gate).
+- ✅ iOS platform parity items from this milestone are done: Firebase (6.1), save/share (6.2),
+  and deep links (6.4).
 - 🚫 Web/WASM remains out of scope for this milestone.
 
 ### How Agents Should Use This Plan
@@ -47,7 +48,7 @@ technical reference notes are at the bottom.
 | S2 — Rover photos grid | ✅ Done | Real rover photos screen with sol/date filters |
 | S3 — Image gallery + photo info sheet | ✅ Done | Fullscreen gallery, zoom, photo info sheet, save/share hooks |
 | S4 — Favorites | ✅ Done | Shared favorites grid backed by Room/Paging |
-| S5 — Popular photos | Pending | Shared popular tab backed by Firebase data on Android |
+| S5 — Popular photos | ✅ Done | Shared popular tab backed by Firebase data on Android |
 | S6 — Mission info | ✅ Done | Shared rover mission detail screen |
 | S7 — About/settings | ✅ Done | Shared settings UI: theme, facts, cache, rate app |
 | S8 — Ukraine route decision | ✅ Done | Shared Ukraine banner and Ukraine screen |
@@ -55,7 +56,7 @@ technical reference notes are at the bottom.
 | 6.1 — Firebase iOS | ✅ Done | Popular data, analytics, Crashlytics on iOS |
 | 6.2 — iOS image save/share | ✅ Done | Save to Photos and native share sheet |
 | 6.3 — Xcode project bootstrap | ✅ Done | Checked-in iOS project/workspace that teammates can run |
-| 6.4 — iOS deep links | Pending | `marsrover://` and universal-link handling on iOS |
+| 6.4 — iOS deep links | ✅ Done | `marsrover://` and universal-link handling on iOS |
 | Final cleanup | Pending | Delete legacy `app/`, final smoke tests, CI gate |
 
 ---
@@ -204,7 +205,7 @@ interface doesn't expose those Firebase methods. Wire up when `6.1` (Firebase iO
 
 ---
 
-### Ticket S5 — Popular Photos
+### ~~Ticket S5 — Popular Photos~~ ✅
 
 **Goal:** extract and migrate the popular-photos tab into shared UI.
 
@@ -222,8 +223,10 @@ interface doesn't expose those Firebase methods. Wire up when `6.1` (Firebase iO
 - iOS will show the empty state until Firebase iOS work in ticket `6.1` is done.
 
 **Definition of Done:**
-- Popular tab renders the grid on Android with real data.
-- iOS and Desktop compile and show a sane empty state where Firebase is not available.
+- ✅ Popular tab renders the grid on Android with real data.
+- ✅ iOS and Desktop compile and show a sane empty state where Firebase is not available.
+
+*Note: `IFirebasePhotos.loadPopularPhotos()` is injected directly into `PopularPhotosViewModel` (bypassing the paged Room mediator which is still commented out for KMP-target reasons). Photos load as a `StateFlow<List<MarsImage>>` via a one-shot coroutine with retry. The placeholder `PopularScreen` in `PlaceholderScreens.kt` was removed. `popular_empty_title` string added to `strings.xml`.*
 
 ---
 
@@ -400,7 +403,7 @@ follow-up (or access it via ObjC runtime).*
 
 ---
 
-### 6.4 — iOS Deep Links
+### ~~6.4 — iOS Deep Links~~ ✅
 
 **Goal:** match Android deep-link behavior on iOS.
 
@@ -411,8 +414,14 @@ follow-up (or access it via ObjC runtime).*
 - Pass the pending deep link into `MainViewController`.
 
 **Definition of Done:**
-- Opening `marsrover://rover/5` on iOS navigates to Curiosity photos.
+- ✅ Opening `marsrover://rover/5` on iOS navigates to Curiosity photos.
 - Universal links work once domain setup is available.
+
+*Note: `marsrover://` URL scheme registered in `Info.plist`. `MarsRoverApp.swift` forwards
+URLs to `pushDeepLink(urlString:)` (exported from `Main.ios.kt`), which parses the path in
+Kotlin and feeds the result into a `MutableStateFlow<DeepLink?>` that `MainViewController`
+collects via `collectAsState()` — no UIViewController recreation needed. Universal links
+deferred until the AASA file is hosted on the domain.*
 
 ---
 

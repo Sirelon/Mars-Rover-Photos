@@ -53,11 +53,32 @@ iosApp/
     └── Info.plist
 ```
 
+## Deep links (ticket 6.4 ✅)
+
+The `marsrover://` URL scheme is registered in `Info.plist`. When iOS delivers a URL,
+`MarsRoverApp.swift` forwards it to `Main_iosKt.pushDeepLink(urlString:)` which parses
+it in Kotlin and injects the result into the running Compose content via a `MutableStateFlow`.
+
+Supported URLs:
+| URL | Effect |
+|---|---|
+| `marsrover://rover/5` | Navigate to rover 5 (Curiosity) photos |
+| `marsrover://photo/123` | Open photo 123 in the gallery |
+
+Test from terminal (simulator must be running):
+```bash
+xcrun simctl openurl booted "marsrover://rover/5"
+xcrun simctl openurl booted "marsrover://photo/123"
+```
+
+Universal links (`https://marsroverphotos.app/…`) work once the AASA file is hosted on the domain.
+
 ## Architecture
 
 ```
 MarsRoverApp.swift  →  FirebaseApp.configure()
                     →  initKoinIos()
+                    →  .onOpenURL → Main_iosKt.pushDeepLink()  (ticket 6.4)
 ContentView.swift   →  Main_iosKt.MainViewController()
                     →  shared.framework (Compose Multiplatform)
                     →  App.kt (commonMain)
