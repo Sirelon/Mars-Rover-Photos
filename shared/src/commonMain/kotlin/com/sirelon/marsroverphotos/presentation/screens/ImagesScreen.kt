@@ -12,9 +12,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
@@ -146,10 +146,9 @@ private fun ImagesPagerContent(
         list.getOrNull(pagerState.currentPage)
     }
 
-    Column {
+    Column(modifier = Modifier.fillMaxSize()) {
         AnimatedVisibility(visible = !hideUi) {
             TopAppBar(
-                windowInsets = WindowInsets(0, 0, 0, 0),
                 title = { Text(text = titleState) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
@@ -192,7 +191,7 @@ private fun ImagesPagerContent(
             }
         }
 
-        Box {
+        Box(modifier = Modifier.weight(1f)) {
             ImagesPager(
                 pagerState = pagerState,
                 images = list,
@@ -236,7 +235,7 @@ private fun BoxScope.OnEvent(uiEvent: UiEvent?) {
 
             MarsSnackbar(
                 snackbarHostState = snackbarHostState,
-                modifier = Modifier.align(Alignment.BottomCenter),
+                modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding(),
                 actionClick = {
                     if (!imagePath.isNullOrBlank()) {
                         try {
@@ -264,7 +263,7 @@ private fun BoxScope.OnEvent(uiEvent: UiEvent?) {
             }
             MarsSnackbar(
                 snackbarHostState = snackbarHostState,
-                modifier = Modifier.align(Alignment.BottomCenter),
+                modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding(),
                 actionClick = null
             )
         }
@@ -277,7 +276,7 @@ private fun BoxScope.OnEvent(uiEvent: UiEvent?) {
             }
             MarsSnackbar(
                 snackbarHostState = snackbarHostState,
-                modifier = Modifier.align(Alignment.BottomCenter),
+                modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding(),
                 actionClick = null
             )
         }
@@ -369,13 +368,20 @@ private fun ImagesPager(
                     showPlaceholder = false,
                 )
 
-                MarsImageFavoriteToggle(
+                // Controls layer — image fills full screen; controls stay above nav bar
+                Box(
                     modifier = Modifier
-                        .size(64.dp)
-                        .align(Alignment.BottomCenter),
-                    checked = marsImage.favorite,
-                    onCheckedChange = { onFavoriteClick(marsImage) }
-                )
+                        .fillMaxSize()
+                        .navigationBarsPadding()
+                ) {
+                    MarsImageFavoriteToggle(
+                        modifier = Modifier
+                            .size(64.dp)
+                            .align(Alignment.BottomCenter),
+                        checked = marsImage.favorite,
+                        onCheckedChange = { onFavoriteClick(marsImage) }
+                    )
+                }
 
                 // Reset zoom when this page scrolls off-screen
                 val isSettled = page == pagerState.settledPage

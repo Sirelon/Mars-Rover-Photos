@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -124,7 +125,7 @@ fun PhotosScreen(
 
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
-            Row(modifier = Modifier.height(52.dp)) {
+            Row(modifier = Modifier.height(IntrinsicSize.Min)) {
                 HeaderButton(stringResource(Res.string.sol_date_fmt, sol)) {
                     openSolDialog = true
                 }
