@@ -44,5 +44,3 @@ data class Rover(
     val totalPhotos: Int
 )
 
-// Platform-specific drawable resolution will be handled via expect/actual
-expect fun Rover.getDrawableResourceId(): Int
