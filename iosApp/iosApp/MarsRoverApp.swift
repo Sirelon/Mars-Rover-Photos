@@ -2,6 +2,8 @@ import SwiftUI
 import shared
 import FirebaseCore
 import AppTrackingTransparency
+import GoogleMobileAds
+import UserMessagingPlatform
 
 @main
 struct MarsRoverApp: App {
@@ -11,17 +13,12 @@ struct MarsRoverApp: App {
         // Initialize Koin dependency injection from shared module
         IosApp.shared.start()
 
-        // Request App Tracking Transparency authorization (iOS 14+).
-        // The prompt is deferred by 1 s so it appears after the app's first frame is rendered,
-        // which is required by Apple's HIG. The status is used when ads are added in the future.
+        // UMP must collect consent before MobileAds.start so the SDK can pick up the user's
+        // choice; ATT must run before any ad request so IDFA personalization is honored.
+        // The chain is deferred by 1s so the prompts appear after the app's first frame
+        // (Apple HIG requirement for ATT).
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            ATTrackingManager.requestTrackingAuthorization { status in
-                // .authorized  — user allowed tracking; use personalized ads
-                // .denied / .restricted — non-personalized ads only
-                // .notDetermined — authorization not yet requested (should not happen here)
-                // Wire into Google Mobile Ads SDK initialization when ads land on iOS.
-                _ = status
-            }
+            Self.bootstrapAds()
         }
     }
 
@@ -33,6 +30,30 @@ struct MarsRoverApp: App {
                 .onOpenURL { url in
                     Main_iosKt.pushDeepLink(urlString: url.absoluteString)
                 }
+        }
+    }
+
+    private static func bootstrapAds() {
+        let params = UMPRequestParameters()
+        params.tagForUnderAgeOfConsent = false
+
+        #if DEBUG
+        let debugSettings = UMPDebugSettings()
+        debugSettings.geography = .EEA
+        params.debugSettings = debugSettings
+        #endif
+
+        UMPConsentInformation.sharedInstance.requestConsentInfoUpdate(with: params) { umpError in
+            if let umpError {
+                NSLog("UMP requestConsentInfoUpdate error: \(umpError.localizedDescription)")
+            }
+            UMPConsentForm.loadAndPresentIfRequired(from: nil) { _ in
+                ATTrackingManager.requestTrackingAuthorization { _ in
+                    GADMobileAds.sharedInstance().start { _ in
+                        IosAdSlot.shared.factory = BannerAdFactoryImpl()
+                    }
+                }
+            }
         }
     }
 }

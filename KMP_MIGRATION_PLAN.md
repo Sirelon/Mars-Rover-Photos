@@ -58,6 +58,7 @@ technical reference notes are at the bottom.
 | 6.3 — Xcode project bootstrap | ✅ Done | Checked-in iOS project/workspace that teammates can run |
 | 6.4 — iOS deep links | ✅ Done | `marsrover://` and universal-link handling on iOS |
 | S10 — GDPR / Consent | ✅ Done | Android UMP consent flow restored; iOS ATT prompt added |
+| S11 — iOS AdMob banner | ✅ Done | Real banner via GoogleMobileAds SPM + UMP iOS; Android NPA wired to consent state |
 | Final cleanup | Pending | Delete legacy `app/`, final smoke tests, CI gate |
 | Edge-to-edge | ✅ Done | Full edge-to-edge support: `isNavigationBarContrastEnforced`, `adjustResize`, ImagesScreen fullscreen |
 
@@ -479,32 +480,90 @@ extend behind the nav bar while interactive controls remain tappable above it.*
 
 ---
 
-### ~~Ticket S10 — Restore AdMob banner on Android~~ ✅
+### ~~Ticket S11 — Restore AdMob banner (Android + iOS)~~ ✅
 
-**Goal:** restore the legacy AdMob banner that was dropped during migration —
-the shared `AdSlot` Android actual was left as a placeholder `Box(modifier)`,
-so users saw no ad.
+**Goal:** restore the legacy AdMob banner that was dropped during migration.
+The shared `AdSlot` was a placeholder `Box(modifier)` on every platform; this
+ticket lights up Android and iOS while keeping Desktop a no-op.
 
-**Done:**
+**Done (Android):**
 - ✅ `shared/src/androidMain/.../AdSlot.android.kt` renders an adaptive AdMob
   banner via `AndroidView`; lifecycle pause/resume/destroy is handled in a
-  `DisposableEffect` against `LocalLifecycleOwner` so the AdView survives
-  recomposition and is cleaned up on dispose.
+  `DisposableEffect` against `LocalLifecycleOwner`.
 - ✅ `play-services-ads` added to `shared/build.gradle.kts` `androidMain`
-  dependencies (mirrors the existing entry in `androidApp/build.gradle.kts`).
+  dependencies.
 - ✅ `MobileAds.initialize(...)` called from `MarsRoverApplication.onCreate`
-  inside a try/catch, matching the existing Crashlytics init pattern.
-- ✅ `GdprHelper` ported to `androidApp/.../feature/gdpr/GdprHelper.kt`
-  (Timber → shared `Logger`, `recordException` from `platform/`).
-- ✅ `MainActivity.onCreate` instantiates `GdprHelper` and calls `init()`.
+  inside a try/catch.
 - ✅ `android.adservices.AD_SERVICES_CONFIG` `<property>` + matching
   `res/xml/custom_ad_services_config.xml` added to androidApp.
+- ✅ NPA gating: `AndroidAdConsent.personalizedAds` in
+  `shared/src/androidMain/.../platform/AndroidAdConsent.kt` mirrors
+  `GdprHelper.canRequestAds()`; `AdSlot.android.kt` appends an
+  `AdMobAdapter` extras bundle with `npa=1` when consent is denied and
+  reloads the ad when the consent state flips.
 
-*Note: banner ad unit ID is a private const in `AdSlot.android.kt` because the
-shared module's androidMain can't see androidApp's R class. iOS keeps its
-no-op `AdSlot.ios.kt`; the legacy app had no iOS counterpart.
-`GdprHelper.acceptGdpr` is exposed but not yet wired to an ad request NPA
-bundle — legacy code had that gating commented out, so parity is preserved.*
+**Done (iOS):**
+- ✅ `GoogleMobileAds` + `UserMessagingPlatform` added via SPM in
+  `iosApp/iosApp.xcodeproj/project.pbxproj`.
+- ✅ `GADApplicationIdentifier` + `SKAdNetworkItems` added to
+  `iosApp/iosApp/Info.plist` (using Google's universal test app ID until
+  the real iOS AdMob app is provisioned).
+- ✅ `shared/src/iosMain/.../platform/IosAdSlot.kt` — Kotlin
+  `AdBannerFactory` interface and an `IosAdSlot.factory` registry.
+- ✅ `shared/src/iosMain/.../presentation/ui/AdSlot.ios.kt` — `BoxWithConstraints`
+  + `UIKitView` rendering the registered factory; falls back to an empty
+  `Box(modifier)` when the factory hasn't been installed yet (e.g. before
+  UMP/ATT/MobileAds bootstrap finishes).
+- ✅ `iosApp/iosApp/BannerAdFactory.swift` builds an anchored adaptive
+  `GADBannerView` with the test banner unit and a topmost-VC lookup that
+  matches the existing pattern in `IosImageOperations`.
+- ✅ `iosApp/iosApp/MarsRoverApp.swift` chains UMP → ATT → `GADMobileAds.start`
+  → registers `BannerAdFactoryImpl()` into `IosAdSlot.shared.factory`. The
+  chain is deferred 1s after launch to satisfy Apple's HIG for ATT timing.
+
+*Note: iOS `GADRequest` does not have an NPA-bundle equivalent — Google's
+Mobile Ads SDK reads consent from UMP's stored state automatically. As long
+as UMP runs to completion before `GADMobileAds.start(...)`, banner requests
+honor the user's choice.*
+
+*Note: production AdMob unit IDs for iOS are not yet provisioned. The
+checked-in values are Google's published test IDs and must be swapped before
+release (see Followups).*
+
+**Followups from S11 (carry-overs, not blockers):**
+
+Production AdMob configuration — required before App Store release:
+- [ ] Swap iOS `GADApplicationIdentifier` in `iosApp/iosApp/Info.plist` from
+      the universal test ID (`ca-app-pub-3940256099942544~1458002511`) to
+      the real iOS AdMob app ID once provisioned.
+- [ ] Swap `BannerAdFactory.swift`'s `testBannerUnitID`
+      (`ca-app-pub-3940256099942544/2934735716`) to the real iOS banner
+      unit ID.
+- [ ] Expand `SKAdNetworkItems` in `Info.plist` from the single
+      representative ID to Google's full recommended list (~75 entries) for
+      iOS 14.5+ attribution.
+
+Privacy settings re-entry point (AdMob policy in some regions):
+- [ ] Add a "Privacy settings" row in the About screen that re-presents the
+      consent form.
+      - Android: `consentInformation.resetConsent()` + `GdprHelper.init()`.
+      - iOS: `UMPConsentForm.presentPrivacyOptionsForm(from:completionHandler:)`.
+
+iOS universal links (was deferred in ticket 6.4):
+- [ ] Host an AASA file on `https://marsroverphotos.app/.well-known/` so
+      `https://marsroverphotos.app/rover/{id}` and `/photo/{id}` work on
+      iOS. Kotlin side is already wired; blocked on domain ops only.
+
+Optional polish:
+- [ ] Lift `MobileAds.initialize` + UMP bootstrap into a shared
+      `AdsBootstrap` abstraction in commonMain — would let the platforms
+      call one shared function instead of each holding its own init path.
+- [ ] `UIKitView` used in `AdSlot.ios.kt` is deprecated in Compose
+      Multiplatform 1.11; migrate to the newer overload next time we touch
+      the file.
+- [ ] Pre-existing detekt warnings on `MainActivity.handleDeepLink`
+      (cyclomatic complexity 18 > 15, nested-block depth) — unrelated to
+      ads but lives in the same file we edited.
 
 ---
 

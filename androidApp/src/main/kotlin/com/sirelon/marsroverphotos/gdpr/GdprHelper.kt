@@ -8,6 +8,7 @@ import com.google.android.ump.ConsentRequestParameters
 import com.google.android.ump.FormError
 import com.google.android.ump.UserMessagingPlatform
 import com.sirelon.marsroverphotos.BuildConfig
+import com.sirelon.marsroverphotos.platform.AndroidAdConsent
 import com.sirelon.marsroverphotos.platform.recordException
 import com.sirelon.marsroverphotos.utils.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -87,7 +88,10 @@ class GdprHelper(private val activity: Activity) {
 
     private fun updateAcceptanceFromConsentState() {
         // UMP source of truth: only true when ad requests are currently allowed.
-        acceptGdpr.value = consentInformation.canRequestAds()
+        val canRequestAds = consentInformation.canRequestAds()
+        acceptGdpr.value = canRequestAds
+        // Mirror into the shared state so AdSlot can switch to NPA when consent is denied.
+        AndroidAdConsent.personalizedAds.value = canRequestAds
     }
 
     private companion object {

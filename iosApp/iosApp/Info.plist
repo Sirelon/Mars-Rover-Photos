@@ -33,6 +33,15 @@
 	<string>Mars Rover Photos needs access to save rover photos to your Photos library.</string>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>We use this to show you relevant ads and improve the app experience.</string>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-3940256099942544~1458002511</string>
+	<key>SKAdNetworkItems</key>
+	<array>
+		<dict>
+			<key>SKAdNetworkIdentifier</key>
+			<string>cstr6suwn9.skadnetwork</string>
+		</dict>
+	</array>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
