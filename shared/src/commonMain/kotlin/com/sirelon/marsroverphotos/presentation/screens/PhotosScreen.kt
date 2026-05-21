@@ -126,9 +126,7 @@ fun PhotosScreen(
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             Row(modifier = Modifier.height(IntrinsicSize.Min)) {
-                HeaderButton(
-                    stringResource(Res.string.sol_date_fmt).replace("%d", sol.toString())
-                ) {
+                HeaderButton(stringResource(Res.string.sol_date_fmt, sol)) {
                     openSolDialog = true
                 }
                 HorizontalDivider(
@@ -136,9 +134,7 @@ fun PhotosScreen(
                         .width(1.dp)
                         .fillMaxHeight()
                 )
-                HeaderButton(
-                    stringResource(Res.string.earth_date_fmt).replace("%s", viewModel.earthDateStr(sol))
-                ) {
+                HeaderButton(stringResource(Res.string.earth_date_fmt, viewModel.earthDateStr(sol))) {
                     openEarthDateDialog = true
                 }
             }
