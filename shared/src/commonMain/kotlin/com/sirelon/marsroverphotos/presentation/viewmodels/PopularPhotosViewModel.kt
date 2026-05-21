@@ -38,7 +38,9 @@ class PopularPhotosViewModel(
             _isLoading.value = true
             try {
                 val photos = firebasePhotos.loadPopularPhotos(count = 50)
-                _popularPhotos.value = photos.mapIndexed { index, fp -> fp.toMarsImage(index) }
+                val mappedPhotos = photos.mapIndexed { index, fp -> fp.toMarsImage(index) }
+                imagesRepository.saveImages(mappedPhotos)
+                _popularPhotos.value = mappedPhotos
             } catch (e: Exception) {
                 Logger.e("PopularPhotosViewModel", e) { "Error loading popular photos" }
                 _popularPhotos.value = emptyList()
