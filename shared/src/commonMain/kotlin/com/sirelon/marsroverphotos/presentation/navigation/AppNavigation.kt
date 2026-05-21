@@ -2,7 +2,10 @@ package com.sirelon.marsroverphotos.presentation.navigation
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -64,15 +67,7 @@ fun AppNavigation(
     }
 
     CompositionLocalProvider(LocalAppNavigator provides navigator) {
-        Column(modifier = modifier) {
-            Box(modifier = Modifier.weight(1f)) {
-                NavDisplay(
-                    backStack = backStack,
-                    onBack = { navigator.goBack() },
-                    entryDecorators = entryDecorators,
-                    entryProvider = entryProvider
-                )
-            }
+        Column(modifier = modifier.windowInsetsPadding(WindowInsets.statusBars)) {
             if (currentDestination !is AppDestination.Ukraine) {
                 UkraineBanner(
                     modifier = Modifier.fillMaxWidth(),
@@ -80,6 +75,14 @@ fun AppNavigation(
                         tracker.trackClick("UkraineBanner_Root")
                         navigator.navigate(AppDestination.Ukraine)
                     },
+                )
+            }
+            Box(modifier = Modifier.weight(1f)) {
+                NavDisplay(
+                    backStack = backStack,
+                    onBack = { navigator.goBack() },
+                    entryDecorators = entryDecorators,
+                    entryProvider = entryProvider
                 )
             }
             AdSlot(modifier = Modifier.fillMaxWidth())
