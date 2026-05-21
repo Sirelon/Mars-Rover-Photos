@@ -48,6 +48,11 @@ struct MarsRoverApp: App {
                 NSLog("UMP requestConsentInfoUpdate error: \(umpError.localizedDescription)")
             }
             UMPConsentForm.loadAndPresentIfRequired(from: nil) { _ in
+                guard UMPConsentInformation.sharedInstance.canRequestAds else {
+                    IosAdSlot.shared.factory = nil
+                    NSLog("UMP canRequestAds=false, skipping Mobile Ads start")
+                    return
+                }
                 ATTrackingManager.requestTrackingAuthorization { _ in
                     GADMobileAds.sharedInstance().start { _ in
                         IosAdSlot.shared.factory = BannerAdFactoryImpl()

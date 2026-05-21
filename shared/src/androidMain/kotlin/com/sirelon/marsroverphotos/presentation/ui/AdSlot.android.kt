@@ -28,6 +28,7 @@ actual fun AdSlot(modifier: Modifier) {
     val context = LocalContext.current
     val widthDp = LocalConfiguration.current.screenWidthDp
     val lifecycleOwner = LocalLifecycleOwner.current
+    val canRequestAds by AndroidAdConsent.canRequestAds.collectAsState()
     val personalizedAds by AndroidAdConsent.personalizedAds.collectAsState()
 
     val adView = remember(context, widthDp) {
@@ -37,7 +38,8 @@ actual fun AdSlot(modifier: Modifier) {
         }
     }
 
-    LaunchedEffect(adView, personalizedAds) {
+    LaunchedEffect(adView, canRequestAds, personalizedAds) {
+        if (!canRequestAds) return@LaunchedEffect
         adView.loadAd(buildAdRequest(personalizedAds))
     }
 

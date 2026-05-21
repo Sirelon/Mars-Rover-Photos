@@ -90,6 +90,8 @@ class GdprHelper(private val activity: Activity) {
         // UMP source of truth: only true when ad requests are currently allowed.
         val canRequestAds = consentInformation.canRequestAds()
         acceptGdpr.value = canRequestAds
+        // Mirror into shared state so AdSlot knows whether it may request ads at all.
+        AndroidAdConsent.canRequestAds.value = canRequestAds
         // Mirror into the shared state so AdSlot can switch to NPA when consent is denied.
         AndroidAdConsent.personalizedAds.value = canRequestAds
     }
