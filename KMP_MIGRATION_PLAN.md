@@ -22,7 +22,8 @@ technical reference notes are at the bottom.
 - ✅ Ticket S3 is done.
 - ✅ Ticket S4 is done.
 - ✅ Ticket S6, Mission info, is done.
-- ⏭️ Next main ticket: **S5 — Popular Photos**.
+- ✅ Ticket S5, Popular Photos, is done.
+- ⏭️ Next work: **6.2 — iOS image save/share** and **6.4 — iOS deep links**.
 - ⚠️ iOS still needs save/share and deep links before the app is fully useful there.
   Firebase (6.1) is now wired.
 - 🚫 Web/WASM remains out of scope for this milestone.
@@ -47,7 +48,7 @@ technical reference notes are at the bottom.
 | S2 — Rover photos grid | ✅ Done | Real rover photos screen with sol/date filters |
 | S3 — Image gallery + photo info sheet | ✅ Done | Fullscreen gallery, zoom, photo info sheet, save/share hooks |
 | S4 — Favorites | ✅ Done | Shared favorites grid backed by Room/Paging |
-| S5 — Popular photos | Pending | Shared popular tab backed by Firebase data on Android |
+| S5 — Popular photos | ✅ Done | Shared popular tab backed by Firebase data on Android |
 | S6 — Mission info | ✅ Done | Shared rover mission detail screen |
 | S7 — About/settings | ✅ Done | Shared settings UI: theme, facts, cache, rate app |
 | S8 — Ukraine route decision | ✅ Done | Shared Ukraine banner and Ukraine screen |
@@ -204,7 +205,7 @@ interface doesn't expose those Firebase methods. Wire up when `6.1` (Firebase iO
 
 ---
 
-### Ticket S5 — Popular Photos
+### ~~Ticket S5 — Popular Photos~~ ✅
 
 **Goal:** extract and migrate the popular-photos tab into shared UI.
 
@@ -222,8 +223,10 @@ interface doesn't expose those Firebase methods. Wire up when `6.1` (Firebase iO
 - iOS will show the empty state until Firebase iOS work in ticket `6.1` is done.
 
 **Definition of Done:**
-- Popular tab renders the grid on Android with real data.
-- iOS and Desktop compile and show a sane empty state where Firebase is not available.
+- ✅ Popular tab renders the grid on Android with real data.
+- ✅ iOS and Desktop compile and show a sane empty state where Firebase is not available.
+
+*Note: `IFirebasePhotos.loadPopularPhotos()` is injected directly into `PopularPhotosViewModel` (bypassing the paged Room mediator which is still commented out for KMP-target reasons). Photos load as a `StateFlow<List<MarsImage>>` via a one-shot coroutine with retry. The placeholder `PopularScreen` in `PlaceholderScreens.kt` was removed. `popular_empty_title` string added to `strings.xml`.*
 
 ---
 
