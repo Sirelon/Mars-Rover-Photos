@@ -25,6 +25,7 @@ import platform.Photos.PHPhotoLibrary
 import platform.UIKit.UIActivityViewController
 import platform.UIKit.UIApplication
 import platform.UIKit.UIModalPresentationFormSheet
+import platform.UIKit.UISceneActivationStateForegroundActive
 import platform.UIKit.UIViewController
 import platform.UIKit.UIWindow
 import platform.UIKit.UIWindowScene
@@ -238,9 +239,22 @@ class IosImageOperations : ImageOperations {
     private fun findTopViewController(): UIViewController? {
         // Prefer connected scenes (iOS 13+; also supports Stage Manager / multi-window).
         var rootVC: UIViewController? = null
+        val scenes = UIApplication.sharedApplication.connectedScenes
 
-        for (scene in UIApplication.sharedApplication.connectedScenes) {
-            val windowScene = scene as? UIWindowScene ?: continue
+        // In multi-window mode, choose the scene currently in the foreground first.
+        val foregroundActiveScene = scenes
+            .asSequence()
+            .mapNotNull { it as? UIWindowScene }
+            .firstOrNull { it.activationState == UISceneActivationStateForegroundActive }
+
+        val scenesToCheck = if (foregroundActiveScene != null) {
+            sequenceOf(foregroundActiveScene) +
+                scenes.asSequence().mapNotNull { it as? UIWindowScene }.filter { it != foregroundActiveScene }
+        } else {
+            scenes.asSequence().mapNotNull { it as? UIWindowScene }
+        }
+
+        for (windowScene in scenesToCheck) {
             for (window in windowScene.windows) {
                 val w = window as? UIWindow ?: continue
                 if (w.isKeyWindow()) {
