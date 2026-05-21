@@ -23,8 +23,8 @@ technical reference notes are at the bottom.
 - ✅ Ticket S4 is done.
 - ✅ Ticket S6, Mission info, is done.
 - ⏭️ Next main ticket: **S5 — Popular Photos**.
-- ⚠️ iOS still needs save/share and deep links before the app is fully useful there.
-  Firebase (6.1) is now wired.
+- ⚠️ iOS still needs deep links (6.4) before the app is fully useful there.
+  Firebase (6.1) and save/share (6.2) are now wired.
 - 🚫 Web/WASM remains out of scope for this milestone.
 
 ### How Agents Should Use This Plan
@@ -53,7 +53,7 @@ technical reference notes are at the bottom.
 | S8 — Ukraine route decision | ✅ Done | Shared Ukraine banner and Ukraine screen |
 | S9 — Android widget adaptation | ✅ Done | Keep widget Android-only, but wire it to shared repositories/settings/tracker |
 | 6.1 — Firebase iOS | ✅ Done | Popular data, analytics, Crashlytics on iOS |
-| 6.2 — iOS image save/share | Pending | Save to Photos and native share sheet |
+| 6.2 — iOS image save/share | ✅ Done | Save to Photos and native share sheet |
 | 6.3 — Xcode project bootstrap | ✅ Done | Checked-in iOS project/workspace that teammates can run |
 | 6.4 — iOS deep links | Pending | `marsrover://` and universal-link handling on iOS |
 | Final cleanup | Pending | Delete legacy `app/`, final smoke tests, CI gate |
@@ -354,7 +354,7 @@ file must be provided locally. `IosTracker` now mirrors `AndroidTracker` using `
 
 ---
 
-### 6.2 — Image Save / Share on iOS
+### ~~6.2 — Image Save / Share on iOS~~ ✅
 
 **Goal:** make image save and share useful from the iOS gallery.
 
@@ -366,8 +366,17 @@ file must be provided locally. `IosTracker` now mirrors `AndroidTracker` using `
 - Handle iPad popover source configuration.
 
 **Definition of Done:**
-- Save writes the current photo to the iOS Photos app.
-- Share opens the native iOS share sheet from `ImagesScreen`.
+- ✅ Save writes the current photo to the iOS Photos app.
+- ✅ Share opens the native iOS share sheet from `ImagesScreen`.
+
+*Note: `saveImage` downloads via Ktor Darwin, writes to a POSIX temp file, and saves via
+`PHPhotoLibrary.performChanges` + `PHAssetCreationRequest.addResourceWithType(fileURL:)`. Add-only
+permission is requested at runtime (iOS 14+ `PHAccessLevelAddOnly`). `shareImage` presents
+`UIActivityViewController` with share text + image URL; `modalPresentationStyle` is set to
+`UIModalPresentationFormSheet` to handle iPad without a popover anchor — Kotlin/Native does not
+bridge the `UIViewController(UIPopoverController)` ObjC category that holds
+`popoverPresentationController`. For a proper popover anchor, that category must be bridged in a
+follow-up (or access it via ObjC runtime).*
 
 ---
 
