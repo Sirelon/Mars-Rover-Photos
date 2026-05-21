@@ -8,7 +8,7 @@ struct MarsRoverApp: App {
         // Initialize Firebase before anything else (required for Analytics, Crashlytics, Firestore)
         FirebaseApp.configure()
         // Initialize Koin dependency injection from shared module
-        KoinInitKt.initKoinIos()
+        IosApp.shared.start()
     }
 
     var body: some Scene {
