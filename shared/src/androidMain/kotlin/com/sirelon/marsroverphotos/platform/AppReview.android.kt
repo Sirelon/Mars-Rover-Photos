@@ -1,40 +1,48 @@
 package com.sirelon.marsroverphotos.platform
 
 import android.content.Context
-import com.google.android.play.core.review.ReviewInfo
+import com.google.android.play.core.ktx.launchReview
+import com.google.android.play.core.ktx.requestReview
+import com.google.android.play.core.review.ReviewException
 import com.google.android.play.core.review.ReviewManagerFactory
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlin.coroutines.resume
+import com.sirelon.marsroverphotos.utils.Logger
 
 /**
- * Android implementation of [AppReview] backed by the Google Play In-App Review API.
+ * Android implementation of [AppReview] backed by Google Play's in-app review flow.
  *
- * Returns `true` if the review overlay was launched.
- * Returns `false` if no Activity is available or the review flow fails — the
- * caller in [AboutScreen] will fall back to opening the Play Store URL.
+ * Notes:
+ * - In-app review is throttled by Google Play and may simply not show in debug builds
+ *   or when the device doesn't have a recent Play Store. We return `true` whenever the
+ *   flow completes (regardless of whether the UI was actually rendered) so the caller
+ *   does NOT redirect the user to the store - per Play Core guidance.
+ * - If anything fails (Play Services missing, quota exhausted, no Activity), we return
+ *   `false` so the caller can fall back to the store URL.
  */
-class AndroidAppReview(private val context: Context) : AppReview {
+class AndroidAppReview(
+    private val context: Context,
+    private val activityProvider: () -> android.app.Activity? = { ActivityProvider.current() },
+) : AppReview {
 
     override suspend fun requestReview(): Boolean {
-        val activity = ActivityProvider.get() ?: return false
+        val activity = activityProvider() ?: run {
+            Logger.w(TAG) { "No Activity available for in-app review" }
+            return false
+        }
         return try {
             val manager = ReviewManagerFactory.create(context)
-
-            // Step 1: request a ReviewInfo token (quota-managed by Play)
-            val reviewInfo: ReviewInfo = suspendCancellableCoroutine { cont ->
-                manager.requestReviewFlow()
-                    .addOnSuccessListener { info -> cont.resume(info) }
-                    .addOnFailureListener { cont.resume(null) }
-            } ?: return false
-
-            // Step 2: launch the overlay (may be a no-op if Play throttles it)
-            suspendCancellableCoroutine { cont ->
-                manager.launchReviewFlow(activity, reviewInfo)
-                    .addOnCompleteListener { cont.resume(Unit) }
-            }
+            val reviewInfo = manager.requestReview()
+            manager.launchReview(activity, reviewInfo)
             true
-        } catch (_: Exception) {
+        } catch (e: ReviewException) {
+            Logger.w(TAG) { "In-app review failed: errorCode=${e.errorCode}, ${e.message}" }
+            false
+        } catch (e: Exception) {
+            Logger.w(TAG) { "In-app review failed: ${e.message}" }
             false
         }
+    }
+
+    companion object {
+        private const val TAG = "AndroidAppReview"
     }
 }
