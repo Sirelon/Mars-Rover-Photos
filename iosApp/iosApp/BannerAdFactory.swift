@@ -3,19 +3,29 @@ import UIKit
 import shared
 
 /// Swift implementation of the Kotlin `AdBannerFactory` interface declared in the shared module.
-/// Builds a `GADBannerView` configured with the test ad unit and presents it inside the Compose
-/// `AdSlot` via the `UIKitView` interop.
+/// Builds a `GADBannerView` configured with the production ad unit and presents it inside the
+/// Compose `AdSlot` via the `UIKitView` interop.
 final class BannerAdFactoryImpl: NSObject, AdBannerFactory {
 
-    /// Universal Google test banner unit for iOS. Swap for the production unit
-    /// once the app's iOS AdMob entry is provisioned.
-    static let testBannerUnitID = "ca-app-pub-3940256099942544/2934735716"
+    // MARK: - Production ad unit IDs
+    // App ID registered in Info.plist: ca-app-pub-7516059448019339~1086903880
+
+    /// Banner shown alongside list / grid screens (rovers, favorites, popular, about).
+    private static let bannerListUnitID = "ca-app-pub-7516059448019339/7887281803"
+
+    /// Banner shown alongside content / detail screens (photos grid, mission info).
+    private static let bannerAtContentUnitID = "ca-app-pub-7516059448019339/6993836680"
+
+    /// Banner shown inside the image gallery screen.
+    private static let bannerAtImageUnitID = "ca-app-pub-7516059448019339/9920068688"
 
     func createBanner(widthPoints: Double) -> UIView {
         let width = CGFloat(widthPoints)
         let size = GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(width)
         let banner = GADBannerView(adSize: size)
-        banner.adUnitID = Self.testBannerUnitID
+        // The current single AdSlot placement lives in the main navigation shell,
+        // shown alongside list/grid screens — use the List unit.
+        banner.adUnitID = Self.bannerListUnitID
         banner.rootViewController = UIApplication.shared.topMostViewController()
         banner.load(GADRequest())
         return banner

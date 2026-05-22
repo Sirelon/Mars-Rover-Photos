@@ -1,10 +1,10 @@
 package com.sirelon.marsroverphotos.platform
 
 import android.content.Context
-import com.google.android.play.core.review.ReviewManagerFactory
-import com.google.android.play.core.review.ReviewException
-import com.google.android.play.core.ktx.requestReview
 import com.google.android.play.core.ktx.launchReview
+import com.google.android.play.core.ktx.requestReview
+import com.google.android.play.core.review.ReviewException
+import com.google.android.play.core.review.ReviewManagerFactory
 import com.sirelon.marsroverphotos.utils.Logger
 
 /**
@@ -14,7 +14,7 @@ import com.sirelon.marsroverphotos.utils.Logger
  * - In-app review is throttled by Google Play and may simply not show in debug builds
  *   or when the device doesn't have a recent Play Store. We return `true` whenever the
  *   flow completes (regardless of whether the UI was actually rendered) so the caller
- *   does NOT redirect the user to the store — per Play Core guidance.
+ *   does NOT redirect the user to the store - per Play Core guidance.
  * - If anything fails (Play Services missing, quota exhausted, no Activity), we return
  *   `false` so the caller can fall back to the store URL.
  */
