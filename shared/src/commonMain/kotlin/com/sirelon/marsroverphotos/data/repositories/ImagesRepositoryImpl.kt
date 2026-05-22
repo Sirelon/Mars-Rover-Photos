@@ -33,13 +33,12 @@ class ImagesRepositoryImpl(
 
     override fun loadFavoriteImages(): Flow<List<MarsImage>> = imagesDao.loadFavoriteImages()
 
-    // TODO: Re-enable when room-paging supports all KMP targets
-    // override fun loadFavoritePagedSource(): Flow<PagingData<MarsImage>> {
-    //     return Pager(
-    //         config = PagingConfig(pageSize = 10, initialLoadSize = 10),
-    //         pagingSourceFactory = { imagesDao.loadFavoritePagedSource() }
-    //     ).flow
-    // }
+    override fun loadFavoritePagedSource(): Flow<PagingData<MarsImage>> {
+        return Pager(
+            config = PagingConfig(pageSize = 10, initialLoadSize = 10),
+            pagingSourceFactory = { imagesDao.loadFavoritePagedSource() }
+        ).flow
+    }
 
     override suspend fun updateFavForImage(item: MarsImage) {
         supervisorScope {
@@ -61,13 +60,12 @@ class ImagesRepositoryImpl(
         }
     }
 
-    // TODO: Re-enable when room-paging supports all KMP targets
-    // @OptIn(ExperimentalPagingApi::class)
-    // override fun loadPopularPagedSource(): Flow<PagingData<MarsImage>> {
-    //     return Pager(
-    //         config = PagingConfig(pageSize = 20, initialLoadSize = 20),
-    //         pagingSourceFactory = { imagesDao.loadPopularPagedSource() },
-    //         remoteMediator = PopularRemoteMediator(firebasePhotos, imagesDao)
-    //     ).flow
-    // }
+    @OptIn(ExperimentalPagingApi::class)
+    override fun loadPopularPagedSource(): Flow<PagingData<MarsImage>> {
+        return Pager(
+            config = PagingConfig(pageSize = 20, initialLoadSize = 20),
+            pagingSourceFactory = { imagesDao.loadPopularPagedSource() },
+            remoteMediator = PopularRemoteMediator(firebasePhotos, imagesDao)
+        ).flow
+    }
 }

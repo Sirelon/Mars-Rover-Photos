@@ -1,10 +1,12 @@
 package com.sirelon.marsroverphotos.data.database
 
 import androidx.room3.ConstructedBy
+import androidx.room3.DaoReturnTypeConverters
 import androidx.room3.Database
 import androidx.room3.RoomDatabase
 import androidx.room3.RoomDatabaseConstructor
 import androidx.room3.migration.Migration
+import androidx.room3.paging.PagingSourceDaoReturnTypeConverter
 import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.execSQL
 import com.sirelon.marsroverphotos.data.database.dao.FactDisplayDao
@@ -28,6 +30,7 @@ expect object AppDataBaseConstructor : RoomDatabaseConstructor<AppDataBase>
     exportSchema = false
 )
 @ConstructedBy(AppDataBaseConstructor::class)
+@DaoReturnTypeConverters(PagingSourceDaoReturnTypeConverter::class)
 abstract class AppDataBase : RoomDatabase() {
 
     abstract fun roversDao(): RoverDao

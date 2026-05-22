@@ -86,6 +86,11 @@ and the old placeholders still render before real screens replace them.
 **Notes:**
 - `paging-compose-common` does not exist on Maven Central. The working artifact is
   `androidx.paging:paging-compose:3.4.2`.
+- `androidx.room3:room3-paging:3.0.0-alpha05` ships KMP artifacts for iOS/Desktop (b/339934824
+  fixed). `room-paging` moved to `commonMain`; `@DaoReturnTypeConverters(PagingSourceDaoReturnTypeConverter::class)`
+  added to `AppDataBase`; `loadFavoritePagedSource()` and `loadPopularPagedSource()` restored in
+  `ImagesDao`, `ImagesRepository`, and `ImagesRepositoryImpl`. ViewModels and screens still use
+  the non-paged `Flow<List<MarsImage>>` path — wiring them to `LazyPagingItems` is a follow-up.
 
 ---
 
