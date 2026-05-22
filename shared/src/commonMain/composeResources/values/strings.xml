@@ -35,6 +35,8 @@
     <string name="favorite_empty_btn">Go to rovers</string>
     <string name="favorite_empty_title">No favorite photos yet.\nYou can save any photos you like.\nJust mark them as "favorite".</string>
     <string name="popular_empty_title">No popular photos available.\nCheck back later!</string>
+    <string name="images_empty_title">No photos available.</string>
+    <string name="images_empty_btn">Go back</string>
 
     <!-- Navigation labels -->
     <string name="nav_rovers">Rovers</string>

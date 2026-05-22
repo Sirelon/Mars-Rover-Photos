@@ -12,8 +12,10 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -21,6 +23,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -61,8 +64,12 @@ import com.sirelon.marsroverphotos.presentation.ui.rememberZoomableState
 import com.sirelon.marsroverphotos.presentation.ui.zoomable
 import com.sirelon.marsroverphotos.presentation.viewmodels.ImageViewModel
 import com.sirelon.marsroverphotos.presentation.viewmodels.UiEvent
+import com.sirelon.marsroverphotos.shared.resources.Res
+import com.sirelon.marsroverphotos.shared.resources.images_empty_btn
+import com.sirelon.marsroverphotos.shared.resources.images_empty_title
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
@@ -104,20 +111,47 @@ fun ImagesScreen(
         initialPage = 0,
         pageCount = { images.size },
     )
+    var isInitialPositionApplied by remember(source, selectedId) { mutableStateOf(false) }
+    var hasRenderedImages by remember(source) { mutableStateOf(false) }
 
-    LaunchedEffect(images, selectedId) {
-        val index = selectedId?.let { targetId ->
-            images.indexOfFirst { it.id == targetId }.takeIf { it >= 0 }
-        } ?: return@LaunchedEffect
-
-        if (pagerState.currentPage != index && index < pagerState.pageCount) {
-            pagerState.scrollToPage(index)
+    if (images.isNotEmpty() && !hasRenderedImages) {
+        SideEffect {
+            hasRenderedImages = true
         }
+    }
+
+    LaunchedEffect(images, selectedId, isInitialPositionApplied) {
+        if (isInitialPositionApplied) return@LaunchedEffect
+
+        if (selectedId == null) {
+            isInitialPositionApplied = true
+            return@LaunchedEffect
+        }
+
+        if (images.isEmpty()) {
+            return@LaunchedEffect
+        }
+
+        val index = selectedId.let { targetId ->
+            images.indexOfFirst { it.id == targetId }.takeIf { it >= 0 }
+        }
+
+        if (index != null && index < pagerState.pageCount) {
+            if (pagerState.currentPage != index) {
+                pagerState.scrollToPage(index)
+            }
+        }
+
+        isInitialPositionApplied = true
     }
 
     Crossfade(targetState = images.isEmpty(), label = "Images") { isEmpty ->
         if (isEmpty) {
-            CenteredProgress()
+            if (source != AppDestination.ImagesSource.DIRECT_IDS && hasRenderedImages) {
+                ImagesEmptyState(onBack = onBack)
+            } else {
+                CenteredProgress()
+            }
         } else {
             ImagesPagerContent(
                 viewModel = viewModel,
@@ -126,6 +160,25 @@ fun ImagesScreen(
                 hideUi = screenState.hideUi,
                 onBack = onBack,
             )
+        }
+    }
+}
+
+@Composable
+private fun ImagesEmptyState(onBack: () -> Unit) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = stringResource(Res.string.images_empty_title),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Button(onClick = onBack) {
+                Text(text = stringResource(Res.string.images_empty_btn))
+            }
         }
     }
 }
