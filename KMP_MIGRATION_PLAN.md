@@ -291,6 +291,11 @@ interface doesn't expose those Firebase methods. Wire up when `6.1` (Firebase iO
 - ✅ Rate app action works or degrades safely on each platform.
 - ✅ Android, iOS framework, and Desktop compile.
 
+*Note (2026-05-22): `IosAppReview` added in `shared/src/iosMain/.../platform/AppReview.ios.kt`.
+Uses `SKStoreReviewController.requestReview(in:)` (scene-based, iOS 16+) with a fallback to the
+class-level `requestReview()` on older iOS. Wired into Koin `PlatformModule.ios.kt`; `NoOpAppReview`
+replaced. Desktop remains `NoOpAppReview` — falls back to opening the store URL.*
+
 ---
 
 ### ~~Ticket S8 — Ukraine Route Decision~~ ✅
