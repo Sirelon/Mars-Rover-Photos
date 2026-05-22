@@ -132,6 +132,9 @@ kotlin {
 
             // AndroidX
             implementation(libs.androidx.ktx)
+
+            // AdMob (real banner is rendered from AdSlot.android.kt)
+            implementation(libs.play.services.ads)
         }
 
         // iOS-specific dependencies

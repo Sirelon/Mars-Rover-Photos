@@ -37,6 +37,8 @@ class MainActivity : ComponentActivity() {
             window.isNavigationBarContrastEnforced = false
         }
 
+        gdprHelper.init()
+
         // Handle deep link if present
         handleDeepLink(intent)
 
@@ -49,10 +51,6 @@ class MainActivity : ComponentActivity() {
             )
         }
 
-        // Initialise GDPR/UMP consent flow. For EEA users this may show a consent form;
-        // for everyone else it completes silently. gdprHelper.acceptGdpr can be wired into
-        // AdSlot when ads are re-enabled.
-        gdprHelper.init()
     }
 
     private fun openStoreListing() {
