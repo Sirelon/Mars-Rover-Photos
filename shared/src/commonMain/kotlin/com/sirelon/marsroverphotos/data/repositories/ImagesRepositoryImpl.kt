@@ -35,7 +35,7 @@ class ImagesRepositoryImpl(
 
     override fun loadFavoritePagedSource(): Flow<PagingData<MarsImage>> {
         return Pager(
-            config = PagingConfig(pageSize = 10, initialLoadSize = 10),
+            config = PagingConfig(pageSize = 10, initialLoadSize = 10, enablePlaceholders = false),
             pagingSourceFactory = { imagesDao.loadFavoritePagedSource() }
         ).flow
     }
@@ -63,7 +63,7 @@ class ImagesRepositoryImpl(
     @OptIn(ExperimentalPagingApi::class)
     override fun loadPopularPagedSource(): Flow<PagingData<MarsImage>> {
         return Pager(
-            config = PagingConfig(pageSize = 20, initialLoadSize = 20),
+            config = PagingConfig(pageSize = 20, initialLoadSize = 20, enablePlaceholders = false),
             pagingSourceFactory = { imagesDao.loadPopularPagedSource() },
             remoteMediator = PopularRemoteMediator(firebasePhotos, imagesDao)
         ).flow
