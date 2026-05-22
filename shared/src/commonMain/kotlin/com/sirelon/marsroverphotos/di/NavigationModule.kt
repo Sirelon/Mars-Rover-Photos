@@ -38,7 +38,8 @@ val navigationModule = module {
                 navigator.navigate(
                     AppDestination.Images(
                         photoIds = listOf(photoId),
-                        selectedId = photoId
+                        selectedId = photoId,
+                        source = AppDestination.ImagesSource.DIRECT_IDS,
                     )
                 )
             },
@@ -54,6 +55,7 @@ val navigationModule = module {
         ImagesScreen(
             photoIds = destination.photoIds,
             selectedId = destination.selectedId,
+            source = destination.source,
             onBack = { navigator.goBack() }
         )
     }
@@ -61,11 +63,11 @@ val navigationModule = module {
     navigation<AppDestination.Favorite> {
         val navigator = LocalAppNavigator.current
         FavoriteScreen(
-            onNavigateToImages = { image, allImages ->
+            onNavigateToImages = { image ->
                 navigator.navigate(
                     AppDestination.Images(
-                        photoIds = allImages.map { it.id },
-                        selectedId = image.id
+                        selectedId = image.id,
+                        source = AppDestination.ImagesSource.FAVORITES,
                     )
                 )
             },
@@ -76,11 +78,11 @@ val navigationModule = module {
     navigation<AppDestination.Popular> {
         val navigator = LocalAppNavigator.current
         PopularScreen(
-            onNavigateToImages = { image, allImages ->
+            onNavigateToImages = { image ->
                 navigator.navigate(
                     AppDestination.Images(
-                        photoIds = allImages.map { it.id },
-                        selectedId = image.id
+                        selectedId = image.id,
+                        source = AppDestination.ImagesSource.POPULAR,
                     )
                 )
             }

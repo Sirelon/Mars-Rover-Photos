@@ -104,6 +104,8 @@ kotlin {
 
             // Room KMP (Android, iOS, Desktop only - no WASM support)
             implementation(libs.androidx.room.runtime)
+            // room-paging supports all KMP targets since room3 3.0.0-alpha05 (b/339934824)
+            implementation(libs.androidx.room.paging)
 
             // GitLive Firebase KMP (Firestore supports all platforms)
             implementation(libs.gitlive.firebase.firestore)
@@ -116,9 +118,6 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
             implementation(libs.lifecycle.viewmodel.navigation3)
-
-            // Room paging (Android-only — confirmed: KSP does not support PagingSource on non-Android targets)
-            implementation(libs.androidx.room.paging)
 
             // Firebase native (Android-only — GitLive wraps these, still needed for Android init)
             implementation(libs.firebase.analytics.versioned)

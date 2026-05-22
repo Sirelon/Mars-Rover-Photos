@@ -2,6 +2,8 @@ package com.sirelon.marsroverphotos.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
 import com.sirelon.marsroverphotos.platform.Tracker
@@ -11,7 +13,7 @@ import kotlinx.coroutines.launch
 
 /**
  * ViewModel for the favorite images screen.
- * Loads user's favorite images.
+ * Loads user's favorite images with paging support.
  *
  * Created on 25.08.2020 12:13 for Mars-Rover-Photos.
  */
@@ -21,9 +23,11 @@ class FavoriteImagesViewModel(
 ) : ViewModel() {
 
     /**
-     * Flow of favorite images.
+     * Paged flow of favorite images, cached in [viewModelScope].
      */
-    val favoriteImagesFlow: Flow<List<MarsImage>> = imagesRepository.loadFavoriteImages()
+    val favoritePagedFlow: Flow<PagingData<MarsImage>> = imagesRepository
+        .loadFavoritePagedSource()
+        .cachedIn(viewModelScope)
 
     /**
      * Track an analytics event.
@@ -35,6 +39,7 @@ class FavoriteImagesViewModel(
 
     /**
      * Toggle favorite status for an image.
+     * Room invalidates the PagingSource automatically after the DB write.
      * @param image The image to update
      */
     fun updateFavForImage(image: MarsImage) {

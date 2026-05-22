@@ -28,12 +28,17 @@ interface ImagesRepository {
      */
     fun loadFavoriteImages(): Flow<List<MarsImage>>
 
-    // TODO: Re-enable when room-paging supports all KMP targets
-    // /**
-    //  * Load favorite images with paging support.
-    //  * @return Flow of paged favorite images
-    //  */
-    // fun loadFavoritePagedSource(): Flow<PagingData<MarsImage>>
+    /**
+     * Load popular images.
+     * @return Flow of popular images
+     */
+    fun loadPopularImages(): Flow<List<MarsImage>>
+
+    /**
+     * Load favorite images with paging support.
+     * @return Flow of paged favorite images
+     */
+    fun loadFavoritePagedSource(): Flow<PagingData<MarsImage>>
 
     /**
      * Toggle favorite status for an image.
@@ -41,10 +46,9 @@ interface ImagesRepository {
      */
     suspend fun updateFavForImage(item: MarsImage)
 
-    // TODO: Re-enable when room-paging supports all KMP targets
-    // /**
-    //  * Load popular images with paging support.
-    //  * @return Flow of paged popular images
-    //  */
-    // fun loadPopularPagedSource(): Flow<PagingData<MarsImage>>
+    /**
+     * Load popular images with paging support.
+     * @return Flow of paged popular images
+     */
+    fun loadPopularPagedSource(): Flow<PagingData<MarsImage>>
 }

@@ -2,6 +2,7 @@ package com.sirelon.marsroverphotos.presentation.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -36,10 +37,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.domain.settings.AppSettings
 import com.sirelon.marsroverphotos.presentation.ui.CenteredColumn
-import com.sirelon.marsroverphotos.presentation.ui.CenteredProgress
 import com.sirelon.marsroverphotos.presentation.ui.MarsImageComposable
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
@@ -49,9 +54,6 @@ import com.sirelon.marsroverphotos.shared.resources.alien_icon
 import com.sirelon.marsroverphotos.shared.resources.favorite_empty_btn
 import com.sirelon.marsroverphotos.shared.resources.favorite_empty_title
 import com.sirelon.marsroverphotos.shared.resources.favorite_title
-import com.sirelon.marsroverphotos.shared.resources.img_placeholder
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -59,28 +61,28 @@ import org.koin.compose.viewmodel.koinViewModel
 
 /**
  * Favorite images screen.
- * Displays the user's favorite Mars photos.
+ * Displays the user's favorite Mars photos with paging support backed by Room.
  *
  * Created on 01.03.2021 22:32 for Mars-Rover-Photos.
  * Ported to Compose Multiplatform (KMP).
  */
 @Composable
 fun FavoriteScreen(
-    onNavigateToImages: (selected: MarsImage, all: List<MarsImage>) -> Unit,
+    onNavigateToImages: (selected: MarsImage) -> Unit,
     onNavigateToRovers: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: FavoriteImagesViewModel = koinViewModel()
 ) {
     val appSettings: AppSettings = koinInject()
-    val items by viewModel.favoriteImagesFlow.collectAsState(initial = emptyList())
+    val lazyPagingItems = viewModel.favoritePagedFlow.collectAsLazyPagingItems()
 
     FavoritePhotosContent(
         modifier = modifier,
         title = stringResource(Res.string.favorite_title),
-        items = items,
+        lazyPagingItems = lazyPagingItems,
         appSettings = appSettings,
         onFavoriteClick = { viewModel.updateFavForImage(it) },
-        onItemClick = { image -> onNavigateToImages(image, items) },
+        onItemClick = onNavigateToImages,
         emptyContent = {
             FavoriteEmptyContent(
                 title = stringResource(Res.string.favorite_empty_title),
@@ -94,12 +96,12 @@ fun FavoriteScreen(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalUuidApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun FavoritePhotosContent(
     modifier: Modifier,
     title: String,
-    items: List<MarsImage>,
+    lazyPagingItems: LazyPagingItems<MarsImage>,
     appSettings: AppSettings,
     onItemClick: (image: MarsImage) -> Unit,
     onFavoriteClick: (image: MarsImage) -> Unit,
@@ -114,7 +116,7 @@ private fun FavoritePhotosContent(
             title = { Text(text = title) },
             windowInsets = WindowInsets(0, 0, 0, 0),
             actions = {
-                if (items.isNotEmpty()) {
+                if (lazyPagingItems.itemCount > 0) {
                     IconButton(
                         onClick = {
                             gridView = !gridView
@@ -138,38 +140,52 @@ private fun FavoritePhotosContent(
             scrollBehavior = scrollBehavior,
         )
 
-        if (items.isEmpty()) {
-            emptyContent()
-        } else {
-            val spacedBy = Arrangement.spacedBy(8.dp)
-            LazyVerticalStaggeredGrid(
-                modifier = modifier
-                    .weight(1f)
-                    .nestedScroll(scrollBehavior.nestedScrollConnection),
-                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
-                columns = if (gridView) {
-                    StaggeredGridCells.Adaptive(minSize = 180.dp)
-                } else {
-                    StaggeredGridCells.Fixed(1)
-                },
-                verticalItemSpacing = 8.dp,
-                horizontalArrangement = spacedBy,
-                content = {
-                    items(
-                        count = items.size,
-                        key = { items[it].id.ifEmpty { Uuid.random().toString() } },
-                        contentType = { "MarsImageComposable" }
-                    ) { index ->
-                        val image = items[index]
-                        MarsImageComposable(
-                            modifier = Modifier,
-                            marsImage = image,
-                            onClick = { onItemClick(image) },
-                            onFavoriteClick = { onFavoriteClick(image) }
-                        )
-                    }
+        when {
+            lazyPagingItems.loadState.refresh is LoadState.Loading && lazyPagingItems.itemCount == 0 -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
                 }
-            )
+            }
+
+            lazyPagingItems.itemCount == 0 -> {
+                emptyContent()
+            }
+
+            else -> {
+                LazyVerticalStaggeredGrid(
+                    modifier = modifier
+                        .weight(1f)
+                        .nestedScroll(scrollBehavior.nestedScrollConnection),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+                    columns = if (gridView) {
+                        StaggeredGridCells.Adaptive(minSize = 180.dp)
+                    } else {
+                        StaggeredGridCells.Fixed(1)
+                    },
+                    verticalItemSpacing = 8.dp,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    content = {
+                        items(
+                            count = lazyPagingItems.itemCount,
+                            key = lazyPagingItems.itemKey { it.id },
+                            contentType = lazyPagingItems.itemContentType { "MarsImageComposable" }
+                        ) { index ->
+                            val image = lazyPagingItems[index] ?: return@items
+                            MarsImageComposable(
+                                modifier = Modifier,
+                                marsImage = image,
+                                onClick = { onItemClick(image) },
+                                onFavoriteClick = { onFavoriteClick(image) }
+                            )
+                        }
+                        if (lazyPagingItems.loadState.append is LoadState.Loading) {
+                            item(span = StaggeredGridItemSpan.FullLine) {
+                                LoadingMoreItem()
+                            }
+                        }
+                    }
+                )
+            }
         }
     }
 }

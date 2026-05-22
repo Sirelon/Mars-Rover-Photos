@@ -87,6 +87,11 @@ and the old placeholders still render before real screens replace them.
 **Notes:**
 - `paging-compose-common` does not exist on Maven Central. The working artifact is
   `androidx.paging:paging-compose:3.4.2`.
+- `androidx.room3:room3-paging:3.0.0-alpha05` ships KMP artifacts for iOS/Desktop (b/339934824
+  fixed). `room-paging` moved to `commonMain`; `@DaoReturnTypeConverters(PagingSourceDaoReturnTypeConverter::class)`
+  added to `AppDataBase`; `loadFavoritePagedSource()` and `loadPopularPagedSource()` restored in
+  `ImagesDao`, `ImagesRepository`, and `ImagesRepositoryImpl`. ViewModels and screens still use
+  the non-paged `Flow<List<MarsImage>>` path — wiring them to `LazyPagingItems` is a follow-up.
 
 ---
 
@@ -230,6 +235,8 @@ interface doesn't expose those Firebase methods. Wire up when `6.1` (Firebase iO
 - ✅ iOS and Desktop compile and show a sane empty state where Firebase is not available.
 
 *Note: `IFirebasePhotos.loadPopularPhotos()` is injected directly into `PopularPhotosViewModel` (bypassing the paged Room mediator which is still commented out for KMP-target reasons). Photos load as a `StateFlow<List<MarsImage>>` via a one-shot coroutine with retry. The placeholder `PopularScreen` in `PlaceholderScreens.kt` was removed. `popular_empty_title` string added to `strings.xml`.*
+
+*Follow-up (2026-05-22): Favorites/Popular now use `LazyPagingItems` + Room paging sources and `PopularRemoteMediator` again. To avoid truncated `ImagesScreen` swiping when opening from a paged list, `AppDestination.Images` now carries an `ImagesSource` enum; the image viewer loads full lists from Room for `FAVORITES`/`POPULAR` and uses explicit `photoIds` only for `DIRECT_IDS` (Photos screen flow).*
 
 ---
 

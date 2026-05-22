@@ -8,9 +8,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
@@ -28,6 +28,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.domain.settings.AppSettings
 import com.sirelon.marsroverphotos.presentation.ui.CenteredColumn
@@ -38,8 +43,6 @@ import com.sirelon.marsroverphotos.presentation.viewmodels.PopularPhotosViewMode
 import com.sirelon.marsroverphotos.shared.resources.Res
 import com.sirelon.marsroverphotos.shared.resources.popular_empty_title
 import com.sirelon.marsroverphotos.shared.resources.popular_title
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -47,44 +50,39 @@ import org.koin.compose.viewmodel.koinViewModel
 /**
  * Popular photos screen.
  * Displays the most popular Mars photos ranked by community engagement.
- * On Android, shows real Firebase data. On iOS and Desktop, degrades to an empty state
- * until platform Firebase support is fully active.
+ * Data is fetched from Firebase via [PopularRemoteMediator] and cached in Room,
+ * then surfaced to the UI as paged items — works on Android, iOS, and Desktop.
  *
  * Created for KMP migration — Ticket S5.
  */
 @Composable
 fun PopularScreen(
-    onNavigateToImages: (selected: MarsImage, all: List<MarsImage>) -> Unit,
+    onNavigateToImages: (selected: MarsImage) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: PopularPhotosViewModel = koinViewModel(),
 ) {
     val appSettings: AppSettings = koinInject()
-    val items by viewModel.popularPhotos.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
+    val lazyPagingItems = viewModel.popularPagedFlow.collectAsLazyPagingItems()
 
     PopularPhotosContent(
         modifier = modifier,
         title = stringResource(Res.string.popular_title),
-        items = items,
-        isLoading = isLoading,
+        lazyPagingItems = lazyPagingItems,
         appSettings = appSettings,
         onFavoriteClick = { viewModel.updateFavorite(it) },
-        onItemClick = { image -> onNavigateToImages(image, items) },
-        onRetry = { viewModel.loadPopularPhotos() },
+        onItemClick = onNavigateToImages,
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalUuidApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PopularPhotosContent(
     modifier: Modifier,
     title: String,
-    items: List<MarsImage>,
-    isLoading: Boolean,
+    lazyPagingItems: LazyPagingItems<MarsImage>,
     appSettings: AppSettings,
     onItemClick: (image: MarsImage) -> Unit,
     onFavoriteClick: (image: MarsImage) -> Unit,
-    onRetry: () -> Unit,
 ) {
     val gridViewState by appSettings.gridViewFlow.collectAsState()
     var gridView by rememberSaveable { mutableStateOf(gridViewState) }
@@ -118,21 +116,27 @@ private fun PopularPhotosContent(
         )
 
         when {
-            isLoading && items.isEmpty() -> {
+            lazyPagingItems.loadState.refresh is LoadState.Loading && lazyPagingItems.itemCount == 0 -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
             }
 
-            items.isEmpty() -> {
+            lazyPagingItems.loadState.refresh is LoadState.Error && lazyPagingItems.itemCount == 0 -> {
                 PopularEmptyContent(
                     title = stringResource(Res.string.popular_empty_title),
-                    onRetry = onRetry,
+                    onRetry = { lazyPagingItems.retry() },
+                )
+            }
+
+            lazyPagingItems.itemCount == 0 -> {
+                PopularEmptyContent(
+                    title = stringResource(Res.string.popular_empty_title),
+                    onRetry = { lazyPagingItems.refresh() },
                 )
             }
 
             else -> {
-                val spacedBy = Arrangement.spacedBy(8.dp)
                 LazyVerticalStaggeredGrid(
                     modifier = modifier
                         .weight(1f)
@@ -144,14 +148,14 @@ private fun PopularPhotosContent(
                         StaggeredGridCells.Fixed(1)
                     },
                     verticalItemSpacing = 8.dp,
-                    horizontalArrangement = spacedBy,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                     content = {
                         items(
-                            count = items.size,
-                            key = { items[it].id.ifEmpty { Uuid.random().toString() } },
-                            contentType = { "MarsImageComposable" }
+                            count = lazyPagingItems.itemCount,
+                            key = lazyPagingItems.itemKey { it.id },
+                            contentType = lazyPagingItems.itemContentType { "MarsImageComposable" }
                         ) { index ->
-                            val image = items[index]
+                            val image = lazyPagingItems[index] ?: return@items
                             MarsImageComposable(
                                 modifier = Modifier,
                                 marsImage = image,
@@ -179,7 +183,7 @@ private fun PopularEmptyContent(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(modifier = Modifier.height(16.dp))
-        androidx.compose.material3.Button(onClick = onRetry) {
+        Button(onClick = onRetry) {
             Text(text = "Retry")
         }
     }
