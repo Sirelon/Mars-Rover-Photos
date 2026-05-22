@@ -200,7 +200,15 @@ private fun ImagesPagerContent(
             if (list.isNotEmpty() && page < list.size) {
                 val marsPhoto = list[page]
                 viewModel.onShown(marsPhoto, page)
-                titleState = "Mars image ID: ${marsPhoto.id}"
+                titleState = buildString {
+                    append("Sol ")
+                    append(marsPhoto.sol)
+                    val cam = marsPhoto.camera?.name?.takeIf { it.isNotBlank() }
+                    if (cam != null) {
+                        append(" · ")
+                        append(cam)
+                    }
+                }
             }
         }
     }

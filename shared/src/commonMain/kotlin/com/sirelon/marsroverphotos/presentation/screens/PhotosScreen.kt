@@ -5,6 +5,7 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,18 +13,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -31,13 +27,14 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
@@ -74,12 +71,10 @@ import com.sirelon.marsroverphotos.shared.resources.alien_icon
 import com.sirelon.marsroverphotos.shared.resources.cancel
 import com.sirelon.marsroverphotos.shared.resources.choose
 import com.sirelon.marsroverphotos.shared.resources.did_you_know
-import com.sirelon.marsroverphotos.shared.resources.earth_date_fmt
 import com.sirelon.marsroverphotos.shared.resources.educational_fact
 import com.sirelon.marsroverphotos.shared.resources.no_photos_title
 import com.sirelon.marsroverphotos.shared.resources.select
 import com.sirelon.marsroverphotos.shared.resources.select_date
-import com.sirelon.marsroverphotos.shared.resources.sol_date_fmt
 import com.sirelon.marsroverphotos.shared.resources.sol_description
 import com.sirelon.marsroverphotos.shared.resources.sol_label
 import com.sirelon.marsroverphotos.shared.resources.sol_max_error_fmt
@@ -151,18 +146,24 @@ fun PhotosScreen(
                     }
                 }
             )
-            Row(modifier = Modifier.height(IntrinsicSize.Min)) {
-                HeaderButton(stringResource(Res.string.sol_date_fmt, sol)) {
-                    openSolDialog = true
-                }
-                HorizontalDivider(
-                    modifier = Modifier
-                        .width(1.dp)
-                        .fillMaxHeight()
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                DateSelectorButton(
+                    modifier = Modifier.weight(1f),
+                    label = "Sol date",
+                    value = sol.toString(),
+                    onClick = { openSolDialog = true }
                 )
-                HeaderButton(stringResource(Res.string.earth_date_fmt, viewModel.earthDateStr(sol))) {
-                    openEarthDateDialog = true
-                }
+                DateSelectorButton(
+                    modifier = Modifier.weight(1f),
+                    label = "Earth date",
+                    value = viewModel.earthDateStr(sol),
+                    onClick = { openEarthDateDialog = true }
+                )
             }
 
             if (!cameraFilter.isNullOrBlank()) {
@@ -415,17 +416,45 @@ private fun SolChanger(
 }
 
 @Composable
-private fun RowScope.HeaderButton(text: String, onClick: () -> Unit) {
-    TextButton(
-        modifier = Modifier
-            .weight(1f)
-            .animateContentSize(),
-        onClick = onClick
-    ) {
-        Text(
-            text = text,
-            textAlign = TextAlign.Center
+private fun DateSelectorButton(
+    label: String,
+    value: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    OutlinedButton(
+        modifier = modifier.animateContentSize(),
+        onClick = onClick,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        colors = ButtonDefaults.outlinedButtonColors(
+            contentColor = MaterialTheme.colorScheme.onSurface
         )
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = value,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1
+                )
+            }
+            MaterialSymbolIcon(
+                symbol = MaterialSymbol.ExpandMore,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp),
+                size = 18.dp
+            )
+        }
     }
 }
 

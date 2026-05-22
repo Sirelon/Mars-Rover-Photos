@@ -2,6 +2,7 @@ package com.sirelon.marsroverphotos.platform
 
 import androidx.room3.Room
 import androidx.room3.RoomDatabase
+import androidx.sqlite.driver.NativeSQLiteDriver
 import com.sirelon.marsroverphotos.data.database.AppDataBase
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
@@ -28,6 +29,7 @@ actual fun getDatabaseBuilder(): RoomDatabase.Builder<AppDataBase> {
     return Room.databaseBuilder<AppDataBase>(
         name = dbPath
     )
+        .setDriver(NativeSQLiteDriver())
         .fallbackToDestructiveMigration(false)
         .addMigrations(AppDataBase.migration7To8, AppDataBase.migration8To9)
 }

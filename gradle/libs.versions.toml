@@ -1,7 +1,7 @@
 [versions]
 # Core
 kotlin = "2.3.21"
-androidGradlePlugin = "9.2.0"
+androidGradlePlugin = "9.2.1"
 ksp = "2.3.7"
 
 # Compose Multiplatform
@@ -78,6 +78,8 @@ playServicesAds = "25.1.0"
 userMessagingPlatform = "4.0.0"
 # https://github.com/usuiat/Zoomable/releases
 zoomable = "2.9.0"
+# https://developer.android.com/guide/playcore/in-app-review/release-notes
+playReview = "2.0.2"
 
 # Legacy (to be removed)
 navigation3 = "1.1.0"
@@ -179,6 +181,7 @@ play-services-ads = { module = "com.google.android.gms:play-services-ads", versi
 user-messaging-platform = { module = "com.google.android.ump:user-messaging-platform", version.ref = "userMessagingPlatform" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 zoomable = { module = "net.engawapg.lib:zoomable", version.ref = "zoomable" }
+play-review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "playReview" }
 androidx-material3-window-size-class1 = { group = "androidx.compose.material3", name = "material3-window-size-class", version.ref = "material3WindowSizeClass" }
 
 [plugins]

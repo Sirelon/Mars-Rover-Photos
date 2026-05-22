@@ -3,7 +3,9 @@ package com.sirelon.marsroverphotos.di
 import com.sirelon.marsroverphotos.data.repositories.MissionRepositoryImpl
 import com.sirelon.marsroverphotos.domain.repositories.MissionRepository
 import com.sirelon.marsroverphotos.domain.settings.AppSettings
+import com.sirelon.marsroverphotos.platform.AppReview
 import com.sirelon.marsroverphotos.platform.FirebaseAnalytics
+import com.sirelon.marsroverphotos.platform.NoOpAppReview
 import com.sirelon.marsroverphotos.platform.FirebasePhotosImpl
 import com.sirelon.marsroverphotos.platform.FirebaseTracker
 import com.sirelon.marsroverphotos.platform.IFirebasePhotos
@@ -49,4 +51,7 @@ val platformModule = module {
     single<MissionRepository> {
         MissionRepositoryImpl()
     }
+
+    // In-app review — no-op on iOS (caller falls back to App Store URL)
+    single<AppReview> { NoOpAppReview() }
 }

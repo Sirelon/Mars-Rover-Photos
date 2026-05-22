@@ -22,6 +22,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
@@ -34,16 +35,19 @@ import androidx.compose.ui.unit.dp
 import coil3.SingletonImageLoader
 import coil3.compose.LocalPlatformContext
 import com.sirelon.marsroverphotos.domain.settings.Theme
+import com.sirelon.marsroverphotos.platform.AppReview
 import com.sirelon.marsroverphotos.presentation.navigation.LocalAboutCallbacks
 import com.sirelon.marsroverphotos.presentation.ui.RadioButtonText
 import com.sirelon.marsroverphotos.presentation.ui.rememberPlatformUriHandler
 import com.sirelon.marsroverphotos.presentation.viewmodels.AboutViewModel
+import kotlinx.coroutines.launch
 import com.sirelon.marsroverphotos.shared.resources.Res
 import com.sirelon.marsroverphotos.shared.resources.alien_icon
 import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -74,6 +78,8 @@ private fun AboutContent(
 ) {
     val typography = MaterialTheme.typography
     val uriHandler = rememberPlatformUriHandler()
+    val appReview: AppReview = koinInject()
+    val scope = rememberCoroutineScope()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -121,10 +127,15 @@ private fun AboutContent(
 
         Button(
             onClick = {
-                if (rateAppUrl.isNotBlank()) {
-                    uriHandler.openUri(rateAppUrl)
-                } else {
-                    onRateApp()
+                scope.launch {
+                    val shown = appReview.requestReview()
+                    if (!shown) {
+                        if (rateAppUrl.isNotBlank()) {
+                            uriHandler.openUri(rateAppUrl)
+                        } else {
+                            onRateApp()
+                        }
+                    }
                 }
             }
         ) {

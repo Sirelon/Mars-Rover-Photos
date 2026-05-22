@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -90,53 +92,60 @@ fun RoverItem(
     onMissionInfoClick: (rover: Rover) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
-            .padding(8.dp)
-            .clickable(onClick = { onClick(rover) })
+    Card(
+        modifier = modifier.padding(8.dp),
+        shape = MaterialTheme.shapes.large,
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = { onClick(rover) })
+                .padding(8.dp)
         ) {
-            Box(
-                modifier = Modifier.weight(1f),
-                contentAlignment = Alignment.Center
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                TitleText(rover.name)
+                Box(
+                    modifier = Modifier.weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    TitleText(rover.name)
+                }
+                IconButton(onClick = { onMissionInfoClick(rover) }) {
+                    MaterialSymbolIcon(
+                        symbol = MaterialSymbol.Info,
+                        contentDescription = "Mission Info"
+                    )
+                }
             }
-            IconButton(onClick = { onMissionInfoClick(rover) }) {
-                MaterialSymbolIcon(
-                    symbol = MaterialSymbol.Info,
-                    contentDescription = "Mission Info"
-                )
-            }
-        }
-        InfoText(label = "Status:", text = rover.status)
+            InfoText(label = "Status:", text = rover.status)
 
-        Row(modifier = Modifier.padding(8.dp)) {
-            Image(
-                contentScale = ContentScale.FillHeight,
-                painter = rover.painter(),
-                modifier = Modifier
-                    .height(175.dp)
-                    .weight(1f)
-                    .clip(shape = MaterialTheme.shapes.large),
-                contentDescription = rover.name
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.SpaceAround
-            ) {
-                InfoText(
-                    label = stringResource(Res.string.label_photos_total),
-                    text = formatThousands(rover.totalPhotos)
+            Row(modifier = Modifier.padding(8.dp)) {
+                Image(
+                    contentScale = ContentScale.FillHeight,
+                    painter = rover.painter(),
+                    modifier = Modifier
+                        .height(175.dp)
+                        .weight(1f)
+                        .clip(shape = MaterialTheme.shapes.large),
+                    contentDescription = rover.name
                 )
-                InfoText(label = "Last photo date:", text = rover.maxDate)
-                InfoText(label = "Launch date from Earth:", text = rover.launchDate)
-                InfoText(label = "Landing date on Mars:", text = rover.landingDate)
+                Spacer(modifier = Modifier.width(8.dp))
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.SpaceAround
+                ) {
+                    InfoText(
+                        label = stringResource(Res.string.label_photos_total),
+                        text = formatThousands(rover.totalPhotos)
+                    )
+                    InfoText(label = "Last photo date:", text = rover.maxDate)
+                    InfoText(label = "Launch date from Earth:", text = rover.launchDate)
+                    InfoText(label = "Landing date on Mars:", text = rover.landingDate)
+                }
             }
         }
     }

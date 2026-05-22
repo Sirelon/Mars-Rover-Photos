@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.sirelon.marsroverphotos.platform.Tracker
 import com.sirelon.marsroverphotos.platform.recordException
@@ -121,7 +122,7 @@ private fun UkraineInfoContent(
                 onOpenUri("https://en.wikipedia.org/wiki/Rashism")
             },
         ) {
-            Text(text = "rashism.")
+            Text(text = "rashism.", textDecoration = TextDecoration.Underline)
         }
         Text(
             text = "The sheer brutality of it is unfathomable in the 21st century. Yet, Ukraine " +
@@ -151,7 +152,7 @@ private fun UkraineInfoContent(
                 onOpenUri("https://war.ukraine.ua/")
             },
         ) {
-            Text(text = "https://war.ukraine.ua/")
+            Text(text = "https://war.ukraine.ua/", textDecoration = TextDecoration.Underline)
         }
         Text(text = "If you have any questions, reach me via email")
         TextButton(
@@ -160,7 +161,7 @@ private fun UkraineInfoContent(
                 onOpenUri("mailto:sasha.sirelon@gmail.com")
             },
         ) {
-            Text(text = "sasha.sirelon@gmail.com")
+            Text(text = "sasha.sirelon@gmail.com", textDecoration = TextDecoration.Underline)
         }
         Text(
             text = "Thanks a bunch – we're all in this together!",

@@ -134,6 +134,9 @@ kotlin {
 
             // AdMob (real banner is rendered from AdSlot.android.kt)
             implementation(libs.play.services.ads)
+
+            // Google Play in-app review (Android only)
+            implementation(libs.play.review.ktx)
         }
 
         // iOS-specific dependencies

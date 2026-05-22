@@ -4,8 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
@@ -84,55 +82,61 @@ fun MarsImageComposable(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun PhotoStats(marsImage: MarsImage, onFavoriteClick: () -> Unit) {
     val stats = marsImage.stats
 
-    FlowRow(
+    Column(
         modifier = Modifier
-            .padding(8.dp)
+            .padding(horizontal = 8.dp, vertical = 4.dp)
             .fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceAround,
-        verticalArrangement = Arrangement.Center
     ) {
-
-        StatsInfoText(stats.see, MaterialSymbol.Visibility, "Views")
-        StatsInfoText(stats.scale, MaterialSymbol.ZoomIn, "Zooms")
-        StatsInfoText(stats.save, MaterialSymbol.Save, "Saves")
-        StatsInfoText(stats.share, MaterialSymbol.Share, "Shares")
-        FavoriteStat(
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            StatsInfoText(stats.see, MaterialSymbol.Visibility, "Views")
+            StatsInfoText(stats.scale, MaterialSymbol.ZoomIn, "Zooms")
+            StatsInfoText(stats.save, MaterialSymbol.Save, "Saves")
+            StatsInfoText(stats.share, MaterialSymbol.Share, "Shares")
+        }
+        LikeAction(
             count = stats.favorite,
             checked = marsImage.favorite,
-            onCheckedChange = { onFavoriteClick() }
+            onClick = onFavoriteClick,
         )
     }
 }
 
 @Composable
-private fun FavoriteStat(
+private fun LikeAction(
     count: Long,
     checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit
+    onClick: () -> Unit,
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        IconToggleButton(
-            checked = checked,
-            onCheckedChange = onCheckedChange
-        ) {
-            MaterialSymbolIcon(
-                symbol = MaterialSymbol.Favorite,
-                contentDescription = "Favorites",
-                filled = checked,
-                size = 20.dp
-            )
-        }
-        if (count > 0) {
-            Text(
-                text = count.toString(),
-                style = MaterialTheme.typography.bodySmall,
-            )
-        }
+    val tint = if (checked) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+    ) {
+        MaterialSymbolIcon(
+            symbol = MaterialSymbol.Favorite,
+            contentDescription = if (checked) "Unlike" else "Like",
+            filled = checked,
+            tint = tint,
+            size = 22.dp,
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            text = if (count > 0) "Like · ${compactCount(count)}" else "Like",
+            style = MaterialTheme.typography.labelLarge,
+            color = tint,
+        )
     }
 }
 
@@ -179,19 +183,36 @@ fun NetworkImage(
 
 @Composable
 private fun StatsInfoText(counter: Long, symbol: MaterialSymbol, desc: String) {
-
-    if (counter <= 0) return
-
     Row(verticalAlignment = Alignment.CenterVertically) {
         MaterialSymbolIcon(
             symbol = symbol,
             contentDescription = desc,
-            size = 20.dp
+            size = 16.dp,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Spacer(modifier = Modifier.width(6.dp))
+        Spacer(modifier = Modifier.width(2.dp))
         Text(
-            text = counter.toString(),
-            style = MaterialTheme.typography.bodySmall,
+            text = if (counter > 0) compactCount(counter) else "0",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
         )
     }
+}
+
+private fun compactCount(value: Long): String {
+    val abs = if (value < 0) -value else value
+    return when {
+        abs < 1_000 -> value.toString()
+        abs < 10_000 -> formatOneDecimal(value, 1_000) + "K"
+        abs < 1_000_000 -> (value / 1_000).toString() + "K"
+        abs < 10_000_000 -> formatOneDecimal(value, 1_000_000) + "M"
+        else -> (value / 1_000_000).toString() + "M"
+    }
+}
+
+private fun formatOneDecimal(value: Long, divisor: Int): String {
+    val whole = value / divisor
+    val tenths = ((value % divisor) * 10 / divisor)
+    return if (tenths == 0L) whole.toString() else "$whole.$tenths"
 }

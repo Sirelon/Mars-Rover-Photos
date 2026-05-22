@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import com.sirelon.marsroverphotos.gdpr.GdprHelper
+import com.sirelon.marsroverphotos.platform.ActivityProvider
 import com.sirelon.marsroverphotos.presentation.App
 import com.sirelon.marsroverphotos.presentation.navigation.DeepLink
 import com.sirelon.marsroverphotos.utils.Logger
@@ -30,6 +31,9 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
 
         super.onCreate(savedInstanceState)
+        // Register this Activity so shared-module code (e.g. Play in-app review)
+        // can reach an Activity reference without leaking it.
+        ActivityProvider.set(this)
         enableEdgeToEdge()
         // Prevent the system from adding a translucent scrim over the NavigationBar —
         // the app's NavigationBar background provides the necessary contrast.
@@ -65,6 +69,11 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         handleDeepLink(intent)
+    }
+
+    override fun onDestroy() {
+        ActivityProvider.clear(this)
+        super.onDestroy()
     }
 
     /**

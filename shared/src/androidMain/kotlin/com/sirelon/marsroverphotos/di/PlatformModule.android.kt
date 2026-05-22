@@ -5,7 +5,9 @@ import android.content.SharedPreferences
 import com.sirelon.marsroverphotos.data.repositories.MissionRepositoryImpl
 import com.sirelon.marsroverphotos.domain.repositories.MissionRepository
 import com.sirelon.marsroverphotos.domain.settings.AppSettings
+import com.sirelon.marsroverphotos.platform.AndroidAppReview
 import com.sirelon.marsroverphotos.platform.AndroidPlatformPreferences
+import com.sirelon.marsroverphotos.platform.AppReview
 import com.sirelon.marsroverphotos.platform.FirebaseAnalytics
 import com.sirelon.marsroverphotos.platform.FirebaseTracker
 import com.sirelon.marsroverphotos.platform.FirebasePhotosImpl
@@ -56,4 +58,7 @@ val platformModule = module {
     single<MissionRepository> {
         MissionRepositoryImpl()
     }
+
+    // In-app review (Play Core)
+    single<AppReview> { AndroidAppReview(context = androidContext()) }
 }

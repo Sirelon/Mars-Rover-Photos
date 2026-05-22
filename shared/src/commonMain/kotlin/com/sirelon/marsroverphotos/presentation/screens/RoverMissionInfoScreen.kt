@@ -223,7 +223,7 @@ private fun RoverHeader(rover: Rover) {
                 text = rover.name,
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.tertiary
             )
         }
     }
@@ -235,7 +235,7 @@ private fun SectionHeader(title: String) {
         text = title,
         style = MaterialTheme.typography.titleLarge,
         fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colorScheme.primary
+        color = MaterialTheme.colorScheme.tertiary
     )
 }
 
@@ -243,7 +243,7 @@ private fun SectionHeader(title: String) {
 private fun MissionTimeline(milestones: List<TimelineMilestone>, status: String) {
     val isActive = status.equals("active", ignoreCase = true)
     val milestoneColor = if (isActive) {
-        MaterialTheme.colorScheme.primary
+        MaterialTheme.colorScheme.tertiary
     } else {
         MaterialTheme.colorScheme.secondary
     }
@@ -349,7 +349,7 @@ private fun TimelineSegment(progress: Float, modifier: Modifier = Modifier) {
                 .fillMaxWidth(progress.coerceIn(0f, 1f))
                 .fillMaxHeight()
                 .clip(shape)
-                .background(MaterialTheme.colorScheme.primary)
+                .background(MaterialTheme.colorScheme.tertiary)
         )
     }
 }
