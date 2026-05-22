@@ -54,7 +54,16 @@
 			</dict>
 	</array>
 	<key>UILaunchScreen</key>
-	<dict/>
+	<dict>
+		<!-- Mars orange/red background matching the app icon -->
+		<key>UIColorName</key>
+		<string>SplashBackground</string>
+		<!-- Show the app icon centered on the splash -->
+		<key>UIImageName</key>
+		<string>SplashIcon</string>
+		<key>UIImageRespectsSafeAreaInsets</key>
+		<true/>
+	</dict>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>

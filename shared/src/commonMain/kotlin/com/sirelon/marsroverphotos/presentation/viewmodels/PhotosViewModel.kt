@@ -46,7 +46,14 @@ class PhotosViewModel(
 
     private val queryEmitter = MutableStateFlow<PhotosQueryRequest?>(null)
     private val roverIdEmitter = MutableStateFlow<Long?>(null)
+    private val cameraFilterEmitter = MutableStateFlow<String?>(null)
     private var dateUtil: RoverDateUtil? = null
+
+    /**
+     * Flow exposing the currently-applied camera filter (e.g. "FHAZ").
+     * Null when no filter is active.
+     */
+    val cameraFilterFlow: kotlinx.coroutines.flow.StateFlow<String?> = cameraFilterEmitter
 
     private val roverFlow = roverIdEmitter
         .filterNotNull()
@@ -62,10 +69,10 @@ class PhotosViewModel(
     val roverNameFlow = roverFlow.map { it.name }
 
     /**
-     * Flow of photos loaded from the API.
+     * Flow of photos loaded from the API (unfiltered).
      * Null indicates loading state.
      */
-    private val photosFlowInternal = queryEmitter
+    private val rawPhotosFlow = queryEmitter
         .map { query ->
             if (query != null) {
                 try {
@@ -89,7 +96,25 @@ class PhotosViewModel(
         )
 
     /**
-     * Public flow of photos.
+     * Flow of photos after applying the in-memory camera filter (if any).
+     * Null indicates loading state.
+     */
+    private val photosFlowInternal = combine(rawPhotosFlow, cameraFilterEmitter) { photos, filter ->
+        if (photos == null) {
+            null
+        } else if (filter.isNullOrBlank()) {
+            photos
+        } else {
+            photos.filter { image ->
+                val camera = image.camera ?: return@filter false
+                camera.name.equals(filter, ignoreCase = true) ||
+                    camera.fullName.equals(filter, ignoreCase = true)
+            }
+        }
+    }
+
+    /**
+     * Public flow of photos (post camera filter).
      */
     val photosFlow = photosFlowInternal
 
@@ -155,6 +180,14 @@ class PhotosViewModel(
      */
     fun setRoverId(roverId: Long) {
         roverIdEmitter.tryEmit(roverId)
+    }
+
+    /**
+     * Set (or clear with `null`) the in-memory camera filter applied to the
+     * photo list. Matches `RoverCamera.name` or `fullName` case-insensitively.
+     */
+    fun setCameraFilter(camera: String?) {
+        cameraFilterEmitter.value = camera?.takeIf { it.isNotBlank() }
     }
 
     /**

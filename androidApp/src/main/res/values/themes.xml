@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Splash screen theme (light) -->
+    <style name="Theme.MarsRoverPhotos.Splash" parent="Theme.SplashScreen">
+        <!-- Mars orange/red background -->
+        <item name="windowSplashScreenBackground">#D84315</item>
+        <!-- Adaptive icon as splash icon -->
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
+        <!-- Icon background (matches adaptive icon background) -->
+        <item name="windowSplashScreenIconBackgroundColor">#D84315</item>
+        <!-- Theme to switch to after splash -->
+        <item name="postSplashScreenTheme">@style/Theme.AppCompat.DayNight.NoActionBar</item>
+    </style>
+</resources>

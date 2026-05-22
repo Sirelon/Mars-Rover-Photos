@@ -5,15 +5,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -65,14 +66,19 @@ fun RoversContent(
     onClick: (rover: Rover) -> Unit,
     onMissionInfoClick: (rover: Rover) -> Unit
 ) {
-    LazyColumn {
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(minSize = 360.dp),
+        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         items(rovers, key = { it.id }) { item ->
             RoverItem(
+                modifier = Modifier.fillMaxWidth(),
                 rover = item,
                 onClick = onClick,
                 onMissionInfoClick = onMissionInfoClick
             )
-            HorizontalDivider()
         }
     }
 }
@@ -81,11 +87,12 @@ fun RoversContent(
 fun RoverItem(
     rover: Rover,
     onClick: (rover: Rover) -> Unit,
-    onMissionInfoClick: (rover: Rover) -> Unit
+    onMissionInfoClick: (rover: Rover) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
+        modifier = modifier
             .padding(8.dp)
             .clickable(onClick = { onClick(rover) })
     ) {

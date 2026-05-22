@@ -33,6 +33,7 @@ val navigationModule = module {
         val navigator = LocalAppNavigator.current
         PhotosScreen(
             roverId = destination.roverId,
+            cameraFilter = destination.camera,
             onNavigateToImages = { photoId ->
                 navigator.navigate(
                     AppDestination.Images(
@@ -40,6 +41,9 @@ val navigationModule = module {
                         selectedId = photoId
                     )
                 )
+            },
+            onClearCameraFilter = {
+                navigator.replaceTop(AppDestination.Photos(destination.roverId, camera = null))
             },
             onBack = { navigator.goBack() }
         )
@@ -87,7 +91,15 @@ val navigationModule = module {
         val navigator = LocalAppNavigator.current
         RoverMissionInfoScreen(
             roverId = destination.roverId,
-            onBack = { navigator.goBack() }
+            onBack = { navigator.goBack() },
+            onCameraClick = { cameraAbbrev ->
+                navigator.navigate(
+                    AppDestination.Photos(
+                        roverId = destination.roverId,
+                        camera = cameraAbbrev
+                    )
+                )
+            }
         )
     }
 
