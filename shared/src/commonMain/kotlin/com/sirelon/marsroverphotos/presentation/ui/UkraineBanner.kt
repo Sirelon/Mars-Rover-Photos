@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,14 +19,13 @@ import androidx.compose.ui.unit.dp
 
 /**
  * A slim banner composable that displays the Ukrainian flag colors and a title.
- * Tapping the banner invokes [onClick]; tapping the close icon invokes [onDismiss].
+ * Tapping the banner invokes [onClick];
  */
 @Composable
 fun UkraineBanner(
     modifier: Modifier = Modifier,
     title: String = "#Stand with Ukraine",
     onClick: () -> Unit,
-    onDismiss: (() -> Unit)? = null,
 ) {
     Box(
         modifier = modifier
@@ -65,22 +63,5 @@ fun UkraineBanner(
             ),
         )
 
-        if (onDismiss != null) {
-            Box(
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .padding(end = 4.dp)
-                    .size(28.dp)
-                    .clickable(onClick = onDismiss),
-                contentAlignment = Alignment.Center,
-            ) {
-                MaterialSymbolIcon(
-                    symbol = MaterialSymbol.Close,
-                    contentDescription = "Dismiss Ukraine banner",
-                    tint = Color.White,
-                    size = 18.dp,
-                )
-            }
-        }
     }
 }

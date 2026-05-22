@@ -9,10 +9,8 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
@@ -23,7 +21,6 @@ import com.sirelon.marsroverphotos.presentation.ui.AdSlot
 import com.sirelon.marsroverphotos.presentation.ui.UkraineBanner
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
-import kotlinx.serialization.modules.subclass
 import org.koin.compose.koinInject
 import org.koin.compose.navigation3.koinEntryProvider
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -47,8 +44,6 @@ fun AppNavigation(
     val entryDecorators = rememberAppNavEntryDecorators()
     val entryProvider = koinEntryProvider<NavKey>()
     val tracker: Tracker = koinInject()
-    val appSettings: AppSettings = koinInject()
-    val ukraineBannerDismissed by appSettings.ukraineBannerDismissedFlow.collectAsStateWithLifecycle()
     val currentDestination = backStack.lastOrNull() as? AppDestination ?: startDestination
     val isImages = currentDestination is AppDestination.Images
 
@@ -62,6 +57,7 @@ fun AppNavigation(
                     selectedId = target.id.toString()
                 )
             )
+
             is DeepLink.Image -> navigator.navigate(
                 AppDestination.Images(
                     photoIds = listOf(target.id),
@@ -77,16 +73,12 @@ fun AppNavigation(
         Column(
             modifier = if (isImages) modifier else modifier.windowInsetsPadding(WindowInsets.statusBars)
         ) {
-            if (!isImages && currentDestination !is AppDestination.Ukraine && !ukraineBannerDismissed) {
+            if (!isImages && currentDestination !is AppDestination.Ukraine) {
                 UkraineBanner(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
                         tracker.trackClick("UkraineBanner_Root")
                         navigator.navigate(AppDestination.Ukraine)
-                    },
-                    onDismiss = {
-                        tracker.trackClick("UkraineBanner_Dismiss")
-                        appSettings.ukraineBannerDismissed = true
                     },
                 )
             }
@@ -119,6 +111,7 @@ private fun AppDestination.topLevelDestination(): AppDestination {
         is AppDestination.Images,
         is AppDestination.Mission,
         AppDestination.Ukraine -> AppDestination.Rovers
+
         AppDestination.Favorite -> AppDestination.Favorite
         AppDestination.Popular -> AppDestination.Popular
         AppDestination.About -> AppDestination.About

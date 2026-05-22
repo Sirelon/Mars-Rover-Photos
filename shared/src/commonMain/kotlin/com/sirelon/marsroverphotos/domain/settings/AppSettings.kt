@@ -17,22 +17,7 @@ class AppSettings(
         const val KEY_THEME = "theme"
         const val KEY_GRID_VIEW = "gridView"
         const val KEY_SHOW_FACTS = "showFacts"
-        const val KEY_UKRAINE_BANNER_DISMISSED = "ukraine_banner_dismissed"
     }
-
-    private val _ukraineBannerDismissedFlow =
-        MutableStateFlow(preferences.getBoolean(KEY_UKRAINE_BANNER_DISMISSED, false))
-    val ukraineBannerDismissedFlow: StateFlow<Boolean> = _ukraineBannerDismissedFlow.asStateFlow()
-
-    /**
-     * Whether the user has dismissed the Ukraine banner. Persisted across launches.
-     */
-    var ukraineBannerDismissed: Boolean
-        get() = preferences.getBoolean(KEY_UKRAINE_BANNER_DISMISSED, false)
-        set(value) {
-            preferences.setBoolean(KEY_UKRAINE_BANNER_DISMISSED, value)
-            _ukraineBannerDismissedFlow.value = value
-        }
 
     private val _showFactsFlow = MutableStateFlow(preferences.getBoolean(KEY_SHOW_FACTS, true))
     val showFactsFlow: StateFlow<Boolean> = _showFactsFlow.asStateFlow()
