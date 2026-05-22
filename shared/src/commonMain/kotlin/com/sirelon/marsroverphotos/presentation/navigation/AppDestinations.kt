@@ -9,6 +9,13 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed interface AppDestination : NavKey {
     @Serializable
+    enum class ImagesSource {
+        DIRECT_IDS,
+        FAVORITES,
+        POPULAR,
+    }
+
+    @Serializable
     data object Rovers : AppDestination
 
     @Serializable
@@ -17,7 +24,8 @@ sealed interface AppDestination : NavKey {
     @Serializable
     data class Images(
         val photoIds: List<String> = emptyList(),
-        val selectedId: String? = null
+        val selectedId: String? = null,
+        val source: ImagesSource = ImagesSource.DIRECT_IDS,
     ) : AppDestination
 
     @Serializable

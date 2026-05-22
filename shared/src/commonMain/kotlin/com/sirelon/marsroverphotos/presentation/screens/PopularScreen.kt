@@ -57,7 +57,7 @@ import org.koin.compose.viewmodel.koinViewModel
  */
 @Composable
 fun PopularScreen(
-    onNavigateToImages: (selected: MarsImage, all: List<MarsImage>) -> Unit,
+    onNavigateToImages: (selected: MarsImage) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: PopularPhotosViewModel = koinViewModel(),
 ) {
@@ -70,10 +70,7 @@ fun PopularScreen(
         lazyPagingItems = lazyPagingItems,
         appSettings = appSettings,
         onFavoriteClick = { viewModel.updateFavorite(it) },
-        onItemClick = { image ->
-            val loadedItems = (0 until lazyPagingItems.itemCount).mapNotNull { lazyPagingItems.peek(it) }
-            onNavigateToImages(image, loadedItems)
-        },
+        onItemClick = onNavigateToImages,
     )
 }
 

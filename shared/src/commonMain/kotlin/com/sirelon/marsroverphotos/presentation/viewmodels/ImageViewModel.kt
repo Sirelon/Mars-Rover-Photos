@@ -6,6 +6,7 @@ import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
 import com.sirelon.marsroverphotos.platform.ImageOperationResult
 import com.sirelon.marsroverphotos.platform.ImageOperations
+import com.sirelon.marsroverphotos.presentation.navigation.AppDestination
 import com.sirelon.marsroverphotos.utils.Logger
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -37,6 +38,7 @@ class ImageViewModel(
 ) : ViewModel() {
 
     private val idsEmitter = MutableStateFlow<List<String>>(emptyList())
+    private val sourceEmitter = MutableStateFlow(AppDestination.ImagesSource.DIRECT_IDS)
     private val uiEventEmitter = Channel<UiEvent>(capacity = Channel.BUFFERED)
     private val hideUiEmitter = MutableStateFlow(false)
 
@@ -50,16 +52,25 @@ class ImageViewModel(
      */
     var shouldTrack = true
 
-    private val imagesFlow: Flow<ImmutableList<MarsImage>> = idsEmitter
-        .flatMapLatest { ids ->
-            if (ids.isEmpty()) {
-                flowOf(emptyList())
-            } else {
-                imagesRepository.loadImages(ids)
+    private val imagesFlow: Flow<ImmutableList<MarsImage>> = combine(idsEmitter, sourceEmitter) { ids, source ->
+        ids to source
+    }
+        .flatMapLatest { (ids, source) ->
+            when (source) {
+                AppDestination.ImagesSource.DIRECT_IDS -> {
+                    if (ids.isEmpty()) {
+                        flowOf(emptyList())
+                    } else {
+                        imagesRepository.loadImages(ids)
+                    }
+                }
+
+                AppDestination.ImagesSource.FAVORITES -> imagesRepository.loadFavoriteImages()
+                AppDestination.ImagesSource.POPULAR -> imagesRepository.loadPopularImages()
             }
         }
         .flatMapLatest { images ->
-            if (images.isEmpty() && idsEmitter.value.isNotEmpty()) {
+            if (images.isEmpty() && idsEmitter.value.isNotEmpty() && sourceEmitter.value == AppDestination.ImagesSource.DIRECT_IDS) {
                 // Retry once if database is empty but we have IDs
                 Logger.e("ImageViewModel", null) { "Images flow returned empty, retrying" }
                 delay(500)
@@ -84,7 +95,8 @@ class ImageViewModel(
      * Set the list of image IDs to display.
      * @param ids List of image IDs
      */
-    fun setIdsToShow(ids: List<String>) {
+    fun setImageSource(source: AppDestination.ImagesSource, ids: List<String>) {
+        sourceEmitter.value = source
         idsEmitter.value = ids
     }
 

@@ -33,6 +33,8 @@ class ImagesRepositoryImpl(
 
     override fun loadFavoriteImages(): Flow<List<MarsImage>> = imagesDao.loadFavoriteImages()
 
+    override fun loadPopularImages(): Flow<List<MarsImage>> = imagesDao.loadPopularImages()
+
     override fun loadFavoritePagedSource(): Flow<PagingData<MarsImage>> {
         return Pager(
             config = PagingConfig(pageSize = 10, initialLoadSize = 10, enablePlaceholders = false),

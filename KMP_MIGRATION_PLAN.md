@@ -235,6 +235,8 @@ interface doesn't expose those Firebase methods. Wire up when `6.1` (Firebase iO
 
 *Note: `IFirebasePhotos.loadPopularPhotos()` is injected directly into `PopularPhotosViewModel` (bypassing the paged Room mediator which is still commented out for KMP-target reasons). Photos load as a `StateFlow<List<MarsImage>>` via a one-shot coroutine with retry. The placeholder `PopularScreen` in `PlaceholderScreens.kt` was removed. `popular_empty_title` string added to `strings.xml`.*
 
+*Follow-up (2026-05-22): Favorites/Popular now use `LazyPagingItems` + Room paging sources and `PopularRemoteMediator` again. To avoid truncated `ImagesScreen` swiping when opening from a paged list, `AppDestination.Images` now carries an `ImagesSource` enum; the image viewer loads full lists from Room for `FAVORITES`/`POPULAR` and uses explicit `photoIds` only for `DIRECT_IDS` (Photos screen flow).*
+
 ---
 
 ### ~~Ticket S6 — Mission Info~~ ✅

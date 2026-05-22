@@ -49,6 +49,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
+import com.sirelon.marsroverphotos.presentation.navigation.AppDestination
 import com.sirelon.marsroverphotos.presentation.ui.CenteredProgress
 import com.sirelon.marsroverphotos.presentation.ui.MarsImageFavoriteToggle
 import com.sirelon.marsroverphotos.presentation.ui.MarsSnackbar
@@ -71,40 +72,48 @@ import org.koin.compose.viewmodel.koinViewModel
  *
  * @param photoIds    Ordered list of image IDs to show in the pager.
  * @param selectedId  Which ID to land on initially (null → first page).
+ * @param source      Defines where images should be loaded from.
  * @param onBack      Navigate back (e.g. pop to Photos screen).
  */
 @Composable
 fun ImagesScreen(
     photoIds: List<String>,
     selectedId: String?,
+    source: AppDestination.ImagesSource,
     onBack: () -> Unit,
     viewModel: ImageViewModel = koinViewModel(),
 ) {
     // Guard: nothing to show → pop immediately instead of hanging on the loader.
-    if (photoIds.isEmpty()) {
+    if (source == AppDestination.ImagesSource.DIRECT_IDS && photoIds.isEmpty()) {
         LaunchedEffect(Unit) { onBack() }
         return
     }
 
-    LaunchedEffect(photoIds) {
-        viewModel.setIdsToShow(photoIds)
+    LaunchedEffect(photoIds, source) {
+        viewModel.setImageSource(source = source, ids = photoIds)
     }
 
     DisposableEffect(photoIds) {
         onDispose { /* nothing to clean up */ }
     }
 
-    val initialPage = remember(photoIds, selectedId) {
-        selectedId?.let { photoIds.indexOf(it).takeIf { i -> i >= 0 } } ?: 0
-    }
-
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
     val images = screenState.images
 
     val pagerState = rememberPagerState(
-        initialPage = initialPage,
+        initialPage = 0,
         pageCount = { images.size },
     )
+
+    LaunchedEffect(images, selectedId) {
+        val index = selectedId?.let { targetId ->
+            images.indexOfFirst { it.id == targetId }.takeIf { it >= 0 }
+        } ?: return@LaunchedEffect
+
+        if (pagerState.currentPage != index && index < pagerState.pageCount) {
+            pagerState.scrollToPage(index)
+        }
+    }
 
     Crossfade(targetState = images.isEmpty(), label = "Images") { isEmpty ->
         if (isEmpty) {

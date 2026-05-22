@@ -29,6 +29,12 @@ interface ImagesRepository {
     fun loadFavoriteImages(): Flow<List<MarsImage>>
 
     /**
+     * Load popular images.
+     * @return Flow of popular images
+     */
+    fun loadPopularImages(): Flow<List<MarsImage>>
+
+    /**
      * Load favorite images with paging support.
      * @return Flow of paged favorite images
      */

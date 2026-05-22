@@ -68,7 +68,7 @@ import org.koin.compose.viewmodel.koinViewModel
  */
 @Composable
 fun FavoriteScreen(
-    onNavigateToImages: (selected: MarsImage, all: List<MarsImage>) -> Unit,
+    onNavigateToImages: (selected: MarsImage) -> Unit,
     onNavigateToRovers: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: FavoriteImagesViewModel = koinViewModel()
@@ -82,10 +82,7 @@ fun FavoriteScreen(
         lazyPagingItems = lazyPagingItems,
         appSettings = appSettings,
         onFavoriteClick = { viewModel.updateFavForImage(it) },
-        onItemClick = { image ->
-            val loadedItems = (0 until lazyPagingItems.itemCount).mapNotNull { lazyPagingItems.peek(it) }
-            onNavigateToImages(image, loadedItems)
-        },
+        onItemClick = onNavigateToImages,
         emptyContent = {
             FavoriteEmptyContent(
                 title = stringResource(Res.string.favorite_empty_title),
