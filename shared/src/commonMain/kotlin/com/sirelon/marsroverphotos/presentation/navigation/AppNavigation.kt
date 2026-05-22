@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos.presentation.navigation
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -15,7 +16,6 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
-import com.sirelon.marsroverphotos.domain.settings.AppSettings
 import com.sirelon.marsroverphotos.platform.Tracker
 import com.sirelon.marsroverphotos.presentation.ui.AdSlot
 import com.sirelon.marsroverphotos.presentation.ui.UkraineBanner
@@ -73,7 +73,7 @@ fun AppNavigation(
         Column(
             modifier = if (isImages) modifier else modifier.windowInsetsPadding(WindowInsets.statusBars)
         ) {
-            if (!isImages && currentDestination !is AppDestination.Ukraine) {
+            AnimatedVisibility(!isImages && currentDestination !is AppDestination.Ukraine) {
                 UkraineBanner(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
@@ -82,6 +82,7 @@ fun AppNavigation(
                     },
                 )
             }
+
             Box(modifier = Modifier.weight(1f)) {
                 NavDisplay(
                     backStack = backStack,
