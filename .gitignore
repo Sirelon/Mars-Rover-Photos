@@ -135,3 +135,6 @@ Pods/
 Podfile.lock
 # Firebase config — copy from GoogleService-Info.template.plist and fill in real values
 iosApp/iosApp/GoogleService-Info.plist
+
+# Claude Code session artifacts
+.claude/tmp/
