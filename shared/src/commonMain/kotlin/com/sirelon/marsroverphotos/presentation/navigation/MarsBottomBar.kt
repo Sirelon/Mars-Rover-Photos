@@ -19,34 +19,11 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-public val marsTopLevelDestinations: List<AppDestination> = listOf(
-    AppDestination.Rovers,
-    AppDestination.Favorite,
-    AppDestination.Popular,
-    AppDestination.About,
-)
-
 @Composable
-public fun MarsBottomBar(
+fun MarsBottomBar(
     selectedDestination: AppDestination,
     onDestinationClick: (AppDestination) -> Unit,
     modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-) {
-    MarsNavigationBar(
-        selectedDestination = selectedDestination,
-        onDestinationClick = onDestinationClick,
-        modifier = modifier,
-        enabled = enabled,
-    )
-}
-
-@Composable
-public fun MarsNavigationBar(
-    selectedDestination: AppDestination,
-    onDestinationClick: (AppDestination) -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
 ) {
     NavigationBar(modifier = modifier) {
         marsNavigationItems.forEach { item ->
@@ -55,7 +32,6 @@ public fun MarsNavigationBar(
 
             NavigationBarItem(
                 selected = selected,
-                enabled = enabled,
                 onClick = { onDestinationClick(item.destination) },
                 icon = {
                     MarsNavigationIcon(

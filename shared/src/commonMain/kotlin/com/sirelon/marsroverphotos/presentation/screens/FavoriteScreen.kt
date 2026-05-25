@@ -3,7 +3,6 @@ package com.sirelon.marsroverphotos.presentation.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,15 +23,13 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -43,7 +40,6 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
-import com.sirelon.marsroverphotos.domain.settings.AppSettings
 import com.sirelon.marsroverphotos.presentation.ui.CenteredColumn
 import com.sirelon.marsroverphotos.presentation.ui.MarsImageComposable
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
@@ -56,7 +52,6 @@ import com.sirelon.marsroverphotos.shared.resources.favorite_empty_title
 import com.sirelon.marsroverphotos.shared.resources.favorite_title
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
@@ -73,16 +68,19 @@ fun FavoriteScreen(
     modifier: Modifier = Modifier,
     viewModel: FavoriteImagesViewModel = koinViewModel()
 ) {
-    val appSettings: AppSettings = koinInject()
     val lazyPagingItems = viewModel.favoritePagedFlow.collectAsLazyPagingItems()
+    val gridView by viewModel.gridViewState.collectAsState()
 
     FavoritePhotosContent(
         modifier = modifier,
         title = stringResource(Res.string.favorite_title),
         lazyPagingItems = lazyPagingItems,
-        appSettings = appSettings,
+        gridView = gridView,
         onFavoriteClick = { viewModel.updateFavForImage(it) },
         onItemClick = onNavigateToImages,
+        onGridChange = {
+            viewModel.onGridChange(!gridView)
+        },
         emptyContent = {
             FavoriteEmptyContent(
                 title = stringResource(Res.string.favorite_empty_title),
@@ -102,44 +100,42 @@ private fun FavoritePhotosContent(
     modifier: Modifier,
     title: String,
     lazyPagingItems: LazyPagingItems<MarsImage>,
-    appSettings: AppSettings,
+    gridView: Boolean,
     onItemClick: (image: MarsImage) -> Unit,
     onFavoriteClick: (image: MarsImage) -> Unit,
+    onGridChange: () -> Unit,
     emptyContent: @Composable () -> Unit
 ) {
-    val gridViewState by appSettings.gridViewFlow.collectAsState()
-    var gridView by rememberSaveable { mutableStateOf(gridViewState) }
-
-    Column(modifier = Modifier.fillMaxSize()) {
-        val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-        TopAppBar(
-            title = { Text(text = title) },
-            windowInsets = WindowInsets(0, 0, 0, 0),
-            actions = {
-                if (lazyPagingItems.itemCount > 0) {
-                    IconButton(
-                        onClick = {
-                            gridView = !gridView
-                            appSettings.gridView = gridView
-                        },
-                    ) {
-                        if (gridView) {
-                            MaterialSymbolIcon(
-                                symbol = MaterialSymbol.ViewList,
-                                contentDescription = "Change to List View",
-                            )
-                        } else {
-                            MaterialSymbolIcon(
-                                symbol = MaterialSymbol.GridView,
-                                contentDescription = "Change to Grid View",
-                            )
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            TopAppBar(
+                title = { Text(text = title) },
+                windowInsets = WindowInsets(0, 0, 0, 0),
+                actions = {
+                    if (lazyPagingItems.itemCount > 0) {
+                        IconButton(
+                            onClick = onGridChange,
+                        ) {
+                            if (gridView) {
+                                MaterialSymbolIcon(
+                                    symbol = MaterialSymbol.ViewList,
+                                    contentDescription = "Change to List View",
+                                )
+                            } else {
+                                MaterialSymbolIcon(
+                                    symbol = MaterialSymbol.GridView,
+                                    contentDescription = "Change to Grid View",
+                                )
+                            }
                         }
                     }
-                }
-            },
-            scrollBehavior = scrollBehavior,
-        )
-
+                },
+                scrollBehavior = scrollBehavior,
+            )
+        }
+    ) {
         when {
             lazyPagingItems.loadState.refresh is LoadState.Loading && lazyPagingItems.itemCount == 0 -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -153,9 +149,7 @@ private fun FavoritePhotosContent(
 
             else -> {
                 LazyVerticalStaggeredGrid(
-                    modifier = modifier
-                        .weight(1f)
-                        .nestedScroll(scrollBehavior.nestedScrollConnection),
+                    modifier = modifier.fillMaxSize(),
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
                     columns = if (gridView) {
                         StaggeredGridCells.Adaptive(minSize = 180.dp)
