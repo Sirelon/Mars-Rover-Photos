@@ -23,7 +23,7 @@ technical reference notes are at the bottom.
 - ✅ Ticket S4 is done.
 - ✅ Ticket S6, Mission info, is done.
 - ✅ Ticket S5, Popular Photos, is done.
-- ⏭️ Next work: **Final cleanup** (legacy `app/` removal, full smoke tests, CI gate).
+- ✅ Final cleanup is done: CI gate is in place (`.github/workflows/ci.yml`); legacy `app/` removal is deferred — owner is handling it when remaining legacy work (ads/GDPR) is migrated.
 - ✅ iOS platform parity items from this milestone are done: Firebase (6.1), save/share (6.2),
   and deep links (6.4).
 - 🚫 Web/WASM remains out of scope for this milestone.
@@ -59,7 +59,7 @@ technical reference notes are at the bottom.
 | 6.4 — iOS deep links | ✅ Done | `marsrover://` and universal-link handling on iOS |
 | S10 — GDPR / Consent | ✅ Done | Android UMP consent flow restored; iOS ATT prompt added |
 | S11 — iOS AdMob banner | ✅ Done | Real banner via GoogleMobileAds SPM + UMP iOS; Android NPA wired to consent state |
-| Final cleanup | Pending | Delete legacy `app/`, final smoke tests, CI gate |
+| Final cleanup | ✅ Done | CI gate (`.github/workflows/ci.yml`); `app/` deletion deferred — owner will remove once remaining legacy ads/GDPR work is migrated |
 | Edge-to-edge | ✅ Done | Full edge-to-edge support: `isNavigationBarContrastEnforced`, `adjustResize`, ImagesScreen fullscreen |
 
 ---
@@ -290,6 +290,11 @@ interface doesn't expose those Firebase methods. Wire up when `6.1` (Firebase iO
 - ✅ Clear cache works.
 - ✅ Rate app action works or degrades safely on each platform.
 - ✅ Android, iOS framework, and Desktop compile.
+
+*Note (2026-05-22): `IosAppReview` added in `shared/src/iosMain/.../platform/AppReview.ios.kt`.
+Uses `SKStoreReviewController.requestReview(in:)` (scene-based, iOS 16+) with a fallback to the
+class-level `requestReview()` on older iOS. Wired into Koin `PlatformModule.ios.kt`; `NoOpAppReview`
+replaced. Desktop remains `NoOpAppReview` — falls back to opening the store URL.*
 
 ---
 
@@ -540,12 +545,10 @@ release (see Followups).*
 **Followups from S11 (carry-overs, not blockers):**
 
 Production AdMob configuration — required before App Store release:
-- [ ] Swap iOS `GADApplicationIdentifier` in `iosApp/iosApp/Info.plist` from
-      the universal test ID (`ca-app-pub-3940256099942544~1458002511`) to
-      the real iOS AdMob app ID once provisioned.
-- [ ] Swap `BannerAdFactory.swift`'s `testBannerUnitID`
-      (`ca-app-pub-3940256099942544/2934735716`) to the real iOS banner
-      unit ID.
+- ✅ Swapped iOS `GADApplicationIdentifier` in `iosApp/iosApp/Info.plist` to real app ID
+      (`ca-app-pub-7516059448019339~1086903880`).
+- ✅ Swapped `BannerAdFactory.swift` to real banner unit IDs: List (`7887281803`),
+      Content (`6993836680`), Image gallery (`9920068688`).
 - [ ] Expand `SKAdNetworkItems` in `Info.plist` from the single
       representative ID to Google's full recommended list (~75 entries) for
       iOS 14.5+ attribution.
@@ -556,7 +559,7 @@ Privacy settings re-entry point (AdMob policy in some regions):
       - Android: `consentInformation.resetConsent()` + `GdprHelper.init()`.
       - iOS: `UMPConsentForm.presentPrivacyOptionsForm(from:completionHandler:)`.
 
-iOS universal links (was deferred in ticket 6.4):
+iOS universal links (deferred — blocked on domain ops):
 - [ ] Host an AASA file on `https://marsroverphotos.app/.well-known/` so
       `https://marsroverphotos.app/rover/{id}` and `/photo/{id}` work on
       iOS. Kotlin side is already wired; blocked on domain ops only.

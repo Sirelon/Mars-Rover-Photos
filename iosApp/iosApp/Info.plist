@@ -34,7 +34,7 @@
 	<key>NSUserTrackingUsageDescription</key>
 	<string>We use this to show you relevant ads and improve the app experience.</string>
 	<key>GADApplicationIdentifier</key>
-	<string>ca-app-pub-3940256099942544~1458002511</string>
+	<string>ca-app-pub-7516059448019339~1086903880</string>
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>
