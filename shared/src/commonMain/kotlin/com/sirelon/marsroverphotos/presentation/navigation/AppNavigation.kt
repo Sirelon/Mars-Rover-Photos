@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos.presentation.navigation
 
+import androidx.compose.foundation.background
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -82,8 +84,14 @@ fun AppNavigation(
                     },
                 )
             }
-
-            Box(modifier = Modifier.weight(1f)) {
+Box(
+                modifier = Modifier
+                    .weight(1f)
+                    // Opaque background prevents previous navigation entries from
+                    // showing through during transitions or when a screen composable
+                    // doesn't fill its entire allocated area (esp. visible on iOS).
+                    .background(MaterialTheme.colorScheme.background)
+            ) {
                 NavDisplay(
                     backStack = backStack,
                     onBack = { navigator.goBack() },
