@@ -23,21 +23,17 @@ technical reference notes are at the bottom.
 - ✅ Ticket S4 is done.
 - ✅ Ticket S6, Mission info, is done.
 - ✅ Ticket S5, Popular Photos, is done.
-- ✅ Final cleanup is done: CI gate is in place (`.github/workflows/ci.yml`); legacy `app/` removal is deferred — owner is handling it when remaining legacy work (ads/GDPR) is migrated.
+- ✅ Final cleanup is done: CI gate is in place (`.github/workflows/ci.yml`); legacy `app/` module deleted.
 - ✅ iOS platform parity items from this milestone are done: Firebase (6.1), save/share (6.2),
   and deep links (6.4).
 - 🚫 Web/WASM remains out of scope for this milestone.
 
 ### How Agents Should Use This Plan
 
-1. Confirm which ticket you own before editing: `S0`, `S1`, `S2`, ..., `S9`,
-   or iOS work `6.1`, `6.2`, `6.3`, `6.4`.
-2. Stay inside the owned ticket. Other agents may be working nearby.
-3. Use the legacy `app/` module only as a reference. Do not modify it.
-4. Do not re-add `:app` to `settings.gradle.kts`.
-5. Do not bump Gradle or library versions unless the ticket explicitly requires it.
-6. After finishing a ticket, update this file with minimal additive edits:
-   mark DoD bullets with ✅, mark the ticket header complete, and add any blocker note.
+> **The KMP migration is complete.** All tickets are done and the legacy `app/` module has been deleted. This plan is kept as a historical record.
+
+1. Do not re-add `:app` to `settings.gradle.kts`.
+2. Do not bump Gradle or library versions unless the task explicitly requires it.
 
 ### Migration Board
 
@@ -59,7 +55,7 @@ technical reference notes are at the bottom.
 | 6.4 — iOS deep links | ✅ Done | `marsrover://` and universal-link handling on iOS |
 | S10 — GDPR / Consent | ✅ Done | Android UMP consent flow restored; iOS ATT prompt added |
 | S11 — iOS AdMob banner | ✅ Done | Real banner via GoogleMobileAds SPM + UMP iOS; Android NPA wired to consent state |
-| Final cleanup | ✅ Done | CI gate (`.github/workflows/ci.yml`); `app/` deletion deferred — owner will remove once remaining legacy ads/GDPR work is migrated |
+| Final cleanup | ✅ Done | CI gate (`.github/workflows/ci.yml`); legacy `app/` module deleted |
 | Edge-to-edge | ✅ Done | Full edge-to-edge support: `isNavigationBarContrastEnforced`, `adjustResize`, ImagesScreen fullscreen |
 
 ---
@@ -627,10 +623,9 @@ The sections below are for implementation context. They are intentionally below 
 ```text
 settings.gradle.kts
 ├── :shared      common KMP code, Compose UI, domain/data, DI
-├── :androidApp  Android shell: Activity, manifest, app icons, Android-only services
+├── :androidApp  Android shell: Activity, manifest, app icons, widget, GDPR
 ├── :desktopApp  Desktop shell
-├── iosApp/      Swift/iOS shell; project bootstrap still pending
-└── app/         legacy Android app, reference-only during migration
+└── iosApp/      Swift/iOS shell, Xcode project
 ```
 
 ### Source Set Responsibilities
@@ -643,7 +638,6 @@ settings.gradle.kts
 - `androidApp/`: Android app shell and Android-only features.
 - `iosApp/`: Swift shell, iOS project files, iOS app metadata.
 - `desktopApp/`: Desktop app shell.
-- `app/`: legacy reference only; do not edit during screen migration.
 
 ### Shared Code Already Available
 
