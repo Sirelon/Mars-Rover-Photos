@@ -366,13 +366,13 @@ private fun MissionTimeline(milestones: ImmutableList<TimelineMilestone>, status
                 // journey is complete once the rover has landed.
                 // Second connector (Landing → Current/End) is animated for
                 // active rovers and fully filled for completed missions.
-                val segmentProgress: () -> Float = when {
-                    index == 0 -> {{ 1f }}
-                    !isActive -> {{ 1f }}
-                    else -> {{ landingToCurrentProgress.value }}
+                val segmentProgress = when {
+                    index == 0 -> 1f
+                    !isActive -> 1f
+                    else -> landingToCurrentProgress.value
                 }
                 TimelineSegment(
-                    progress = segmentProgress,
+                    progress = { segmentProgress },
                     modifier = Modifier
                         .weight(0.5f)
                         .align(Alignment.CenterVertically)
@@ -656,4 +656,3 @@ private fun RoverMissionInfoScreenLoadedPreview() {
         onCameraClick = {},
     )
 }
-
