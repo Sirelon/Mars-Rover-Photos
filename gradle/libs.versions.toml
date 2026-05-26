@@ -13,13 +13,13 @@ activityCompose = "1.13.0"
 # https://developer.android.com/jetpack/androidx/releases/appcompat
 appcompat = "1.7.1"
 # https://developer.android.com/jetpack/androidx/releases/annotation
-annotation = "1.9.1"
+annotation = "1.10.0"
 ktx = "1.18.0"
 # https://developer.android.com/jetpack/androidx/releases/lifecycle
 lifecycle = "2.10.0"
 lifecycle-androidx = "2.10.0"
 # https://developer.android.com/jetpack/androidx/releases/compose
-compose = "1.11.0"
+compose = "1.11.2"
 # https://developer.android.com/jetpack/androidx/releases/compose-material3
 compose-material3 = "1.5.0-alpha20"
 compose-material3-adaptive-navigation-suite = "1.4.0"
@@ -27,12 +27,12 @@ material3WindowSizeClass = "1.4.0"
 # https://developer.android.com/jetpack/androidx/releases/glance
 glance = "1.2.0-rc01"
 # https://developer.android.com/jetpack/androidx/releases/paging
-paging = "3.4.2"
-paging-kmp = "3.4.2"
+paging = "3.5.0"
+paging-kmp = "3.5.0"
 # https://developer.android.com/jetpack/androidx/releases/room
 room = "3.0.0-alpha05"
 # https://developer.android.com/jetpack/androidx/releases/work
-work = "2.11.0"
+work = "2.11.2"
 # https://developer.android.com/jetpack/androidx/releases/core
 core-splashscreen = "1.2.0"
 
