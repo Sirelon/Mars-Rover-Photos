@@ -14,7 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
+import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
@@ -52,16 +52,9 @@ fun UkraineScreen(onBack: () -> Unit) {
     Scaffold(
         contentWindowInsets = WindowInsets(),
         topBar = {
-            TopAppBar(
+            AppTopBar(
                 title = { Text("Ukraine") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        MaterialSymbolIcon(
-                            symbol = MaterialSymbol.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                }
+                onBack = onBack,
             )
         }
     ) { paddingValues ->

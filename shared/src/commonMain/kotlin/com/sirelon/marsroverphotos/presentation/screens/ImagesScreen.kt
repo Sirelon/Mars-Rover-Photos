@@ -36,8 +36,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -275,7 +275,7 @@ private fun ImagesPagerContent(
             modifier = Modifier.align(Alignment.TopCenter),
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
-                TopAppBar(
+                AppTopBar(
                     modifier = Modifier.statusBarsPadding(),
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.55f),

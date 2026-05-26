@@ -26,8 +26,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -112,7 +112,7 @@ private fun FavoritePhotosContent(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         contentWindowInsets = WindowInsets(),
         topBar = {
-            TopAppBar(
+            AppTopBar(
                 title = { Text(text = title) },
                 windowInsets = WindowInsets(0, 0, 0, 0),
                 actions = {

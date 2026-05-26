@@ -38,8 +38,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -139,40 +139,33 @@ fun PhotosScreen(
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            TopAppBar(
+            AppTopBar(
                 scrollBehavior = scrollBehavior,
                 title = {
-                    Column {
-                        Text(text = roverName)
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 8.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            DateSelectorButton(
-                                modifier = Modifier.weight(1f),
-                                label = "Sol date",
-                                value = sol.toString(),
-                                onClick = { openSolDialog = true }
-                            )
-                            DateSelectorButton(
-                                modifier = Modifier.weight(1f),
-                                label = "Earth date",
-                                value = viewModel.earthDateStr(sol),
-                                onClick = { openEarthDateDialog = true }
-                            )
-                        }
-                    }
+                    Text(text = roverName)
                 },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        MaterialSymbolIcon(
-                            symbol = MaterialSymbol.ArrowBack,
-                            contentDescription = "Back"
+                subtitle = {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        DateSelectorButton(
+                            modifier = Modifier.weight(1f),
+                            label = "Sol date",
+                            value = sol.toString(),
+                            onClick = { openSolDialog = true }
+                        )
+                        DateSelectorButton(
+                            modifier = Modifier.weight(1f),
+                            label = "Earth date",
+                            value = viewModel.earthDateStr(sol),
+                            onClick = { openEarthDateDialog = true }
                         )
                     }
-                }
+                },
+                onBack = onBack,
             )
         },
         floatingActionButton = {
