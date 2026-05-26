@@ -2,16 +2,23 @@
 
 package com.sirelon.marsroverphotos.di
 
+import androidx.compose.runtime.DisposableEffect
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.sirelon.marsroverphotos.presentation.navigation.AppDestination
 import com.sirelon.marsroverphotos.presentation.navigation.LocalAppNavigator
+import com.sirelon.marsroverphotos.presentation.navigation.LocalPhotosViewModelStoreOwners
 import com.sirelon.marsroverphotos.presentation.screens.AboutScreen
+import com.sirelon.marsroverphotos.presentation.screens.EarthDatePickerScreen
 import com.sirelon.marsroverphotos.presentation.screens.FavoriteScreen
 import com.sirelon.marsroverphotos.presentation.screens.ImagesScreen
-import com.sirelon.marsroverphotos.presentation.screens.RoverMissionInfoScreen
 import com.sirelon.marsroverphotos.presentation.screens.PhotosScreen
 import com.sirelon.marsroverphotos.presentation.screens.PopularScreen
+import com.sirelon.marsroverphotos.presentation.screens.RoverMissionInfoScreen
 import com.sirelon.marsroverphotos.presentation.screens.RoversScreen
+import com.sirelon.marsroverphotos.presentation.screens.SolPickerScreen
 import com.sirelon.marsroverphotos.presentation.screens.UkraineScreen
+import com.sirelon.marsroverphotos.presentation.viewmodels.PhotosViewModel
+import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.dsl.module
 import org.koin.dsl.navigation3.navigation
@@ -31,6 +38,23 @@ val navigationModule = module {
 
     navigation<AppDestination.Photos> { destination ->
         val navigator = LocalAppNavigator.current
+
+        // Publish this Photos entry's ViewModelStoreOwner so its dialog entries can
+        // resolve the SAME PhotosViewModel instance. Inside the entry content,
+        // LocalViewModelStoreOwner is the per-entry store on Android (and the shared
+        // root owner on iOS/Desktop) — exactly the store koinViewModel() uses below.
+        // Registered synchronously during composition (not in an effect): Photos is
+        // always composed before its dialog (it sits lower in the back stack), so the
+        // owner is present when the dialog reads it — even on state restoration.
+        val photosStoreOwners = LocalPhotosViewModelStoreOwners.current
+        val entryOwner = LocalViewModelStoreOwner.current
+        if (entryOwner != null) {
+            photosStoreOwners[destination.roverId] = entryOwner
+        }
+        DisposableEffect(destination.roverId) {
+            onDispose { photosStoreOwners.remove(destination.roverId) }
+        }
+
         PhotosScreen(
             roverId = destination.roverId,
             cameraFilter = destination.camera,
@@ -46,7 +70,38 @@ val navigationModule = module {
             onClearCameraFilter = {
                 navigator.replaceTop(AppDestination.Photos(destination.roverId, camera = null))
             },
-            onBack = { navigator.goBack() }
+            onBack = { navigator.goBack() },
+            onOpenSolPicker = {
+                navigator.navigate(AppDestination.PhotosSolPicker(destination.roverId))
+            },
+            onOpenEarthDatePicker = {
+                navigator.navigate(AppDestination.PhotosEarthDatePicker(destination.roverId))
+            },
+        )
+    }
+
+    navigation<AppDestination.PhotosSolPicker> { destination ->
+        val navigator = LocalAppNavigator.current
+        // Resolve the SAME PhotosViewModel instance the Photos screen uses by pointing
+        // koinViewModel at the Photos entry's ViewModelStoreOwner (registered above).
+        // Fallback to the current owner keeps it safe if the parent isn't found.
+        val sharedOwner = LocalPhotosViewModelStoreOwners.current[destination.roverId]
+            ?: LocalViewModelStoreOwner.current!!
+        val viewModel = koinViewModel<PhotosViewModel>(viewModelStoreOwner = sharedOwner)
+        SolPickerScreen(
+            viewModel = viewModel,
+            onDismiss = { navigator.goBack() },
+        )
+    }
+
+    navigation<AppDestination.PhotosEarthDatePicker> { destination ->
+        val navigator = LocalAppNavigator.current
+        val sharedOwner = LocalPhotosViewModelStoreOwners.current[destination.roverId]
+            ?: LocalViewModelStoreOwner.current!!
+        val viewModel = koinViewModel<PhotosViewModel>(viewModelStoreOwner = sharedOwner)
+        EarthDatePickerScreen(
+            viewModel = viewModel,
+            onDismiss = { navigator.goBack() },
         )
     }
 

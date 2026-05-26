@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -58,6 +59,8 @@ fun AppNavigation(
     val tracker: Tracker = koinInject()
     val currentDestination = backStack.lastOrNull() as? AppDestination ?: startDestination
     val isImages = currentDestination is AppDestination.Images
+    val isDialog = currentDestination is AppDestination.PhotosSolPicker ||
+        currentDestination is AppDestination.PhotosEarthDatePicker
 
     LaunchedEffect(deepLink) {
         val target = deepLink ?: return@LaunchedEffect
@@ -80,7 +83,12 @@ fun AppNavigation(
         onDeepLinkConsumed?.invoke()
     }
 
-    CompositionLocalProvider(LocalAppNavigator provides navigator) {
+    val photosStoreOwners = remember { mutableMapOf<Long, ViewModelStoreOwner>() }
+
+    CompositionLocalProvider(
+        LocalAppNavigator provides navigator,
+        LocalPhotosViewModelStoreOwners provides photosStoreOwners,
+    ) {
         // Images screen goes fully edge-to-edge: no status-bar inset, no bottom chrome.
         Column(
             modifier = if (isImages) modifier else modifier.windowInsetsPadding(WindowInsets.statusBars)
@@ -145,7 +153,7 @@ fun AppNavigation(
                     },
                 )
             }
-            if (!isImages) {
+            if (!isImages && !isDialog) {
                 AdSlot(modifier = Modifier.fillMaxWidth())
                 MarsBottomBar(
                     selectedDestination = currentDestination.topLevelDestination(),
@@ -165,7 +173,9 @@ private fun AppDestination.topLevelDestination(): AppDestination {
         is AppDestination.Photos,
         is AppDestination.Images,
         is AppDestination.Mission,
-        AppDestination.Ukraine -> AppDestination.Rovers
+        AppDestination.Ukraine,
+        is AppDestination.PhotosSolPicker,
+        is AppDestination.PhotosEarthDatePicker -> AppDestination.Rovers
 
         AppDestination.Favorite -> AppDestination.Favorite
         AppDestination.Popular -> AppDestination.Popular
@@ -194,6 +204,8 @@ private val navBackStackConfiguration = SavedStateConfiguration {
             subclass(AppDestination.Mission::class, AppDestination.Mission.serializer())
             subclass(AppDestination.About::class, AppDestination.About.serializer())
             subclass(AppDestination.Ukraine::class, AppDestination.Ukraine.serializer())
+            subclass(AppDestination.PhotosSolPicker::class, AppDestination.PhotosSolPicker.serializer())
+            subclass(AppDestination.PhotosEarthDatePicker::class, AppDestination.PhotosEarthDatePicker.serializer())
         }
     }
 }

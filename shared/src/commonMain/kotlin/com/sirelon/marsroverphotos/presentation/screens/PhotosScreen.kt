@@ -21,8 +21,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ButtonDefaults
@@ -33,27 +31,19 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
@@ -64,30 +54,17 @@ import com.sirelon.marsroverphotos.presentation.ui.CenteredProgress
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.presentation.ui.NetworkImage
-import com.sirelon.marsroverphotos.presentation.ui.PlatformDatePickerDialog
 import com.sirelon.marsroverphotos.presentation.ui.adaptiveGridCells
 import com.sirelon.marsroverphotos.presentation.viewmodels.PhotosViewModel
 import com.sirelon.marsroverphotos.shared.resources.Res
 import com.sirelon.marsroverphotos.shared.resources.alien_icon
-import com.sirelon.marsroverphotos.shared.resources.cancel
-import com.sirelon.marsroverphotos.shared.resources.choose
 import com.sirelon.marsroverphotos.shared.resources.did_you_know
 import com.sirelon.marsroverphotos.shared.resources.educational_fact
 import com.sirelon.marsroverphotos.shared.resources.no_photos_title
-import com.sirelon.marsroverphotos.shared.resources.select
-import com.sirelon.marsroverphotos.shared.resources.select_date
-import com.sirelon.marsroverphotos.shared.resources.sol_description
-import com.sirelon.marsroverphotos.shared.resources.sol_label
-import com.sirelon.marsroverphotos.shared.resources.sol_max_error_fmt
 import com.sirelon.marsroverphotos.shared.resources.tap_to_retry
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atStartOfDayIn
-import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -95,16 +72,15 @@ fun PhotosScreen(
     roverId: Long,
     onNavigateToImages: (String) -> Unit,
     onBack: () -> Unit,
+    onOpenSolPicker: () -> Unit,
+    onOpenEarthDatePicker: () -> Unit,
     modifier: Modifier = Modifier,
     cameraFilter: String? = null,
     onClearCameraFilter: () -> Unit = {},
     viewModel: PhotosViewModel = koinViewModel()
 ) {
-    var maxSol by remember { mutableLongStateOf(1L) }
-
     LaunchedEffect(roverId) {
         viewModel.setRoverId(roverId)
-        maxSol = viewModel.maxSol().coerceAtLeast(1L)
     }
 
     LaunchedEffect(cameraFilter) {
@@ -119,20 +95,6 @@ fun PhotosScreen(
     }
     val sol by viewModel.solFlow.collectAsState(initial = 0L)
     val roverName by viewModel.roverNameFlow.collectAsState(initial = "")
-
-    var openSolDialog by rememberSaveable { mutableStateOf(false) }
-    var openEarthDateDialog by rememberSaveable { mutableStateOf(false) }
-
-    SolDialog(
-        maxSol = maxSol,
-        openDialog = openSolDialog,
-        sol = sol,
-        onClose = { openSolDialog = false },
-        onChoose = {
-            viewModel.loadBySol(it)
-            openSolDialog = false
-        }
-    )
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
@@ -154,13 +116,13 @@ fun PhotosScreen(
                                 modifier = Modifier.weight(1f),
                                 label = "Sol date",
                                 value = sol.toString(),
-                                onClick = { openSolDialog = true }
+                                onClick = onOpenSolPicker
                             )
                             DateSelectorButton(
                                 modifier = Modifier.weight(1f),
                                 label = "Earth date",
                                 value = viewModel.earthDateStr(sol),
-                                onClick = { openEarthDateDialog = true }
+                                onClick = onOpenEarthDatePicker
                             )
                         }
                     }
@@ -194,22 +156,6 @@ fun PhotosScreen(
                         viewModel.setCameraFilter(null)
                         onClearCameraFilter()
                     }
-                )
-            }
-
-            if (openEarthDateDialog) {
-                PlatformDatePickerDialog(
-                    selectedDate = millisToUtcLocalDate(viewModel.dateFromSol()),
-                    minDate = millisToUtcLocalDate(viewModel.minDate()),
-                    maxDate = millisToUtcLocalDate(viewModel.maxDate()),
-                    onDateSelected = { selectedDate ->
-                        viewModel.setEarthTime(selectedDate.toUtcMillis())
-                        openEarthDateDialog = false
-                    },
-                    onDismissRequest = { openEarthDateDialog = false },
-                    title = stringResource(Res.string.select_date),
-                    confirmText = stringResource(Res.string.select),
-                    dismissText = stringResource(Res.string.cancel)
                 )
             }
 
@@ -359,95 +305,6 @@ private fun PhotoCard(
 }
 
 @Composable
-private fun SolDialog(
-    openDialog: Boolean,
-    maxSol: Long,
-    sol: Long,
-    onClose: () -> Unit,
-    onChoose: (sol: Long) -> Unit
-) {
-    if (openDialog) {
-        var selectedSol: Long? by remember(sol) { mutableStateOf(sol) }
-        var errorMessage by remember { mutableStateOf<String?>(null) }
-
-        AlertDialog(
-            onDismissRequest = onClose,
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        val resolvedSol = selectedSol
-                        if (resolvedSol != null) {
-                            onChoose(resolvedSol)
-                        } else {
-                            onClose()
-                        }
-                    }
-                ) {
-                    Text(stringResource(Res.string.choose))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = onClose) {
-                    Text(stringResource(Res.string.cancel))
-                }
-            },
-            title = { Text(text = stringResource(Res.string.sol_description)) },
-            text = {
-                val maxSolError = stringResource(Res.string.sol_max_error_fmt, maxSol)
-                SolChanger(selectedSol, maxSol, errorMessage) { nextSol ->
-                    if ((nextSol ?: 0L) > maxSol) {
-                        selectedSol = maxSol
-                        errorMessage = maxSolError
-                    } else {
-                        selectedSol = nextSol
-                        errorMessage = null
-                    }
-                }
-            }
-        )
-    }
-}
-
-@Composable
-private fun SolChanger(
-    sol: Long?,
-    maxSol: Long,
-    errorMessage: String?,
-    onSolChanged: (sol: Long?) -> Unit
-) {
-    val sliderMax = maxSol.coerceAtLeast(1L)
-    Column {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = stringResource(Res.string.sol_label),
-                modifier = Modifier.weight(1f),
-                style = MaterialTheme.typography.titleLarge
-            )
-            OutlinedTextField(
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                value = sol?.toString().orEmpty(),
-                modifier = Modifier.weight(1f),
-                singleLine = true,
-                onValueChange = { onSolChanged(it.toLongOrNull()) }
-            )
-        }
-        Slider(
-            value = (sol ?: 0L).coerceIn(0L, sliderMax).toFloat(),
-            valueRange = 0f..sliderMax.toFloat(),
-            onValueChange = { onSolChanged(it.toLong()) }
-        )
-        if (!errorMessage.isNullOrBlank()) {
-            Text(
-                text = errorMessage,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-        }
-    }
-}
-
-@Composable
 private fun DateSelectorButton(
     label: String,
     value: String,
@@ -556,12 +413,6 @@ private fun FactCard(
         }
     }
 }
-
-private fun millisToUtcLocalDate(timeMillis: Long): LocalDate =
-    Instant.fromEpochMilliseconds(timeMillis).toLocalDateTime(TimeZone.UTC).date
-
-private fun LocalDate.toUtcMillis(): Long =
-    atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
 
 private fun shortCaption(full: String): String =
     full.substringAfter(": ", missingDelimiterValue = full).trim()

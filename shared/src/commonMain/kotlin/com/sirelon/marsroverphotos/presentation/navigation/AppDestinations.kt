@@ -42,4 +42,12 @@ sealed interface AppDestination : NavKey {
 
     @Serializable
     data object Ukraine : AppDestination
+
+    /** Dialog destination: sol number picker. Shares PhotosViewModel with [Photos]. */
+    @Serializable
+    data class PhotosSolPicker(val roverId: Long) : AppDestination
+
+    /** Dialog destination: Earth date picker. Shares PhotosViewModel with [Photos]. */
+    @Serializable
+    data class PhotosEarthDatePicker(val roverId: Long) : AppDestination
 }
