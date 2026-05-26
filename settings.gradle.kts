@@ -20,7 +20,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "MarsRoverPhotos"
 
-// include(":app")  // Old module - migrating to :androidApp
 include(":shared")
 include(":androidApp")
 // include(":iosApp")  // Not yet created
