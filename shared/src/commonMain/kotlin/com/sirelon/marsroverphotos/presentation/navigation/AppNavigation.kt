@@ -19,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.lifecycle.ViewModelStoreOwner
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -30,9 +29,13 @@ import com.sirelon.marsroverphotos.presentation.ui.AdSlot
 import com.sirelon.marsroverphotos.presentation.ui.UkraineBanner
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
+import com.sirelon.marsroverphotos.di.PhotosScope
+import org.koin.compose.LocalKoinScopeContext
+import org.koin.compose.getKoin
 import org.koin.compose.koinInject
 import org.koin.compose.navigation3.koinEntryProvider
 import org.koin.core.annotation.KoinExperimentalAPI
+import org.koin.core.annotation.KoinInternalApi
 
 private const val ANIM_DURATION = 600
 
@@ -41,7 +44,7 @@ private const val ANIM_DURATION_2 = ANIM_DURATION / 2
 /**
  * Main Navigation 3 display for the app.
  */
-@OptIn(KoinExperimentalAPI::class)
+@OptIn(KoinExperimentalAPI::class, KoinInternalApi::class)
 @Composable
 fun AppNavigation(
     modifier: Modifier = Modifier,
@@ -55,7 +58,17 @@ fun AppNavigation(
     )
     val navigator = remember(backStack) { AppNavigator(backStack) }
     val entryDecorators = rememberAppNavEntryDecorators()
-    val entryProvider = koinEntryProvider<NavKey>()
+    // The Photos flow (screen + Sol/Earth dialogs) is declared inside a Koin scope so it
+    // can share one scoped PhotosViewModel. Resolve the entry provider against that scope,
+    // linked to root so getAll() also returns the root-level (module) navigation entries.
+    val koin = getKoin()
+    val rootScope = LocalKoinScopeContext.current.getValue()
+    val photosFlowScope = remember(koin, rootScope) {
+        koin.getOrCreateScope<PhotosScope>("photos-flow-scope").apply {
+            linkTo(rootScope)
+        }
+    }
+    val entryProvider = koinEntryProvider<NavKey>(scope = photosFlowScope)
     val tracker: Tracker = koinInject()
     val currentDestination = backStack.lastOrNull() as? AppDestination ?: startDestination
     val isImages = currentDestination is AppDestination.Images
@@ -83,12 +96,7 @@ fun AppNavigation(
         onDeepLinkConsumed?.invoke()
     }
 
-    val photosStoreOwners = remember { mutableMapOf<Long, ViewModelStoreOwner>() }
-
-    CompositionLocalProvider(
-        LocalAppNavigator provides navigator,
-        LocalPhotosViewModelStoreOwners provides photosStoreOwners,
-    ) {
+    CompositionLocalProvider(LocalAppNavigator provides navigator) {
         // Images screen goes fully edge-to-edge: no status-bar inset, no bottom chrome.
         Column(
             modifier = if (isImages) modifier else modifier.windowInsetsPadding(WindowInsets.statusBars)
