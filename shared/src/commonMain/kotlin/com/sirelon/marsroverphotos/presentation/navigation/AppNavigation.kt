@@ -14,11 +14,11 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -32,6 +32,10 @@ import kotlinx.serialization.modules.polymorphic
 import org.koin.compose.koinInject
 import org.koin.compose.navigation3.koinEntryProvider
 import org.koin.core.annotation.KoinExperimentalAPI
+
+private const val ANIM_DURATION = 600
+
+private const val ANIM_DURATION_2 = ANIM_DURATION / 2
 
 /**
  * Main Navigation 3 display for the app.
@@ -90,7 +94,7 @@ fun AppNavigation(
                     },
                 )
             }
-Box(
+            Box(
                 modifier = Modifier
                     .weight(1f)
                     // Opaque background prevents previous navigation entries from
@@ -105,19 +109,39 @@ Box(
                     entryProvider = entryProvider,
                     // Forward navigation: new screen slides in from the right
                     transitionSpec = {
-                        (slideInHorizontally(tween(300)) { it } + fadeIn(tween(300))) togetherWith
-                            (slideOutHorizontally(tween(300)) { -it / 5 } + fadeOut(tween(150)))
+                        (slideInHorizontally(tween(ANIM_DURATION)) { it } + fadeIn(
+                            tween(
+                                ANIM_DURATION
+                            )
+                        )) togetherWith
+                                (slideOutHorizontally(tween(ANIM_DURATION)) { -it / 5 } + fadeOut(
+                                    tween(
+                                        ANIM_DURATION_2
+                                    )
+                                ))
                     },
                     // Standard back: previous screen revealed from the left
                     popTransitionSpec = {
-                        (slideInHorizontally(tween(300)) { -it / 5 } + fadeIn(tween(300))) togetherWith
-                            (slideOutHorizontally(tween(300)) { it } + fadeOut(tween(150)))
+                        (slideInHorizontally(tween(ANIM_DURATION)) { -it / 5 } + fadeIn(
+                            tween(
+                                ANIM_DURATION
+                            )
+                        )) togetherWith
+                                (slideOutHorizontally(tween(ANIM_DURATION)) { it } + fadeOut(
+                                    tween(
+                                        ANIM_DURATION_2
+                                    )
+                                ))
                     },
                     // Predictive back: same curve — NavDisplay drives this interactively
                     // with the system's back gesture progress on Android 14+
                     predictivePopTransitionSpec = {
-                        (slideInHorizontally(tween(300)) { -it / 5 } + fadeIn(tween(300))) togetherWith
-                            (slideOutHorizontally(tween(300)) { it } + fadeOut(tween(150)))
+                        (slideInHorizontally(tween(ANIM_DURATION)) { -it / 5 } + fadeIn(
+                            tween(ANIM_DURATION)
+                        )) togetherWith
+                                (slideOutHorizontally(tween(ANIM_DURATION)) { it } + fadeOut(
+                                    tween(ANIM_DURATION_2)
+                                ))
                     },
                 )
             }
