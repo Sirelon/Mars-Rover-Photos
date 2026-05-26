@@ -46,6 +46,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sirelon.marsroverphotos.domain.models.Rover
 import com.sirelon.marsroverphotos.domain.models.mission.CameraSpec
@@ -75,8 +76,11 @@ fun RoverMissionInfoScreen(
         viewModel.setRoverId(roverId)
     }
 
+    // rememberUpdatedState so the analytics call reads the latest state after the
+    // roverId key settles, even if state arrives one frame after the id changes.
+    val latestState by rememberUpdatedState(state)
     LaunchedEffect(state?.rover?.id) {
-        state?.rover?.let {
+        latestState?.rover?.let {
             viewModel.trackEvent("mission_info_opened_${it.name}")
         }
     }
@@ -251,8 +255,11 @@ private fun MissionTimeline(milestones: ImmutableList<TimelineMilestone>, status
 
     // Animate the Landing→Current segment from 0f → 1f on first composition for
     // active rovers. Completed rovers go straight to 1f (mission ended).
+    // Key on the full milestones list (ImmutableList has value equality) so the animation
+    // replays when the rover changes. Reset animationStarted first to restart from 0f.
     var animationStarted by remember { mutableStateOf(false) }
-    LaunchedEffect(milestones.firstOrNull()?.date) {
+    LaunchedEffect(milestones) {
+        animationStarted = false  // reset so the animation starts from 0f for the new rover
         animationStarted = true
     }
     val landingToCurrentProgress by animateFloatAsState(

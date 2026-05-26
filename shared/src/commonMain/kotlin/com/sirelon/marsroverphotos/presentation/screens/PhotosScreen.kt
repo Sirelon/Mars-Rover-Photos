@@ -42,8 +42,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -110,14 +110,14 @@ fun PhotosScreen(
         viewModel.setCameraFilter(cameraFilter)
     }
 
-    val gridItems by viewModel.gridItemsFlow.collectAsState(initial = null)
+    val gridItems by viewModel.gridItemsFlow.collectAsStateWithLifecycle(initialValue = null)
     val photos = remember(gridItems) {
         gridItems?.mapNotNull { item ->
             (item as? GridItem.PhotoItem)?.image
         }.orEmpty()
     }
-    val sol by viewModel.solFlow.collectAsState(initial = 0L)
-    val roverName by viewModel.roverNameFlow.collectAsState(initial = "")
+    val sol by viewModel.solFlow.collectAsStateWithLifecycle(initialValue = 0L)
+    val roverName by viewModel.roverNameFlow.collectAsStateWithLifecycle(initialValue = "")
 
     var openSolDialog by rememberSaveable { mutableStateOf(false) }
     var openEarthDateDialog by rememberSaveable { mutableStateOf(false) }

@@ -46,6 +46,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -220,10 +221,15 @@ private fun ImagesPagerContent(
     val density = LocalDensity.current
     val dismissThresholdPx = with(density) { 150.dp.toPx() }
 
+    // rememberUpdatedState so the running snapshotFlow collector always sees the latest
+    // list without restarting the collection (which would cause a page-tracking glitch).
+    val latestList by rememberUpdatedState(list)
+
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
-            if (list.isNotEmpty() && page < list.size) {
-                val marsPhoto = list[page]
+            val currentList = latestList
+            if (currentList.isNotEmpty() && page < currentList.size) {
+                val marsPhoto = currentList[page]
                 viewModel.onShown(marsPhoto, page)
                 titleState = buildString {
                     append("Sol ")
