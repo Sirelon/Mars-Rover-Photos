@@ -17,6 +17,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -240,13 +243,15 @@ private fun RefreshButton(
 ) {
     AnimatedVisibility(
         visible = visible,
-        modifier = modifier
-            .navigationBarsPadding()
-            .padding(16.dp),
         enter = fadeIn(),
         exit = fadeOut()
     ) {
-        FloatingActionButton(onClick = onClick) {
+        FloatingActionButton(
+            onClick = onClick,
+            modifier = modifier
+                .navigationBarsPadding()
+                .padding(16.dp)
+        ) {
             MaterialSymbolIcon(
                 symbol = MaterialSymbol.Autorenew,
                 contentDescription = "Reload random Sol"
@@ -261,6 +266,7 @@ private fun PhotosList(
     onPhotoClick: (image: MarsImage) -> Unit,
     onCameraClick: ((cameraName: String) -> Unit)? = null
 ) {
+    val navBarBottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     LazyVerticalGrid(
         columns = adaptiveGridCells(minColumnWidth = 180.dp),
         modifier = Modifier.fillMaxSize(),
@@ -268,7 +274,8 @@ private fun PhotosList(
             start = 12.dp,
             end = 12.dp,
             top = 8.dp,
-            bottom = 148.dp
+            // 56dp FAB + 16dp FAB padding + 8dp margin above FAB + actual nav bar height
+            bottom = 80.dp + navBarBottom
         ),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)

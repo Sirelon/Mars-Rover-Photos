@@ -152,7 +152,12 @@ private fun FavoritePhotosContent(
             else -> {
                 LazyVerticalStaggeredGrid(
                     modifier = modifier.fillMaxSize().consumeWindowInsets(innerPadding),
-                    contentPadding = innerPadding,
+                    contentPadding = PaddingValues(
+                        start = 12.dp,
+                        end = 12.dp,
+                        top = innerPadding.calculateTopPadding() + 8.dp,
+                        bottom = innerPadding.calculateBottomPadding() + 8.dp,
+                    ),
                     columns = if (gridView) {
                         StaggeredGridCells.Adaptive(minSize = 180.dp)
                     } else {
