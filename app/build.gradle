@@ -23,7 +23,7 @@ def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
-    compileSdk 36
+    compileSdk 37
     signingConfigs {
         release {
             keyAlias keystoreProperties['keyAlias']

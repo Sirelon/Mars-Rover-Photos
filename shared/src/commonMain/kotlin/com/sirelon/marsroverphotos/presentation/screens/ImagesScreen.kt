@@ -307,14 +307,7 @@ private fun ImagesPagerContent(
                             overflow = TextOverflow.Ellipsis,
                         )
                     },
-                    navigationIcon = {
-                        IconButton(onClick = onBack) {
-                            MaterialSymbolIcon(
-                                symbol = MaterialSymbol.ArrowBack,
-                                contentDescription = "Back"
-                            )
-                        }
-                    },
+                    onBack  = onBack,
                     actions = {
                         if (currentImage != null) {
                             SaveIcon(onClick = {
