@@ -1,7 +1,13 @@
 package com.sirelon.marsroverphotos.presentation.navigation
 
-import androidx.compose.foundation.background
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -96,7 +102,23 @@ Box(
                     backStack = backStack,
                     onBack = { navigator.goBack() },
                     entryDecorators = entryDecorators,
-                    entryProvider = entryProvider
+                    entryProvider = entryProvider,
+                    // Forward navigation: new screen slides in from the right
+                    transitionSpec = {
+                        (slideInHorizontally(tween(300)) { it } + fadeIn(tween(300))) togetherWith
+                            (slideOutHorizontally(tween(300)) { -it / 5 } + fadeOut(tween(150)))
+                    },
+                    // Standard back: previous screen revealed from the left
+                    popTransitionSpec = {
+                        (slideInHorizontally(tween(300)) { -it / 5 } + fadeIn(tween(300))) togetherWith
+                            (slideOutHorizontally(tween(300)) { it } + fadeOut(tween(150)))
+                    },
+                    // Predictive back: same curve — NavDisplay drives this interactively
+                    // with the system's back gesture progress on Android 14+
+                    predictivePopTransitionSpec = {
+                        (slideInHorizontally(tween(300)) { -it / 5 } + fadeIn(tween(300))) togetherWith
+                            (slideOutHorizontally(tween(300)) { it } + fadeOut(tween(150)))
+                    },
                 )
             }
             if (!isImages) {

@@ -17,6 +17,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -92,7 +93,14 @@ fun PlatformDatePickerDialog(
                 DatePicker(
                     state = datePickerState,
                     title = if (title.isNotBlank()) {
-                        { Text(title) }
+                        {
+                            Text(
+                                text = title,
+                                modifier = Modifier.padding(
+                                    PaddingValues(start = 24.dp, end = 12.dp, top = 16.dp)
+                                )
+                            )
+                        }
                     } else {
                         null
                     }
