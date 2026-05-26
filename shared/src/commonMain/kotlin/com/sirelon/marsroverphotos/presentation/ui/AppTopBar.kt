@@ -42,11 +42,13 @@ fun AppTopBar(
         title = title,
         modifier = modifier,
         navigationIcon = {
-            IconButton(onClick = onBack) {
-                MaterialSymbolIcon(
-                    symbol = MaterialSymbol.ArrowBack,
-                    contentDescription = "Back"
-                )
+            if (onBack != null) {
+                IconButton(onClick = onBack) {
+                    MaterialSymbolIcon(
+                        symbol = MaterialSymbol.ArrowBack,
+                        contentDescription = "Back"
+                    )
+                }
             }
         },
         actions = actions,
