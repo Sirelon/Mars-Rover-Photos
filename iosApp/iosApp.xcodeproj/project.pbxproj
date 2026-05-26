@@ -485,10 +485,10 @@
 			package = BAA1110002000000A0000012 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
 			productName = GoogleMobileAds;
 		};
-		BAA1110003000000A0000016 /* UserMessagingPlatform */ = {
+		BAA1110003000000A0000016 /* GoogleUserMessagingPlatform */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = BAA1110003000000A0000015 /* XCRemoteSwiftPackageReference "swift-package-manager-google-user-messaging-platform" */;
-			productName = UserMessagingPlatform;
+			productName = GoogleUserMessagingPlatform;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

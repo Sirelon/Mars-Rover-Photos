@@ -12,6 +12,7 @@ import com.sirelon.marsroverphotos.presentation.models.GridItem
 import com.sirelon.marsroverphotos.presentation.models.GridItemTransformer
 import com.sirelon.marsroverphotos.utils.Logger
 import com.sirelon.marsroverphotos.utils.RoverDateUtil
+import com.sirelon.marsroverphotos.utils.formatDisplayDate
 import kotlin.time.Clock
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -237,10 +238,11 @@ class PhotosViewModel(
      */
     fun earthDateStr(sol: Long): String {
         val time = earthTime(sol)
-        return dateUtil?.parseTime(time) ?: run {
+        val isoDate = dateUtil?.parseTime(time) ?: run {
             Logger.w("PhotosViewModel") { "DateUtil not initialized, returning empty date string" }
-            ""
+            return ""
         }
+        return formatDisplayDate(isoDate)
     }
 
     /**

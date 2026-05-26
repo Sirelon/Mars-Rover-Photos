@@ -13,6 +13,9 @@ struct MarsRoverApp: App {
         // Initialize Koin dependency injection from shared module
         IosApp.shared.start()
 
+        // Keep screen on during testing
+        UIApplication.shared.isIdleTimerDisabled = true
+
         // UMP must collect consent before MobileAds.start so the SDK can pick up the user's
         // choice; ATT must run before any ad request so IDFA personalization is honored.
         // The chain is deferred by 1s so the prompts appear after the app's first frame
@@ -34,27 +37,27 @@ struct MarsRoverApp: App {
     }
 
     private static func bootstrapAds() {
-        let params = UMPRequestParameters()
-        params.tagForUnderAgeOfConsent = false
+        let params = RequestParameters()
+        params.isTaggedForUnderAgeOfConsent = false
 
         #if DEBUG
-        let debugSettings = UMPDebugSettings()
+        let debugSettings = DebugSettings()
         debugSettings.geography = .EEA
         params.debugSettings = debugSettings
         #endif
 
-        UMPConsentInformation.sharedInstance.requestConsentInfoUpdate(with: params) { umpError in
+        ConsentInformation.shared.requestConsentInfoUpdate(with: params) { umpError in
             if let umpError {
                 NSLog("UMP requestConsentInfoUpdate error: \(umpError.localizedDescription)")
             }
-            UMPConsentForm.loadAndPresentIfRequired(from: nil) { _ in
-                guard UMPConsentInformation.sharedInstance.canRequestAds else {
+            ConsentForm.loadAndPresentIfRequired(from: nil) { _ in
+                guard ConsentInformation.shared.canRequestAds else {
                     IosAdSlot.shared.factory = nil
                     NSLog("UMP canRequestAds=false, skipping Mobile Ads start")
                     return
                 }
                 ATTrackingManager.requestTrackingAuthorization { _ in
-                    GADMobileAds.sharedInstance().start { _ in
+                    MobileAds.shared.start { _ in
                         IosAdSlot.shared.factory = BannerAdFactoryImpl()
                     }
                 }

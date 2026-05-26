@@ -22,9 +22,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
 import coil3.compose.LocalPlatformContext
+import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -172,13 +176,27 @@ fun NetworkImage(
             crossfade(true)
         }
         .build()
-    AsyncImage(
-        model = request,
-        contentDescription = imageUrl,
-        modifier = modifier,
-        contentScale = contentScale,
-        placeholder = if (showPlaceholder) painterResource(Res.drawable.img_placeholder) else null
-    )
+    if (showPlaceholder) {
+        AsyncImage(
+            model = request,
+            contentDescription = imageUrl,
+            modifier = modifier,
+            contentScale = contentScale,
+            placeholder = painterResource(Res.drawable.img_placeholder)
+        )
+    } else {
+        SubcomposeAsyncImage(
+            model = request,
+            contentDescription = imageUrl,
+            modifier = modifier,
+            contentScale = contentScale,
+            loading = {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            }
+        )
+    }
 }
 
 @Composable

@@ -9,6 +9,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
@@ -36,6 +37,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -45,6 +47,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
@@ -55,6 +59,7 @@ import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.presentation.navigation.AppDestination
 import com.sirelon.marsroverphotos.presentation.ui.CenteredProgress
 import com.sirelon.marsroverphotos.presentation.ui.MarsImageFavoriteToggle
+import com.sirelon.marsroverphotos.presentation.ui.setStatusBarAppearance
 import com.sirelon.marsroverphotos.presentation.ui.MarsSnackbar
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
@@ -100,8 +105,13 @@ fun ImagesScreen(
         viewModel.setImageSource(source = source, ids = photoIds)
     }
 
-    DisposableEffect(photoIds) {
-        onDispose { /* nothing to clean up */ }
+    // Force light (white) status-bar icons while the fullscreen black pager is visible,
+    // and restore the default appearance when this screen leaves composition.
+    DisposableEffect(Unit) {
+        setStatusBarAppearance(lightIcons = true)
+        onDispose {
+            setStatusBarAppearance(lightIcons = false)
+        }
     }
 
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
@@ -203,7 +213,9 @@ private fun ImagesPagerContent(
                 titleState = buildString {
                     append("Sol ")
                     append(marsPhoto.sol)
-                    val cam = marsPhoto.camera?.name?.takeIf { it.isNotBlank() }
+                    val cam = marsPhoto.camera?.fullName
+                    ?.trim()
+                    ?.takeIf { it.isNotBlank() && it != "Unknown Camera" }
                     if (cam != null) {
                         append(" · ")
                         append(cam)
@@ -224,6 +236,7 @@ private fun ImagesPagerContent(
             hideUi = hideUi,
             onTap = { viewModel.onTap() },
             onFavoriteClick = { marsImage -> viewModel.updateFavorite(marsImage) },
+            onBack = onBack,
         )
 
         val uiEvent by viewModel.uiEvent.collectAsStateWithLifecycle(initialValue = null)
@@ -407,6 +420,7 @@ private fun ImagesPager(
     hideUi: Boolean,
     onTap: () -> Unit,
     onFavoriteClick: (MarsImage) -> Unit,
+    onBack: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -415,12 +429,29 @@ private fun ImagesPager(
             state = pagerState,
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
+                .background(Color.Black),
         ) { page ->
             val marsImage = images[page]
             val zoomState = rememberZoomableState()
+            var dragOffsetY by remember { mutableFloatStateOf(0f) }
+            val dismissThresholdPx = with(LocalDensity.current) { 120.dp.toPx() }
 
-            Box(modifier = Modifier.fillMaxSize()) {
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .pointerInput(Unit) {
+                    detectVerticalDragGestures(
+                        onDragStart = { dragOffsetY = 0f },
+                        onVerticalDrag = { _, dragAmount ->
+                            if (dragAmount > 0) dragOffsetY += dragAmount
+                        },
+                        onDragEnd = {
+                            if (dragOffsetY >= dismissThresholdPx) onBack()
+                            dragOffsetY = 0f
+                        },
+                        onDragCancel = { dragOffsetY = 0f },
+                    )
+                }
+            ) {
                 NetworkImage(
                     modifier = Modifier
                         .fillMaxSize()
@@ -435,7 +466,7 @@ private fun ImagesPager(
                                 },
                             )
                         },
-                    contentScale = ContentScale.FillWidth,
+                    contentScale = ContentScale.Fit,
                     imageUrl = marsImage.imageUrl,
                     showPlaceholder = false,
                 )

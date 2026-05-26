@@ -21,13 +21,13 @@ final class BannerAdFactoryImpl: NSObject, AdBannerFactory {
 
     func createBanner(widthPoints: Double) -> UIView {
         let width = CGFloat(widthPoints)
-        let size = GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(width)
-        let banner = GADBannerView(adSize: size)
+        let size = currentOrientationAnchoredAdaptiveBanner(width: width)
+        let banner = BannerView(adSize: size)
         // The current single AdSlot placement lives in the main navigation shell,
         // shown alongside list/grid screens — use the List unit.
         banner.adUnitID = Self.bannerListUnitID
         banner.rootViewController = UIApplication.shared.topMostViewController()
-        banner.load(GADRequest())
+        banner.load(Request())
         return banner
     }
 }

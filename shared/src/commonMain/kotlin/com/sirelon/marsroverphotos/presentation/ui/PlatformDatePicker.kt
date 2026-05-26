@@ -1,15 +1,26 @@
 package com.sirelon.marsroverphotos.presentation.ui
 
-import androidx.compose.material3.AlertDialog
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SelectableDates
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import kotlin.time.Clock
 import kotlinx.datetime.LocalDate
 import kotlin.time.Instant
@@ -65,37 +76,47 @@ fun PlatformDatePickerDialog(
         selectableDates = selectableDates
     )
 
-    AlertDialog(
+    Dialog(
         onDismissRequest = onDismissRequest,
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    val selectedUtc = datePickerState.selectedDateMillis
-                    val resolvedDate = selectedUtc?.let { utcMillisToLocalDate(it) } ?: initialDate
-                    if (isDateWithinRange(resolvedDate, minDate, maxDate)) {
-                        onDateSelected(resolvedDate)
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(horizontal = 16.dp),
+            shape = MaterialTheme.shapes.extraLarge,
+            tonalElevation = 6.dp
+        ) {
+            Column {
+                DatePicker(
+                    state = datePickerState,
+                    title = if (title.isNotBlank()) {
+                        { Text(title) }
+                    } else {
+                        null
                     }
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = onDismissRequest) { Text(dismissText) }
+                    TextButton(
+                        onClick = {
+                            val selectedUtc = datePickerState.selectedDateMillis
+                            val resolvedDate = selectedUtc?.let { utcMillisToLocalDate(it) } ?: initialDate
+                            if (isDateWithinRange(resolvedDate, minDate, maxDate)) {
+                                onDateSelected(resolvedDate)
+                            }
+                        }
+                    ) { Text(confirmText) }
                 }
-            ) {
-                Text(confirmText)
             }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismissRequest) {
-                Text(dismissText)
-            }
-        },
-        text = {
-            DatePicker(
-                state = datePickerState,
-                title = if (title.isNotBlank()) {
-                    { Text(title) }
-                } else {
-                    null
-                }
-            )
         }
-    )
+    }
 }
 
 internal fun currentLocalDate(): LocalDate =

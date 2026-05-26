@@ -211,10 +211,14 @@ fun PhotosScreen(
                         }
                     }
                     else -> {
-                        PhotosList(items) { image ->
-                            viewModel.onPhotoClick()
-                            onNavigateToImages(image.id)
-                        }
+                        PhotosList(
+                            gridItems = items,
+                            onPhotoClick = { image ->
+                                viewModel.onPhotoClick()
+                                onNavigateToImages(image.id)
+                            },
+                            onCameraClick = { cameraName -> viewModel.setCameraFilter(cameraName) }
+                        )
                     }
                 }
             }
@@ -254,7 +258,8 @@ private fun RefreshButton(
 @Composable
 private fun PhotosList(
     gridItems: List<GridItem>,
-    onPhotoClick: (image: MarsImage) -> Unit
+    onPhotoClick: (image: MarsImage) -> Unit,
+    onCameraClick: ((cameraName: String) -> Unit)? = null
 ) {
     LazyVerticalGrid(
         columns = adaptiveGridCells(minColumnWidth = 180.dp),
@@ -263,7 +268,7 @@ private fun PhotosList(
             start = 12.dp,
             end = 12.dp,
             top = 8.dp,
-            bottom = 88.dp
+            bottom = 148.dp
         ),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -290,7 +295,7 @@ private fun PhotosList(
             }
         ) { item ->
             when (item) {
-                is GridItem.PhotoItem -> PhotoCard(image = item.image, onPhotoClick = onPhotoClick)
+                is GridItem.PhotoItem -> PhotoCard(image = item.image, onPhotoClick = onPhotoClick, onCameraClick = onCameraClick)
                 is GridItem.FactItem -> FactCard(fact = item.fact)
             }
         }
@@ -300,7 +305,8 @@ private fun PhotosList(
 @Composable
 private fun PhotoCard(
     image: MarsImage,
-    onPhotoClick: (image: MarsImage) -> Unit
+    onPhotoClick: (image: MarsImage) -> Unit,
+    onCameraClick: ((cameraName: String) -> Unit)? = null
 ) {
     Card(
         modifier = Modifier
@@ -319,7 +325,14 @@ private fun PhotoCard(
             Text(
                 text = shortCaption(image.name.orEmpty()),
                 style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(4.dp).fillMaxWidth(),
+                modifier = Modifier
+                    .padding(4.dp)
+                    .fillMaxWidth()
+                    .then(
+                        if (onCameraClick != null && image.camera != null) {
+                            Modifier.clickable { onCameraClick(image.camera.name) }
+                        } else Modifier
+                    ),
                 textAlign = TextAlign.Center
             )
         }

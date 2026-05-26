@@ -96,7 +96,7 @@ private fun AboutContent(
             )
             Text(text = "Mars Rover Photos", style = typography.headlineSmall)
             Text(
-                text = "Browse photos taken by NASA's Mars rovers. Explore the red planet through the eyes of Curiosity, Opportunity, Spirit, and Perseverance.",
+                text = "Browse photos taken by NASA's Mars rovers. Explore the red planet through the eyes of Curiosity, Opportunity, Spirit, Perseverance, and InSight.",
                 style = typography.bodyLarge,
                 textAlign = TextAlign.Center
             )

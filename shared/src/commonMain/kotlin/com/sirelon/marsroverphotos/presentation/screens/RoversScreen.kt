@@ -37,6 +37,7 @@ import com.sirelon.marsroverphotos.presentation.ui.painter
 import com.sirelon.marsroverphotos.presentation.viewmodels.RoversViewModel
 import com.sirelon.marsroverphotos.shared.resources.Res
 import com.sirelon.marsroverphotos.shared.resources.label_photos_total
+import com.sirelon.marsroverphotos.utils.formatDisplayDate
 import com.sirelon.marsroverphotos.utils.formatThousands
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -142,9 +143,10 @@ fun RoverItem(
                         label = stringResource(Res.string.label_photos_total),
                         text = formatThousands(rover.totalPhotos)
                     )
-                    InfoText(label = "Last photo date:", text = rover.maxDate)
-                    InfoText(label = "Launch date from Earth:", text = rover.launchDate)
-                    InfoText(label = "Landing date on Mars:", text = rover.landingDate)
+                    InfoText(label = "Current sol:", text = "${rover.maxSol}")
+                    InfoText(label = "Last photo date:", text = formatDisplayDate(rover.maxDate))
+                    InfoText(label = "Launch date from Earth:", text = formatDisplayDate(rover.launchDate))
+                    InfoText(label = "Landing date on Mars:", text = formatDisplayDate(rover.landingDate))
                 }
             }
         }
