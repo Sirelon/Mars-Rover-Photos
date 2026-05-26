@@ -179,7 +179,7 @@ compose.resources {
 
 android {
     namespace = "com.sirelon.marsroverphotos.shared"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 23

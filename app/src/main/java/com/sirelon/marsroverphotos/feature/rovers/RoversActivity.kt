@@ -274,7 +274,7 @@ class RoversActivity : FragmentActivity() {
                 )
 
                 val layoutType =
-                    if (hideUI && navAlpha <= 0.01f) NavigationSuiteType.None else navSuiteType
+                    if (hideUI && !navTransition.isRunning) NavigationSuiteType.None else navSuiteType
 
                 Box(modifier = Modifier.fillMaxSize()) {
                     NavigationSuiteScaffold(

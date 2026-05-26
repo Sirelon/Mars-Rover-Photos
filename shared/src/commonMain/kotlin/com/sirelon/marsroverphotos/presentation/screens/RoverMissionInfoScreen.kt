@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -46,12 +45,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sirelon.marsroverphotos.domain.models.Rover
 import com.sirelon.marsroverphotos.domain.models.mission.CameraSpec
@@ -64,7 +66,22 @@ import com.sirelon.marsroverphotos.presentation.viewmodels.MissionInfoState
 import com.sirelon.marsroverphotos.presentation.viewmodels.RoverMissionInfoViewModel
 import com.sirelon.marsroverphotos.presentation.viewmodels.TimelineMilestone
 import com.sirelon.marsroverphotos.utils.formatThousands
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
+
+/**
+ * Immutable UI state for [RoverMissionInfoScreen].
+ *
+ * [missionInfoState] is null while the data is loading — the screen shows a
+ * centered progress indicator in that case.
+ */
+data class RoverMissionInfoUiState(
+    val missionInfoState: MissionInfoState? = null,
+)
+
+// ── State-holder composable ───────────────────────────────────────────────────
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,12 +97,31 @@ fun RoverMissionInfoScreen(
         viewModel.setRoverId(roverId)
     }
 
+    // rememberUpdatedState so the analytics call reads the latest state after the
+    // roverId key settles, even if state arrives one frame after the id changes.
+    val latestState by rememberUpdatedState(state)
     LaunchedEffect(state?.rover?.id) {
-        state?.rover?.let {
+        latestState?.rover?.let {
             viewModel.trackEvent("mission_info_opened_${it.name}")
         }
     }
 
+    RoverMissionInfoScreen(
+        state = RoverMissionInfoUiState(missionInfoState = state),
+        onBack = onBack,
+        onCameraClick = onCameraClick,
+    )
+}
+
+// ── Pure-UI composable ────────────────────────────────────────────────────────
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun RoverMissionInfoScreen(
+    state: RoverMissionInfoUiState,
+    onBack: () -> Unit,
+    onCameraClick: (String) -> Unit = {},
+) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -93,13 +129,13 @@ fun RoverMissionInfoScreen(
         topBar = {
             AppTopBar(
                 scrollBehavior = scrollBehavior,
-                title = { Text(state?.rover?.name ?: "Mission Info") },
+                title = { Text(state.missionInfoState?.rover?.name ?: "Mission Info") },
                 onBack = onBack,
             )
         }
     ) { paddingValues ->
         Crossfade(
-            targetState = state,
+            targetState = state.missionInfoState,
             label = "MissionInfoCrossfade",
             modifier = Modifier.padding(paddingValues)
         ) { currentState ->
@@ -243,7 +279,7 @@ private fun SectionHeader(title: String) {
 }
 
 @Composable
-private fun MissionTimeline(milestones: List<TimelineMilestone>, status: String) {
+private fun MissionTimeline(milestones: ImmutableList<TimelineMilestone>, status: String) {
     val isActive = status.equals("active", ignoreCase = true)
     val milestoneColor = if (isActive) {
         MaterialTheme.colorScheme.tertiary
@@ -253,11 +289,14 @@ private fun MissionTimeline(milestones: List<TimelineMilestone>, status: String)
 
     // Animate the Landing→Current segment from 0f → 1f on first composition for
     // active rovers. Completed rovers go straight to 1f (mission ended).
+    // Key on the full milestones list (ImmutableList has value equality) so the animation
+    // replays when the rover changes. Reset animationStarted first to restart from 0f.
     var animationStarted by remember { mutableStateOf(false) }
-    LaunchedEffect(milestones.firstOrNull()?.date) {
+    LaunchedEffect(milestones) {
+        animationStarted = false  // reset so the animation starts from 0f for the new rover
         animationStarted = true
     }
-    val landingToCurrentProgress by animateFloatAsState(
+    val landingToCurrentProgress = animateFloatAsState(
         targetValue = if (animationStarted) 1f else 0f,
         animationSpec = tween(durationMillis = 600),
         label = "LandingToCurrentProgress"
@@ -323,10 +362,10 @@ private fun MissionTimeline(milestones: List<TimelineMilestone>, status: String)
                 val segmentProgress = when {
                     index == 0 -> 1f
                     !isActive -> 1f
-                    else -> landingToCurrentProgress
+                    else -> landingToCurrentProgress.value
                 }
                 TimelineSegment(
-                    progress = segmentProgress,
+                    progress = { segmentProgress },
                     modifier = Modifier
                         .weight(0.5f)
                         .align(Alignment.CenterVertically)
@@ -338,23 +377,23 @@ private fun MissionTimeline(milestones: List<TimelineMilestone>, status: String)
 }
 
 @Composable
-private fun TimelineSegment(progress: Float, modifier: Modifier = Modifier) {
+private fun TimelineSegment(progress: () -> Float, modifier: Modifier = Modifier) {
     val shape = RoundedCornerShape(3.dp)
+    val fillColor = MaterialTheme.colorScheme.tertiary
+    val trackColor = MaterialTheme.colorScheme.outlineVariant
     Box(
         modifier = modifier
             .fillMaxWidth()
             .height(6.dp)
             .clip(shape)
-            .background(MaterialTheme.colorScheme.outlineVariant)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth(progress.coerceIn(0f, 1f))
-                .fillMaxHeight()
-                .clip(shape)
-                .background(MaterialTheme.colorScheme.tertiary)
-        )
-    }
+            .drawBehind {
+                drawRect(trackColor)
+                drawRect(
+                    color = fillColor,
+                    size = Size(size.width * progress().coerceIn(0f, 1f), size.height),
+                )
+            },
+    )
 }
 
 /**
@@ -433,7 +472,7 @@ private fun StatCard(label: String, value: String, modifier: Modifier = Modifier
 
 @Composable
 private fun CamerasList(
-    cameras: List<CameraSpec>,
+    cameras: ImmutableList<CameraSpec>,
     onCameraClick: (String) -> Unit = {}
 ) {
     if (cameras.isEmpty()) {
@@ -549,3 +588,64 @@ private fun FunFacts(facts: List<String>) {
     }
 }
 
+// ── Previews ──────────────────────────────────────────────────────────────────
+
+@Preview
+@Composable
+private fun RoverMissionInfoScreenLoadingPreview() {
+    RoverMissionInfoScreen(
+        state = RoverMissionInfoUiState(missionInfoState = null),
+        onBack = {},
+        onCameraClick = {},
+    )
+}
+
+@Preview
+@Composable
+private fun RoverMissionInfoScreenLoadedPreview() {
+    val previewRover = Rover(
+        id = 5,
+        name = "Curiosity",
+        drawableName = "curiosity",
+        landingDate = "2012-08-06",
+        launchDate = "2011-11-26",
+        status = "active",
+        maxSol = 4000,
+        maxDate = "2023-10-01",
+        totalPhotos = 695670
+    )
+    val previewMilestones = persistentListOf(
+        TimelineMilestone(label = "Launch", date = "2011-11-26", sol = null, type = MilestoneType.LAUNCH),
+        TimelineMilestone(label = "Landing", date = "2012-08-06", sol = null, type = MilestoneType.LANDING),
+        TimelineMilestone(label = "Today", date = "2023-10-01", sol = 4000L, type = MilestoneType.CURRENT),
+    )
+    val previewCameras = persistentListOf(
+        CameraSpec(
+            name = "MAST",
+            fullName = "Mast Camera",
+            description = "Two cameras mounted on the mast for color imaging."
+        )
+    )
+    val previewFacts = RoverMissionFacts(
+        roverId = 5,
+        roverName = "Curiosity",
+        objectives = listOf("Assess habitability", "Study Martian climate"),
+        funFacts = listOf("Curiosity is the size of a small car.")
+    )
+    RoverMissionInfoScreen(
+        state = RoverMissionInfoUiState(
+            missionInfoState = MissionInfoState(
+                rover = previewRover,
+                daysActive = 4001L,
+                earthDaysActive = 4110L,
+                cameras = previewCameras,
+                missionFacts = previewFacts,
+                factsLoading = false,
+                factsError = null,
+                timelineMilestones = previewMilestones,
+            )
+        ),
+        onBack = {},
+        onCameraClick = {},
+    )
+}

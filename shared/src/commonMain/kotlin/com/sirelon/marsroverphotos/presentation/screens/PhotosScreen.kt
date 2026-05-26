@@ -42,9 +42,8 @@ import androidx.compose.material3.TopAppBarDefaults
 import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -66,6 +65,7 @@ import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.presentation.ui.NetworkImage
 import com.sirelon.marsroverphotos.presentation.ui.PlatformDatePickerDialog
 import com.sirelon.marsroverphotos.presentation.ui.adaptiveGridCells
+import com.sirelon.marsroverphotos.presentation.viewmodels.PhotosUiState
 import com.sirelon.marsroverphotos.presentation.viewmodels.PhotosViewModel
 import com.sirelon.marsroverphotos.shared.resources.Res
 import com.sirelon.marsroverphotos.shared.resources.alien_icon
@@ -86,10 +86,16 @@ import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.time.Instant
 
-@OptIn(ExperimentalMaterial3Api::class)
+// ── State-holder composable ───────────────────────────────────────────────────
+
+/**
+ * State-holder entry point: collects [PhotosViewModel.uiState] and delegates
+ * all layout to the private [PhotosScreen] UI overload.
+ */
 @Composable
 fun PhotosScreen(
     roverId: Long,
@@ -100,36 +106,61 @@ fun PhotosScreen(
     onClearCameraFilter: () -> Unit = {},
     viewModel: PhotosViewModel = koinViewModel()
 ) {
-    var maxSol by remember { mutableLongStateOf(1L) }
-
     LaunchedEffect(roverId) {
         viewModel.setRoverId(roverId)
-        maxSol = viewModel.maxSol().coerceAtLeast(1L)
     }
 
     LaunchedEffect(cameraFilter) {
         viewModel.setCameraFilter(cameraFilter)
     }
 
-    val gridItems by viewModel.gridItemsFlow.collectAsState(initial = null)
-    val photos = remember(gridItems) {
-        gridItems?.mapNotNull { item ->
-            (item as? GridItem.PhotoItem)?.image
-        }.orEmpty()
-    }
-    val sol by viewModel.solFlow.collectAsState(initial = 0L)
-    val roverName by viewModel.roverNameFlow.collectAsState(initial = "")
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
 
+    PhotosScreen(
+        state = state,
+        onLoadBySol = viewModel::loadBySol,
+        onSetEarthTime = viewModel::setEarthTime,
+        onRandomize = viewModel::randomize,
+        onGoToLatest = viewModel::goToLatest,
+        onPhotoClick = viewModel::onPhotoClick,
+        onSetCameraFilter = viewModel::setCameraFilter,
+        onClearCameraFilter = onClearCameraFilter,
+        onNavigateToImages = onNavigateToImages,
+        onBack = onBack,
+        modifier = modifier,
+    )
+}
+
+// ── UI composable ─────────────────────────────────────────────────────────────
+
+/**
+ * Pure UI overload: knows nothing about [PhotosViewModel]. Safe to preview and unit-test.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun PhotosScreen(
+    state: PhotosUiState,
+    onLoadBySol: (Long) -> Unit,
+    onSetEarthTime: (Long) -> Unit,
+    onRandomize: () -> Unit,
+    onGoToLatest: () -> Unit,
+    onPhotoClick: () -> Unit,
+    onSetCameraFilter: (String?) -> Unit,
+    onClearCameraFilter: () -> Unit,
+    onNavigateToImages: (String) -> Unit,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     var openSolDialog by rememberSaveable { mutableStateOf(false) }
     var openEarthDateDialog by rememberSaveable { mutableStateOf(false) }
 
     SolDialog(
-        maxSol = maxSol,
+        maxSol = state.maxSol,
         openDialog = openSolDialog,
-        sol = sol,
+        sol = state.sol,
         onClose = { openSolDialog = false },
         onChoose = {
-            viewModel.loadBySol(it)
+            onLoadBySol(it)
             openSolDialog = false
         }
     )
@@ -142,7 +173,7 @@ fun PhotosScreen(
             AppTopBar(
                 scrollBehavior = scrollBehavior,
                 title = {
-                    Text(text = roverName)
+                    Text(text = state.roverName)
                 },
                 subtitle = {
                     Row(
@@ -154,13 +185,13 @@ fun PhotosScreen(
                         DateSelectorButton(
                             modifier = Modifier.weight(1f),
                             label = "Sol date",
-                            value = sol.toString(),
+                            value = state.sol.toString(),
                             onClick = { openSolDialog = true }
                         )
                         DateSelectorButton(
                             modifier = Modifier.weight(1f),
                             label = "Earth date",
-                            value = viewModel.earthDateStr(sol),
+                            value = state.earthDate,
                             onClick = { openEarthDateDialog = true }
                         )
                     }
@@ -170,8 +201,8 @@ fun PhotosScreen(
         },
         floatingActionButton = {
             RefreshButton(
-                visible = photos.isNotEmpty(),
-                onClick = { viewModel.goToLatest() }
+                visible = state.hasPhotos,
+                onClick = { onGoToLatest() }
             )
         }
     ) { innerPadding ->
@@ -180,11 +211,11 @@ fun PhotosScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            if (!cameraFilter.isNullOrBlank()) {
+            if (!state.cameraFilter.isNullOrBlank()) {
                 CameraFilterChip(
-                    camera = cameraFilter,
+                    camera = state.cameraFilter,
                     onClear = {
-                        viewModel.setCameraFilter(null)
+                        onSetCameraFilter(null)
                         onClearCameraFilter()
                     }
                 )
@@ -192,11 +223,11 @@ fun PhotosScreen(
 
             if (openEarthDateDialog) {
                 PlatformDatePickerDialog(
-                    selectedDate = millisToUtcLocalDate(viewModel.dateFromSol()),
-                    minDate = millisToUtcLocalDate(viewModel.minDate()),
-                    maxDate = millisToUtcLocalDate(viewModel.maxDate()),
+                    selectedDate = millisToUtcLocalDate(state.datePickerSelectedMillis),
+                    minDate = millisToUtcLocalDate(state.datePickerMinMillis),
+                    maxDate = millisToUtcLocalDate(state.datePickerMaxMillis),
                     onDateSelected = { selectedDate ->
-                        viewModel.setEarthTime(selectedDate.toUtcMillis())
+                        onSetEarthTime(selectedDate.toUtcMillis())
                         openEarthDateDialog = false
                     },
                     onDismissRequest = { openEarthDateDialog = false },
@@ -206,21 +237,21 @@ fun PhotosScreen(
                 )
             }
 
-            Crossfade(targetState = gridItems, label = "[Anim]:PhotosProgress") { items ->
+            Crossfade(targetState = state.gridItems, label = "[Anim]:PhotosProgress") { items ->
                 when {
                     items == null -> CenteredProgress()
                     items.isEmpty() -> {
-                        if (!cameraFilter.isNullOrBlank()) {
+                        if (!state.cameraFilter.isNullOrBlank()) {
                             EmptyPhotos(
-                                title = "No $cameraFilter photos on Sol $sol. Try another Sol.",
+                                title = "No ${state.cameraFilter} photos on Sol ${state.sol}. Try another Sol.",
                                 btnTitle = stringResource(Res.string.tap_to_retry),
-                                callback = { viewModel.randomize() }
+                                callback = { onRandomize() }
                             )
                         } else {
                             EmptyPhotos(
                                 title = stringResource(Res.string.no_photos_title),
                                 btnTitle = stringResource(Res.string.tap_to_retry),
-                                callback = { viewModel.randomize() }
+                                callback = { onRandomize() }
                             )
                         }
                     }
@@ -229,10 +260,10 @@ fun PhotosScreen(
                         PhotosList(
                             gridItems = items,
                             onPhotoClick = { image ->
-                                viewModel.onPhotoClick()
+                                onPhotoClick()
                                 onNavigateToImages(image.id)
                             },
-                            onCameraClick = { cameraName -> viewModel.setCameraFilter(cameraName) }
+                            onCameraClick = { cameraName -> onSetCameraFilter(cameraName) }
                         )
                     }
                 }
@@ -574,6 +605,83 @@ private fun CameraFilterChip(camera: String, onClear: () -> Unit) {
                 containerColor = MaterialTheme.colorScheme.secondaryContainer,
                 labelColor = MaterialTheme.colorScheme.onSecondaryContainer
             )
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun PhotosScreenPreview() {
+    MaterialTheme {
+        PhotosScreen(
+            state = PhotosUiState(
+                roverName = "Curiosity",
+                sol = 3200L,
+                earthDate = "Aug 5, 2015",
+                gridItems = emptyList(),
+                maxSol = 4000L,
+                cameraFilter = null,
+                hasPhotos = false,
+            ),
+            onLoadBySol = {},
+            onSetEarthTime = {},
+            onRandomize = {},
+            onGoToLatest = {},
+            onPhotoClick = {},
+            onSetCameraFilter = {},
+            onClearCameraFilter = {},
+            onNavigateToImages = {},
+            onBack = {},
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun PhotosScreenWithPhotosPreview() {
+    val sampleImage = MarsImage(
+        id = "123",
+        order = 0,
+        sol = 3200L,
+        name = "Curiosity: FHAZ",
+        imageUrl = "https://example.com/img.jpg",
+        earthDate = "2015-08-05",
+        camera = com.sirelon.marsroverphotos.domain.models.RoverCamera(
+            id = 1,
+            name = "FHAZ",
+            fullName = "Front Hazard Avoidance Camera"
+        ),
+        favorite = false,
+        popular = false,
+        stats = MarsImage.Stats(see = 42, scale = 0, save = 2, share = 1, favorite = 5),
+    )
+    MaterialTheme {
+        PhotosScreen(
+            state = PhotosUiState(
+                roverName = "Curiosity",
+                sol = 3200L,
+                earthDate = "Aug 5, 2015",
+                gridItems = listOf(
+                    com.sirelon.marsroverphotos.presentation.models.GridItem.PhotoItem(sampleImage),
+                    com.sirelon.marsroverphotos.presentation.models.GridItem.PhotoItem(
+                        sampleImage.copy(id = "124", name = "Curiosity: MAST")
+                    ),
+                ),
+                maxSol = 4000L,
+                cameraFilter = null,
+                hasPhotos = true,
+            ),
+            onLoadBySol = {},
+            onSetEarthTime = {},
+            onRandomize = {},
+            onGoToLatest = {},
+            onPhotoClick = {},
+            onSetCameraFilter = {},
+            onClearCameraFilter = {},
+            onNavigateToImages = {},
+            onBack = {},
         )
     }
 }

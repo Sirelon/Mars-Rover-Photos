@@ -67,10 +67,12 @@ fun RoversScreen(
 fun RoversContent(
     rovers: List<Rover>,
     onClick: (rover: Rover) -> Unit,
-    onMissionInfoClick: (rover: Rover) -> Unit
+    onMissionInfoClick: (rover: Rover) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 360.dp),
+        modifier = modifier,
         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)

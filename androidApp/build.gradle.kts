@@ -23,7 +23,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.sirelon.marsroverphotos"
-    compileSdk = 36
+    compileSdk = 37
 
     signingConfigs {
         create("release") {
