@@ -16,8 +16,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -86,7 +86,7 @@ private fun PopularPhotosContent(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-        TopAppBar(
+        AppTopBar(
             title = { Text(text = title) },
             windowInsets = WindowInsets(0, 0, 0, 0),
             actions = {

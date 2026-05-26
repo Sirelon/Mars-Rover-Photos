@@ -36,9 +36,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults.contentWindowInsets
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -127,17 +127,10 @@ private fun RoverMissionInfoScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         contentWindowInsets = WindowInsets(),
         topBar = {
-            TopAppBar(
+            AppTopBar(
                 scrollBehavior = scrollBehavior,
                 title = { Text(state.missionInfoState?.rover?.name ?: "Mission Info") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        MaterialSymbolIcon(
-                            symbol = MaterialSymbol.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                }
+                onBack = onBack,
             )
         }
     ) { paddingValues ->
