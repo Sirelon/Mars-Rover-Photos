@@ -120,8 +120,10 @@ private fun AboutContent(
                 }
             }
 
-            ThemeChanger(viewModel)
-            FactsToggle(viewModel)
+            val currentTheme by viewModel.themeFlow.collectAsState()
+            val showFacts by viewModel.showFactsFlow.collectAsState()
+            ThemeChanger(currentTheme = currentTheme, onThemeChange = viewModel::setTheme)
+            FactsToggle(showFacts = showFacts, onFactsToggle = viewModel::toggleFacts)
 
             OutlinedButton(onClick = {
                 onClearCache()
@@ -165,8 +167,7 @@ private fun AboutContent(
 }
 
 @Composable
-private fun ThemeChanger(viewModel: AboutViewModel) {
-    val currentTheme by viewModel.themeFlow.collectAsState()
+private fun ThemeChanger(currentTheme: Theme, onThemeChange: (Theme) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -187,13 +188,13 @@ private fun ThemeChanger(viewModel: AboutViewModel) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 RadioButtonText(text = "White", selected = currentTheme == Theme.WHITE) {
-                    viewModel.setTheme(Theme.WHITE)
+                    onThemeChange(Theme.WHITE)
                 }
                 RadioButtonText(text = "Dark", selected = currentTheme == Theme.DARK) {
-                    viewModel.setTheme(Theme.DARK)
+                    onThemeChange(Theme.DARK)
                 }
                 RadioButtonText(text = "System", selected = currentTheme == Theme.SYSTEM) {
-                    viewModel.setTheme(Theme.SYSTEM)
+                    onThemeChange(Theme.SYSTEM)
                 }
             }
         }
@@ -201,8 +202,7 @@ private fun ThemeChanger(viewModel: AboutViewModel) {
 }
 
 @Composable
-private fun FactsToggle(viewModel: AboutViewModel) {
-    val showFacts by viewModel.showFactsFlow.collectAsState()
+private fun FactsToggle(showFacts: Boolean, onFactsToggle: (Boolean) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -227,7 +227,7 @@ private fun FactsToggle(viewModel: AboutViewModel) {
             }
             Switch(
                 checked = showFacts,
-                onCheckedChange = { viewModel.toggleFacts(it) }
+                onCheckedChange = onFactsToggle
             )
         }
     }

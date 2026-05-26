@@ -328,37 +328,25 @@ private fun BoxScope.OnEvent(uiEvent: UiEvent?) {
     val haptic = LocalHapticFeedback.current
     val uriHandler = LocalUriHandler.current
     var showCheckmark by remember { mutableStateOf(false) }
+    // Captures the saved-image path so the "Open" action in the snackbar can open it.
+    // Held outside the `when` branch so MarsSnackbar (always rendered) can reference it.
+    var openImagePath by remember { mutableStateOf<String?>(null) }
 
     when (uiEvent) {
         is UiEvent.PhotoSaved -> {
             val imagePath = uiEvent.imagePath
-
             LaunchedEffect(uiEvent) {
                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 showCheckmark = true
-                delay(1500)
-                showCheckmark = false
-            }
-
-            SaveSuccessOverlay(visible = showCheckmark)
-
-            MarsSnackbar(
-                snackbarHostState = snackbarHostState,
-                modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding(),
-                actionClick = {
-                    if (!imagePath.isNullOrBlank()) {
-                        try {
-                            uriHandler.openUri(imagePath)
-                        } catch (_: Exception) {
-                            // URI may not be openable on all platforms — silently ignore
-                        }
-                    }
+                openImagePath = imagePath
+                // Show checkmark for 1.5 s concurrently with the snackbar.
+                launch {
+                    delay(1500)
+                    showCheckmark = false
                 }
-            )
-            LaunchedEffect(uiEvent) {
                 snackbarHostState.showSnackbar(
                     message = "Image saved successfully",
-                    actionLabel = if (imagePath != null) "Open" else null
+                    actionLabel = if (!imagePath.isNullOrBlank()) "Open" else null
                 )
             }
         }
@@ -370,11 +358,6 @@ private fun BoxScope.OnEvent(uiEvent: UiEvent?) {
                     message = "Failed to save image: ${uiEvent.errorMessage}"
                 )
             }
-            MarsSnackbar(
-                snackbarHostState = snackbarHostState,
-                modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding(),
-                actionClick = null
-            )
         }
 
         is UiEvent.ShareError -> {
@@ -383,15 +366,30 @@ private fun BoxScope.OnEvent(uiEvent: UiEvent?) {
                     message = "Failed to share image: ${uiEvent.errorMessage}"
                 )
             }
-            MarsSnackbar(
-                snackbarHostState = snackbarHostState,
-                modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding(),
-                actionClick = null
-            )
         }
 
         null -> { /* idle */ }
     }
+
+    // SaveSuccessOverlay lives outside the when so AnimatedVisibility can play its exit
+    // animation even after the event is consumed (uiEvent → null).
+    SaveSuccessOverlay(visible = showCheckmark)
+
+    // MarsSnackbar is always rendered so the SnackbarHost is never removed mid-display.
+    MarsSnackbar(
+        snackbarHostState = snackbarHostState,
+        modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding(),
+        actionClick = {
+            val path = openImagePath
+            if (!path.isNullOrBlank()) {
+                try {
+                    uriHandler.openUri(path)
+                } catch (_: Exception) {
+                    // URI may not be openable on all platforms — silently ignore
+                }
+            }
+        }
+    )
 }
 
 @Composable

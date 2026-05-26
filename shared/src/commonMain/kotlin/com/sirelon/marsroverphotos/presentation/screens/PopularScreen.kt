@@ -21,9 +21,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -62,13 +59,15 @@ fun PopularScreen(
     viewModel: PopularPhotosViewModel = koinViewModel(),
 ) {
     val appSettings: AppSettings = koinInject()
+    val gridView by appSettings.gridViewFlow.collectAsState()
     val lazyPagingItems = viewModel.popularPagedFlow.collectAsLazyPagingItems()
 
     PopularPhotosContent(
         modifier = modifier,
         title = stringResource(Res.string.popular_title),
         lazyPagingItems = lazyPagingItems,
-        appSettings = appSettings,
+        gridView = gridView,
+        onGridChange = { appSettings.gridView = !gridView },
         onFavoriteClick = { viewModel.updateFavorite(it) },
         onItemClick = onNavigateToImages,
     )
@@ -77,27 +76,22 @@ fun PopularScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PopularPhotosContent(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     title: String,
     lazyPagingItems: LazyPagingItems<MarsImage>,
-    appSettings: AppSettings,
+    gridView: Boolean,
+    onGridChange: () -> Unit,
     onItemClick: (image: MarsImage) -> Unit,
     onFavoriteClick: (image: MarsImage) -> Unit,
 ) {
-    val gridViewState by appSettings.gridViewFlow.collectAsState()
-    var gridView by rememberSaveable { mutableStateOf(gridViewState) }
-
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = modifier.fillMaxSize()) {
         val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
         TopAppBar(
             title = { Text(text = title) },
             windowInsets = WindowInsets(0, 0, 0, 0),
             actions = {
                 IconButton(
-                    onClick = {
-                        gridView = !gridView
-                        appSettings.gridView = gridView
-                    },
+                    onClick = onGridChange,
                 ) {
                     if (gridView) {
                         MaterialSymbolIcon(
@@ -138,7 +132,7 @@ private fun PopularPhotosContent(
 
             else -> {
                 LazyVerticalStaggeredGrid(
-                    modifier = modifier
+                    modifier = Modifier
                         .weight(1f)
                         .nestedScroll(scrollBehavior.nestedScrollConnection),
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),

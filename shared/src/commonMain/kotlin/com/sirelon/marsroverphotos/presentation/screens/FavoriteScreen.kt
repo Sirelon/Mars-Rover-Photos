@@ -97,7 +97,7 @@ fun FavoriteScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun FavoritePhotosContent(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     title: String,
     lazyPagingItems: LazyPagingItems<MarsImage>,
     gridView: Boolean,
@@ -108,7 +108,7 @@ private fun FavoritePhotosContent(
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
                 title = { Text(text = title) },
@@ -149,7 +149,7 @@ private fun FavoritePhotosContent(
 
             else -> {
                 LazyVerticalStaggeredGrid(
-                    modifier = modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
                     columns = if (gridView) {
                         StaggeredGridCells.Adaptive(minSize = 180.dp)
