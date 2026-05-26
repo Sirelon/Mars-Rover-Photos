@@ -187,14 +187,14 @@ private fun ThemeChanger(currentTheme: Theme, onThemeChange: (Theme) -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                RadioButtonText(text = "White", selected = currentTheme == Theme.WHITE) {
-                    onThemeChange(Theme.WHITE)
+                RadioButtonText(selected = currentTheme == Theme.WHITE, onClick = { onThemeChange(Theme.WHITE) }) {
+                    Text("White")
                 }
-                RadioButtonText(text = "Dark", selected = currentTheme == Theme.DARK) {
-                    onThemeChange(Theme.DARK)
+                RadioButtonText(selected = currentTheme == Theme.DARK, onClick = { onThemeChange(Theme.DARK) }) {
+                    Text("Dark")
                 }
-                RadioButtonText(text = "System", selected = currentTheme == Theme.SYSTEM) {
-                    onThemeChange(Theme.SYSTEM)
+                RadioButtonText(selected = currentTheme == Theme.SYSTEM, onClick = { onThemeChange(Theme.SYSTEM) }) {
+                    Text("System")
                 }
             }
         }

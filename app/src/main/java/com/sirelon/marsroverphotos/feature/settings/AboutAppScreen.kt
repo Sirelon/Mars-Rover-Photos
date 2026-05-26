@@ -131,15 +131,14 @@ private fun ThemeChanger() {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                RadioButtonText(text = "White", selected = currentTheme == Theme.WHITE) {
-                    changeColor(Theme.WHITE)
+                RadioButtonText(selected = currentTheme == Theme.WHITE, onClick = { changeColor(Theme.WHITE) }) {
+                    Text(text = "White")
                 }
-                RadioButtonText(text = "Dark", selected = currentTheme == Theme.DARK) {
-                    changeColor(Theme.DARK)
+                RadioButtonText(selected = currentTheme == Theme.DARK, onClick = { changeColor(Theme.DARK) }) {
+                    Text(text = "Dark")
                 }
-
-                RadioButtonText(text = "System", selected = currentTheme == Theme.SYSTEM) {
-                    changeColor(Theme.SYSTEM)
+                RadioButtonText(selected = currentTheme == Theme.SYSTEM, onClick = { changeColor(Theme.SYSTEM) }) {
+                    Text(text = "System")
                 }
             }
         }
@@ -176,11 +175,11 @@ private fun FactsToggle() {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                RadioButtonText(text = "Show Facts", selected = showFacts) {
-                    toggleFacts(true)
+                RadioButtonText(selected = showFacts, onClick = { toggleFacts(true) }) {
+                    Text(text = "Show Facts")
                 }
-                RadioButtonText(text = "Hide Facts", selected = !showFacts) {
-                    toggleFacts(false)
+                RadioButtonText(selected = !showFacts, onClick = { toggleFacts(false) }) {
+                    Text(text = "Hide Facts")
                 }
             }
         }
