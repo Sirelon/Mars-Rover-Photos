@@ -5,6 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 
 /**
@@ -86,6 +87,7 @@ fun MarsRoverPhotosTheme(
  * Platform-specific implementation.
  */
 @Composable
+@ReadOnlyComposable
 expect fun isSystemInDarkTheme(): Boolean
 
 /**
@@ -93,6 +95,7 @@ expect fun isSystemInDarkTheme(): Boolean
  * Returns true for Android 12+ (API 31+), false for other platforms.
  */
 @Composable
+@ReadOnlyComposable
 expect fun supportsDynamicColor(): Boolean
 
 /**
@@ -100,6 +103,7 @@ expect fun supportsDynamicColor(): Boolean
  * Returns static dark scheme for platforms without dynamic color support.
  */
 @Composable
+@ReadOnlyComposable
 expect fun getDynamicDarkColorScheme(): ColorScheme
 
 /**
@@ -107,4 +111,5 @@ expect fun getDynamicDarkColorScheme(): ColorScheme
  * Returns static light scheme for platforms without dynamic color support.
  */
 @Composable
+@ReadOnlyComposable
 expect fun getDynamicLightColorScheme(): ColorScheme

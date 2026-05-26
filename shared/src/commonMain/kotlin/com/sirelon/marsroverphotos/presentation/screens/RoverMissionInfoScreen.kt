@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -41,6 +40,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -262,7 +263,7 @@ private fun MissionTimeline(milestones: ImmutableList<TimelineMilestone>, status
         animationStarted = false  // reset so the animation starts from 0f for the new rover
         animationStarted = true
     }
-    val landingToCurrentProgress by animateFloatAsState(
+    val landingToCurrentProgress = animateFloatAsState(
         targetValue = if (animationStarted) 1f else 0f,
         animationSpec = tween(durationMillis = 600),
         label = "LandingToCurrentProgress"
@@ -325,10 +326,10 @@ private fun MissionTimeline(milestones: ImmutableList<TimelineMilestone>, status
                 // journey is complete once the rover has landed.
                 // Second connector (Landing → Current/End) is animated for
                 // active rovers and fully filled for completed missions.
-                val segmentProgress = when {
-                    index == 0 -> 1f
-                    !isActive -> 1f
-                    else -> landingToCurrentProgress
+                val segmentProgress: () -> Float = when {
+                    index == 0 -> {{ 1f }}
+                    !isActive -> {{ 1f }}
+                    else -> {{ landingToCurrentProgress.value }}
                 }
                 TimelineSegment(
                     progress = segmentProgress,
@@ -343,23 +344,23 @@ private fun MissionTimeline(milestones: ImmutableList<TimelineMilestone>, status
 }
 
 @Composable
-private fun TimelineSegment(progress: Float, modifier: Modifier = Modifier) {
+private fun TimelineSegment(progress: () -> Float, modifier: Modifier = Modifier) {
     val shape = RoundedCornerShape(3.dp)
+    val fillColor = MaterialTheme.colorScheme.tertiary
+    val trackColor = MaterialTheme.colorScheme.outlineVariant
     Box(
         modifier = modifier
             .fillMaxWidth()
             .height(6.dp)
             .clip(shape)
-            .background(MaterialTheme.colorScheme.outlineVariant)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth(progress.coerceIn(0f, 1f))
-                .fillMaxHeight()
-                .clip(shape)
-                .background(MaterialTheme.colorScheme.tertiary)
-        )
-    }
+            .drawBehind {
+                drawRect(trackColor)
+                drawRect(
+                    color = fillColor,
+                    size = Size(size.width * progress().coerceIn(0f, 1f), size.height),
+                )
+            },
+    )
 }
 
 /**
