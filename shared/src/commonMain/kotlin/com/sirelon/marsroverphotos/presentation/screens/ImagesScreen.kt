@@ -82,9 +82,11 @@ import com.sirelon.marsroverphotos.shared.resources.Res
 import com.sirelon.marsroverphotos.shared.resources.images_empty_btn
 import com.sirelon.marsroverphotos.shared.resources.images_empty_title
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
@@ -126,6 +128,8 @@ fun ImagesScreen(
 
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
     val images = screenState.images
+
+    val uiEvent by viewModel.uiEvent.collectAsStateWithLifecycle(initialValue = null)
 
     val pagerState = rememberPagerState(
         initialPage = 0,
@@ -174,11 +178,16 @@ fun ImagesScreen(
             }
         } else {
             ImagesPagerContent(
-                viewModel = viewModel,
+                uiEvent = uiEvent,
                 list = images,
                 pagerState = pagerState,
                 hideUi = screenState.hideUi,
                 onBack = onBack,
+                onShown = viewModel::onShown,
+                onTap = viewModel::onTap,
+                onFavoriteClick = viewModel::updateFavorite,
+                onSaveClick = viewModel::saveImage,
+                onShareClick = viewModel::shareMarsImage,
             )
         }
     }
@@ -206,11 +215,16 @@ private fun ImagesEmptyState(onBack: () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ImagesPagerContent(
-    viewModel: ImageViewModel,
+    uiEvent: UiEvent?,
     list: ImmutableList<MarsImage>,
     pagerState: PagerState,
     hideUi: Boolean,
     onBack: () -> Unit,
+    onShown: (MarsImage, Int) -> Unit,
+    onTap: () -> Unit,
+    onFavoriteClick: (MarsImage) -> Unit,
+    onSaveClick: (MarsImage) -> Unit,
+    onShareClick: (MarsImage) -> Unit,
 ) {
     var titleState by remember { mutableStateOf("Mars Rover Photos") }
     var showInfoSheet by remember { mutableStateOf(false) }
@@ -230,7 +244,7 @@ private fun ImagesPagerContent(
             val currentList = latestList
             if (currentList.isNotEmpty() && page < currentList.size) {
                 val marsPhoto = currentList[page]
-                viewModel.onShown(marsPhoto, page)
+                onShown(marsPhoto, page)
                 titleState = buildString {
                     append("Sol ")
                     append(marsPhoto.sol)
@@ -264,14 +278,13 @@ private fun ImagesPagerContent(
             pagerState = pagerState,
             images = list,
             hideUi = hideUi,
-            onTap = { viewModel.onTap() },
-            onFavoriteClick = { marsImage -> viewModel.updateFavorite(marsImage) },
+            onTap = onTap,
+            onFavoriteClick = onFavoriteClick,
             onBack = onBack,
             dismissOffsetY = dismissOffsetY,
             dismissThresholdPx = dismissThresholdPx,
         )
 
-        val uiEvent by viewModel.uiEvent.collectAsStateWithLifecycle(initialValue = null)
         OnEvent(uiEvent = uiEvent)
 
         // Translucent TopAppBar overlay + (debug-only) action row.
@@ -305,10 +318,10 @@ private fun ImagesPagerContent(
                     actions = {
                         if (currentImage != null) {
                             SaveIcon(onClick = {
-                                viewModel.saveImage(currentImage)
+                                onSaveClick(currentImage)
                             })
                             ShareIcon(onClick = {
-                                viewModel.shareMarsImage(currentImage)
+                                onShareClick(currentImage)
                             })
                             InfoIcon(onClick = {
                                 showInfoSheet = true
@@ -594,5 +607,46 @@ private fun ImagesPager(
                 }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun ImagesPagerContentPreview() {
+    val sampleImage = MarsImage(
+        id = "preview_1",
+        order = 0,
+        sol = 3200L,
+        name = "Curiosity: FHAZ",
+        imageUrl = "https://mars.nasa.gov/msl-raw-images/sample.jpg",
+        earthDate = "2015-08-05",
+        camera = com.sirelon.marsroverphotos.domain.models.RoverCamera(
+            id = 1,
+            name = "FHAZ",
+            fullName = "Front Hazard Avoidance Camera"
+        ),
+        favorite = false,
+        popular = false,
+        stats = MarsImage.Stats(see = 42, scale = 0, save = 2, share = 1, favorite = 5),
+    )
+    val sampleImages = persistentListOf(
+        sampleImage,
+        sampleImage.copy(id = "preview_2", sol = 3201L, name = "Curiosity: MAST"),
+    )
+    val pagerState = rememberPagerState(pageCount = { sampleImages.size })
+    MaterialTheme {
+        ImagesPagerContent(
+            uiEvent = null,
+            list = sampleImages,
+            pagerState = pagerState,
+            hideUi = false,
+            onBack = {},
+            onShown = { _, _ -> },
+            onTap = {},
+            onFavoriteClick = {},
+            onSaveClick = {},
+            onShareClick = {},
+        )
     }
 }

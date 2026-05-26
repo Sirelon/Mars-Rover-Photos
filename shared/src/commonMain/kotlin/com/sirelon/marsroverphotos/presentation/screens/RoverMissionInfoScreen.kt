@@ -67,7 +67,21 @@ import com.sirelon.marsroverphotos.presentation.viewmodels.RoverMissionInfoViewM
 import com.sirelon.marsroverphotos.presentation.viewmodels.TimelineMilestone
 import com.sirelon.marsroverphotos.utils.formatThousands
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
+
+/**
+ * Immutable UI state for [RoverMissionInfoScreen].
+ *
+ * [missionInfoState] is null while the data is loading — the screen shows a
+ * centered progress indicator in that case.
+ */
+data class RoverMissionInfoUiState(
+    val missionInfoState: MissionInfoState? = null,
+)
+
+// ── State-holder composable ───────────────────────────────────────────────────
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -92,6 +106,22 @@ fun RoverMissionInfoScreen(
         }
     }
 
+    RoverMissionInfoScreen(
+        state = RoverMissionInfoUiState(missionInfoState = state),
+        onBack = onBack,
+        onCameraClick = onCameraClick,
+    )
+}
+
+// ── Pure-UI composable ────────────────────────────────────────────────────────
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun RoverMissionInfoScreen(
+    state: RoverMissionInfoUiState,
+    onBack: () -> Unit,
+    onCameraClick: (String) -> Unit = {},
+) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -99,7 +129,7 @@ fun RoverMissionInfoScreen(
         topBar = {
             TopAppBar(
                 scrollBehavior = scrollBehavior,
-                title = { Text(state?.rover?.name ?: "Mission Info") },
+                title = { Text(state.missionInfoState?.rover?.name ?: "Mission Info") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         MaterialSymbolIcon(
@@ -112,7 +142,7 @@ fun RoverMissionInfoScreen(
         }
     ) { paddingValues ->
         Crossfade(
-            targetState = state,
+            targetState = state.missionInfoState,
             label = "MissionInfoCrossfade",
             modifier = Modifier.padding(paddingValues)
         ) { currentState ->
@@ -563,5 +593,67 @@ private fun FunFacts(facts: List<String>) {
             }
         }
     }
+}
+
+// ── Previews ──────────────────────────────────────────────────────────────────
+
+@Preview
+@Composable
+private fun RoverMissionInfoScreenLoadingPreview() {
+    RoverMissionInfoScreen(
+        state = RoverMissionInfoUiState(missionInfoState = null),
+        onBack = {},
+        onCameraClick = {},
+    )
+}
+
+@Preview
+@Composable
+private fun RoverMissionInfoScreenLoadedPreview() {
+    val previewRover = Rover(
+        id = 5,
+        name = "Curiosity",
+        drawableName = "curiosity",
+        landingDate = "2012-08-06",
+        launchDate = "2011-11-26",
+        status = "active",
+        maxSol = 4000,
+        maxDate = "2023-10-01",
+        totalPhotos = 695670
+    )
+    val previewMilestones = persistentListOf(
+        TimelineMilestone(label = "Launch", date = "2011-11-26", sol = null, type = MilestoneType.LAUNCH),
+        TimelineMilestone(label = "Landing", date = "2012-08-06", sol = null, type = MilestoneType.LANDING),
+        TimelineMilestone(label = "Today", date = "2023-10-01", sol = 4000L, type = MilestoneType.CURRENT),
+    )
+    val previewCameras = persistentListOf(
+        CameraSpec(
+            name = "MAST",
+            fullName = "Mast Camera",
+            description = "Two cameras mounted on the mast for color imaging."
+        )
+    )
+    val previewFacts = RoverMissionFacts(
+        roverId = 5,
+        roverName = "Curiosity",
+        objectives = listOf("Assess habitability", "Study Martian climate"),
+        funFacts = listOf("Curiosity is the size of a small car.")
+    )
+    RoverMissionInfoScreen(
+        state = RoverMissionInfoUiState(
+            missionInfoState = MissionInfoState(
+                rover = previewRover,
+                daysActive = 4001L,
+                earthDaysActive = 4110L,
+                cameras = previewCameras,
+                missionFacts = previewFacts,
+                factsLoading = false,
+                factsError = null,
+                timelineMilestones = previewMilestones,
+            )
+        ),
+        onBack = {},
+        onCameraClick = {},
+    )
 }
 

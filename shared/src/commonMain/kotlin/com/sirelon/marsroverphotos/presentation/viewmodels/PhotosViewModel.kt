@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.random.Random
@@ -167,6 +168,39 @@ class PhotosViewModel(
      * Flow of current sol number.
      */
     val solFlow = queryEmitter.mapNotNull { it?.sol }
+
+    /**
+     * Single-observable UI state for [PhotosScreen].
+     *
+     * Combines rover info, current sol, grid items, and camera filter into one snapshot.
+     * By the time [combine] fires, [roverFlow] has emitted (setting [dateUtil]), so all
+     * date computations inside the lambda are safe.
+     */
+    val uiState: StateFlow<PhotosUiState> = combine(
+        roverFlow.map { it.name to it.maxSol.coerceAtLeast(1L) },
+        solFlow,
+        gridItemsFlow,
+        cameraFilterEmitter,
+    ) { roverInfo, sol, gridItems, cameraFilter ->
+        val (roverName, maxSol) = roverInfo
+        PhotosUiState(
+            roverName = roverName,
+            sol = sol,
+            earthDate = earthDateStr(sol),
+            gridItems = gridItems,
+            maxSol = maxSol,
+            cameraFilter = cameraFilter,
+            hasPhotos = gridItems?.any { it is GridItem.PhotoItem } ?: false,
+            datePickerSelectedMillis = earthTime(sol),
+            datePickerMinMillis = minDate(),
+            datePickerMaxMillis = maxDate(),
+        )
+    }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = PhotosUiState()
+        )
 
     init {
         viewModelScope.launch {
@@ -333,3 +367,27 @@ class PhotosViewModel(
         return PhotosQueryRequest(rover.id, sol, null)
     }
 }
+
+/**
+ * UI state for [PhotosScreen].
+ *
+ * All values are plain/immutable — the UI composable has no dependency on the ViewModel.
+ */
+data class PhotosUiState(
+    val roverName: String = "",
+    val sol: Long = 0L,
+    /** Earth-date string pre-formatted for the current sol (e.g. "Jan 15, 2021"). */
+    val earthDate: String = "",
+    /** Null = loading; empty list = no photos found for this sol. */
+    val gridItems: List<GridItem>? = null,
+    val maxSol: Long = 1L,
+    val cameraFilter: String? = null,
+    /** True when the photos list is non-empty and the "go to latest" FAB should be shown. */
+    val hasPhotos: Boolean = false,
+    /** Earth-date millis for the current sol — the date-picker's initial selection. */
+    val datePickerSelectedMillis: Long = 0L,
+    /** Rover landing-date millis — lower bound for the date picker. */
+    val datePickerMinMillis: Long = 0L,
+    /** Rover last-date millis — upper bound for the date picker. */
+    val datePickerMaxMillis: Long = 0L,
+)
