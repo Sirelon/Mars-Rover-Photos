@@ -12,6 +12,8 @@ import com.sirelon.marsroverphotos.platform.FirebaseAnalytics
 import com.sirelon.marsroverphotos.utils.Logger
 import com.sirelon.marsroverphotos.utils.buildTimelineMilestones
 import com.sirelon.marsroverphotos.utils.calculateEarthDaysActive
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -67,11 +69,11 @@ class RoverMissionInfoViewModel(
                     rover = rover,
                     daysActive = daysActive,
                     earthDaysActive = earthDaysActive,
-                    cameras = cameras,
+                    cameras = cameras.toImmutableList(),
                     missionFacts = factsUiState.facts,
                     factsLoading = factsUiState.loading,
                     factsError = factsUiState.error,
-                    timelineMilestones = milestones
+                    timelineMilestones = milestones.toImmutableList()
                 )
             }.collect { state ->
                 _stateFlow.value = state
@@ -174,11 +176,11 @@ data class MissionInfoState(
     val rover: Rover,
     val daysActive: Long,
     val earthDaysActive: Long,
-    val cameras: List<CameraSpec>,
+    val cameras: ImmutableList<CameraSpec>,
     val missionFacts: RoverMissionFacts?,
     val factsLoading: Boolean,
     val factsError: String?,
-    val timelineMilestones: List<TimelineMilestone>
+    val timelineMilestones: ImmutableList<TimelineMilestone>
 )
 
 /**

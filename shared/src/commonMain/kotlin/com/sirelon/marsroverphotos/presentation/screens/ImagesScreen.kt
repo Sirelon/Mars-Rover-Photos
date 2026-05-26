@@ -80,6 +80,7 @@ import com.sirelon.marsroverphotos.presentation.viewmodels.UiEvent
 import com.sirelon.marsroverphotos.shared.resources.Res
 import com.sirelon.marsroverphotos.shared.resources.images_empty_btn
 import com.sirelon.marsroverphotos.shared.resources.images_empty_title
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -205,7 +206,7 @@ private fun ImagesEmptyState(onBack: () -> Unit) {
 @Composable
 private fun ImagesPagerContent(
     viewModel: ImageViewModel,
-    list: List<MarsImage>,
+    list: ImmutableList<MarsImage>,
     pagerState: PagerState,
     hideUi: Boolean,
     onBack: () -> Unit,
@@ -439,7 +440,7 @@ private fun InfoIcon(onClick: () -> Unit) {
 @Composable
 private fun ImagesPager(
     pagerState: PagerState,
-    images: List<MarsImage>,
+    images: ImmutableList<MarsImage>,
     hideUi: Boolean,
     onTap: () -> Unit,
     onFavoriteClick: (MarsImage) -> Unit,

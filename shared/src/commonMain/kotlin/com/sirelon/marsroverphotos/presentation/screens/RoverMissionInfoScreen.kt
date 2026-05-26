@@ -58,6 +58,7 @@ import com.sirelon.marsroverphotos.presentation.viewmodels.MissionInfoState
 import com.sirelon.marsroverphotos.presentation.viewmodels.RoverMissionInfoViewModel
 import com.sirelon.marsroverphotos.presentation.viewmodels.TimelineMilestone
 import com.sirelon.marsroverphotos.utils.formatThousands
+import kotlinx.collections.immutable.ImmutableList
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -240,7 +241,7 @@ private fun SectionHeader(title: String) {
 }
 
 @Composable
-private fun MissionTimeline(milestones: List<TimelineMilestone>, status: String) {
+private fun MissionTimeline(milestones: ImmutableList<TimelineMilestone>, status: String) {
     val isActive = status.equals("active", ignoreCase = true)
     val milestoneColor = if (isActive) {
         MaterialTheme.colorScheme.tertiary
@@ -430,7 +431,7 @@ private fun StatCard(label: String, value: String, modifier: Modifier = Modifier
 
 @Composable
 private fun CamerasList(
-    cameras: List<CameraSpec>,
+    cameras: ImmutableList<CameraSpec>,
     onCameraClick: (String) -> Unit = {}
 ) {
     if (cameras.isEmpty()) {
