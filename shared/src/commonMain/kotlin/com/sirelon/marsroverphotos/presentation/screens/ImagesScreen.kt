@@ -9,7 +9,10 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.gestures.detectVerticalDragGestures
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
@@ -37,7 +40,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -433,23 +435,35 @@ private fun ImagesPager(
         ) { page ->
             val marsImage = images[page]
             val zoomState = rememberZoomableState()
-            var dragOffsetY by remember { mutableFloatStateOf(0f) }
-            val dismissThresholdPx = with(LocalDensity.current) { 120.dp.toPx() }
+            val dismissThresholdPx = with(LocalDensity.current) { 150.dp.toPx() }
 
             Box(modifier = Modifier
                 .fillMaxSize()
-                .pointerInput(Unit) {
-                    detectVerticalDragGestures(
-                        onDragStart = { dragOffsetY = 0f },
-                        onVerticalDrag = { _, dragAmount ->
-                            if (dragAmount > 0) dragOffsetY += dragAmount
-                        },
-                        onDragEnd = {
-                            if (dragOffsetY >= dismissThresholdPx) onBack()
-                            dragOffsetY = 0f
-                        },
-                        onDragCancel = { dragOffsetY = 0f },
-                    )
+                // Use PointerEventPass.Final so the HorizontalPager handles horizontal
+                // swipes first; we only observe what remains and trigger dismiss when
+                // the net downward movement clearly exceeds the threshold.
+                .pointerInput(onBack) {
+                    awaitEachGesture {
+                        val down = awaitFirstDown(requireUnconsumed = false)
+                        var startY = down.position.y
+                        var startX = down.position.x
+                        var totalDy = 0f
+                        var totalDx = 0f
+                        while (true) {
+                            val event = awaitPointerEvent(PointerEventPass.Final)
+                            val change = event.changes.firstOrNull { it.id == down.id }
+                                ?: break
+                            if (!change.pressed) break
+                            totalDy = change.position.y - startY
+                            totalDx = kotlin.math.abs(change.position.x - startX)
+                            // Ignore if horizontal swipe is dominant
+                            if (totalDx > totalDy * 1.5f) break
+                            if (totalDy >= dismissThresholdPx) {
+                                onBack()
+                                break
+                            }
+                        }
+                    }
                 }
             ) {
                 NetworkImage(
