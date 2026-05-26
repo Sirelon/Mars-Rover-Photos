@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -109,6 +110,7 @@ private fun FavoritePhotosContent(
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        contentWindowInsets = WindowInsets(),
         topBar = {
             TopAppBar(
                 title = { Text(text = title) },
@@ -135,7 +137,7 @@ private fun FavoritePhotosContent(
                 scrollBehavior = scrollBehavior,
             )
         }
-    ) {
+    ) { innerPadding ->
         when {
             lazyPagingItems.loadState.refresh is LoadState.Loading && lazyPagingItems.itemCount == 0 -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -149,8 +151,13 @@ private fun FavoritePhotosContent(
 
             else -> {
                 LazyVerticalStaggeredGrid(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+                    modifier = Modifier.fillMaxSize().consumeWindowInsets(innerPadding),
+                    contentPadding = PaddingValues(
+                        start = 12.dp,
+                        end = 12.dp,
+                        top = innerPadding.calculateTopPadding() + 8.dp,
+                        bottom = innerPadding.calculateBottomPadding() + 8.dp,
+                    ),
                     columns = if (gridView) {
                         StaggeredGridCells.Adaptive(minSize = 180.dp)
                     } else {

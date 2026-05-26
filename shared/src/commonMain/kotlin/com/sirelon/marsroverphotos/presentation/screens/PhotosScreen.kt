@@ -9,7 +9,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -36,10 +34,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -51,6 +51,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -79,7 +80,6 @@ import com.sirelon.marsroverphotos.shared.resources.sol_description
 import com.sirelon.marsroverphotos.shared.resources.sol_label
 import com.sirelon.marsroverphotos.shared.resources.sol_max_error_fmt
 import com.sirelon.marsroverphotos.shared.resources.tap_to_retry
-import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
@@ -87,6 +87,7 @@ import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -133,10 +134,37 @@ fun PhotosScreen(
         }
     )
 
-    Box(modifier = modifier.fillMaxSize()) {
-        Column(modifier = Modifier.fillMaxSize()) {
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+    Scaffold(
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
             TopAppBar(
-                title = { Text(text = roverName) },
+                scrollBehavior = scrollBehavior,
+                title = {
+                    Column {
+                        Text(text = roverName)
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            DateSelectorButton(
+                                modifier = Modifier.weight(1f),
+                                label = "Sol date",
+                                value = sol.toString(),
+                                onClick = { openSolDialog = true }
+                            )
+                            DateSelectorButton(
+                                modifier = Modifier.weight(1f),
+                                label = "Earth date",
+                                value = viewModel.earthDateStr(sol),
+                                onClick = { openEarthDateDialog = true }
+                            )
+                        }
+                    }
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         MaterialSymbolIcon(
@@ -146,26 +174,19 @@ fun PhotosScreen(
                     }
                 }
             )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                DateSelectorButton(
-                    modifier = Modifier.weight(1f),
-                    label = "Sol date",
-                    value = sol.toString(),
-                    onClick = { openSolDialog = true }
-                )
-                DateSelectorButton(
-                    modifier = Modifier.weight(1f),
-                    label = "Earth date",
-                    value = viewModel.earthDateStr(sol),
-                    onClick = { openEarthDateDialog = true }
-                )
-            }
-
+        },
+        floatingActionButton = {
+            RefreshButton(
+                visible = photos.isNotEmpty(),
+                onClick = { viewModel.goToLatest() }
+            )
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
             if (!cameraFilter.isNullOrBlank()) {
                 CameraFilterChip(
                     camera = cameraFilter,
@@ -210,6 +231,7 @@ fun PhotosScreen(
                             )
                         }
                     }
+
                     else -> {
                         PhotosList(
                             gridItems = items,
@@ -223,26 +245,16 @@ fun PhotosScreen(
                 }
             }
         }
-
-        RefreshButton(
-            visible = photos.isNotEmpty(),
-            modifier = Modifier.align(Alignment.BottomEnd),
-            onClick = { viewModel.goToLatest() }
-        )
     }
 }
 
 @Composable
 private fun RefreshButton(
     visible: Boolean,
-    modifier: Modifier,
     onClick: () -> Unit,
 ) {
     AnimatedVisibility(
         visible = visible,
-        modifier = modifier
-            .navigationBarsPadding()
-            .padding(16.dp),
         enter = fadeIn(),
         exit = fadeOut()
     ) {
@@ -268,7 +280,9 @@ private fun PhotosList(
             start = 12.dp,
             end = 12.dp,
             top = 8.dp,
-            bottom = 148.dp
+            // 56dp FAB + 16dp FAB padding + 8dp margin above FAB
+            // nav bar inset is handled by Scaffold's innerPadding on the parent Column
+            bottom = 80.dp
         ),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -295,7 +309,12 @@ private fun PhotosList(
             }
         ) { item ->
             when (item) {
-                is GridItem.PhotoItem -> PhotoCard(image = item.image, onPhotoClick = onPhotoClick, onCameraClick = onCameraClick)
+                is GridItem.PhotoItem -> PhotoCard(
+                    image = item.image,
+                    onPhotoClick = onPhotoClick,
+                    onCameraClick = onCameraClick
+                )
+
                 is GridItem.FactItem -> FactCard(fact = item.fact)
             }
         }
@@ -480,7 +499,11 @@ private fun EmptyPhotos(title: String, btnTitle: String, callback: () -> Unit) {
     ) {
         Image(painter = painterResource(Res.drawable.alien_icon), contentDescription = null)
         Spacer(modifier = Modifier.size(8.dp))
-        Text(text = title, style = MaterialTheme.typography.headlineSmall, textAlign = TextAlign.Center)
+        Text(
+            text = title,
+            style = MaterialTheme.typography.headlineSmall,
+            textAlign = TextAlign.Center
+        )
         Spacer(modifier = Modifier.size(8.dp))
         Text(text = btnTitle, style = MaterialTheme.typography.headlineMedium)
     }
