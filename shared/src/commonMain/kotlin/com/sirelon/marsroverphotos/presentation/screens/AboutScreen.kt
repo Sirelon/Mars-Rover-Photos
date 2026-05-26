@@ -21,10 +21,10 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -120,8 +120,10 @@ private fun AboutContent(
                 }
             }
 
-            ThemeChanger(viewModel)
-            FactsToggle(viewModel)
+            val currentTheme by viewModel.themeFlow.collectAsStateWithLifecycle()
+            val showFacts by viewModel.showFactsFlow.collectAsStateWithLifecycle()
+            ThemeChanger(currentTheme = currentTheme, onThemeChange = viewModel::setTheme)
+            FactsToggle(showFacts = showFacts, onFactsToggle = viewModel::toggleFacts)
 
             OutlinedButton(onClick = {
                 onClearCache()
@@ -165,8 +167,7 @@ private fun AboutContent(
 }
 
 @Composable
-private fun ThemeChanger(viewModel: AboutViewModel) {
-    val currentTheme by viewModel.themeFlow.collectAsState()
+private fun ThemeChanger(currentTheme: Theme, onThemeChange: (Theme) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -186,14 +187,14 @@ private fun ThemeChanger(viewModel: AboutViewModel) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                RadioButtonText(text = "White", selected = currentTheme == Theme.WHITE) {
-                    viewModel.setTheme(Theme.WHITE)
+                RadioButtonText(selected = currentTheme == Theme.WHITE, onClick = { onThemeChange(Theme.WHITE) }) {
+                    Text("White")
                 }
-                RadioButtonText(text = "Dark", selected = currentTheme == Theme.DARK) {
-                    viewModel.setTheme(Theme.DARK)
+                RadioButtonText(selected = currentTheme == Theme.DARK, onClick = { onThemeChange(Theme.DARK) }) {
+                    Text("Dark")
                 }
-                RadioButtonText(text = "System", selected = currentTheme == Theme.SYSTEM) {
-                    viewModel.setTheme(Theme.SYSTEM)
+                RadioButtonText(selected = currentTheme == Theme.SYSTEM, onClick = { onThemeChange(Theme.SYSTEM) }) {
+                    Text("System")
                 }
             }
         }
@@ -201,8 +202,7 @@ private fun ThemeChanger(viewModel: AboutViewModel) {
 }
 
 @Composable
-private fun FactsToggle(viewModel: AboutViewModel) {
-    val showFacts by viewModel.showFactsFlow.collectAsState()
+private fun FactsToggle(showFacts: Boolean, onFactsToggle: (Boolean) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -227,7 +227,7 @@ private fun FactsToggle(viewModel: AboutViewModel) {
             }
             Switch(
                 checked = showFacts,
-                onCheckedChange = { viewModel.toggleFacts(it) }
+                onCheckedChange = onFactsToggle
             )
         }
     }

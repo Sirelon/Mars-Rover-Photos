@@ -87,11 +87,15 @@ fun MarsImageComposable(
 }
 
 @Composable
-fun PhotoStats(marsImage: MarsImage, onFavoriteClick: () -> Unit) {
+fun PhotoStats(
+    marsImage: MarsImage,
+    onFavoriteClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val stats = marsImage.stats
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .padding(horizontal = 8.dp, vertical = 4.dp)
             .fillMaxWidth(),
     ) {

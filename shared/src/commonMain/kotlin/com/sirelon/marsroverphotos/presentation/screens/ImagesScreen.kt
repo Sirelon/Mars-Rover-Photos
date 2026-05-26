@@ -36,8 +36,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -46,6 +46,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -80,9 +81,12 @@ import com.sirelon.marsroverphotos.presentation.viewmodels.UiEvent
 import com.sirelon.marsroverphotos.shared.resources.Res
 import com.sirelon.marsroverphotos.shared.resources.images_empty_btn
 import com.sirelon.marsroverphotos.shared.resources.images_empty_title
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
@@ -124,6 +128,8 @@ fun ImagesScreen(
 
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
     val images = screenState.images
+
+    val uiEvent by viewModel.uiEvent.collectAsStateWithLifecycle(initialValue = null)
 
     val pagerState = rememberPagerState(
         initialPage = 0,
@@ -172,11 +178,16 @@ fun ImagesScreen(
             }
         } else {
             ImagesPagerContent(
-                viewModel = viewModel,
+                uiEvent = uiEvent,
                 list = images,
                 pagerState = pagerState,
                 hideUi = screenState.hideUi,
                 onBack = onBack,
+                onShown = viewModel::onShown,
+                onTap = viewModel::onTap,
+                onFavoriteClick = viewModel::updateFavorite,
+                onSaveClick = viewModel::saveImage,
+                onShareClick = viewModel::shareMarsImage,
             )
         }
     }
@@ -204,11 +215,16 @@ private fun ImagesEmptyState(onBack: () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ImagesPagerContent(
-    viewModel: ImageViewModel,
-    list: List<MarsImage>,
+    uiEvent: UiEvent?,
+    list: ImmutableList<MarsImage>,
     pagerState: PagerState,
     hideUi: Boolean,
     onBack: () -> Unit,
+    onShown: (MarsImage, Int) -> Unit,
+    onTap: () -> Unit,
+    onFavoriteClick: (MarsImage) -> Unit,
+    onSaveClick: (MarsImage) -> Unit,
+    onShareClick: (MarsImage) -> Unit,
 ) {
     var titleState by remember { mutableStateOf("Mars Rover Photos") }
     var showInfoSheet by remember { mutableStateOf(false) }
@@ -219,11 +235,16 @@ private fun ImagesPagerContent(
     val density = LocalDensity.current
     val dismissThresholdPx = with(density) { 150.dp.toPx() }
 
+    // rememberUpdatedState so the running snapshotFlow collector always sees the latest
+    // list without restarting the collection (which would cause a page-tracking glitch).
+    val latestList by rememberUpdatedState(list)
+
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
-            if (list.isNotEmpty() && page < list.size) {
-                val marsPhoto = list[page]
-                viewModel.onShown(marsPhoto, page)
+            val currentList = latestList
+            if (currentList.isNotEmpty() && page < currentList.size) {
+                val marsPhoto = currentList[page]
+                onShown(marsPhoto, page)
                 titleState = buildString {
                     append("Sol ")
                     append(marsPhoto.sol)
@@ -257,14 +278,13 @@ private fun ImagesPagerContent(
             pagerState = pagerState,
             images = list,
             hideUi = hideUi,
-            onTap = { viewModel.onTap() },
-            onFavoriteClick = { marsImage -> viewModel.updateFavorite(marsImage) },
+            onTap = onTap,
+            onFavoriteClick = onFavoriteClick,
             onBack = onBack,
             dismissOffsetY = dismissOffsetY,
             dismissThresholdPx = dismissThresholdPx,
         )
 
-        val uiEvent by viewModel.uiEvent.collectAsStateWithLifecycle(initialValue = null)
         OnEvent(uiEvent = uiEvent)
 
         // Translucent TopAppBar overlay + (debug-only) action row.
@@ -275,7 +295,7 @@ private fun ImagesPagerContent(
             modifier = Modifier.align(Alignment.TopCenter),
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
-                TopAppBar(
+                AppTopBar(
                     modifier = Modifier.statusBarsPadding(),
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.55f),
@@ -298,10 +318,10 @@ private fun ImagesPagerContent(
                     actions = {
                         if (currentImage != null) {
                             SaveIcon(onClick = {
-                                viewModel.saveImage(currentImage)
+                                onSaveClick(currentImage)
                             })
                             ShareIcon(onClick = {
-                                viewModel.shareMarsImage(currentImage)
+                                onShareClick(currentImage)
                             })
                             InfoIcon(onClick = {
                                 showInfoSheet = true
@@ -328,37 +348,25 @@ private fun BoxScope.OnEvent(uiEvent: UiEvent?) {
     val haptic = LocalHapticFeedback.current
     val uriHandler = LocalUriHandler.current
     var showCheckmark by remember { mutableStateOf(false) }
+    // Captures the saved-image path so the "Open" action in the snackbar can open it.
+    // Held outside the `when` branch so MarsSnackbar (always rendered) can reference it.
+    var openImagePath by remember { mutableStateOf<String?>(null) }
 
     when (uiEvent) {
         is UiEvent.PhotoSaved -> {
             val imagePath = uiEvent.imagePath
-
             LaunchedEffect(uiEvent) {
                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 showCheckmark = true
-                delay(1500)
-                showCheckmark = false
-            }
-
-            SaveSuccessOverlay(visible = showCheckmark)
-
-            MarsSnackbar(
-                snackbarHostState = snackbarHostState,
-                modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding(),
-                actionClick = {
-                    if (!imagePath.isNullOrBlank()) {
-                        try {
-                            uriHandler.openUri(imagePath)
-                        } catch (_: Exception) {
-                            // URI may not be openable on all platforms — silently ignore
-                        }
-                    }
+                openImagePath = imagePath
+                // Show checkmark for 1.5 s concurrently with the snackbar.
+                launch {
+                    delay(1500)
+                    showCheckmark = false
                 }
-            )
-            LaunchedEffect(uiEvent) {
                 snackbarHostState.showSnackbar(
                     message = "Image saved successfully",
-                    actionLabel = if (imagePath != null) "Open" else null
+                    actionLabel = if (!imagePath.isNullOrBlank()) "Open" else null
                 )
             }
         }
@@ -370,11 +378,6 @@ private fun BoxScope.OnEvent(uiEvent: UiEvent?) {
                     message = "Failed to save image: ${uiEvent.errorMessage}"
                 )
             }
-            MarsSnackbar(
-                snackbarHostState = snackbarHostState,
-                modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding(),
-                actionClick = null
-            )
         }
 
         is UiEvent.ShareError -> {
@@ -383,15 +386,30 @@ private fun BoxScope.OnEvent(uiEvent: UiEvent?) {
                     message = "Failed to share image: ${uiEvent.errorMessage}"
                 )
             }
-            MarsSnackbar(
-                snackbarHostState = snackbarHostState,
-                modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding(),
-                actionClick = null
-            )
         }
 
         null -> { /* idle */ }
     }
+
+    // SaveSuccessOverlay lives outside the when so AnimatedVisibility can play its exit
+    // animation even after the event is consumed (uiEvent → null).
+    SaveSuccessOverlay(visible = showCheckmark)
+
+    // MarsSnackbar is always rendered so the SnackbarHost is never removed mid-display.
+    MarsSnackbar(
+        snackbarHostState = snackbarHostState,
+        modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding(),
+        actionClick = {
+            val path = openImagePath
+            if (!path.isNullOrBlank()) {
+                try {
+                    uriHandler.openUri(path)
+                } catch (_: Exception) {
+                    // URI may not be openable on all platforms — silently ignore
+                }
+            }
+        }
+    )
 }
 
 @Composable
@@ -441,7 +459,7 @@ private fun InfoIcon(onClick: () -> Unit) {
 @Composable
 private fun ImagesPager(
     pagerState: PagerState,
-    images: List<MarsImage>,
+    images: ImmutableList<MarsImage>,
     hideUi: Boolean,
     onTap: () -> Unit,
     onFavoriteClick: (MarsImage) -> Unit,
@@ -589,5 +607,46 @@ private fun ImagesPager(
                 }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun ImagesPagerContentPreview() {
+    val sampleImage = MarsImage(
+        id = "preview_1",
+        order = 0,
+        sol = 3200L,
+        name = "Curiosity: FHAZ",
+        imageUrl = "https://mars.nasa.gov/msl-raw-images/sample.jpg",
+        earthDate = "2015-08-05",
+        camera = com.sirelon.marsroverphotos.domain.models.RoverCamera(
+            id = 1,
+            name = "FHAZ",
+            fullName = "Front Hazard Avoidance Camera"
+        ),
+        favorite = false,
+        popular = false,
+        stats = MarsImage.Stats(see = 42, scale = 0, save = 2, share = 1, favorite = 5),
+    )
+    val sampleImages = persistentListOf(
+        sampleImage,
+        sampleImage.copy(id = "preview_2", sol = 3201L, name = "Curiosity: MAST"),
+    )
+    val pagerState = rememberPagerState(pageCount = { sampleImages.size })
+    MaterialTheme {
+        ImagesPagerContent(
+            uiEvent = null,
+            list = sampleImages,
+            pagerState = pagerState,
+            hideUi = false,
+            onBack = {},
+            onShown = { _, _ -> },
+            onTap = {},
+            onFavoriteClick = {},
+            onSaveClick = {},
+            onShareClick = {},
+        )
     }
 }

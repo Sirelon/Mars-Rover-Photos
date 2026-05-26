@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
@@ -25,7 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -109,7 +108,6 @@ public class MarsPhotoWidgetConfigActivity : ComponentActivity() {
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
 private fun WidgetConfigScreen(
     appWidgetId: Int,
     onConfirm: (Long) -> Unit
@@ -135,7 +133,7 @@ private fun WidgetConfigScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text(text = "Choose rover") })
+            AppTopBar(title = { Text(text = "Choose rover") })
         }
     ) { paddingValues ->
         Column(

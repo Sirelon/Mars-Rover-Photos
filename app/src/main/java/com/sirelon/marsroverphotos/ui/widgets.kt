@@ -53,10 +53,10 @@ fun MarsSnackbar(
 
 @Composable
 fun RadioButtonText(
-    text: String,
     selected: Boolean,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    labelContent: @Composable () -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -69,7 +69,7 @@ fun RadioButtonText(
             selected = selected,
             onClick = null
         )
-        Text(text = text)
+        labelContent()
     }
 }
 

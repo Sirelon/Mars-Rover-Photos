@@ -55,19 +55,19 @@ fun MarsSnackbar(
 }
 
 /**
- * Radio button with text label component.
+ * Radio button with a composable label slot.
  *
- * @param text The label text to display
  * @param selected Whether the radio button is selected
- * @param modifier Modifier for the component
  * @param onClick Callback when the component is clicked
+ * @param modifier Modifier for the component
+ * @param labelContent The label rendered below the radio button
  */
 @Composable
 fun RadioButtonText(
-    text: String,
     selected: Boolean,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    labelContent: @Composable () -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -80,7 +80,7 @@ fun RadioButtonText(
             selected = selected,
             onClick = null
         )
-        Text(text = text)
+        labelContent()
     }
 }
 

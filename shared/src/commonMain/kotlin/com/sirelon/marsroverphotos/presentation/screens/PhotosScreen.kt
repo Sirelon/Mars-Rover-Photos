@@ -28,33 +28,32 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.domain.models.EducationalFact
 import com.sirelon.marsroverphotos.presentation.models.GridItem
+import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
 import com.sirelon.marsroverphotos.presentation.ui.CenteredColumn
 import com.sirelon.marsroverphotos.presentation.ui.CenteredProgress
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.presentation.ui.NetworkImage
 import com.sirelon.marsroverphotos.presentation.ui.adaptiveGridCells
+import com.sirelon.marsroverphotos.presentation.viewmodels.PhotosUiState
 import com.sirelon.marsroverphotos.presentation.viewmodels.PhotosViewModel
 import com.sirelon.marsroverphotos.shared.resources.Res
 import com.sirelon.marsroverphotos.shared.resources.alien_icon
@@ -64,9 +63,19 @@ import com.sirelon.marsroverphotos.shared.resources.no_photos_title
 import com.sirelon.marsroverphotos.shared.resources.tap_to_retry
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+// ── State-holder composable ───────────────────────────────────────────────────
+
+/**
+ * State-holder entry point: collects [PhotosViewModel.uiState] and delegates
+ * all layout to the private [PhotosScreen] UI overload.
+ *
+ * The Sol and Earth-date pickers are separate navigation entries (sharing this
+ * screen's [PhotosViewModel]); tapping a date selector navigates to them via
+ * [onOpenSolPicker] / [onOpenEarthDatePicker].
+ */
 @Composable
 fun PhotosScreen(
     roverId: Long,
@@ -87,60 +96,81 @@ fun PhotosScreen(
         viewModel.setCameraFilter(cameraFilter)
     }
 
-    val gridItems by viewModel.gridItemsFlow.collectAsState(initial = null)
-    val photos = remember(gridItems) {
-        gridItems?.mapNotNull { item ->
-            (item as? GridItem.PhotoItem)?.image
-        }.orEmpty()
-    }
-    val sol by viewModel.solFlow.collectAsState(initial = 0L)
-    val roverName by viewModel.roverNameFlow.collectAsState(initial = "")
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
 
+    PhotosScreen(
+        state = state,
+        onRandomize = viewModel::randomize,
+        onGoToLatest = viewModel::goToLatest,
+        onPhotoClick = viewModel::onPhotoClick,
+        onSetCameraFilter = viewModel::setCameraFilter,
+        onClearCameraFilter = onClearCameraFilter,
+        onNavigateToImages = onNavigateToImages,
+        onBack = onBack,
+        onOpenSolPicker = onOpenSolPicker,
+        onOpenEarthDatePicker = onOpenEarthDatePicker,
+        modifier = modifier,
+    )
+}
+
+// ── UI composable ─────────────────────────────────────────────────────────────
+
+/**
+ * Pure UI overload: knows nothing about [PhotosViewModel]. Safe to preview and unit-test.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun PhotosScreen(
+    state: PhotosUiState,
+    onRandomize: () -> Unit,
+    onGoToLatest: () -> Unit,
+    onPhotoClick: () -> Unit,
+    onSetCameraFilter: (String?) -> Unit,
+    onClearCameraFilter: () -> Unit,
+    onNavigateToImages: (String) -> Unit,
+    onBack: () -> Unit,
+    onOpenSolPicker: () -> Unit,
+    onOpenEarthDatePicker: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            TopAppBar(
+            AppTopBar(
                 scrollBehavior = scrollBehavior,
                 title = {
-                    Column {
-                        Text(text = roverName)
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 8.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            DateSelectorButton(
-                                modifier = Modifier.weight(1f),
-                                label = "Sol date",
-                                value = sol.toString(),
-                                onClick = onOpenSolPicker
-                            )
-                            DateSelectorButton(
-                                modifier = Modifier.weight(1f),
-                                label = "Earth date",
-                                value = viewModel.earthDateStr(sol),
-                                onClick = onOpenEarthDatePicker
-                            )
-                        }
-                    }
+                    Text(text = state.roverName)
                 },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        MaterialSymbolIcon(
-                            symbol = MaterialSymbol.ArrowBack,
-                            contentDescription = "Back"
+                subtitle = {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        DateSelectorButton(
+                            modifier = Modifier.weight(1f),
+                            label = "Sol date",
+                            value = state.sol.toString(),
+                            onClick = onOpenSolPicker
+                        )
+                        DateSelectorButton(
+                            modifier = Modifier.weight(1f),
+                            label = "Earth date",
+                            value = state.earthDate,
+                            onClick = onOpenEarthDatePicker
                         )
                     }
-                }
+                },
+                onBack = onBack,
             )
         },
         floatingActionButton = {
             RefreshButton(
-                visible = photos.isNotEmpty(),
-                onClick = { viewModel.goToLatest() }
+                visible = state.hasPhotos,
+                onClick = { onGoToLatest() }
             )
         }
     ) { innerPadding ->
@@ -149,31 +179,31 @@ fun PhotosScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            if (!cameraFilter.isNullOrBlank()) {
+            if (!state.cameraFilter.isNullOrBlank()) {
                 CameraFilterChip(
-                    camera = cameraFilter,
+                    camera = state.cameraFilter,
                     onClear = {
-                        viewModel.setCameraFilter(null)
+                        onSetCameraFilter(null)
                         onClearCameraFilter()
                     }
                 )
             }
 
-            Crossfade(targetState = gridItems, label = "[Anim]:PhotosProgress") { items ->
+            Crossfade(targetState = state.gridItems, label = "[Anim]:PhotosProgress") { items ->
                 when {
                     items == null -> CenteredProgress()
                     items.isEmpty() -> {
-                        if (!cameraFilter.isNullOrBlank()) {
+                        if (!state.cameraFilter.isNullOrBlank()) {
                             EmptyPhotos(
-                                title = "No $cameraFilter photos on Sol $sol. Try another Sol.",
+                                title = "No ${state.cameraFilter} photos on Sol ${state.sol}. Try another Sol.",
                                 btnTitle = stringResource(Res.string.tap_to_retry),
-                                callback = { viewModel.randomize() }
+                                callback = { onRandomize() }
                             )
                         } else {
                             EmptyPhotos(
                                 title = stringResource(Res.string.no_photos_title),
                                 btnTitle = stringResource(Res.string.tap_to_retry),
-                                callback = { viewModel.randomize() }
+                                callback = { onRandomize() }
                             )
                         }
                     }
@@ -182,10 +212,10 @@ fun PhotosScreen(
                         PhotosList(
                             gridItems = items,
                             onPhotoClick = { image ->
-                                viewModel.onPhotoClick()
+                                onPhotoClick()
                                 onNavigateToImages(image.id)
                             },
-                            onCameraClick = { cameraName -> viewModel.setCameraFilter(cameraName) }
+                            onCameraClick = { cameraName -> onSetCameraFilter(cameraName) }
                         )
                     }
                 }
@@ -432,6 +462,83 @@ private fun CameraFilterChip(camera: String, onClear: () -> Unit) {
                 containerColor = MaterialTheme.colorScheme.secondaryContainer,
                 labelColor = MaterialTheme.colorScheme.onSecondaryContainer
             )
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun PhotosScreenPreview() {
+    MaterialTheme {
+        PhotosScreen(
+            state = PhotosUiState(
+                roverName = "Curiosity",
+                sol = 3200L,
+                earthDate = "Aug 5, 2015",
+                gridItems = emptyList(),
+                maxSol = 4000L,
+                cameraFilter = null,
+                hasPhotos = false,
+            ),
+            onRandomize = {},
+            onGoToLatest = {},
+            onPhotoClick = {},
+            onSetCameraFilter = {},
+            onClearCameraFilter = {},
+            onNavigateToImages = {},
+            onBack = {},
+            onOpenSolPicker = {},
+            onOpenEarthDatePicker = {},
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun PhotosScreenWithPhotosPreview() {
+    val sampleImage = MarsImage(
+        id = "123",
+        order = 0,
+        sol = 3200L,
+        name = "Curiosity: FHAZ",
+        imageUrl = "https://example.com/img.jpg",
+        earthDate = "2015-08-05",
+        camera = com.sirelon.marsroverphotos.domain.models.RoverCamera(
+            id = 1,
+            name = "FHAZ",
+            fullName = "Front Hazard Avoidance Camera"
+        ),
+        favorite = false,
+        popular = false,
+        stats = MarsImage.Stats(see = 42, scale = 0, save = 2, share = 1, favorite = 5),
+    )
+    MaterialTheme {
+        PhotosScreen(
+            state = PhotosUiState(
+                roverName = "Curiosity",
+                sol = 3200L,
+                earthDate = "Aug 5, 2015",
+                gridItems = listOf(
+                    com.sirelon.marsroverphotos.presentation.models.GridItem.PhotoItem(sampleImage),
+                    com.sirelon.marsroverphotos.presentation.models.GridItem.PhotoItem(
+                        sampleImage.copy(id = "124", name = "Curiosity: MAST")
+                    ),
+                ),
+                maxSol = 4000L,
+                cameraFilter = null,
+                hasPhotos = true,
+            ),
+            onRandomize = {},
+            onGoToLatest = {},
+            onPhotoClick = {},
+            onSetCameraFilter = {},
+            onClearCameraFilter = {},
+            onNavigateToImages = {},
+            onBack = {},
+            onOpenSolPicker = {},
+            onOpenEarthDatePicker = {},
         )
     }
 }
