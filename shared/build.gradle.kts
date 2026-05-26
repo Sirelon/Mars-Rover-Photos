@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.library)
+    alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.kotlin.serialization)
@@ -18,8 +18,13 @@ kotlin {
         freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
-    // Android target
-    androidTarget()
+    // Android target — namespace/compileSdk/minSdk live here with com.android.kotlin.multiplatform.library
+    // jvmToolchain(17) above already covers the JVM target for this Android compilation.
+    android {
+        namespace = "com.sirelon.marsroverphotos.shared"
+        compileSdk = 37
+        minSdk = 23
+    }
 
     // iOS targets — XCFramework bundles both slices so Xcode picks the right one
     // for simulator and real device builds automatically.
@@ -52,13 +57,13 @@ kotlin {
     sourceSets {
         // Common source set - shared across all platforms
         commonMain.dependencies {
-            // Compose Multiplatform
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
+            // Compose Multiplatform (direct coordinates — compose.XXX shorthands deprecated in 1.12+)
+            implementation(libs.compose.mp.runtime)
+            implementation(libs.compose.mp.foundation)
+            implementation(libs.compose.mp.material3)
+            implementation(libs.compose.mp.ui)
+            implementation(libs.compose.mp.components.resources)
+            implementation(libs.compose.mp.components.ui.tooling.preview)
 
             // Ktor (networking)
             implementation(libs.ktor.core)
@@ -175,24 +180,6 @@ kotlin {
 
 compose.resources {
     packageOfResClass = "com.sirelon.marsroverphotos.shared.resources"
-}
-
-android {
-    namespace = "com.sirelon.marsroverphotos.shared"
-    compileSdk = 37
-
-    defaultConfig {
-        minSdk = 23
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    buildFeatures {
-        compose = true
-    }
 }
 
 room3 {
