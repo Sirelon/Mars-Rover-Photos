@@ -264,6 +264,9 @@ private fun ImagesPagerContent(
         list.getOrNull(pagerState.currentPage)
     }
 
+    // Black backdrop stays put so the window background never shows through during dismiss
+    Box(modifier = Modifier.fillMaxSize().background(Color.Black))
+
     Box(
         modifier = Modifier
             .fillMaxSize()
