@@ -99,7 +99,7 @@ import kotlin.time.Instant
 @Composable
 fun PhotosScreen(
     roverId: Long,
-    onNavigateToImages: (String) -> Unit,
+    onNavigateToImages: (clickedId: String, allIds: List<String>) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
     cameraFilter: String? = null,
@@ -125,7 +125,7 @@ fun PhotosScreen(
         onPhotoClick = viewModel::onPhotoClick,
         onSetCameraFilter = viewModel::setCameraFilter,
         onClearCameraFilter = onClearCameraFilter,
-        onNavigateToImages = onNavigateToImages,
+        onNavigateToImages = { clickedId, allIds -> onNavigateToImages(clickedId, allIds) },
         onBack = onBack,
         modifier = modifier,
     )
@@ -147,7 +147,7 @@ private fun PhotosScreen(
     onPhotoClick: () -> Unit,
     onSetCameraFilter: (String?) -> Unit,
     onClearCameraFilter: () -> Unit,
-    onNavigateToImages: (String) -> Unit,
+    onNavigateToImages: (clickedId: String, allIds: List<String>) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -261,7 +261,10 @@ private fun PhotosScreen(
                             gridItems = items,
                             onPhotoClick = { image ->
                                 onPhotoClick()
-                                onNavigateToImages(image.id)
+                                val allIds = items
+                                    .filterIsInstance<GridItem.PhotoItem>()
+                                    .map { it.id }
+                                onNavigateToImages(image.id, allIds)
                             },
                             onCameraClick = { cameraName -> onSetCameraFilter(cameraName) }
                         )
@@ -631,7 +634,7 @@ private fun PhotosScreenPreview() {
             onPhotoClick = {},
             onSetCameraFilter = {},
             onClearCameraFilter = {},
-            onNavigateToImages = {},
+            onNavigateToImages = { _, _ -> },
             onBack = {},
         )
     }
@@ -680,7 +683,7 @@ private fun PhotosScreenWithPhotosPreview() {
             onPhotoClick = {},
             onSetCameraFilter = {},
             onClearCameraFilter = {},
-            onNavigateToImages = {},
+            onNavigateToImages = { _, _ -> },
             onBack = {},
         )
     }
