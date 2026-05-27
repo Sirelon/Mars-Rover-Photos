@@ -3,6 +3,7 @@
 package com.sirelon.marsroverphotos.di
 
 import com.sirelon.marsroverphotos.presentation.navigation.AppDestination
+import com.sirelon.marsroverphotos.presentation.navigation.DialogOverlaySceneStrategy
 import com.sirelon.marsroverphotos.presentation.navigation.LocalAppNavigator
 import com.sirelon.marsroverphotos.presentation.screens.AboutScreen
 import com.sirelon.marsroverphotos.presentation.screens.EarthDatePickerScreen
@@ -69,7 +70,9 @@ val navigationModule = module {
             )
         }
 
-        navigation<AppDestination.PhotosSolPicker> {
+        navigation<AppDestination.PhotosSolPicker>(
+            metadata = DialogOverlaySceneStrategy.dialogOverlay(),
+        ) {
             val navigator = LocalAppNavigator.current
             SolPickerScreen(
                 viewModel = get<PhotosViewModel>(),
@@ -77,7 +80,9 @@ val navigationModule = module {
             )
         }
 
-        navigation<AppDestination.PhotosEarthDatePicker> {
+        navigation<AppDestination.PhotosEarthDatePicker>(
+            metadata = DialogOverlaySceneStrategy.dialogOverlay(),
+        ) {
             val navigator = LocalAppNavigator.current
             EarthDatePickerScreen(
                 viewModel = get<PhotosViewModel>(),

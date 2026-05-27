@@ -34,7 +34,7 @@ import org.jetbrains.compose.resources.stringResource
 /**
  * Navigation-entry dialog that lets the user pick a sol number.
  * Shares [PhotosViewModel] with the [com.sirelon.marsroverphotos.presentation.navigation.AppDestination.Photos]
- * back-stack entry via [com.sirelon.marsroverphotos.presentation.navigation.LocalSharedViewModelStoreOwner].
+ * back-stack entry via the Photos Koin scope.
  */
 @Composable
 fun SolPickerScreen(

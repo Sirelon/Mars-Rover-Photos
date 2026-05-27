@@ -8,6 +8,8 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 sealed interface AppDestination : NavKey {
+    sealed interface DialogDestination : AppDestination
+
     @Serializable
     enum class ImagesSource {
         DIRECT_IDS,
@@ -45,9 +47,9 @@ sealed interface AppDestination : NavKey {
 
     /** Dialog destination: sol number picker. Shares PhotosViewModel with [Photos]. */
     @Serializable
-    data class PhotosSolPicker(val roverId: Long) : AppDestination
+    data class PhotosSolPicker(val roverId: Long) : DialogDestination
 
     /** Dialog destination: Earth date picker. Shares PhotosViewModel with [Photos]. */
     @Serializable
-    data class PhotosEarthDatePicker(val roverId: Long) : AppDestination
+    data class PhotosEarthDatePicker(val roverId: Long) : DialogDestination
 }

@@ -63,17 +63,22 @@ fun AppNavigation(
     // linked to root so getAll() also returns the root-level (module) navigation entries.
     val koin = getKoin()
     val rootScope = LocalKoinScopeContext.current.getValue()
-    val photosFlowScope = remember(koin, rootScope) {
-        koin.getOrCreateScope<PhotosScope>("photos-flow-scope").apply {
-            linkTo(rootScope)
-        }
+    val photosFlowScope = remember(koin) {
+        koin.getOrCreateScope<PhotosScope>("photos-flow-scope")
+    }
+    // Link to root exactly once so the scope's getAll() also returns the root-level
+    // navigation entries. linkTo() appends without de-duping, so guard against the
+    // re-runs that would otherwise emit every root entry twice ("entry already added").
+    if (rootScope.id !in photosFlowScope.getLinkedScopeIds()) {
+        photosFlowScope.linkTo(rootScope)
     }
     val entryProvider = koinEntryProvider<NavKey>(scope = photosFlowScope)
+    val dialogOverlaySceneStrategy = remember { DialogOverlaySceneStrategy<NavKey>() }
     val tracker: Tracker = koinInject()
     val currentDestination = backStack.lastOrNull() as? AppDestination ?: startDestination
-    val isImages = currentDestination is AppDestination.Images
-    val isDialog = currentDestination is AppDestination.PhotosSolPicker ||
-        currentDestination is AppDestination.PhotosEarthDatePicker
+    val chromeDestination = backStack.lastOrNull { it !is AppDestination.DialogDestination } as? AppDestination
+        ?: currentDestination
+    val isImages = chromeDestination is AppDestination.Images
 
     LaunchedEffect(deepLink) {
         val target = deepLink ?: return@LaunchedEffect
@@ -101,7 +106,7 @@ fun AppNavigation(
         Column(
             modifier = if (isImages) modifier else modifier.windowInsetsPadding(WindowInsets.statusBars)
         ) {
-            AnimatedVisibility(!isImages && currentDestination !is AppDestination.Ukraine) {
+            AnimatedVisibility(!isImages && chromeDestination !is AppDestination.Ukraine) {
                 UkraineBanner(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
@@ -122,6 +127,7 @@ fun AppNavigation(
                     backStack = backStack,
                     onBack = { navigator.goBack() },
                     entryDecorators = entryDecorators,
+                    sceneStrategies = listOf(dialogOverlaySceneStrategy),
                     entryProvider = entryProvider,
                     // Forward navigation: new screen slides in from the right
                     transitionSpec = {
@@ -161,10 +167,10 @@ fun AppNavigation(
                     },
                 )
             }
-            if (!isImages && !isDialog) {
+            if (!isImages) {
                 AdSlot(modifier = Modifier.fillMaxWidth())
                 MarsBottomBar(
-                    selectedDestination = currentDestination.topLevelDestination(),
+                    selectedDestination = chromeDestination.topLevelDestination(),
                     onDestinationClick = { destination ->
                         tracker.trackClick("bottom_${destination.analyticsTag}")
                         navigator.selectTopLevel(destination)
