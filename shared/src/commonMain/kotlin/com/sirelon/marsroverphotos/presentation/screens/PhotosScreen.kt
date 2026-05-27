@@ -21,8 +21,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ButtonDefaults
@@ -30,77 +28,61 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
-import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.domain.models.EducationalFact
 import com.sirelon.marsroverphotos.presentation.models.GridItem
+import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
 import com.sirelon.marsroverphotos.presentation.ui.CenteredColumn
 import com.sirelon.marsroverphotos.presentation.ui.CenteredProgress
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.presentation.ui.NetworkImage
-import com.sirelon.marsroverphotos.presentation.ui.PlatformDatePickerDialog
 import com.sirelon.marsroverphotos.presentation.ui.adaptiveGridCells
 import com.sirelon.marsroverphotos.presentation.viewmodels.PhotosUiState
 import com.sirelon.marsroverphotos.presentation.viewmodels.PhotosViewModel
 import com.sirelon.marsroverphotos.shared.resources.Res
 import com.sirelon.marsroverphotos.shared.resources.alien_icon
-import com.sirelon.marsroverphotos.shared.resources.cancel
-import com.sirelon.marsroverphotos.shared.resources.choose
 import com.sirelon.marsroverphotos.shared.resources.did_you_know
 import com.sirelon.marsroverphotos.shared.resources.educational_fact
 import com.sirelon.marsroverphotos.shared.resources.no_photos_title
-import com.sirelon.marsroverphotos.shared.resources.select
-import com.sirelon.marsroverphotos.shared.resources.select_date
-import com.sirelon.marsroverphotos.shared.resources.sol_description
-import com.sirelon.marsroverphotos.shared.resources.sol_label
-import com.sirelon.marsroverphotos.shared.resources.sol_max_error_fmt
 import com.sirelon.marsroverphotos.shared.resources.tap_to_retry
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atStartOfDayIn
-import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.time.Instant
 
 // ── State-holder composable ───────────────────────────────────────────────────
 
 /**
  * State-holder entry point: collects [PhotosViewModel.uiState] and delegates
  * all layout to the private [PhotosScreen] UI overload.
+ *
+ * The Sol and Earth-date pickers are separate navigation entries (sharing this
+ * screen's [PhotosViewModel]); tapping a date selector navigates to them via
+ * [onOpenSolPicker] / [onOpenEarthDatePicker].
  */
 @Composable
 fun PhotosScreen(
     roverId: Long,
     onNavigateToImages: (clickedId: String, allIds: List<String>) -> Unit,
     onBack: () -> Unit,
+    onOpenSolPicker: () -> Unit,
+    onOpenEarthDatePicker: () -> Unit,
     modifier: Modifier = Modifier,
     cameraFilter: String? = null,
     onClearCameraFilter: () -> Unit = {},
@@ -118,8 +100,6 @@ fun PhotosScreen(
 
     PhotosScreen(
         state = state,
-        onLoadBySol = viewModel::loadBySol,
-        onSetEarthTime = viewModel::setEarthTime,
         onRandomize = viewModel::randomize,
         onGoToLatest = viewModel::goToLatest,
         onPhotoClick = viewModel::onPhotoClick,
@@ -127,6 +107,8 @@ fun PhotosScreen(
         onClearCameraFilter = onClearCameraFilter,
         onNavigateToImages = { clickedId, allIds -> onNavigateToImages(clickedId, allIds) },
         onBack = onBack,
+        onOpenSolPicker = onOpenSolPicker,
+        onOpenEarthDatePicker = onOpenEarthDatePicker,
         modifier = modifier,
     )
 }
@@ -140,8 +122,6 @@ fun PhotosScreen(
 @Composable
 private fun PhotosScreen(
     state: PhotosUiState,
-    onLoadBySol: (Long) -> Unit,
-    onSetEarthTime: (Long) -> Unit,
     onRandomize: () -> Unit,
     onGoToLatest: () -> Unit,
     onPhotoClick: () -> Unit,
@@ -149,22 +129,10 @@ private fun PhotosScreen(
     onClearCameraFilter: () -> Unit,
     onNavigateToImages: (clickedId: String, allIds: List<String>) -> Unit,
     onBack: () -> Unit,
+    onOpenSolPicker: () -> Unit,
+    onOpenEarthDatePicker: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var openSolDialog by rememberSaveable { mutableStateOf(false) }
-    var openEarthDateDialog by rememberSaveable { mutableStateOf(false) }
-
-    SolDialog(
-        maxSol = state.maxSol,
-        openDialog = openSolDialog,
-        sol = state.sol,
-        onClose = { openSolDialog = false },
-        onChoose = {
-            onLoadBySol(it)
-            openSolDialog = false
-        }
-    )
-
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
@@ -186,13 +154,13 @@ private fun PhotosScreen(
                             modifier = Modifier.weight(1f),
                             label = "Sol date",
                             value = state.sol.toString(),
-                            onClick = { openSolDialog = true }
+                            onClick = onOpenSolPicker
                         )
                         DateSelectorButton(
                             modifier = Modifier.weight(1f),
                             label = "Earth date",
                             value = state.earthDate,
-                            onClick = { openEarthDateDialog = true }
+                            onClick = onOpenEarthDatePicker
                         )
                     }
                 },
@@ -218,22 +186,6 @@ private fun PhotosScreen(
                         onSetCameraFilter(null)
                         onClearCameraFilter()
                     }
-                )
-            }
-
-            if (openEarthDateDialog) {
-                PlatformDatePickerDialog(
-                    selectedDate = millisToUtcLocalDate(state.datePickerSelectedMillis),
-                    minDate = millisToUtcLocalDate(state.datePickerMinMillis),
-                    maxDate = millisToUtcLocalDate(state.datePickerMaxMillis),
-                    onDateSelected = { selectedDate ->
-                        onSetEarthTime(selectedDate.toUtcMillis())
-                        openEarthDateDialog = false
-                    },
-                    onDismissRequest = { openEarthDateDialog = false },
-                    title = stringResource(Res.string.select_date),
-                    confirmText = stringResource(Res.string.select),
-                    dismissText = stringResource(Res.string.cancel)
                 )
             }
 
@@ -386,95 +338,6 @@ private fun PhotoCard(
 }
 
 @Composable
-private fun SolDialog(
-    openDialog: Boolean,
-    maxSol: Long,
-    sol: Long,
-    onClose: () -> Unit,
-    onChoose: (sol: Long) -> Unit
-) {
-    if (openDialog) {
-        var selectedSol: Long? by remember(sol) { mutableStateOf(sol) }
-        var errorMessage by remember { mutableStateOf<String?>(null) }
-
-        AlertDialog(
-            onDismissRequest = onClose,
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        val resolvedSol = selectedSol
-                        if (resolvedSol != null) {
-                            onChoose(resolvedSol)
-                        } else {
-                            onClose()
-                        }
-                    }
-                ) {
-                    Text(stringResource(Res.string.choose))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = onClose) {
-                    Text(stringResource(Res.string.cancel))
-                }
-            },
-            title = { Text(text = stringResource(Res.string.sol_description)) },
-            text = {
-                val maxSolError = stringResource(Res.string.sol_max_error_fmt, maxSol)
-                SolChanger(selectedSol, maxSol, errorMessage) { nextSol ->
-                    if ((nextSol ?: 0L) > maxSol) {
-                        selectedSol = maxSol
-                        errorMessage = maxSolError
-                    } else {
-                        selectedSol = nextSol
-                        errorMessage = null
-                    }
-                }
-            }
-        )
-    }
-}
-
-@Composable
-private fun SolChanger(
-    sol: Long?,
-    maxSol: Long,
-    errorMessage: String?,
-    onSolChanged: (sol: Long?) -> Unit
-) {
-    val sliderMax = maxSol.coerceAtLeast(1L)
-    Column {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = stringResource(Res.string.sol_label),
-                modifier = Modifier.weight(1f),
-                style = MaterialTheme.typography.titleLarge
-            )
-            OutlinedTextField(
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                value = sol?.toString().orEmpty(),
-                modifier = Modifier.weight(1f),
-                singleLine = true,
-                onValueChange = { onSolChanged(it.toLongOrNull()) }
-            )
-        }
-        Slider(
-            value = (sol ?: 0L).coerceIn(0L, sliderMax).toFloat(),
-            valueRange = 0f..sliderMax.toFloat(),
-            onValueChange = { onSolChanged(it.toLong()) }
-        )
-        if (!errorMessage.isNullOrBlank()) {
-            Text(
-                text = errorMessage,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-        }
-    }
-}
-
-@Composable
 private fun DateSelectorButton(
     label: String,
     value: String,
@@ -584,12 +447,6 @@ private fun FactCard(
     }
 }
 
-private fun millisToUtcLocalDate(timeMillis: Long): LocalDate =
-    Instant.fromEpochMilliseconds(timeMillis).toLocalDateTime(TimeZone.UTC).date
-
-private fun LocalDate.toUtcMillis(): Long =
-    atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
-
 private fun shortCaption(full: String): String =
     full.substringAfter(": ", missingDelimiterValue = full).trim()
 
@@ -627,8 +484,6 @@ private fun PhotosScreenPreview() {
                 cameraFilter = null,
                 hasPhotos = false,
             ),
-            onLoadBySol = {},
-            onSetEarthTime = {},
             onRandomize = {},
             onGoToLatest = {},
             onPhotoClick = {},
@@ -636,6 +491,8 @@ private fun PhotosScreenPreview() {
             onClearCameraFilter = {},
             onNavigateToImages = { _, _ -> },
             onBack = {},
+            onOpenSolPicker = {},
+            onOpenEarthDatePicker = {},
         )
     }
 }
@@ -676,8 +533,6 @@ private fun PhotosScreenWithPhotosPreview() {
                 cameraFilter = null,
                 hasPhotos = true,
             ),
-            onLoadBySol = {},
-            onSetEarthTime = {},
             onRandomize = {},
             onGoToLatest = {},
             onPhotoClick = {},
@@ -685,6 +540,8 @@ private fun PhotosScreenWithPhotosPreview() {
             onClearCameraFilter = {},
             onNavigateToImages = { _, _ -> },
             onBack = {},
+            onOpenSolPicker = {},
+            onOpenEarthDatePicker = {},
         )
     }
 }

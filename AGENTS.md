@@ -12,6 +12,9 @@ Feature screens and view models live in `shared/src/commonMain/kotlin/com/sirelo
 
 The KMP migration is complete. The legacy `app/` module has been deleted.
 
+## Dependency Versions
+Beta, alpha, and RC dependency versions are acceptable in this project. Prefer the version that unlocks a needed multiplatform capability over waiting for a stable release (e.g., `lifecycle-viewmodel-navigation3` requires `2.11.0+` for the iOS/Desktop/Web ViewModelStore Nav3 APIs; `2.10.0` was Android-only). When pinning a pre-release, record why it is required so the choice stays revisitable, but do not reject a pre-release on stability grounds alone.
+
 ## Build, Test, and Development Commands
 - `./gradlew assembleDebug` — build the debuggable APK with the repository Compose compiler flags.
 - `./gradlew testDebugUnitTest` — run JVM unit tests; execute before every commit.
