@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -58,13 +59,17 @@ fun AppNavigation(
     )
     val navigator = remember(backStack) { AppNavigator(backStack) }
     val entryDecorators = rememberAppNavEntryDecorators()
+    val currentDestination = backStack.lastOrNull() as? AppDestination ?: startDestination
+    val chromeDestination = backStack.lastOrNull { it !is AppDestination.DialogDestination } as? AppDestination
+        ?: currentDestination
+    val activePhotosScopeId = backStack.activePhotosScopeId()
     // The Photos flow (screen + Sol/Earth dialogs) is declared inside a Koin scope so it
     // can share one scoped PhotosViewModel. Resolve the entry provider against that scope,
     // linked to root so getAll() also returns the root-level (module) navigation entries.
     val koin = getKoin()
     val rootScope = LocalKoinScopeContext.current.getValue()
-    val photosFlowScope = remember(koin) {
-        koin.getOrCreateScope<PhotosScope>("photos-flow-scope")
+    val photosFlowScope = remember(koin, activePhotosScopeId) {
+        koin.getOrCreateScope<PhotosScope>(activePhotosScopeId)
     }
     // Link to root exactly once so the scope's getAll() also returns the root-level
     // navigation entries. linkTo() appends without de-duping, so guard against the
@@ -72,12 +77,12 @@ fun AppNavigation(
     if (rootScope.id !in photosFlowScope.getLinkedScopeIds()) {
         photosFlowScope.linkTo(rootScope)
     }
+    DisposableEffect(photosFlowScope) {
+        onDispose { photosFlowScope.close() }
+    }
     val entryProvider = koinEntryProvider<NavKey>(scope = photosFlowScope)
     val dialogOverlaySceneStrategy = remember { DialogOverlaySceneStrategy<NavKey>() }
     val tracker: Tracker = koinInject()
-    val currentDestination = backStack.lastOrNull() as? AppDestination ?: startDestination
-    val chromeDestination = backStack.lastOrNull { it !is AppDestination.DialogDestination } as? AppDestination
-        ?: currentDestination
     val isImages = chromeDestination is AppDestination.Images
 
     LaunchedEffect(deepLink) {
@@ -178,6 +183,16 @@ fun AppNavigation(
                 )
             }
         }
+    }
+}
+
+private fun List<NavKey>.activePhotosScopeId(): String {
+    val photosIndex = indexOfLast { it is AppDestination.Photos }
+    val photos = getOrNull(photosIndex) as? AppDestination.Photos
+    return if (photos != null) {
+        "photos-flow-$photosIndex-${photos.roverId}"
+    } else {
+        "photos-flow-inactive"
     }
 }
 
