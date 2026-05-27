@@ -79,7 +79,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun PhotosScreen(
     roverId: Long,
-    onNavigateToImages: (String) -> Unit,
+    onNavigateToImages: (clickedId: String, allIds: List<String>) -> Unit,
     onBack: () -> Unit,
     onOpenSolPicker: () -> Unit,
     onOpenEarthDatePicker: () -> Unit,
@@ -105,7 +105,7 @@ fun PhotosScreen(
         onPhotoClick = viewModel::onPhotoClick,
         onSetCameraFilter = viewModel::setCameraFilter,
         onClearCameraFilter = onClearCameraFilter,
-        onNavigateToImages = onNavigateToImages,
+        onNavigateToImages = { clickedId, allIds -> onNavigateToImages(clickedId, allIds) },
         onBack = onBack,
         onOpenSolPicker = onOpenSolPicker,
         onOpenEarthDatePicker = onOpenEarthDatePicker,
@@ -127,7 +127,7 @@ private fun PhotosScreen(
     onPhotoClick: () -> Unit,
     onSetCameraFilter: (String?) -> Unit,
     onClearCameraFilter: () -> Unit,
-    onNavigateToImages: (String) -> Unit,
+    onNavigateToImages: (clickedId: String, allIds: List<String>) -> Unit,
     onBack: () -> Unit,
     onOpenSolPicker: () -> Unit,
     onOpenEarthDatePicker: () -> Unit,
@@ -213,7 +213,10 @@ private fun PhotosScreen(
                             gridItems = items,
                             onPhotoClick = { image ->
                                 onPhotoClick()
-                                onNavigateToImages(image.id)
+                                val allIds = items
+                                    .filterIsInstance<GridItem.PhotoItem>()
+                                    .map { it.id }
+                                onNavigateToImages(image.id, allIds)
                             },
                             onCameraClick = { cameraName -> onSetCameraFilter(cameraName) }
                         )
@@ -486,7 +489,7 @@ private fun PhotosScreenPreview() {
             onPhotoClick = {},
             onSetCameraFilter = {},
             onClearCameraFilter = {},
-            onNavigateToImages = {},
+            onNavigateToImages = { _, _ -> },
             onBack = {},
             onOpenSolPicker = {},
             onOpenEarthDatePicker = {},
@@ -535,7 +538,7 @@ private fun PhotosScreenWithPhotosPreview() {
             onPhotoClick = {},
             onSetCameraFilter = {},
             onClearCameraFilter = {},
-            onNavigateToImages = {},
+            onNavigateToImages = { _, _ -> },
             onBack = {},
             onOpenSolPicker = {},
             onOpenEarthDatePicker = {},

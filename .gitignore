@@ -12,7 +12,6 @@
 bin/
 gen/
 compose_compiler_analytics/
-app/compose_compiler_analytics/
 
 # Gradle files
 .gradle/
@@ -116,14 +115,7 @@ freeline_project_description.json
 atlassian-ide-plugin.xml
 
 .idea/
-app/.idea/
-app/gradle/
-app/gradlew
-app/gradlew.bat
-app/mapping.txt
-
 Cloud/
-/app/release/output-metadata.json
 /release/output-metadata.json
 
 # Xcode / iOS
