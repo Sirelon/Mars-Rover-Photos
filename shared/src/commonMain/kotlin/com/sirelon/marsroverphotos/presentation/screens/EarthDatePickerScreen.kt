@@ -17,7 +17,7 @@ import kotlin.time.Instant
 /**
  * Navigation-entry dialog that lets the user pick an Earth date.
  * Shares [PhotosViewModel] with the [com.sirelon.marsroverphotos.presentation.navigation.AppDestination.Photos]
- * back-stack entry via the Photos Koin scope.
+ * back-stack entry via that entry's ViewModelStore (Nav3 SharedViewModelStoreNavEntryDecorator).
  */
 @Composable
 fun EarthDatePickerScreen(

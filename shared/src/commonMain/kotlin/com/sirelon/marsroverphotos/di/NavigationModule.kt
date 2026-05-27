@@ -3,25 +3,17 @@
 package com.sirelon.marsroverphotos.di
 
 import com.sirelon.marsroverphotos.presentation.navigation.AppDestination
-import com.sirelon.marsroverphotos.presentation.navigation.DialogOverlaySceneStrategy
 import com.sirelon.marsroverphotos.presentation.navigation.LocalAppNavigator
 import com.sirelon.marsroverphotos.presentation.screens.AboutScreen
-import com.sirelon.marsroverphotos.presentation.screens.EarthDatePickerScreen
 import com.sirelon.marsroverphotos.presentation.screens.FavoriteScreen
 import com.sirelon.marsroverphotos.presentation.screens.ImagesScreen
-import com.sirelon.marsroverphotos.presentation.screens.PhotosScreen
 import com.sirelon.marsroverphotos.presentation.screens.PopularScreen
 import com.sirelon.marsroverphotos.presentation.screens.RoverMissionInfoScreen
 import com.sirelon.marsroverphotos.presentation.screens.RoversScreen
-import com.sirelon.marsroverphotos.presentation.screens.SolPickerScreen
 import com.sirelon.marsroverphotos.presentation.screens.UkraineScreen
-import com.sirelon.marsroverphotos.presentation.viewmodels.PhotosViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.dsl.module
 import org.koin.dsl.navigation3.navigation
-
-/** Marker type qualifying the Koin scope shared by the Photos flow (screen + its dialogs). */
-class PhotosScope
 
 val navigationModule = module {
     navigation<AppDestination.Rovers> {
@@ -36,60 +28,10 @@ val navigationModule = module {
         )
     }
 
-    // Photos flow: the screen and its two dialog destinations live in one Koin scope and
-    // share a single scoped PhotosViewModel. Each scoped navigation entry resolves the
-    // same instance via the Scope receiver's get().
-    scope<PhotosScope> {
-        scoped { PhotosViewModel(get(), get(), get(), get(), get()) }
-
-        navigation<AppDestination.Photos> { destination ->
-            val navigator = LocalAppNavigator.current
-            PhotosScreen(
-                viewModel = get<PhotosViewModel>(),
-                roverId = destination.roverId,
-                cameraFilter = destination.camera,
-                onNavigateToImages = { photoId ->
-                    navigator.navigate(
-                        AppDestination.Images(
-                            photoIds = listOf(photoId),
-                            selectedId = photoId,
-                            source = AppDestination.ImagesSource.DIRECT_IDS,
-                        )
-                    )
-                },
-                onClearCameraFilter = {
-                    navigator.replaceTop(AppDestination.Photos(destination.roverId, camera = null))
-                },
-                onBack = { navigator.goBack() },
-                onOpenSolPicker = {
-                    navigator.navigate(AppDestination.PhotosSolPicker(destination.roverId))
-                },
-                onOpenEarthDatePicker = {
-                    navigator.navigate(AppDestination.PhotosEarthDatePicker(destination.roverId))
-                },
-            )
-        }
-
-        navigation<AppDestination.PhotosSolPicker>(
-            metadata = DialogOverlaySceneStrategy.dialogOverlay(),
-        ) {
-            val navigator = LocalAppNavigator.current
-            SolPickerScreen(
-                viewModel = get<PhotosViewModel>(),
-                onDismiss = { navigator.goBack() },
-            )
-        }
-
-        navigation<AppDestination.PhotosEarthDatePicker>(
-            metadata = DialogOverlaySceneStrategy.dialogOverlay(),
-        ) {
-            val navigator = LocalAppNavigator.current
-            EarthDatePickerScreen(
-                viewModel = get<PhotosViewModel>(),
-                onDismiss = { navigator.goBack() },
-            )
-        }
-    }
+    // AppDestination.Photos and its dialog destinations (PhotosSolPicker, PhotosEarthDatePicker)
+    // are declared as raw NavEntry in AppNavigation: they need a camera-independent contentKey so
+    // the shared PhotosViewModel survives camera-filter changes, and the dialogs name the Photos
+    // entry as their ViewModelStore parent (see SharedViewModelStoreNavEntryDecorator).
 
     navigation<AppDestination.Images> { destination ->
         val navigator = LocalAppNavigator.current

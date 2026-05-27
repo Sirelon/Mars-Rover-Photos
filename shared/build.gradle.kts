@@ -94,6 +94,7 @@ kotlin {
             // Navigation 3
             implementation(libs.navigation3.runtime)
             implementation(libs.navigation3.ui)
+            implementation(libs.lifecycle.viewmodel.navigation3)
 
             // Kermit logging
             implementation(libs.kermit)
@@ -117,7 +118,6 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
-            implementation(libs.lifecycle.viewmodel.navigation3)
 
             // Firebase native (Android-only — GitLive wraps these, still needed for Android init)
             implementation(libs.firebase.analytics.versioned)

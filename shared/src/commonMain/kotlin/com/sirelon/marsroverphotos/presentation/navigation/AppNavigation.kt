@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -30,13 +29,14 @@ import com.sirelon.marsroverphotos.presentation.ui.AdSlot
 import com.sirelon.marsroverphotos.presentation.ui.UkraineBanner
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
-import com.sirelon.marsroverphotos.di.PhotosScope
-import org.koin.compose.LocalKoinScopeContext
-import org.koin.compose.getKoin
+import androidx.navigation3.runtime.NavEntry
+import com.sirelon.marsroverphotos.presentation.screens.EarthDatePickerScreen
+import com.sirelon.marsroverphotos.presentation.screens.PhotosScreen
+import com.sirelon.marsroverphotos.presentation.screens.SolPickerScreen
 import org.koin.compose.koinInject
 import org.koin.compose.navigation3.koinEntryProvider
+import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
-import org.koin.core.annotation.KoinInternalApi
 
 private const val ANIM_DURATION = 600
 
@@ -45,7 +45,7 @@ private const val ANIM_DURATION_2 = ANIM_DURATION / 2
 /**
  * Main Navigation 3 display for the app.
  */
-@OptIn(KoinExperimentalAPI::class, KoinInternalApi::class)
+@OptIn(KoinExperimentalAPI::class)
 @Composable
 fun AppNavigation(
     modifier: Modifier = Modifier,
@@ -62,25 +62,70 @@ fun AppNavigation(
     val currentDestination = backStack.lastOrNull() as? AppDestination ?: startDestination
     val chromeDestination = backStack.lastOrNull { it !is AppDestination.DialogDestination } as? AppDestination
         ?: currentDestination
-    val activePhotosScopeId = backStack.activePhotosScopeId()
-    // The Photos flow (screen + Sol/Earth dialogs) is declared inside a Koin scope so it
-    // can share one scoped PhotosViewModel. Resolve the entry provider against that scope,
-    // linked to root so getAll() also returns the root-level (module) navigation entries.
-    val koin = getKoin()
-    val rootScope = LocalKoinScopeContext.current.getValue()
-    val photosFlowScope = remember(koin, activePhotosScopeId) {
-        koin.getOrCreateScope<PhotosScope>(activePhotosScopeId)
+    // The Photos flow (screen + Sol/Earth dialogs) shares one PhotosViewModel via the Photos
+    // entry's ViewModelStore. The Photos entry uses a camera-independent contentKey so the VM
+    // survives camera-filter changes; the dialog entries name it as their parent and resolve the
+    // same PhotosViewModel through LocalSharedViewModelStoreOwner. These three are declared as raw
+    // NavEntry (Koin's navigation<> DSL can't set contentKey); everything else comes from Koin.
+    val koinProvider = koinEntryProvider<NavKey>()
+    val entryProvider: (NavKey) -> NavEntry<NavKey> = { key ->
+        when (key) {
+            is AppDestination.Photos -> NavEntry<NavKey>(
+                key = key,
+                contentKey = photosContentKey(key.roverId),
+            ) {
+                PhotosScreen(
+                    roverId = key.roverId,
+                    cameraFilter = key.camera,
+                    onNavigateToImages = { photoId ->
+                        navigator.navigate(
+                            AppDestination.Images(
+                                photoIds = listOf(photoId),
+                                selectedId = photoId,
+                                source = AppDestination.ImagesSource.DIRECT_IDS,
+                            )
+                        )
+                    },
+                    onClearCameraFilter = {
+                        navigator.replaceTop(AppDestination.Photos(key.roverId, camera = null))
+                    },
+                    onBack = { navigator.goBack() },
+                    onOpenSolPicker = {
+                        navigator.navigate(AppDestination.PhotosSolPicker(key.roverId))
+                    },
+                    onOpenEarthDatePicker = {
+                        navigator.navigate(AppDestination.PhotosEarthDatePicker(key.roverId))
+                    },
+                )
+            }
+
+            is AppDestination.PhotosSolPicker -> NavEntry<NavKey>(
+                key = key,
+                contentKey = "${photosContentKey(key.roverId)}/sol",
+                metadata = SharedViewModelStoreNavEntryDecorator.parent(photosContentKey(key.roverId)) +
+                    DialogOverlaySceneStrategy.dialogOverlay(),
+            ) {
+                SolPickerScreen(
+                    viewModel = koinViewModel(viewModelStoreOwner = LocalSharedViewModelStoreOwner.current),
+                    onDismiss = { navigator.goBack() },
+                )
+            }
+
+            is AppDestination.PhotosEarthDatePicker -> NavEntry<NavKey>(
+                key = key,
+                contentKey = "${photosContentKey(key.roverId)}/earth",
+                metadata = SharedViewModelStoreNavEntryDecorator.parent(photosContentKey(key.roverId)) +
+                    DialogOverlaySceneStrategy.dialogOverlay(),
+            ) {
+                EarthDatePickerScreen(
+                    viewModel = koinViewModel(viewModelStoreOwner = LocalSharedViewModelStoreOwner.current),
+                    onDismiss = { navigator.goBack() },
+                )
+            }
+
+            else -> koinProvider(key)
+        }
     }
-    // Link to root exactly once so the scope's getAll() also returns the root-level
-    // navigation entries. linkTo() appends without de-duping, so guard against the
-    // re-runs that would otherwise emit every root entry twice ("entry already added").
-    if (rootScope.id !in photosFlowScope.getLinkedScopeIds()) {
-        photosFlowScope.linkTo(rootScope)
-    }
-    DisposableEffect(photosFlowScope) {
-        onDispose { photosFlowScope.close() }
-    }
-    val entryProvider = koinEntryProvider<NavKey>(scope = photosFlowScope)
     val dialogOverlaySceneStrategy = remember { DialogOverlaySceneStrategy<NavKey>() }
     val tracker: Tracker = koinInject()
     val isImages = chromeDestination is AppDestination.Images
@@ -186,15 +231,11 @@ fun AppNavigation(
     }
 }
 
-private fun List<NavKey>.activePhotosScopeId(): String {
-    val photosIndex = indexOfLast { it is AppDestination.Photos }
-    val photos = getOrNull(photosIndex) as? AppDestination.Photos
-    return if (photos != null) {
-        "photos-flow-$photosIndex-${photos.roverId}"
-    } else {
-        "photos-flow-inactive"
-    }
-}
+/**
+ * Stable, camera-independent contentKey for a rover's Photos entry. Used as the Photos
+ * entry's contentKey and named by its dialog entries as their shared-ViewModelStore parent.
+ */
+private fun photosContentKey(roverId: Long): String = "photos-$roverId"
 
 private fun AppDestination.topLevelDestination(): AppDestination {
     return when (this) {

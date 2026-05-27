@@ -83,7 +83,7 @@ playReview = "2.0.2"
 
 # Legacy (to be removed)
 navigation3 = "1.1.1"
-lifecycle-navigation3 = "2.10.0"
+lifecycle-navigation3 = "2.11.0-beta02"
 navigationevent = "1.1.1"
 timber = "5.0.1"
 
