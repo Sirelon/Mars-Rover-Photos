@@ -34,11 +34,11 @@ val navigationModule = module {
         PhotosScreen(
             roverId = destination.roverId,
             cameraFilter = destination.camera,
-            onNavigateToImages = { photoId ->
+            onNavigateToImages = { clickedId, allIds ->
                 navigator.navigate(
                     AppDestination.Images(
-                        photoIds = listOf(photoId),
-                        selectedId = photoId,
+                        photoIds = allIds,
+                        selectedId = clickedId,
                         source = AppDestination.ImagesSource.DIRECT_IDS,
                     )
                 )

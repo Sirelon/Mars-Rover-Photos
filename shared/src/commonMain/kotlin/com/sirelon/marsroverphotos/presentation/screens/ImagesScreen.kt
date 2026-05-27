@@ -3,7 +3,6 @@ package com.sirelon.marsroverphotos.presentation.screens
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
@@ -13,9 +12,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.gestures.awaitEachGesture
-import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
@@ -43,6 +40,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -51,14 +49,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.input.pointer.util.VelocityTracker
-import androidx.compose.ui.input.pointer.util.addPointerInputChange
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextOverflow
@@ -74,8 +70,9 @@ import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.presentation.ui.NetworkImage
 import com.sirelon.marsroverphotos.presentation.ui.NoScrollEffect
-import com.sirelon.marsroverphotos.presentation.ui.rememberZoomableState
-import com.sirelon.marsroverphotos.presentation.ui.zoomable
+import net.engawapg.lib.zoomable.ScrollGesturePropagation
+import net.engawapg.lib.zoomable.rememberZoomState
+import net.engawapg.lib.zoomable.zoomable
 import com.sirelon.marsroverphotos.presentation.viewmodels.ImageViewModel
 import com.sirelon.marsroverphotos.presentation.viewmodels.UiEvent
 import com.sirelon.marsroverphotos.shared.resources.Res
@@ -229,11 +226,14 @@ private fun ImagesPagerContent(
     var titleState by remember { mutableStateOf("Mars Rover Photos") }
     var showInfoSheet by remember { mutableStateOf(false) }
 
-    // Swipe-to-dismiss: tracks how far the user has dragged the screen downward.
-    // Lives here so the graphicsLayer wrapper can cover ALL content (pager + overlays).
+    // Per-page zoom scale — used to gate the dismiss gesture when an image is zoomed in
+    val pageScales = remember { mutableStateMapOf<Int, Float>() }
+    val isCurrentPageZoomed = (pageScales[pagerState.currentPage] ?: 1f) > 1f
+
+    // Dismiss-by-drag state
     val dismissOffsetY = remember { Animatable(0f) }
-    val density = LocalDensity.current
-    val dismissThresholdPx = with(density) { 150.dp.toPx() }
+    val scope = rememberCoroutineScope()
+    val dismissThresholdPx = with(LocalDensity.current) { 150.dp.toPx() }
 
     // rememberUpdatedState so the running snapshotFlow collector always sees the latest
     // list without restarting the collection (which would cause a page-tracking glitch).
@@ -264,15 +264,46 @@ private fun ImagesPagerContent(
         list.getOrNull(pagerState.currentPage)
     }
 
-    // The graphicsLayer wrapper translates & fades the entire screen during swipe-to-dismiss,
-    // including the TopAppBar overlay, so they all move together naturally.
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .graphicsLayer {
-            translationY = dismissOffsetY.value
-            // Fade from fully opaque (offset=0) to transparent (offset=2×threshold)
-            alpha = (1f - (dismissOffsetY.value / (dismissThresholdPx * 2f)).coerceIn(0f, 1f))
-        }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .graphicsLayer {
+                translationY = dismissOffsetY.value
+                // Gently fade the screen as the user drags it down
+                alpha = (1f - dismissOffsetY.value / (dismissThresholdPx * 2.5f))
+                    .coerceIn(0f, 1f)
+            }
+            .pointerInput(isCurrentPageZoomed) {
+                if (isCurrentPageZoomed) return@pointerInput
+                detectVerticalDragGestures(
+                    onDragEnd = {
+                        if (dismissOffsetY.value > dismissThresholdPx) {
+                            onBack()
+                        } else {
+                            scope.launch {
+                                dismissOffsetY.animateTo(
+                                    targetValue = 0f,
+                                    animationSpec = spring(stiffness = Spring.StiffnessMedium)
+                                )
+                            }
+                        }
+                    },
+                    onDragCancel = {
+                        scope.launch { dismissOffsetY.animateTo(0f) }
+                    },
+                    onVerticalDrag = { change, dragAmount ->
+                        // Only respond to downward drags (or releasing back up once started)
+                        if (dragAmount > 0f || dismissOffsetY.value > 0f) {
+                            change.consume()
+                            scope.launch {
+                                dismissOffsetY.snapTo(
+                                    (dismissOffsetY.value + dragAmount).coerceAtLeast(0f)
+                                )
+                            }
+                        }
+                    }
+                )
+            }
     ) {
         ImagesPager(
             pagerState = pagerState,
@@ -280,9 +311,7 @@ private fun ImagesPagerContent(
             hideUi = hideUi,
             onTap = onTap,
             onFavoriteClick = onFavoriteClick,
-            onBack = onBack,
-            dismissOffsetY = dismissOffsetY,
-            dismissThresholdPx = dismissThresholdPx,
+            onScaleChange = { page, scale -> pageScales[page] = scale },
         )
 
         OnEvent(uiEvent = uiEvent)
@@ -463,13 +492,8 @@ private fun ImagesPager(
     hideUi: Boolean,
     onTap: () -> Unit,
     onFavoriteClick: (MarsImage) -> Unit,
-    onBack: () -> Unit,
-    dismissOffsetY: Animatable<Float, AnimationVector1D>,
-    dismissThresholdPx: Float,
+    onScaleChange: (page: Int, scale: Float) -> Unit,
 ) {
-    val scope = rememberCoroutineScope()
-    val density = LocalDensity.current
-
     NoScrollEffect {
         HorizontalPager(
             state = pagerState,
@@ -478,102 +502,32 @@ private fun ImagesPager(
                 .background(Color.Black),
         ) { page ->
             val marsImage = images[page]
-            val zoomState = rememberZoomableState()
+            val zoomState = rememberZoomState()
 
-            Box(modifier = Modifier
-                .fillMaxSize()
-                // PointerEventPass.Final: let HorizontalPager consume horizontal swipes first.
-                // We observe the remaining gesture and handle downward-only drags for dismiss.
-                .pointerInput(onBack, zoomState) {
-                    awaitEachGesture {
-                        val velocityTracker = VelocityTracker()
-                        val down = awaitFirstDown(requireUnconsumed = false)
-                        velocityTracker.addPointerInputChange(down)
-                        val startY = down.position.y
-                        val startX = down.position.x
-
-                        while (true) {
-                            val event = awaitPointerEvent(PointerEventPass.Final)
-                            val change = event.changes.firstOrNull { it.id == down.id } ?: break
-                            velocityTracker.addPointerInputChange(change)
-
-                            if (!change.pressed) {
-                                // Finger lifted — decide: dismiss or snap back
-                                val velocity = velocityTracker.calculateVelocity()
-                                val currentOffset = dismissOffsetY.value
-                                // Dismiss if dragged past threshold OR if a quick flick downward
-                                val shouldDismiss = currentOffset >= dismissThresholdPx ||
-                                        (currentOffset > 0f && velocity.y > 800f)
-                                if (shouldDismiss) {
-                                    scope.launch {
-                                        dismissOffsetY.animateTo(
-                                            with(density) { 1000.dp.toPx() },
-                                            animationSpec = tween(durationMillis = 220),
-                                        )
-                                        onBack()
-                                    }
-                                } else if (currentOffset > 0f) {
-                                    scope.launch {
-                                        dismissOffsetY.animateTo(
-                                            0f,
-                                            animationSpec = spring(stiffness = Spring.StiffnessMedium),
-                                        )
-                                    }
-                                }
-                                break
-                            }
-
-                            val dy = change.position.y - startY
-                            val dx = kotlin.math.abs(change.position.x - startX)
-
-                            when {
-                                zoomState.scale > 1f -> {
-                                    // Zoomed in — don't intercept, snap any offset back
-                                    if (dismissOffsetY.value > 0f) {
-                                        scope.launch { dismissOffsetY.animateTo(0f) }
-                                    }
-                                    break
-                                }
-                                dx > dy.coerceAtLeast(0f) * 1.5f -> {
-                                    // Horizontal swipe dominant — let the pager handle it, snap back
-                                    if (dismissOffsetY.value > 0f) {
-                                        scope.launch {
-                                            dismissOffsetY.animateTo(
-                                                0f,
-                                                animationSpec = spring(stiffness = Spring.StiffnessMedium),
-                                            )
-                                        }
-                                    }
-                                    break
-                                }
-                                dy > 0f -> {
-                                    // Downward vertical drag — update the dismiss offset live
-                                    scope.launch { dismissOffsetY.snapTo(dy) }
-                                }
-                                dy < 0f && dismissOffsetY.value > 0f -> {
-                                    // Upward drag while offset is non-zero — pull back toward 0
-                                    scope.launch {
-                                        dismissOffsetY.snapTo((dismissOffsetY.value + dy).coerceAtLeast(0f))
-                                    }
-                                }
-                            }
-                        }
-                    }
+            // Reset zoom when the user swipes to another page
+            LaunchedEffect(pagerState.settledPage) {
+                if (pagerState.settledPage != page) {
+                    zoomState.reset()
                 }
-            ) {
+            }
+
+            // Propagate scale changes so the parent can gate the dismiss gesture
+            LaunchedEffect(zoomState) {
+                snapshotFlow { zoomState.scale }
+                    .collect { scale -> onScaleChange(page, scale) }
+            }
+
+            Box(modifier = Modifier.fillMaxSize()) {
                 NetworkImage(
                     modifier = Modifier
                         .fillMaxSize()
-                        .zoomable(state = zoomState)
-                        .pointerInput(zoomState) {
-                            detectTapGestures(
-                                onTap = { onTap() },
-                                onDoubleTap = {
-                                    if (zoomState.scale > 1f) {
-                                        scope.launch { zoomState.reset() }
-                                    }
-                                },
-                            )
+                        .zoomable(
+                            zoomState = zoomState,
+                            scrollGesturePropagation = ScrollGesturePropagation.NotZoomed,
+                            enableOneFingerZoom = false,
+                        )
+                        .pointerInput(Unit) {
+                            detectTapGestures(onTap = { onTap() })
                         },
                     contentScale = ContentScale.Fit,
                     imageUrl = marsImage.imageUrl,
@@ -600,11 +554,6 @@ private fun ImagesPager(
                     }
                 }
 
-                // Reset zoom when this page scrolls off-screen
-                val isSettled = page == pagerState.settledPage
-                LaunchedEffect(isSettled) {
-                    if (!isSettled) zoomState.reset()
-                }
             }
         }
     }

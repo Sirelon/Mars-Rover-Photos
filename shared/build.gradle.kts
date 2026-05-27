@@ -84,6 +84,9 @@ kotlin {
             implementation(libs.coil)
             implementation(libs.coil.network)
 
+            // Zoomable (pinch-to-zoom for Compose Multiplatform)
+            implementation(libs.zoomable)
+
             // Immutable collections
             implementation(libs.kotlinx.collections.immutable)
 
