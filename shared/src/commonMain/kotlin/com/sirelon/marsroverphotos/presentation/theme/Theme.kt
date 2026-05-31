@@ -67,6 +67,38 @@ val LightColorPalette = lightColorScheme(
 )
 
 /**
+ * Overlays brand-critical color slots onto any [ColorScheme].
+ *
+ * Dynamic color (Material You) replaces the full palette with wallpaper-derived
+ * colors, which would override the design-system tokens for secondary (coral),
+ * secondaryContainer, tertiary, and primaryContainer. This function restores
+ * those slots so branded components always render correctly.
+ */
+private fun ColorScheme.withBrandOverrides(darkTheme: Boolean): ColorScheme = if (darkTheme) {
+    copy(
+        secondary = accent,
+        onSecondary = Color.Black,
+        secondaryContainer = Color(0xFF2A3A4D),
+        onSecondaryContainer = Color(0xFFDCE6F2),
+        tertiary = primaryLight,
+        onTertiary = Color.Black,
+        primaryContainer = primaryNavy,
+        onPrimaryContainer = Color.White,
+    )
+} else {
+    copy(
+        secondary = accent,
+        onSecondary = Color.Black,
+        secondaryContainer = Color(0xFFE4ECF6),
+        onSecondaryContainer = Color(0xFF1A283D),
+        tertiary = primary,
+        onTertiary = Color.White,
+        primaryContainer = Color(0xFFD4E3F5),
+        onPrimaryContainer = Color(0xFF1A283D),
+    )
+}
+
+/**
  * Main theme composable for Mars Rover Photos app.
  * Supports dark/light themes with platform-specific dynamic color support.
  *
@@ -81,15 +113,16 @@ fun MarsRoverPhotosTheme(
     content: @Composable () -> Unit
 ) {
     val colors = when {
-        // Dynamic color is available on Android 12+ (API 31+)
+        // Dynamic color (Material You) on Android 12+: use wallpaper-derived scheme
+        // but restore brand-critical slots so design-system components are consistent.
         dynamicColor && supportsDynamicColor() -> {
             if (darkTheme) {
-                getDynamicDarkColorScheme()
+                getDynamicDarkColorScheme().withBrandOverrides(darkTheme = true)
             } else {
-                getDynamicLightColorScheme()
+                getDynamicLightColorScheme().withBrandOverrides(darkTheme = false)
             }
         }
-        // Fall back to static color schemes
+        // Fall back to fully static brand palettes
         darkTheme -> DarkColorPalette
         else -> LightColorPalette
     }
