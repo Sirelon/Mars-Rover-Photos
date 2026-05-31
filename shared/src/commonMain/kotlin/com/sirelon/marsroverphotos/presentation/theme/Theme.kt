@@ -16,20 +16,32 @@ val primaryDark = Color(0xFF6200EE)
 val primaryVariant = Color(0xFF1A283D)
 val accent = Color(0xFFFC6C4B)
 
+/** Lighter blue used for section headers and rover titles in Mission Info. */
+val primaryLight = Color(0xFF7FA6D8)
+
+/** Navy used for the Fun Facts card background. */
+val primaryNavy = Color(0xFF1A283D)
+
 /**
  * Dark color scheme for the app.
  */
 val DarkColorPalette = darkColorScheme(
     primary = primary,
-    secondary = accent,
+    onPrimary = Color.Black,
+    primaryContainer = primaryNavy,        // Fun Facts card background
+    onPrimaryContainer = Color.White,
+    secondary = accent,                    // coral — rover names, captions, FAB, selected nav
+    onSecondary = Color.Black,
+    secondaryContainer = Color(0xFF2A3A4D), // "Did You Know?" fact card
+    onSecondaryContainer = Color(0xFFDCE6F2),
+    tertiary = primaryLight,               // lighter blue — section headers, Mission Info titles
+    onTertiary = Color.Black,
     background = Color(0xFF121212),
     surface = Color(0xFF121212),
     error = Color(0xFFCF6679),
-    onPrimary = Color.Black,
-    onSecondary = Color.Black,
     onBackground = Color.White,
     onSurface = Color.White,
-    onError = Color.Black
+    onError = Color.Black,
 )
 
 /**
@@ -37,15 +49,21 @@ val DarkColorPalette = darkColorScheme(
  */
 val LightColorPalette = lightColorScheme(
     primary = primary,
+    onPrimary = Color.White,
+    primaryContainer = Color(0xFFD4E3F5),
+    onPrimaryContainer = Color(0xFF1A283D),
     secondary = accent,
+    onSecondary = Color.Black,
+    secondaryContainer = Color(0xFFE4ECF6),
+    onSecondaryContainer = Color(0xFF1A283D),
+    tertiary = primary,
+    onTertiary = Color.White,
     background = Color.White,
     surface = Color.White,
     error = Color(0xFFB00020),
-    onPrimary = Color.White,
-    onSecondary = Color.Black,
     onBackground = Color.Black,
     onSurface = Color.Black,
-    onError = Color.White
+    onError = Color.White,
 )
 
 /**

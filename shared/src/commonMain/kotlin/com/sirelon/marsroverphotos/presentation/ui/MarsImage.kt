@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Card
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -61,12 +60,11 @@ fun MarsImageComposable(
 
     val state by painter.state.collectAsState()
     val showStats = state is AsyncImagePainter.State.Success
-    Card(
+    AppCard(
         modifier = modifier
             .padding(vertical = 8.dp)
             .fillMaxWidth()
             .clickable(onClick = onClick),
-        shape = MaterialTheme.shapes.large
     ) {
         Column {
             Image(
