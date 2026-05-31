@@ -27,8 +27,8 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import com.sirelon.marsroverphotos.presentation.ui.AppButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
@@ -202,7 +202,7 @@ private fun ImagesEmptyState(onBack: () -> Unit) {
                 style = MaterialTheme.typography.titleMedium,
             )
             Spacer(modifier = Modifier.height(12.dp))
-            Button(onClick = onBack) {
+            AppButton(onClick = onBack) {
                 Text(text = stringResource(Res.string.images_empty_btn))
             }
         }
