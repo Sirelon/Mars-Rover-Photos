@@ -43,20 +43,25 @@ class ImagesRepositoryImpl(
     }
 
     override suspend fun updateFavForImage(item: MarsImage) {
-        supervisorScope {
-            val favorite = !item.favorite
-            val m = if (favorite) 1 else -1
-            val counter = item.stats.favorite + (1 * m)
+        setFavorite(item, !item.favorite)
+    }
 
+    override suspend fun setFavorite(item: MarsImage, favorite: Boolean) {
+        supervisorScope {
+            val m = if (favorite) 1 else -1
+            val counter = (item.stats.favorite + m).coerceAtLeast(0)
+
+            // Ensure the row exists (feed photos may not be cached yet); IGNORE keeps any
+            // existing row untouched so the explicit UPDATE below is the single source of truth.
+            imagesDao.insertImages(listOf(item))
             imagesDao.updateFavorite(item.id, favorite, counter)
 
-            // Update Firebase counter in background
+            // Update Firebase counter in background (best-effort)
             launch {
                 try {
                     firebasePhotos.updatePhotoFavoriteCounter(item, favorite)
                 } catch (e: Exception) {
                     // Log error but don't fail the operation
-                    // Firebase update is best-effort
                 }
             }
         }

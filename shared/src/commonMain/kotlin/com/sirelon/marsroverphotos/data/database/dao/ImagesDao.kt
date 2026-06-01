@@ -55,6 +55,24 @@ interface ImagesDao {
     @Query("DELETE FROM images WHERE popular = 1")
     suspend fun deleteAllPopular()
 
+    /**
+     * Evicts cached (non-favorite, non-popular) images, keeping the [keepCount] most-recently
+     * cached rows. Recency is expressed by SQLite's implicit `rowid` (monotonic with insertion):
+     * the `order` column is reset per-sol so it does not express recency across sols.
+     */
+    @Query("""
+        DELETE FROM images
+        WHERE favorite = 0
+          AND popular = 0
+          AND id NOT IN (
+            SELECT id FROM images
+            WHERE favorite = 0 AND popular = 0
+            ORDER BY rowid DESC
+            LIMIT :keepCount
+          )
+    """)
+    suspend fun deleteNonUserImagesBeyondCount(keepCount: Int)
+
     // TODO: Re-enable when Room KMP fixes Kotlin/Native @Transaction support
     // Do not name it 'withTransaction' see more here: https://issuetracker.google.com/issues/275678088
     // @Transaction

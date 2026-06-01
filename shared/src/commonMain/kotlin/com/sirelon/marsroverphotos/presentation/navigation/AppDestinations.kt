@@ -15,6 +15,9 @@ sealed interface AppDestination : NavKey {
         DIRECT_IDS,
         FAVORITES,
         POPULAR,
+
+        /** Infinite rover feed — the detail pager shares the list's paged stream. */
+        ROVER_FEED,
     }
 
     @Serializable
@@ -28,6 +31,10 @@ sealed interface AppDestination : NavKey {
         val photoIds: List<String> = emptyList(),
         val selectedId: String? = null,
         val source: ImagesSource = ImagesSource.DIRECT_IDS,
+        /** Set for [ImagesSource.ROVER_FEED] — the rover whose shared feed the pager scrolls. */
+        val roverId: Long? = null,
+        /** Set for [ImagesSource.ROVER_FEED] when opened from a camera-filtered photos feed. */
+        val camera: String? = null,
     ) : AppDestination
 
     @Serializable
