@@ -59,4 +59,8 @@ sealed interface AppDestination : NavKey {
     /** Dialog destination: Earth date picker. Shares PhotosViewModel with [Photos]. */
     @Serializable
     data class PhotosEarthDatePicker(val roverId: Long) : DialogDestination
+
+    /** Dialog destination: filters sheet (camera, date, appearance). Shares PhotosViewModel with [Photos]. */
+    @Serializable
+    data class PhotosFilters(val roverId: Long) : DialogDestination
 }

@@ -41,7 +41,7 @@ class SolPagingSource(
     private val photosRepository: PhotosRepository,
     private val imagesDao: ImagesDao,
     private val roverId: Long,
-    private val camera: String?,
+    private val cameras: Set<String>,
     private val initialSol: Long,
     private val minSol: Long,
     private val maxSol: Long,
@@ -59,27 +59,40 @@ class SolPagingSource(
     override suspend fun load(params: LoadParams<Long>): LoadResult<Long, MarsImage> {
         return try {
             when (params) {
-                is LoadParams.Append -> when (val r = findDay(params.key, step = +1)) {
-                    is FindResult.Found -> r.day.toPage()
-                    // Budget hit, not the bound: keep the forward key so the next load resumes.
-                    is FindResult.Exhausted ->
-                        continuationPage(prevKey = null, nextKey = clampMax(r.nextSol))
-                    FindResult.End -> terminalPage()
-                }
-
-                is LoadParams.Prepend -> when (val r = findDay(params.key, step = -1)) {
-                    is FindResult.Found -> r.day.toPage()
-                    // Budget hit, not the bound: keep the backward key so the next load resumes.
-                    is FindResult.Exhausted ->
-                        continuationPage(prevKey = clampMin(r.nextSol), nextKey = null)
-                    FindResult.End -> terminalPage()
-                }
-
+                is LoadParams.Append -> findNextPage(params.key, step = +1)
+                is LoadParams.Prepend -> findNextPage(params.key, step = -1)
                 is LoadParams.Refresh -> loadRefresh(params.key ?: initialSol)
             }
         } catch (e: Exception) {
             Logger.e("SolPagingSource", e) { "Error loading sol page (rover=$roverId)" }
             LoadResult.Error(e)
+        }
+    }
+
+    /**
+     * Finds the next non-empty page in [step] direction.
+     *
+     * For unfiltered feeds: returns a continuation page on budget exhaustion so each [load]
+     * call is bounded. Paging 3 auto-enqueues another load from the continuation key.
+     *
+     * For camera-filtered feeds: loops within the same [load] call instead of returning an
+     * empty continuation page. Per the class-level comment, Paging 3 does not reliably
+     * re-trigger loads after empty pages, which would stall filtered pagination.
+     */
+    private suspend fun findNextPage(start: Long, step: Int): LoadResult<Long, MarsImage> {
+        var key = start
+        while (true) {
+            when (val r = findDay(key, step)) {
+                is FindResult.Found -> return r.day.toPage()
+                is FindResult.Exhausted -> {
+                    if (cameras.isEmpty()) {
+                        return if (step > 0) continuationPage(prevKey = null, nextKey = clampMax(r.nextSol))
+                        else continuationPage(prevKey = clampMin(r.nextSol), nextKey = null)
+                    }
+                    key = r.nextSol
+                }
+                FindResult.End -> return terminalPage()
+            }
         }
     }
 
@@ -127,7 +140,7 @@ class SolPagingSource(
             // camera-aware for every rover — Perseverance/Insight raw APIs ignore the camera param.
             val photos = photosRepository
                 .refreshImages(PhotosQueryRequest(roverId, sol, camera = null))
-                .filterByCamera(camera)
+                .filterByCameras(cameras)
             probes++
             if (photos.isNotEmpty()) {
                 return FindResult.Found(Day(sol, cacheAndMerge(photos)))
@@ -144,7 +157,7 @@ class SolPagingSource(
      * returns a continuation page so the next load resumes the scan.
      */
     private val scanBudget: Int
-        get() = if (camera.isNullOrBlank()) UNFILTERED_SCAN_BUDGET else FILTER_SCAN_BUDGET
+        get() = if (cameras.isEmpty()) UNFILTERED_SCAN_BUDGET else FILTER_SCAN_BUDGET
 
     private fun Day.toPage(): LoadResult.Page<Long, MarsImage> = LoadResult.Page(
         data = photos,
@@ -191,13 +204,30 @@ class SolPagingSource(
         }
     }
 
-    /** In-memory camera filter matching [RoverCamera.name] or [RoverCamera.fullName]. */
-    private fun List<MarsImage>.filterByCamera(camera: String?): List<MarsImage> {
-        if (camera.isNullOrBlank()) return this
+    /**
+     * In-memory camera filter.
+     *
+     * Standard rovers (Curiosity, Opportunity, Spirit) return abbreviated camera names in
+     * [RoverCamera.name] (e.g. "FHAZ"), so a direct name equality check is sufficient.
+     *
+     * Perseverance returns a compact instrument identifier in [RoverCamera.fullName]
+     * (e.g. "FRONT_HAZCAM_LEFT_A", "NAVCAM_LEFT", "MCZ_RIGHT"). The [RoverMissionData]
+     * spec's [fullName][CameraSpec.fullName] is stored as a prefix of those identifiers
+     * (e.g. "FRONT_HAZCAM", "NAVCAM", "MCZ"), so we use a startsWith check.
+     */
+    private fun List<MarsImage>.filterByCameras(cameras: Set<String>): List<MarsImage> {
+        if (cameras.isEmpty()) return this
+        val specsByName = com.sirelon.marsroverphotos.domain.models.mission.RoverMissionData
+            .getCamerasForRover(roverId)
+            .associateBy { it.name.uppercase() }
         return filter { image ->
             val cam = image.camera ?: return@filter false
-            cam.name.equals(camera, ignoreCase = true) ||
-                cam.fullName.equals(camera, ignoreCase = true)
+            cameras.any { filter ->
+                val spec = specsByName[filter.uppercase()]
+                cam.name.equals(filter, ignoreCase = true) ||
+                    cam.fullName.equals(filter, ignoreCase = true) ||
+                    (spec != null && cam.fullName.startsWith(spec.fullName, ignoreCase = true))
+            }
         }
     }
 

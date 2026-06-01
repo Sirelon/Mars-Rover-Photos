@@ -96,8 +96,9 @@ class ImageViewModel(
     private fun restoreRoverFeedIfNeeded(roverId: Long?, selectedId: String?, camera: String?) {
         if (roverId == null) return
 
+        val cameras = if (camera != null) setOf(camera) else emptySet()
         val current = roverFeedPager.currentParams
-        if (current?.roverId == roverId && current.camera == camera) return
+        if (current?.roverId == roverId && current.cameras == cameras) return
 
         viewModelScope.launch {
             val rover = roversRepository.loadRoverById(roverId) ?: return@launch
@@ -110,7 +111,7 @@ class ImageViewModel(
                 anchorSol = anchorSol.coerceIn(0L, maxSol),
                 minSol = 0L,
                 maxSol = maxSol,
-                camera = camera,
+                cameras = cameras,
             )
         }
     }
