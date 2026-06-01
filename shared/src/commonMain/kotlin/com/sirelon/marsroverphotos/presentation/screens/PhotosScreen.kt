@@ -1,14 +1,12 @@
 package com.sirelon.marsroverphotos.presentation.screens
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -19,88 +17,88 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.AlertDialog
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Slider
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
-import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.domain.models.EducationalFact
 import com.sirelon.marsroverphotos.presentation.models.GridItem
+import com.sirelon.marsroverphotos.presentation.ui.AppCard
+import com.sirelon.marsroverphotos.presentation.ui.AppFactCard
+import com.sirelon.marsroverphotos.presentation.ui.AppFloatingActionButton
+import com.sirelon.marsroverphotos.presentation.ui.AppOutlinedButton
+import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
 import com.sirelon.marsroverphotos.presentation.ui.CenteredColumn
 import com.sirelon.marsroverphotos.presentation.ui.CenteredProgress
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.presentation.ui.NetworkImage
-import com.sirelon.marsroverphotos.presentation.ui.PlatformDatePickerDialog
 import com.sirelon.marsroverphotos.presentation.ui.adaptiveGridCells
 import com.sirelon.marsroverphotos.presentation.viewmodels.PhotosUiState
 import com.sirelon.marsroverphotos.presentation.viewmodels.PhotosViewModel
 import com.sirelon.marsroverphotos.shared.resources.Res
 import com.sirelon.marsroverphotos.shared.resources.alien_icon
-import com.sirelon.marsroverphotos.shared.resources.cancel
-import com.sirelon.marsroverphotos.shared.resources.choose
 import com.sirelon.marsroverphotos.shared.resources.did_you_know
 import com.sirelon.marsroverphotos.shared.resources.educational_fact
 import com.sirelon.marsroverphotos.shared.resources.no_photos_title
-import com.sirelon.marsroverphotos.shared.resources.select
-import com.sirelon.marsroverphotos.shared.resources.select_date
-import com.sirelon.marsroverphotos.shared.resources.sol_description
-import com.sirelon.marsroverphotos.shared.resources.sol_label
-import com.sirelon.marsroverphotos.shared.resources.sol_max_error_fmt
 import com.sirelon.marsroverphotos.shared.resources.tap_to_retry
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atStartOfDayIn
-import kotlinx.datetime.toLocalDateTime
+import com.sirelon.marsroverphotos.utils.formatDisplayDate
+import kotlinx.coroutines.flow.flowOf
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.time.Instant
 
 // ── State-holder composable ───────────────────────────────────────────────────
 
 /**
- * State-holder entry point: collects [PhotosViewModel.uiState] and delegates
- * all layout to the private [PhotosScreen] UI overload.
+ * State-holder entry point: collects [PhotosViewModel.uiState] and the paged feed, and
+ * delegates layout to the private [PhotosScreen] UI overload.
+ *
+ * The feed is an infinite, bidirectional sol-paged list (`gridItemsFlow`). The floating date
+ * chip mirrors the top-visible day and opens the Sol/Earth pickers (separate nav entries that
+ * share this screen's [PhotosViewModel]).
  */
 @Composable
 fun PhotosScreen(
     roverId: Long,
-    onNavigateToImages: (String) -> Unit,
+    onNavigateToImages: (clickedId: String) -> Unit,
     onBack: () -> Unit,
+    onOpenSolPicker: () -> Unit,
+    onOpenEarthDatePicker: () -> Unit,
     modifier: Modifier = Modifier,
     cameraFilter: String? = null,
     onClearCameraFilter: () -> Unit = {},
@@ -115,18 +113,30 @@ fun PhotosScreen(
     }
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val pagingItems = viewModel.gridItemsFlow.collectAsLazyPagingItems()
+    val gridState = rememberLazyGridState()
+
+    // Keep the floating chip + pickers in sync with the top-visible day as the user scrolls.
+    val currentPagingItems = rememberUpdatedState(pagingItems)
+    LaunchedEffect(gridState) {
+        snapshotFlow { gridState.firstVisibleItemIndex }
+            .collect { index ->
+                solAtIndex(currentPagingItems.value, index)?.let(viewModel::onVisibleSolChanged)
+            }
+    }
 
     PhotosScreen(
         state = state,
-        onLoadBySol = viewModel::loadBySol,
-        onSetEarthTime = viewModel::setEarthTime,
+        pagingItems = pagingItems,
+        gridState = gridState,
         onRandomize = viewModel::randomize,
         onGoToLatest = viewModel::goToLatest,
-        onPhotoClick = viewModel::onPhotoClick,
         onSetCameraFilter = viewModel::setCameraFilter,
         onClearCameraFilter = onClearCameraFilter,
         onNavigateToImages = onNavigateToImages,
         onBack = onBack,
+        onOpenSolPicker = onOpenSolPicker,
+        onOpenEarthDatePicker = onOpenEarthDatePicker,
         modifier = modifier,
     )
 }
@@ -140,69 +150,34 @@ fun PhotosScreen(
 @Composable
 private fun PhotosScreen(
     state: PhotosUiState,
-    onLoadBySol: (Long) -> Unit,
-    onSetEarthTime: (Long) -> Unit,
+    pagingItems: LazyPagingItems<GridItem>,
+    gridState: LazyGridState,
     onRandomize: () -> Unit,
     onGoToLatest: () -> Unit,
-    onPhotoClick: () -> Unit,
     onSetCameraFilter: (String?) -> Unit,
     onClearCameraFilter: () -> Unit,
-    onNavigateToImages: (String) -> Unit,
+    onNavigateToImages: (clickedId: String) -> Unit,
     onBack: () -> Unit,
+    onOpenSolPicker: () -> Unit,
+    onOpenEarthDatePicker: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var openSolDialog by rememberSaveable { mutableStateOf(false) }
-    var openEarthDateDialog by rememberSaveable { mutableStateOf(false) }
-
-    SolDialog(
-        maxSol = state.maxSol,
-        openDialog = openSolDialog,
-        sol = state.sol,
-        onClose = { openSolDialog = false },
-        onChoose = {
-            onLoadBySol(it)
-            openSolDialog = false
-        }
-    )
-
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val refresh = pagingItems.loadState.refresh
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             AppTopBar(
                 scrollBehavior = scrollBehavior,
-                title = {
-                    Text(text = state.roverName)
-                },
-                subtitle = {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        DateSelectorButton(
-                            modifier = Modifier.weight(1f),
-                            label = "Sol date",
-                            value = state.sol.toString(),
-                            onClick = { openSolDialog = true }
-                        )
-                        DateSelectorButton(
-                            modifier = Modifier.weight(1f),
-                            label = "Earth date",
-                            value = state.earthDate,
-                            onClick = { openEarthDateDialog = true }
-                        )
-                    }
-                },
+                title = { Text(text = state.roverName) },
                 onBack = onBack,
             )
         },
         floatingActionButton = {
             RefreshButton(
-                visible = state.hasPhotos,
-                onClick = { onGoToLatest() }
+                visible = pagingItems.itemCount > 0,
+                onClick = onGoToLatest
             )
         }
     ) { innerPadding ->
@@ -221,50 +196,52 @@ private fun PhotosScreen(
                 )
             }
 
-            if (openEarthDateDialog) {
-                PlatformDatePickerDialog(
-                    selectedDate = millisToUtcLocalDate(state.datePickerSelectedMillis),
-                    minDate = millisToUtcLocalDate(state.datePickerMinMillis),
-                    maxDate = millisToUtcLocalDate(state.datePickerMaxMillis),
-                    onDateSelected = { selectedDate ->
-                        onSetEarthTime(selectedDate.toUtcMillis())
-                        openEarthDateDialog = false
-                    },
-                    onDismissRequest = { openEarthDateDialog = false },
-                    title = stringResource(Res.string.select_date),
-                    confirmText = stringResource(Res.string.select),
-                    dismissText = stringResource(Res.string.cancel)
-                )
-            }
-
-            Crossfade(targetState = state.gridItems, label = "[Anim]:PhotosProgress") { items ->
+            Box(modifier = Modifier.fillMaxSize()) {
                 when {
-                    items == null -> CenteredProgress()
-                    items.isEmpty() -> {
-                        if (!state.cameraFilter.isNullOrBlank()) {
-                            EmptyPhotos(
-                                title = "No ${state.cameraFilter} photos on Sol ${state.sol}. Try another Sol.",
-                                btnTitle = stringResource(Res.string.tap_to_retry),
-                                callback = { onRandomize() }
-                            )
+                    refresh is LoadState.Loading && pagingItems.itemCount == 0 -> CenteredProgress()
+
+                    refresh is LoadState.Error && pagingItems.itemCount == 0 -> EmptyPhotos(
+                        title = stringResource(Res.string.no_photos_title),
+                        btnTitle = stringResource(Res.string.tap_to_retry),
+                        callback = { pagingItems.retry() }
+                    )
+
+                    pagingItems.itemCount == 0 -> EmptyPhotos(
+                        title = if (!state.cameraFilter.isNullOrBlank()) {
+                            "No ${state.cameraFilter} photos near Sol ${state.sol}. Try another Sol."
                         } else {
-                            EmptyPhotos(
-                                title = stringResource(Res.string.no_photos_title),
-                                btnTitle = stringResource(Res.string.tap_to_retry),
-                                callback = { onRandomize() }
-                            )
-                        }
-                    }
+                            stringResource(Res.string.no_photos_title)
+                        },
+                        btnTitle = stringResource(Res.string.tap_to_retry),
+                        callback = onRandomize
+                    )
 
                     else -> {
-                        PhotosList(
-                            gridItems = items,
-                            onPhotoClick = { image ->
-                                onPhotoClick()
-                                onNavigateToImages(image.id)
-                            },
-                            onCameraClick = { cameraName -> onSetCameraFilter(cameraName) }
+                        PhotosGrid(
+                            pagingItems = pagingItems,
+                            gridState = gridState,
+                            onPhotoClick = { image -> onNavigateToImages(image.id) },
+                            onCameraClick = onSetCameraFilter,
                         )
+
+                        // Floating "sticky" date chip — mirrors the top-visible day.
+                        FloatingDateChip(
+                            sol = state.sol,
+                            earthDate = state.earthDate,
+                            onOpenSolPicker = onOpenSolPicker,
+                            onOpenEarthDatePicker = onOpenEarthDatePicker,
+                            modifier = Modifier
+                                .align(Alignment.TopCenter)
+                                .padding(top = 8.dp)
+                        )
+
+                        // Prepend (scroll-up) progress at the top, append (scroll-down) at the bottom.
+                        if (pagingItems.loadState.prepend is LoadState.Loading) {
+                            EdgeProgress(modifier = Modifier.align(Alignment.TopEnd))
+                        }
+                        if (pagingItems.loadState.append is LoadState.Loading) {
+                            EdgeProgress(modifier = Modifier.align(Alignment.BottomCenter))
+                        }
                     }
                 }
             }
@@ -282,67 +259,152 @@ private fun RefreshButton(
         enter = fadeIn(),
         exit = fadeOut()
     ) {
-        FloatingActionButton(onClick = onClick) {
+        AppFloatingActionButton(onClick = onClick) {
             MaterialSymbolIcon(
                 symbol = MaterialSymbol.Autorenew,
-                contentDescription = "Reload random Sol"
+                contentDescription = "Jump to latest Sol"
             )
         }
     }
 }
 
 @Composable
-private fun PhotosList(
-    gridItems: List<GridItem>,
+private fun PhotosGrid(
+    pagingItems: LazyPagingItems<GridItem>,
+    gridState: LazyGridState,
     onPhotoClick: (image: MarsImage) -> Unit,
     onCameraClick: ((cameraName: String) -> Unit)? = null
 ) {
     LazyVerticalGrid(
+        state = gridState,
         columns = adaptiveGridCells(minColumnWidth = 180.dp),
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(
             start = 12.dp,
             end = 12.dp,
-            top = 8.dp,
+            // Leave room for the floating date chip at the top.
+            top = 52.dp,
             // 56dp FAB + 16dp FAB padding + 8dp margin above FAB
-            // nav bar inset is handled by Scaffold's innerPadding on the parent Column
             bottom = 80.dp
         ),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(
-            items = gridItems,
-            key = { item ->
-                when (item) {
-                    is GridItem.PhotoItem -> item.id
-                    is GridItem.FactItem -> item.id
-                }
-            },
-            contentType = { item ->
-                when (item) {
-                    is GridItem.PhotoItem -> "MarsPhotoContentType"
-                    is GridItem.FactItem -> "FactCardContentType"
-                }
-            },
-            span = { item ->
-                when (item) {
+            count = pagingItems.itemCount,
+            key = pagingItems.itemKey { it.gridKey },
+            contentType = pagingItems.itemContentType { it.contentType },
+            span = { index ->
+                when (pagingItems.peek(index)) {
                     is GridItem.PhotoItem -> GridItemSpan(1)
-                    is GridItem.FactItem -> GridItemSpan(maxLineSpan)
+                    else -> GridItemSpan(maxLineSpan)
                 }
             }
-        ) { item ->
-            when (item) {
+        ) { index ->
+            when (val item = pagingItems[index]) {
                 is GridItem.PhotoItem -> PhotoCard(
                     image = item.image,
                     onPhotoClick = onPhotoClick,
                     onCameraClick = onCameraClick
                 )
 
+                is GridItem.DateHeader -> DateHeaderRow(header = item)
+
                 is GridItem.FactItem -> FactCard(fact = item.fact)
+
+                null -> Unit
             }
         }
     }
+}
+
+@Composable
+private fun DateHeaderRow(
+    header: GridItem.DateHeader,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            text = formatDisplayDate(header.earthDate),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+        )
+        Text(
+            text = "Sol ${header.sol}",
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun FloatingDateChip(
+    sol: Long,
+    earthDate: String,
+    onOpenSolPicker: () -> Unit,
+    onOpenEarthDatePicker: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    Box(modifier = modifier) {
+        Surface(
+            modifier = Modifier.clickable { expanded = true },
+            shape = MaterialTheme.shapes.large,
+            color = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            tonalElevation = 3.dp,
+            shadowElevation = 4.dp,
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Text(
+                    text = if (earthDate.isNotBlank()) "Sol $sol · $earthDate" else "Sol $sol",
+                    style = MaterialTheme.typography.labelLarge,
+                    maxLines = 1,
+                )
+                MaterialSymbolIcon(
+                    symbol = MaterialSymbol.ExpandMore,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                    size = 18.dp
+                )
+            }
+        }
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            DropdownMenuItem(
+                text = { Text("Pick by Sol") },
+                onClick = {
+                    expanded = false
+                    onOpenSolPicker()
+                }
+            )
+            DropdownMenuItem(
+                text = { Text("Pick by Earth date") },
+                onClick = {
+                    expanded = false
+                    onOpenEarthDatePicker()
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun EdgeProgress(modifier: Modifier = Modifier) {
+    CircularProgressIndicator(
+        modifier = modifier
+            .padding(12.dp)
+            .size(28.dp)
+    )
 }
 
 @Composable
@@ -351,12 +413,11 @@ private fun PhotoCard(
     onPhotoClick: (image: MarsImage) -> Unit,
     onCameraClick: ((cameraName: String) -> Unit)? = null
 ) {
-    Card(
+    AppCard(
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth()
             .clickable { onPhotoClick(image) },
-        shape = MaterialTheme.shapes.large
     ) {
         Column(verticalArrangement = Arrangement.SpaceBetween) {
             NetworkImage(
@@ -368,6 +429,7 @@ private fun PhotoCard(
             Text(
                 text = shortCaption(image.name.orEmpty()),
                 style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.secondary,
                 modifier = Modifier
                     .padding(4.dp)
                     .fillMaxWidth()
@@ -377,138 +439,6 @@ private fun PhotoCard(
                         } else Modifier
                     ),
                 textAlign = TextAlign.Center
-            )
-        }
-    }
-}
-
-@Composable
-private fun SolDialog(
-    openDialog: Boolean,
-    maxSol: Long,
-    sol: Long,
-    onClose: () -> Unit,
-    onChoose: (sol: Long) -> Unit
-) {
-    if (openDialog) {
-        var selectedSol: Long? by remember(sol) { mutableStateOf(sol) }
-        var errorMessage by remember { mutableStateOf<String?>(null) }
-
-        AlertDialog(
-            onDismissRequest = onClose,
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        val resolvedSol = selectedSol
-                        if (resolvedSol != null) {
-                            onChoose(resolvedSol)
-                        } else {
-                            onClose()
-                        }
-                    }
-                ) {
-                    Text(stringResource(Res.string.choose))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = onClose) {
-                    Text(stringResource(Res.string.cancel))
-                }
-            },
-            title = { Text(text = stringResource(Res.string.sol_description)) },
-            text = {
-                val maxSolError = stringResource(Res.string.sol_max_error_fmt, maxSol)
-                SolChanger(selectedSol, maxSol, errorMessage) { nextSol ->
-                    if ((nextSol ?: 0L) > maxSol) {
-                        selectedSol = maxSol
-                        errorMessage = maxSolError
-                    } else {
-                        selectedSol = nextSol
-                        errorMessage = null
-                    }
-                }
-            }
-        )
-    }
-}
-
-@Composable
-private fun SolChanger(
-    sol: Long?,
-    maxSol: Long,
-    errorMessage: String?,
-    onSolChanged: (sol: Long?) -> Unit
-) {
-    val sliderMax = maxSol.coerceAtLeast(1L)
-    Column {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = stringResource(Res.string.sol_label),
-                modifier = Modifier.weight(1f),
-                style = MaterialTheme.typography.titleLarge
-            )
-            OutlinedTextField(
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                value = sol?.toString().orEmpty(),
-                modifier = Modifier.weight(1f),
-                singleLine = true,
-                onValueChange = { onSolChanged(it.toLongOrNull()) }
-            )
-        }
-        Slider(
-            value = (sol ?: 0L).coerceIn(0L, sliderMax).toFloat(),
-            valueRange = 0f..sliderMax.toFloat(),
-            onValueChange = { onSolChanged(it.toLong()) }
-        )
-        if (!errorMessage.isNullOrBlank()) {
-            Text(
-                text = errorMessage,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-        }
-    }
-}
-
-@Composable
-private fun DateSelectorButton(
-    label: String,
-    value: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    OutlinedButton(
-        modifier = modifier.animateContentSize(),
-        onClick = onClick,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-        colors = ButtonDefaults.outlinedButtonColors(
-            contentColor = MaterialTheme.colorScheme.onSurface
-        )
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = label,
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    text = value,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 1
-                )
-            }
-            MaterialSymbolIcon(
-                symbol = MaterialSymbol.ExpandMore,
-                contentDescription = null,
-                modifier = Modifier.size(18.dp),
-                size = 18.dp
             )
         }
     }
@@ -538,14 +468,10 @@ private fun FactCard(
     fact: EducationalFact,
     modifier: Modifier = Modifier
 ) {
-    Card(
+    AppFactCard(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
             modifier = Modifier
@@ -560,32 +486,23 @@ private fun FactCard(
                 MaterialSymbolIcon(
                     symbol = MaterialSymbol.Info,
                     contentDescription = stringResource(Res.string.educational_fact),
-                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
                     modifier = Modifier.size(24.dp)
                 )
                 Text(
                     text = stringResource(Res.string.did_you_know),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
                 )
             }
 
             Text(
                 text = fact.text,
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
                 modifier = Modifier.padding(top = 4.dp)
             )
         }
     }
 }
-
-private fun millisToUtcLocalDate(timeMillis: Long): LocalDate =
-    Instant.fromEpochMilliseconds(timeMillis).toLocalDateTime(TimeZone.UTC).date
-
-private fun LocalDate.toUtcMillis(): Long =
-    atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
 
 private fun shortCaption(full: String): String =
     full.substringAfter(": ", missingDelimiterValue = full).trim()
@@ -609,40 +526,45 @@ private fun CameraFilterChip(camera: String, onClear: () -> Unit) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview
-@Composable
-private fun PhotosScreenPreview() {
-    MaterialTheme {
-        PhotosScreen(
-            state = PhotosUiState(
-                roverName = "Curiosity",
-                sol = 3200L,
-                earthDate = "Aug 5, 2015",
-                gridItems = emptyList(),
-                maxSol = 4000L,
-                cameraFilter = null,
-                hasPhotos = false,
-            ),
-            onLoadBySol = {},
-            onSetEarthTime = {},
-            onRandomize = {},
-            onGoToLatest = {},
-            onPhotoClick = {},
-            onSetCameraFilter = {},
-            onClearCameraFilter = {},
-            onNavigateToImages = {},
-            onBack = {},
-        )
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+private val GridItem.gridKey: String
+    get() = when (this) {
+        is GridItem.PhotoItem -> id
+        is GridItem.FactItem -> id
+        is GridItem.DateHeader -> id
     }
+
+private val GridItem.contentType: String
+    get() = when (this) {
+        is GridItem.PhotoItem -> "photo"
+        is GridItem.FactItem -> "fact"
+        is GridItem.DateHeader -> "header"
+    }
+
+/**
+ * Sol of the day at (or just above) [index] — used to drive the floating header. For a
+ * [GridItem.FactItem] (no sol of its own) it scans backward to the nearest photo/header.
+ */
+private fun solAtIndex(pagingItems: LazyPagingItems<GridItem>, index: Int): Long? {
+    if (pagingItems.itemCount == 0) return null
+    var i = index.coerceIn(0, pagingItems.itemCount - 1)
+    while (i >= 0) {
+        when (val item = pagingItems.peek(i)) {
+            is GridItem.PhotoItem -> return item.image.sol
+            is GridItem.DateHeader -> return item.sol
+            else -> i--
+        }
+    }
+    return null
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
-private fun PhotosScreenWithPhotosPreview() {
+private fun PhotosScreenPreview() {
     val sampleImage = MarsImage(
-        id = "123",
+        id = "preview_1",
         order = 0,
         sol = 3200L,
         name = "Curiosity: FHAZ",
@@ -657,31 +579,31 @@ private fun PhotosScreenWithPhotosPreview() {
         popular = false,
         stats = MarsImage.Stats(see = 42, scale = 0, save = 2, share = 1, favorite = 5),
     )
+    val sampleItems: List<GridItem> = listOf(
+        GridItem.DateHeader(sol = 3200L, earthDate = "2015-08-05"),
+        GridItem.PhotoItem(sampleImage),
+        GridItem.PhotoItem(sampleImage.copy(id = "preview_2", name = "Curiosity: MAST")),
+    )
+    val pagingItems = flowOf(PagingData.from(sampleItems)).collectAsLazyPagingItems()
     MaterialTheme {
         PhotosScreen(
             state = PhotosUiState(
                 roverName = "Curiosity",
                 sol = 3200L,
                 earthDate = "Aug 5, 2015",
-                gridItems = listOf(
-                    com.sirelon.marsroverphotos.presentation.models.GridItem.PhotoItem(sampleImage),
-                    com.sirelon.marsroverphotos.presentation.models.GridItem.PhotoItem(
-                        sampleImage.copy(id = "124", name = "Curiosity: MAST")
-                    ),
-                ),
                 maxSol = 4000L,
                 cameraFilter = null,
-                hasPhotos = true,
             ),
-            onLoadBySol = {},
-            onSetEarthTime = {},
+            pagingItems = pagingItems,
+            gridState = rememberLazyGridState(),
             onRandomize = {},
             onGoToLatest = {},
-            onPhotoClick = {},
             onSetCameraFilter = {},
             onClearCameraFilter = {},
             onNavigateToImages = {},
             onBack = {},
+            onOpenSolPicker = {},
+            onOpenEarthDatePicker = {},
         )
     }
 }

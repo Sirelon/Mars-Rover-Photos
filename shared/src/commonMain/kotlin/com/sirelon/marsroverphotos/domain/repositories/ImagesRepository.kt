@@ -47,6 +47,15 @@ interface ImagesRepository {
     suspend fun updateFavForImage(item: MarsImage)
 
     /**
+     * Set favorite status to an explicit value (idempotent in direction, unlike
+     * [updateFavForImage] which toggles from [item]'s — possibly stale — state).
+     * Ensures the row exists first so it works for feed photos not yet cached.
+     * @param item Image to update
+     * @param favorite Desired favorite state
+     */
+    suspend fun setFavorite(item: MarsImage, favorite: Boolean)
+
+    /**
      * Load popular images with paging support.
      * @return Flow of paged popular images
      */

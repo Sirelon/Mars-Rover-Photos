@@ -17,10 +17,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import com.sirelon.marsroverphotos.presentation.ui.AppButton
+import com.sirelon.marsroverphotos.presentation.ui.AppCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -211,7 +211,7 @@ private fun FavoriteEmptyContent(
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = onBtnClick) {
+        AppButton(onClick = onBtnClick) {
             Text(text = btnTitle)
         }
     }
@@ -221,14 +221,14 @@ private fun FavoriteEmptyContent(
 private fun LoadingMoreItem(
     modifier: Modifier = Modifier
 ) {
-    Card(
+    AppCard(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
-            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        ),
     ) {
         Row(
             modifier = Modifier

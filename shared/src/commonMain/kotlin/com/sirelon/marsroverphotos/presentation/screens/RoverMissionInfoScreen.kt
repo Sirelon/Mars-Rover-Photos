@@ -1,7 +1,7 @@
 package com.sirelon.marsroverphotos.presentation.screens
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -22,12 +22,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import com.sirelon.marsroverphotos.presentation.ui.AppCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
@@ -53,7 +51,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sirelon.marsroverphotos.domain.models.Rover
 import com.sirelon.marsroverphotos.domain.models.mission.CameraSpec
@@ -97,11 +94,8 @@ fun RoverMissionInfoScreen(
         viewModel.setRoverId(roverId)
     }
 
-    // rememberUpdatedState so the analytics call reads the latest state after the
-    // roverId key settles, even if state arrives one frame after the id changes.
-    val latestState by rememberUpdatedState(state)
     LaunchedEffect(state?.rover?.id) {
-        latestState?.rover?.let {
+        state?.rover?.let {
             viewModel.trackEvent("mission_info_opened_${it.name}")
         }
     }
@@ -240,9 +234,9 @@ private fun MissionInfoContent(
 
 @Composable
 private fun RoverHeader(rover: Rover) {
-    Card(
+    AppCard(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -280,27 +274,26 @@ private fun SectionHeader(title: String) {
 
 @Composable
 private fun MissionTimeline(milestones: ImmutableList<TimelineMilestone>, status: String) {
-    val isActive = status.equals("active", ignoreCase = true)
-    val milestoneColor = if (isActive) {
+    val roverActive = status.equals("active", ignoreCase = true)
+    val milestoneColor = if (roverActive) {
         MaterialTheme.colorScheme.tertiary
     } else {
         MaterialTheme.colorScheme.secondary
     }
 
-    // Animate the Landing→Current segment from 0f → 1f on first composition for
-    // active rovers. Completed rovers go straight to 1f (mission ended).
-    // Key on the full milestones list (ImmutableList has value equality) so the animation
-    // replays when the rover changes. Reset animationStarted first to restart from 0f.
-    var animationStarted by remember { mutableStateOf(false) }
+    // Animate the Landing→Current segment from 0f → 1f on first composition for active rovers.
+    // Completed rovers snap straight to 1f. Using Animatable so snapTo(0f) + animateTo(1f) are
+    // two distinct frames — animateFloatAsState + a boolean flag batches both writes into one
+    // snapshot and the animation never resets on rover change.
+    val landingToCurrentProgress = remember { Animatable(0f) }
     LaunchedEffect(milestones) {
-        animationStarted = false  // reset so the animation starts from 0f for the new rover
-        animationStarted = true
+        if (roverActive) {
+            landingToCurrentProgress.snapTo(0f)
+            landingToCurrentProgress.animateTo(1f, animationSpec = tween(durationMillis = 600))
+        } else {
+            landingToCurrentProgress.snapTo(1f)
+        }
     }
-    val landingToCurrentProgress = animateFloatAsState(
-        targetValue = if (animationStarted) 1f else 0f,
-        animationSpec = tween(durationMillis = 600),
-        label = "LandingToCurrentProgress"
-    )
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -361,7 +354,7 @@ private fun MissionTimeline(milestones: ImmutableList<TimelineMilestone>, status
                 // active rovers and fully filled for completed missions.
                 val segmentProgress = when {
                     index == 0 -> 1f
-                    !isActive -> 1f
+                    !roverActive -> 1f
                     else -> landingToCurrentProgress.value
                 }
                 TimelineSegment(
@@ -443,10 +436,7 @@ private fun MissionStatistics(
 
 @Composable
 private fun StatCard(label: String, value: String, modifier: Modifier = Modifier) {
-    Card(
-        modifier = modifier,
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
+    AppCard(modifier = modifier) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -483,10 +473,7 @@ private fun CamerasList(
         )
         return
     }
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
+    AppCard(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             cameras.forEachIndexed { index, camera ->
                 CameraItem(
@@ -542,10 +529,7 @@ private fun CameraItem(
 
 @Composable
 private fun MissionObjectives(objectives: List<String>) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
+    AppCard(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             objectives.forEach { objective ->
                 Row(modifier = Modifier.padding(vertical = 4.dp)) {
@@ -567,12 +551,12 @@ private fun MissionObjectives(objectives: List<String>) {
 
 @Composable
 private fun FunFacts(facts: List<String>) {
-    Card(
+    AppCard(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        )
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        ),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             facts.forEach { fact ->

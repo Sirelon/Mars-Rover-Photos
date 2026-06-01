@@ -3,7 +3,6 @@ package com.sirelon.marsroverphotos.presentation.screens
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
@@ -13,9 +12,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.gestures.awaitEachGesture
-import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
@@ -30,42 +27,42 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import com.sirelon.marsroverphotos.presentation.ui.AppButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.input.pointer.util.VelocityTracker
-import androidx.compose.ui.input.pointer.util.addPointerInputChange
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.presentation.navigation.AppDestination
+import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
 import com.sirelon.marsroverphotos.presentation.ui.CenteredProgress
 import com.sirelon.marsroverphotos.presentation.ui.MarsImageFavoriteToggle
 import com.sirelon.marsroverphotos.presentation.ui.setStatusBarAppearance
@@ -74,15 +71,14 @@ import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.presentation.ui.NetworkImage
 import com.sirelon.marsroverphotos.presentation.ui.NoScrollEffect
-import com.sirelon.marsroverphotos.presentation.ui.rememberZoomableState
-import com.sirelon.marsroverphotos.presentation.ui.zoomable
+import net.engawapg.lib.zoomable.ScrollGesturePropagation
+import net.engawapg.lib.zoomable.rememberZoomState
+import net.engawapg.lib.zoomable.zoomable
 import com.sirelon.marsroverphotos.presentation.viewmodels.ImageViewModel
 import com.sirelon.marsroverphotos.presentation.viewmodels.UiEvent
 import com.sirelon.marsroverphotos.shared.resources.Res
 import com.sirelon.marsroverphotos.shared.resources.images_empty_btn
 import com.sirelon.marsroverphotos.shared.resources.images_empty_title
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -92,86 +88,86 @@ import org.koin.compose.viewmodel.koinViewModel
 /**
  * Fullscreen image viewer — horizontal pager with pinch-to-zoom, save, share, info sheet.
  *
- * Ported from `app/.../feature/images/ImagesScreen.kt` to Compose Multiplatform.
+ * Content is delivered as paged [androidx.paging.PagingData]. For [AppDestination.ImagesSource.ROVER_FEED]
+ * the pager shares the photos list's [com.sirelon.marsroverphotos.data.paging.RoverFeedPager] stream, so
+ * swiping past the first/last loaded photo auto-loads the previous/next day (bidirectional, in sync with
+ * the list). Other sources present a finite, single-page list.
  *
- * @param photoIds    Ordered list of image IDs to show in the pager.
+ * @param photoIds    Image IDs (used by [AppDestination.ImagesSource.DIRECT_IDS]; empty for ROVER_FEED).
  * @param selectedId  Which ID to land on initially (null → first page).
- * @param source      Defines where images should be loaded from.
- * @param onBack      Navigate back (e.g. pop to Photos screen).
+ * @param source      Where images are loaded from.
+ * @param roverId     Rover id used to restore [AppDestination.ImagesSource.ROVER_FEED] after recreation.
+ * @param camera      Camera filter used to restore [AppDestination.ImagesSource.ROVER_FEED] after recreation.
+ * @param onBack      Navigate back.
  */
 @Composable
 fun ImagesScreen(
     photoIds: List<String>,
     selectedId: String?,
     source: AppDestination.ImagesSource,
+    roverId: Long? = null,
+    camera: String? = null,
     onBack: () -> Unit,
     viewModel: ImageViewModel = koinViewModel(),
 ) {
-    // Guard: nothing to show → pop immediately instead of hanging on the loader.
+    // Guard: nothing to show for direct IDs → pop immediately instead of hanging on the loader.
     if (source == AppDestination.ImagesSource.DIRECT_IDS && photoIds.isEmpty()) {
         LaunchedEffect(Unit) { onBack() }
         return
     }
 
-    LaunchedEffect(photoIds, source) {
-        viewModel.setImageSource(source = source, ids = photoIds)
+    LaunchedEffect(photoIds, selectedId, source, roverId, camera) {
+        viewModel.setImageSource(
+            source = source,
+            ids = photoIds,
+            selectedId = selectedId,
+            roverId = roverId,
+            camera = camera,
+        )
     }
 
     // Force light (white) status-bar icons while the fullscreen black pager is visible,
     // and restore the default appearance when this screen leaves composition.
     DisposableEffect(Unit) {
         setStatusBarAppearance(lightIcons = true)
-        onDispose {
-            setStatusBarAppearance(lightIcons = false)
-        }
+        onDispose { setStatusBarAppearance(lightIcons = false) }
     }
 
-    val screenState by viewModel.screenState.collectAsStateWithLifecycle()
-    val images = screenState.images
-
+    val pagingItems = viewModel.pagedImages.collectAsLazyPagingItems()
+    val hideUi by viewModel.hideUi.collectAsStateWithLifecycle()
     val uiEvent by viewModel.uiEvent.collectAsStateWithLifecycle(initialValue = null)
 
     val pagerState = rememberPagerState(
         initialPage = 0,
-        pageCount = { images.size },
+        pageCount = { pagingItems.itemCount },
     )
-    var isInitialPositionApplied by remember(source, selectedId) { mutableStateOf(false) }
-    var hasRenderedImages by remember(source) { mutableStateOf(false) }
 
-    if (images.isNotEmpty() && !hasRenderedImages) {
-        SideEffect {
-            hasRenderedImages = true
-        }
-    }
-
-    LaunchedEffect(images, selectedId, isInitialPositionApplied) {
-        if (isInitialPositionApplied) return@LaunchedEffect
-
+    // Land on the selected photo once it is present in the loaded snapshot.
+    var didInitialScroll by remember(source, selectedId) { mutableStateOf(false) }
+    LaunchedEffect(pagingItems.itemCount, selectedId) {
+        if (didInitialScroll) return@LaunchedEffect
         if (selectedId == null) {
-            isInitialPositionApplied = true
+            didInitialScroll = true
             return@LaunchedEffect
         }
-
-        if (images.isEmpty()) {
-            return@LaunchedEffect
+        if (pagingItems.itemCount == 0) return@LaunchedEffect
+        val index = pagingItems.itemSnapshotList.indexOfFirst { it?.id == selectedId }
+        if (index >= 0) {
+            if (pagerState.currentPage != index) pagerState.scrollToPage(index)
+            didInitialScroll = true
         }
-
-        val index = selectedId.let { targetId ->
-            images.indexOfFirst { it.id == targetId }.takeIf { it >= 0 }
-        }
-
-        if (index != null && index < pagerState.pageCount) {
-            if (pagerState.currentPage != index) {
-                pagerState.scrollToPage(index)
-            }
-        }
-
-        isInitialPositionApplied = true
     }
 
-    Crossfade(targetState = images.isEmpty(), label = "Images") { isEmpty ->
+    val refresh = pagingItems.loadState.refresh
+    Crossfade(targetState = pagingItems.itemCount == 0, label = "Images") { isEmpty ->
         if (isEmpty) {
-            if (source != AppDestination.ImagesSource.DIRECT_IDS && hasRenderedImages) {
+            // Only treat the feed as genuinely empty once a load has settled: a
+            // refresh that finished with no results (endOfPaginationReached) or one
+            // that errored. While the first refresh is still pending or in-flight,
+            // show progress instead of flashing the back-prompting empty state.
+            val settledEmpty = (refresh is LoadState.NotLoading && refresh.endOfPaginationReached) ||
+                refresh is LoadState.Error
+            if (settledEmpty) {
                 ImagesEmptyState(onBack = onBack)
             } else {
                 CenteredProgress()
@@ -179,13 +175,13 @@ fun ImagesScreen(
         } else {
             ImagesPagerContent(
                 uiEvent = uiEvent,
-                list = images,
+                pagingItems = pagingItems,
                 pagerState = pagerState,
-                hideUi = screenState.hideUi,
+                hideUi = hideUi,
                 onBack = onBack,
                 onShown = viewModel::onShown,
                 onTap = viewModel::onTap,
-                onFavoriteClick = viewModel::updateFavorite,
+                onFavoriteClick = viewModel::setFavorite,
                 onSaveClick = viewModel::saveImage,
                 onShareClick = viewModel::shareMarsImage,
             )
@@ -205,10 +201,18 @@ private fun ImagesEmptyState(onBack: () -> Unit) {
                 style = MaterialTheme.typography.titleMedium,
             )
             Spacer(modifier = Modifier.height(12.dp))
-            Button(onClick = onBack) {
+            AppButton(onClick = onBack) {
                 Text(text = stringResource(Res.string.images_empty_btn))
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun ImagesEmptyStatePreview() {
+    MaterialTheme {
+        ImagesEmptyState(onBack = {})
     }
 }
 
@@ -216,78 +220,104 @@ private fun ImagesEmptyState(onBack: () -> Unit) {
 @Composable
 private fun ImagesPagerContent(
     uiEvent: UiEvent?,
-    list: ImmutableList<MarsImage>,
+    pagingItems: LazyPagingItems<MarsImage>,
     pagerState: PagerState,
     hideUi: Boolean,
     onBack: () -> Unit,
     onShown: (MarsImage, Int) -> Unit,
     onTap: () -> Unit,
-    onFavoriteClick: (MarsImage) -> Unit,
+    onFavoriteClick: (MarsImage, Boolean) -> Unit,
     onSaveClick: (MarsImage) -> Unit,
     onShareClick: (MarsImage) -> Unit,
 ) {
     var titleState by remember { mutableStateOf("Mars Rover Photos") }
     var showInfoSheet by remember { mutableStateOf(false) }
 
-    // Swipe-to-dismiss: tracks how far the user has dragged the screen downward.
-    // Lives here so the graphicsLayer wrapper can cover ALL content (pager + overlays).
-    val dismissOffsetY = remember { Animatable(0f) }
-    val density = LocalDensity.current
-    val dismissThresholdPx = with(density) { 150.dp.toPx() }
+    // Per-page zoom scale — used to gate the dismiss gesture when an image is zoomed in
+    val pageScales = remember { mutableStateMapOf<Int, Float>() }
+    val isCurrentPageZoomed = (pageScales[pagerState.currentPage] ?: 1f) > 1f
 
-    // rememberUpdatedState so the running snapshotFlow collector always sees the latest
-    // list without restarting the collection (which would cause a page-tracking glitch).
-    val latestList by rememberUpdatedState(list)
+    // Dismiss-by-drag state
+    val dismissOffsetY = remember { Animatable(0f) }
+    val scope = rememberCoroutineScope()
+    val dismissThresholdPx = with(LocalDensity.current) { 150.dp.toPx() }
 
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
-            val currentList = latestList
-            if (currentList.isNotEmpty() && page < currentList.size) {
-                val marsPhoto = currentList[page]
-                onShown(marsPhoto, page)
-                titleState = buildString {
-                    append("Sol ")
-                    append(marsPhoto.sol)
-                    val cam = marsPhoto.camera?.fullName
+            val marsPhoto = pagingItems.peek(page) ?: return@collect
+            onShown(marsPhoto, page)
+            titleState = buildString {
+                append("Sol ")
+                append(marsPhoto.sol)
+                val cam = marsPhoto.camera?.fullName
                     ?.trim()
                     ?.takeIf { it.isNotBlank() && it != "Unknown Camera" }
-                    if (cam != null) {
-                        append(" · ")
-                        append(cam)
-                    }
+                if (cam != null) {
+                    append(" · ")
+                    append(cam)
                 }
             }
         }
     }
 
-    val currentImage = remember(pagerState.currentPage, list) {
-        list.getOrNull(pagerState.currentPage)
-    }
+    val currentImage = pagingItems.peek(pagerState.currentPage)
 
-    // The graphicsLayer wrapper translates & fades the entire screen during swipe-to-dismiss,
-    // including the TopAppBar overlay, so they all move together naturally.
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .graphicsLayer {
-            translationY = dismissOffsetY.value
-            // Fade from fully opaque (offset=0) to transparent (offset=2×threshold)
-            alpha = (1f - (dismissOffsetY.value / (dismissThresholdPx * 2f)).coerceIn(0f, 1f))
-        }
+    // Black backdrop stays put so the window background never shows through during dismiss
+    Box(modifier = Modifier.fillMaxSize().background(Color.Black))
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .graphicsLayer {
+                translationY = dismissOffsetY.value
+                // Gently fade the screen as the user drags it down
+                alpha = (1f - dismissOffsetY.value / (dismissThresholdPx * 2.5f))
+                    .coerceIn(0f, 1f)
+            }
+            .pointerInput(isCurrentPageZoomed) {
+                if (isCurrentPageZoomed) return@pointerInput
+                detectVerticalDragGestures(
+                    onDragEnd = {
+                        if (dismissOffsetY.value > dismissThresholdPx) {
+                            onBack()
+                        } else {
+                            scope.launch {
+                                dismissOffsetY.animateTo(
+                                    targetValue = 0f,
+                                    animationSpec = spring(stiffness = Spring.StiffnessMedium)
+                                )
+                            }
+                        }
+                    },
+                    onDragCancel = {
+                        scope.launch { dismissOffsetY.animateTo(0f) }
+                    },
+                    onVerticalDrag = { change, dragAmount ->
+                        // Only respond to downward drags (or releasing back up once started)
+                        if (dragAmount > 0f || dismissOffsetY.value > 0f) {
+                            change.consume()
+                            scope.launch {
+                                dismissOffsetY.snapTo(
+                                    (dismissOffsetY.value + dragAmount).coerceAtLeast(0f)
+                                )
+                            }
+                        }
+                    }
+                )
+            }
     ) {
         ImagesPager(
             pagerState = pagerState,
-            images = list,
+            pagingItems = pagingItems,
             hideUi = hideUi,
             onTap = onTap,
             onFavoriteClick = onFavoriteClick,
-            onBack = onBack,
-            dismissOffsetY = dismissOffsetY,
-            dismissThresholdPx = dismissThresholdPx,
+            onScaleChange = { page, scale -> pageScales[page] = scale },
         )
 
         OnEvent(uiEvent = uiEvent)
 
-        // Translucent TopAppBar overlay + (debug-only) action row.
+        // Translucent TopAppBar overlay + action row.
         AnimatedVisibility(
             visible = !hideUi,
             enter = fadeIn() + slideInVertically(initialOffsetY = { -it }),
@@ -310,15 +340,9 @@ private fun ImagesPagerContent(
                     onBack  = onBack,
                     actions = {
                         if (currentImage != null) {
-                            SaveIcon(onClick = {
-                                onSaveClick(currentImage)
-                            })
-                            ShareIcon(onClick = {
-                                onShareClick(currentImage)
-                            })
-                            InfoIcon(onClick = {
-                                showInfoSheet = true
-                            })
+                            SaveIcon(onClick = { onSaveClick(currentImage) })
+                            ShareIcon(onClick = { onShareClick(currentImage) })
+                            InfoIcon(onClick = { showInfoSheet = true })
                         }
                     },
                 )
@@ -342,7 +366,6 @@ private fun BoxScope.OnEvent(uiEvent: UiEvent?) {
     val uriHandler = LocalUriHandler.current
     var showCheckmark by remember { mutableStateOf(false) }
     // Captures the saved-image path so the "Open" action in the snackbar can open it.
-    // Held outside the `when` branch so MarsSnackbar (always rendered) can reference it.
     var openImagePath by remember { mutableStateOf<String?>(null) }
 
     when (uiEvent) {
@@ -352,7 +375,6 @@ private fun BoxScope.OnEvent(uiEvent: UiEvent?) {
                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 showCheckmark = true
                 openImagePath = imagePath
-                // Show checkmark for 1.5 s concurrently with the snackbar.
                 launch {
                     delay(1500)
                     showCheckmark = false
@@ -384,11 +406,8 @@ private fun BoxScope.OnEvent(uiEvent: UiEvent?) {
         null -> { /* idle */ }
     }
 
-    // SaveSuccessOverlay lives outside the when so AnimatedVisibility can play its exit
-    // animation even after the event is consumed (uiEvent → null).
     SaveSuccessOverlay(visible = showCheckmark)
 
-    // MarsSnackbar is always rendered so the SnackbarHost is never removed mid-display.
     MarsSnackbar(
         snackbarHostState = snackbarHostState,
         modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding(),
@@ -452,121 +471,53 @@ private fun InfoIcon(onClick: () -> Unit) {
 @Composable
 private fun ImagesPager(
     pagerState: PagerState,
-    images: ImmutableList<MarsImage>,
+    pagingItems: LazyPagingItems<MarsImage>,
     hideUi: Boolean,
     onTap: () -> Unit,
-    onFavoriteClick: (MarsImage) -> Unit,
-    onBack: () -> Unit,
-    dismissOffsetY: Animatable<Float, AnimationVector1D>,
-    dismissThresholdPx: Float,
+    onFavoriteClick: (MarsImage, Boolean) -> Unit,
+    onScaleChange: (page: Int, scale: Float) -> Unit,
 ) {
-    val scope = rememberCoroutineScope()
-    val density = LocalDensity.current
+    // Immediate visual feedback for the heart: the paged item's favorite flag is correct on load
+    // (merged from Room by the write-through cache) but can't be mutated in place after a tap,
+    // so the override holds the desired state until the page is re-fetched.
+    val favoriteOverrides = remember { mutableStateMapOf<String, Boolean>() }
 
     NoScrollEffect {
         HorizontalPager(
             state = pagerState,
+            // Stable keys keep the centered photo in place when a PREPEND inserts earlier days.
+            key = { page -> pagingItems.peek(page)?.id ?: page },
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black),
         ) { page ->
-            val marsImage = images[page]
-            val zoomState = rememberZoomableState()
+            val marsImage = pagingItems[page] ?: return@HorizontalPager
+            val zoomState = rememberZoomState()
 
-            Box(modifier = Modifier
-                .fillMaxSize()
-                // PointerEventPass.Final: let HorizontalPager consume horizontal swipes first.
-                // We observe the remaining gesture and handle downward-only drags for dismiss.
-                .pointerInput(onBack, zoomState) {
-                    awaitEachGesture {
-                        val velocityTracker = VelocityTracker()
-                        val down = awaitFirstDown(requireUnconsumed = false)
-                        velocityTracker.addPointerInputChange(down)
-                        val startY = down.position.y
-                        val startX = down.position.x
-
-                        while (true) {
-                            val event = awaitPointerEvent(PointerEventPass.Final)
-                            val change = event.changes.firstOrNull { it.id == down.id } ?: break
-                            velocityTracker.addPointerInputChange(change)
-
-                            if (!change.pressed) {
-                                // Finger lifted — decide: dismiss or snap back
-                                val velocity = velocityTracker.calculateVelocity()
-                                val currentOffset = dismissOffsetY.value
-                                // Dismiss if dragged past threshold OR if a quick flick downward
-                                val shouldDismiss = currentOffset >= dismissThresholdPx ||
-                                        (currentOffset > 0f && velocity.y > 800f)
-                                if (shouldDismiss) {
-                                    scope.launch {
-                                        dismissOffsetY.animateTo(
-                                            with(density) { 1000.dp.toPx() },
-                                            animationSpec = tween(durationMillis = 220),
-                                        )
-                                        onBack()
-                                    }
-                                } else if (currentOffset > 0f) {
-                                    scope.launch {
-                                        dismissOffsetY.animateTo(
-                                            0f,
-                                            animationSpec = spring(stiffness = Spring.StiffnessMedium),
-                                        )
-                                    }
-                                }
-                                break
-                            }
-
-                            val dy = change.position.y - startY
-                            val dx = kotlin.math.abs(change.position.x - startX)
-
-                            when {
-                                zoomState.scale > 1f -> {
-                                    // Zoomed in — don't intercept, snap any offset back
-                                    if (dismissOffsetY.value > 0f) {
-                                        scope.launch { dismissOffsetY.animateTo(0f) }
-                                    }
-                                    break
-                                }
-                                dx > dy.coerceAtLeast(0f) * 1.5f -> {
-                                    // Horizontal swipe dominant — let the pager handle it, snap back
-                                    if (dismissOffsetY.value > 0f) {
-                                        scope.launch {
-                                            dismissOffsetY.animateTo(
-                                                0f,
-                                                animationSpec = spring(stiffness = Spring.StiffnessMedium),
-                                            )
-                                        }
-                                    }
-                                    break
-                                }
-                                dy > 0f -> {
-                                    // Downward vertical drag — update the dismiss offset live
-                                    scope.launch { dismissOffsetY.snapTo(dy) }
-                                }
-                                dy < 0f && dismissOffsetY.value > 0f -> {
-                                    // Upward drag while offset is non-zero — pull back toward 0
-                                    scope.launch {
-                                        dismissOffsetY.snapTo((dismissOffsetY.value + dy).coerceAtLeast(0f))
-                                    }
-                                }
-                            }
-                        }
-                    }
+            // Reset zoom when the user swipes to another page
+            LaunchedEffect(pagerState.settledPage) {
+                if (pagerState.settledPage != page) {
+                    zoomState.reset()
                 }
-            ) {
+            }
+
+            // Propagate scale changes so the parent can gate the dismiss gesture
+            LaunchedEffect(zoomState) {
+                snapshotFlow { zoomState.scale }
+                    .collect { scale -> onScaleChange(page, scale) }
+            }
+
+            Box(modifier = Modifier.fillMaxSize()) {
                 NetworkImage(
                     modifier = Modifier
                         .fillMaxSize()
-                        .zoomable(state = zoomState)
-                        .pointerInput(zoomState) {
-                            detectTapGestures(
-                                onTap = { onTap() },
-                                onDoubleTap = {
-                                    if (zoomState.scale > 1f) {
-                                        scope.launch { zoomState.reset() }
-                                    }
-                                },
-                            )
+                        .zoomable(
+                            zoomState = zoomState,
+                            scrollGesturePropagation = ScrollGesturePropagation.NotZoomed,
+                            enableOneFingerZoom = false,
+                        )
+                        .pointerInput(Unit) {
+                            detectTapGestures(onTap = { onTap() })
                         },
                     contentScale = ContentScale.Fit,
                     imageUrl = marsImage.imageUrl,
@@ -585,61 +536,19 @@ private fun ImagesPager(
                         exit = fadeOut() + slideOutVertically(targetOffsetY = { it }),
                         modifier = Modifier.align(Alignment.BottomCenter),
                     ) {
+                        val checked = favoriteOverrides[marsImage.id] ?: marsImage.favorite
                         MarsImageFavoriteToggle(
                             modifier = Modifier.size(64.dp),
-                            checked = marsImage.favorite,
-                            onCheckedChange = { onFavoriteClick(marsImage) }
+                            checked = checked,
+                            onCheckedChange = {
+                                val desired = !checked
+                                favoriteOverrides[marsImage.id] = desired
+                                onFavoriteClick(marsImage, desired)
+                            }
                         )
                     }
                 }
-
-                // Reset zoom when this page scrolls off-screen
-                val isSettled = page == pagerState.settledPage
-                LaunchedEffect(isSettled) {
-                    if (!isSettled) zoomState.reset()
-                }
             }
         }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview
-@Composable
-private fun ImagesPagerContentPreview() {
-    val sampleImage = MarsImage(
-        id = "preview_1",
-        order = 0,
-        sol = 3200L,
-        name = "Curiosity: FHAZ",
-        imageUrl = "https://mars.nasa.gov/msl-raw-images/sample.jpg",
-        earthDate = "2015-08-05",
-        camera = com.sirelon.marsroverphotos.domain.models.RoverCamera(
-            id = 1,
-            name = "FHAZ",
-            fullName = "Front Hazard Avoidance Camera"
-        ),
-        favorite = false,
-        popular = false,
-        stats = MarsImage.Stats(see = 42, scale = 0, save = 2, share = 1, favorite = 5),
-    )
-    val sampleImages = persistentListOf(
-        sampleImage,
-        sampleImage.copy(id = "preview_2", sol = 3201L, name = "Curiosity: MAST"),
-    )
-    val pagerState = rememberPagerState(pageCount = { sampleImages.size })
-    MaterialTheme {
-        ImagesPagerContent(
-            uiEvent = null,
-            list = sampleImages,
-            pagerState = pagerState,
-            hideUi = false,
-            onBack = {},
-            onShown = { _, _ -> },
-            onTap = {},
-            onFavoriteClick = {},
-            onSaveClick = {},
-            onShareClick = {},
-        )
     }
 }

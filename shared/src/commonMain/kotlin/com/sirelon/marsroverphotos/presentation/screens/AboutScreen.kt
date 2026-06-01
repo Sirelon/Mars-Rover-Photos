@@ -12,11 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.SnackbarHostState
@@ -35,6 +32,9 @@ import coil3.compose.LocalPlatformContext
 import com.sirelon.marsroverphotos.domain.settings.Theme
 import com.sirelon.marsroverphotos.platform.AppReview
 import com.sirelon.marsroverphotos.presentation.navigation.LocalAboutCallbacks
+import com.sirelon.marsroverphotos.presentation.ui.AppButton
+import com.sirelon.marsroverphotos.presentation.ui.AppCard
+import com.sirelon.marsroverphotos.presentation.ui.AppOutlinedButton
 import com.sirelon.marsroverphotos.presentation.ui.MarsSnackbar
 import com.sirelon.marsroverphotos.presentation.ui.RadioButtonText
 import com.sirelon.marsroverphotos.presentation.ui.rememberPlatformUriHandler
@@ -54,8 +54,13 @@ fun AboutScreen() {
     val viewModel: AboutViewModel = koinViewModel()
     val callbacks = LocalAboutCallbacks.current
     val coilContext = LocalPlatformContext.current
+    val currentTheme by viewModel.themeFlow.collectAsStateWithLifecycle()
+    val showFacts by viewModel.showFactsFlow.collectAsStateWithLifecycle()
     AboutContent(
-        viewModel = viewModel,
+        currentTheme = currentTheme,
+        showFacts = showFacts,
+        onThemeChange = viewModel::setTheme,
+        onFactsToggle = viewModel::toggleFacts,
         onClearCache = {
             val loader = SingletonImageLoader.get(coilContext)
             loader.diskCache?.clear()
@@ -69,7 +74,10 @@ fun AboutScreen() {
 
 @Composable
 private fun AboutContent(
-    viewModel: AboutViewModel,
+    currentTheme: Theme,
+    showFacts: Boolean,
+    onThemeChange: (Theme) -> Unit,
+    onFactsToggle: (Boolean) -> Unit,
     onClearCache: () -> Unit,
     onRateApp: () -> Unit,
     appVersion: String,
@@ -120,19 +128,17 @@ private fun AboutContent(
                 }
             }
 
-            val currentTheme by viewModel.themeFlow.collectAsStateWithLifecycle()
-            val showFacts by viewModel.showFactsFlow.collectAsStateWithLifecycle()
-            ThemeChanger(currentTheme = currentTheme, onThemeChange = viewModel::setTheme)
-            FactsToggle(showFacts = showFacts, onFactsToggle = viewModel::toggleFacts)
+            ThemeChanger(currentTheme = currentTheme, onThemeChange = onThemeChange)
+            FactsToggle(showFacts = showFacts, onFactsToggle = onFactsToggle)
 
-            OutlinedButton(onClick = {
+            AppOutlinedButton(onClick = {
                 onClearCache()
                 scope.launch { snackbarHostState.showSnackbar("Cache cleared") }
             }) {
                 Text(text = "Clear Cache")
             }
 
-            Button(
+            AppButton(
                 onClick = {
                     scope.launch {
                         val shown = appReview.requestReview()
@@ -168,10 +174,10 @@ private fun AboutContent(
 
 @Composable
 private fun ThemeChanger(currentTheme: Theme, onThemeChange: (Theme) -> Unit) {
-    Card(
+    AppCard(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp)
+            .padding(horizontal = 8.dp),
     ) {
         Column(
             modifier = Modifier
@@ -203,10 +209,10 @@ private fun ThemeChanger(currentTheme: Theme, onThemeChange: (Theme) -> Unit) {
 
 @Composable
 private fun FactsToggle(showFacts: Boolean, onFactsToggle: (Boolean) -> Unit) {
-    Card(
+    AppCard(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp)
+            .padding(horizontal = 8.dp),
     ) {
         Row(
             modifier = Modifier

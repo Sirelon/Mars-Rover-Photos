@@ -29,8 +29,13 @@ import com.sirelon.marsroverphotos.presentation.ui.AdSlot
 import com.sirelon.marsroverphotos.presentation.ui.UkraineBanner
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
+import androidx.navigation3.runtime.NavEntry
+import com.sirelon.marsroverphotos.presentation.screens.EarthDatePickerScreen
+import com.sirelon.marsroverphotos.presentation.screens.PhotosScreen
+import com.sirelon.marsroverphotos.presentation.screens.SolPickerScreen
 import org.koin.compose.koinInject
 import org.koin.compose.navigation3.koinEntryProvider
+import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 
 private const val ANIM_DURATION = 600
@@ -54,10 +59,77 @@ fun AppNavigation(
     )
     val navigator = remember(backStack) { AppNavigator(backStack) }
     val entryDecorators = rememberAppNavEntryDecorators()
-    val entryProvider = koinEntryProvider<NavKey>()
-    val tracker: Tracker = koinInject()
     val currentDestination = backStack.lastOrNull() as? AppDestination ?: startDestination
-    val isImages = currentDestination is AppDestination.Images
+    val chromeDestination = backStack.lastOrNull { it !is AppDestination.DialogDestination } as? AppDestination
+        ?: currentDestination
+    // The Photos flow (screen + Sol/Earth dialogs) shares one PhotosViewModel via the Photos
+    // entry's ViewModelStore. The Photos entry uses a camera-independent contentKey so the VM
+    // survives camera-filter changes; the dialog entries name it as their parent and resolve the
+    // same PhotosViewModel through LocalSharedViewModelStoreOwner. These three are declared as raw
+    // NavEntry (Koin's navigation<> DSL can't set contentKey); everything else comes from Koin.
+    val koinProvider = koinEntryProvider<NavKey>()
+    val entryProvider: (NavKey) -> NavEntry<NavKey> = { key ->
+        when (key) {
+            is AppDestination.Photos -> NavEntry<NavKey>(
+                key = key,
+                contentKey = photosContentKey(key.roverId),
+            ) {
+                PhotosScreen(
+                    roverId = key.roverId,
+                    cameraFilter = key.camera,
+                    onNavigateToImages = { clickedId ->
+                        navigator.navigate(
+                            AppDestination.Images(
+                                selectedId = clickedId,
+                                roverId = key.roverId,
+                                camera = key.camera,
+                                source = AppDestination.ImagesSource.ROVER_FEED,
+                            )
+                        )
+                    },
+                    onClearCameraFilter = {
+                        navigator.replaceTop(AppDestination.Photos(key.roverId, camera = null))
+                    },
+                    onBack = { navigator.goBack() },
+                    onOpenSolPicker = {
+                        navigator.navigate(AppDestination.PhotosSolPicker(key.roverId))
+                    },
+                    onOpenEarthDatePicker = {
+                        navigator.navigate(AppDestination.PhotosEarthDatePicker(key.roverId))
+                    },
+                )
+            }
+
+            is AppDestination.PhotosSolPicker -> NavEntry<NavKey>(
+                key = key,
+                contentKey = "${photosContentKey(key.roverId)}/sol",
+                metadata = SharedViewModelStoreNavEntryDecorator.parent(photosContentKey(key.roverId)) +
+                    DialogOverlaySceneStrategy.dialogOverlay(),
+            ) {
+                SolPickerScreen(
+                    viewModel = koinViewModel(viewModelStoreOwner = LocalSharedViewModelStoreOwner.current),
+                    onDismiss = { navigator.goBack() },
+                )
+            }
+
+            is AppDestination.PhotosEarthDatePicker -> NavEntry<NavKey>(
+                key = key,
+                contentKey = "${photosContentKey(key.roverId)}/earth",
+                metadata = SharedViewModelStoreNavEntryDecorator.parent(photosContentKey(key.roverId)) +
+                    DialogOverlaySceneStrategy.dialogOverlay(),
+            ) {
+                EarthDatePickerScreen(
+                    viewModel = koinViewModel(viewModelStoreOwner = LocalSharedViewModelStoreOwner.current),
+                    onDismiss = { navigator.goBack() },
+                )
+            }
+
+            else -> koinProvider(key)
+        }
+    }
+    val dialogOverlaySceneStrategy = remember { DialogOverlaySceneStrategy<NavKey>() }
+    val tracker: Tracker = koinInject()
+    val isImages = chromeDestination is AppDestination.Images
 
     LaunchedEffect(deepLink) {
         val target = deepLink ?: return@LaunchedEffect
@@ -85,7 +157,7 @@ fun AppNavigation(
         Column(
             modifier = if (isImages) modifier else modifier.windowInsetsPadding(WindowInsets.statusBars)
         ) {
-            AnimatedVisibility(!isImages && currentDestination !is AppDestination.Ukraine) {
+            AnimatedVisibility(!isImages && chromeDestination !is AppDestination.Ukraine) {
                 UkraineBanner(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
@@ -106,6 +178,7 @@ fun AppNavigation(
                     backStack = backStack,
                     onBack = { navigator.goBack() },
                     entryDecorators = entryDecorators,
+                    sceneStrategies = listOf(dialogOverlaySceneStrategy),
                     entryProvider = entryProvider,
                     // Forward navigation: new screen slides in from the right
                     transitionSpec = {
@@ -148,7 +221,7 @@ fun AppNavigation(
             if (!isImages) {
                 AdSlot(modifier = Modifier.fillMaxWidth())
                 MarsBottomBar(
-                    selectedDestination = currentDestination.topLevelDestination(),
+                    selectedDestination = chromeDestination.topLevelDestination(),
                     onDestinationClick = { destination ->
                         tracker.trackClick("bottom_${destination.analyticsTag}")
                         navigator.selectTopLevel(destination)
@@ -159,13 +232,21 @@ fun AppNavigation(
     }
 }
 
+/**
+ * Stable, camera-independent contentKey for a rover's Photos entry. Used as the Photos
+ * entry's contentKey and named by its dialog entries as their shared-ViewModelStore parent.
+ */
+private fun photosContentKey(roverId: Long): String = "photos-$roverId"
+
 private fun AppDestination.topLevelDestination(): AppDestination {
     return when (this) {
         AppDestination.Rovers,
         is AppDestination.Photos,
         is AppDestination.Images,
         is AppDestination.Mission,
-        AppDestination.Ukraine -> AppDestination.Rovers
+        AppDestination.Ukraine,
+        is AppDestination.PhotosSolPicker,
+        is AppDestination.PhotosEarthDatePicker -> AppDestination.Rovers
 
         AppDestination.Favorite -> AppDestination.Favorite
         AppDestination.Popular -> AppDestination.Popular
@@ -194,6 +275,8 @@ private val navBackStackConfiguration = SavedStateConfiguration {
             subclass(AppDestination.Mission::class, AppDestination.Mission.serializer())
             subclass(AppDestination.About::class, AppDestination.About.serializer())
             subclass(AppDestination.Ukraine::class, AppDestination.Ukraine.serializer())
+            subclass(AppDestination.PhotosSolPicker::class, AppDestination.PhotosSolPicker.serializer())
+            subclass(AppDestination.PhotosEarthDatePicker::class, AppDestination.PhotosEarthDatePicker.serializer())
         }
     }
 }
