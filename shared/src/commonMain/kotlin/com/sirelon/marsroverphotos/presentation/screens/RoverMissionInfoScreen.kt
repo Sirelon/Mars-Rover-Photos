@@ -23,9 +23,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.remember
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import com.sirelon.marsroverphotos.presentation.ui.AppCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
@@ -234,9 +234,9 @@ private fun MissionInfoContent(
 
 @Composable
 private fun RoverHeader(rover: Rover) {
-    Card(
+    AppCard(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -436,10 +436,7 @@ private fun MissionStatistics(
 
 @Composable
 private fun StatCard(label: String, value: String, modifier: Modifier = Modifier) {
-    Card(
-        modifier = modifier,
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
+    AppCard(modifier = modifier) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -476,10 +473,7 @@ private fun CamerasList(
         )
         return
     }
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
+    AppCard(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             cameras.forEachIndexed { index, camera ->
                 CameraItem(
@@ -535,10 +529,7 @@ private fun CameraItem(
 
 @Composable
 private fun MissionObjectives(objectives: List<String>) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
+    AppCard(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             objectives.forEach { objective ->
                 Row(modifier = Modifier.padding(vertical = 4.dp)) {
@@ -560,12 +551,12 @@ private fun MissionObjectives(objectives: List<String>) {
 
 @Composable
 private fun FunFacts(facts: List<String>) {
-    Card(
+    AppCard(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        )
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        ),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             facts.forEach { fact ->

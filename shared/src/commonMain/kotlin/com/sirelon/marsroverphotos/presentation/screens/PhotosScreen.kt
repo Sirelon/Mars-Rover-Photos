@@ -23,13 +23,10 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -59,6 +56,10 @@ import androidx.paging.compose.itemKey
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.domain.models.EducationalFact
 import com.sirelon.marsroverphotos.presentation.models.GridItem
+import com.sirelon.marsroverphotos.presentation.ui.AppCard
+import com.sirelon.marsroverphotos.presentation.ui.AppFactCard
+import com.sirelon.marsroverphotos.presentation.ui.AppFloatingActionButton
+import com.sirelon.marsroverphotos.presentation.ui.AppOutlinedButton
 import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
 import com.sirelon.marsroverphotos.presentation.ui.CenteredColumn
 import com.sirelon.marsroverphotos.presentation.ui.CenteredProgress
@@ -258,7 +259,7 @@ private fun RefreshButton(
         enter = fadeIn(),
         exit = fadeOut()
     ) {
-        FloatingActionButton(onClick = onClick) {
+        AppFloatingActionButton(onClick = onClick) {
             MaterialSymbolIcon(
                 symbol = MaterialSymbol.Autorenew,
                 contentDescription = "Jump to latest Sol"
@@ -412,12 +413,11 @@ private fun PhotoCard(
     onPhotoClick: (image: MarsImage) -> Unit,
     onCameraClick: ((cameraName: String) -> Unit)? = null
 ) {
-    Card(
+    AppCard(
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth()
             .clickable { onPhotoClick(image) },
-        shape = MaterialTheme.shapes.large
     ) {
         Column(verticalArrangement = Arrangement.SpaceBetween) {
             NetworkImage(
@@ -429,6 +429,7 @@ private fun PhotoCard(
             Text(
                 text = shortCaption(image.name.orEmpty()),
                 style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.secondary,
                 modifier = Modifier
                     .padding(4.dp)
                     .fillMaxWidth()
@@ -467,14 +468,10 @@ private fun FactCard(
     fact: EducationalFact,
     modifier: Modifier = Modifier
 ) {
-    Card(
+    AppFactCard(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
             modifier = Modifier
@@ -489,21 +486,18 @@ private fun FactCard(
                 MaterialSymbolIcon(
                     symbol = MaterialSymbol.Info,
                     contentDescription = stringResource(Res.string.educational_fact),
-                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
                     modifier = Modifier.size(24.dp)
                 )
                 Text(
                     text = stringResource(Res.string.did_you_know),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
                 )
             }
 
             Text(
                 text = fact.text,
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
                 modifier = Modifier.padding(top = 4.dp)
             )
         }

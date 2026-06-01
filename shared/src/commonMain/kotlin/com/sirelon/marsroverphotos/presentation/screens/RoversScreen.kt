@@ -15,9 +15,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.IconButton
+import com.sirelon.marsroverphotos.presentation.ui.AppCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -95,10 +94,8 @@ fun RoverItem(
     onMissionInfoClick: (rover: Rover) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(
+    AppCard(
         modifier = modifier.padding(8.dp),
-        shape = MaterialTheme.shapes.large,
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -160,7 +157,7 @@ private fun TitleText(text: String) {
     Text(
         text = text,
         style = MaterialTheme.typography.headlineMedium,
-        color = MaterialTheme.colorScheme.tertiary,
+        color = MaterialTheme.colorScheme.secondary,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis
     )
