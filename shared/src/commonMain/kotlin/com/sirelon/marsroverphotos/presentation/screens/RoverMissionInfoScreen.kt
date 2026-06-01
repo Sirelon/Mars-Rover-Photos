@@ -48,9 +48,10 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
+import com.sirelon.marsroverphotos.presentation.theme.AppTypography
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sirelon.marsroverphotos.domain.models.Rover
 import com.sirelon.marsroverphotos.domain.models.mission.CameraSpec
@@ -164,15 +165,15 @@ private fun MissionInfoContent(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp),
-        contentPadding = PaddingValues(vertical = 16.dp),
+            .padding(horizontal = AppSpacing.lg),
+        verticalArrangement = Arrangement.spacedBy(AppSpacing.xl),
+        contentPadding = PaddingValues(vertical = AppSpacing.lg),
     ) {
         item { RoverHeader(state.rover) }
 
         item {
             SectionHeader("Mission Timeline")
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(AppSpacing.sm))
             MissionTimeline(
                 milestones = state.timelineMilestones,
                 status = state.rover.status
@@ -181,7 +182,7 @@ private fun MissionInfoContent(
 
         item {
             SectionHeader("Statistics")
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(AppSpacing.sm))
             MissionStatistics(
                 totalPhotos = state.rover.totalPhotos,
                 daysActive = state.daysActive,
@@ -192,7 +193,7 @@ private fun MissionInfoContent(
 
         item {
             SectionHeader("Cameras")
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(AppSpacing.sm))
             CamerasList(
                 cameras = state.cameras,
                 onCameraClick = onCameraClick
@@ -202,7 +203,7 @@ private fun MissionInfoContent(
         when {
             state.factsLoading -> item {
                 SectionHeader("Mission Info")
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(AppSpacing.sm))
                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
             }
 
@@ -210,14 +211,14 @@ private fun MissionInfoContent(
                 if (state.missionFacts.objectives.isNotEmpty()) {
                     item {
                         SectionHeader("Mission Objectives")
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(AppSpacing.sm))
                         MissionObjectives(objectives = state.missionFacts.objectives)
                     }
                 }
                 if (state.missionFacts.funFacts.isNotEmpty()) {
                     item {
                         SectionHeader("Fun Facts")
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(AppSpacing.sm))
                         FunFacts(facts = state.missionFacts.funFacts)
                     }
                 }
@@ -239,7 +240,7 @@ private fun RoverHeader(rover: Rover) {
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(AppSpacing.lg),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
@@ -251,11 +252,10 @@ private fun RoverHeader(rover: Rover) {
                     .clip(MaterialTheme.shapes.medium),
                 contentScale = ContentScale.Fit
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(AppSpacing.lg))
             Text(
                 text = rover.name,
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
+                style = AppTypography.roverTitle,
                 color = MaterialTheme.colorScheme.tertiary
             )
         }
@@ -266,8 +266,7 @@ private fun RoverHeader(rover: Rover) {
 private fun SectionHeader(title: String) {
     Text(
         text = title,
-        style = MaterialTheme.typography.titleLarge,
-        fontWeight = FontWeight.Bold,
+        style = AppTypography.sectionHeader,
         color = MaterialTheme.colorScheme.tertiary
     )
 }
@@ -306,11 +305,10 @@ private fun MissionTimeline(milestones: ImmutableList<TimelineMilestone>, status
             ) {
                 Text(
                     text = milestone.label,
-                    style = MaterialTheme.typography.labelSmall,
-                    fontWeight = FontWeight.Bold,
+                    style = AppTypography.milestoneLabel,
                     textAlign = TextAlign.Center
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(AppSpacing.xs))
                 Box(
                     modifier = Modifier
                         .size(32.dp)
@@ -331,7 +329,7 @@ private fun MissionTimeline(milestones: ImmutableList<TimelineMilestone>, status
                         modifier = Modifier.size(20.dp)
                     )
                 }
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(AppSpacing.xs))
                 Text(
                     text = milestone.date,
                     style = MaterialTheme.typography.bodySmall,
@@ -362,7 +360,7 @@ private fun MissionTimeline(milestones: ImmutableList<TimelineMilestone>, status
                     modifier = Modifier
                         .weight(0.5f)
                         .align(Alignment.CenterVertically)
-                        .padding(horizontal = 4.dp)
+                        .padding(horizontal = AppSpacing.xs)
                 )
             }
         }
@@ -400,10 +398,10 @@ private fun MissionStatistics(
     earthDaysActive: Long,
     status: String
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
         ) {
             StatCard(
                 label = "Total Photos",
@@ -418,7 +416,7 @@ private fun MissionStatistics(
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
         ) {
             StatCard(
                 label = "Earth Days",
@@ -440,20 +438,19 @@ private fun StatCard(label: String, value: String, modifier: Modifier = Modifier
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(AppSpacing.lg),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = label,
-                style = MaterialTheme.typography.labelMedium,
+                style = AppTypography.statLabel,
                 color = MaterialTheme.colorScheme.secondary,
                 textAlign = TextAlign.Center
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(AppSpacing.sm))
             Text(
                 text = value,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
+                style = AppTypography.statValue,
                 textAlign = TextAlign.Center
             )
         }
@@ -468,20 +465,20 @@ private fun CamerasList(
     if (cameras.isEmpty()) {
         Text(
             text = "No camera information available",
-            style = MaterialTheme.typography.bodyMedium,
+            style = AppTypography.bodySecondary,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         return
     }
     AppCard(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(AppSpacing.lg)) {
             cameras.forEachIndexed { index, camera ->
                 CameraItem(
                     camera = camera,
                     onClick = { onCameraClick(camera.name) }
                 )
                 if (index < cameras.size - 1) {
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
+                    HorizontalDivider(modifier = Modifier.padding(vertical = AppSpacing.md))
                 }
             }
         }
@@ -504,21 +501,20 @@ private fun CameraItem(
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp)
             )
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(AppSpacing.md))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = camera.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    style = AppTypography.factHeader
                 )
                 Text(
                     text = camera.fullName,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = AppTypography.bodySecondary,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(AppSpacing.sm))
         Text(
             text = camera.description,
             style = MaterialTheme.typography.bodySmall,
@@ -530,18 +526,18 @@ private fun CameraItem(
 @Composable
 private fun MissionObjectives(objectives: List<String>) {
     AppCard(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(AppSpacing.lg)) {
             objectives.forEach { objective ->
-                Row(modifier = Modifier.padding(vertical = 4.dp)) {
+                Row(modifier = Modifier.padding(vertical = AppSpacing.xs)) {
                     Text(
                         text = "•",
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = AppTypography.body,
                         color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(end = 8.dp)
+                        modifier = Modifier.padding(end = AppSpacing.sm)
                     )
                     Text(
                         text = objective,
-                        style = MaterialTheme.typography.bodyLarge
+                        style = AppTypography.body
                     )
                 }
             }
@@ -558,13 +554,13 @@ private fun FunFacts(facts: List<String>) {
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
         ),
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(AppSpacing.lg)) {
             facts.forEach { fact ->
-                Row(modifier = Modifier.padding(vertical = 4.dp)) {
-                    Text(text = "✨", modifier = Modifier.padding(end = 8.dp))
+                Row(modifier = Modifier.padding(vertical = AppSpacing.xs)) {
+                    Text(text = "✨", modifier = Modifier.padding(end = AppSpacing.sm))
                     Text(
                         text = fact,
-                        style = MaterialTheme.typography.bodyLarge
+                        style = AppTypography.body
                     )
                 }
             }

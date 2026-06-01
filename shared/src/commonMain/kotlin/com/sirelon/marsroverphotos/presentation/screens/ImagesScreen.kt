@@ -56,6 +56,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -200,7 +201,7 @@ private fun ImagesEmptyState(onBack: () -> Unit) {
                 text = stringResource(Res.string.images_empty_title),
                 style = MaterialTheme.typography.titleMedium,
             )
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(AppSpacing.md))
             AppButton(onClick = onBack) {
                 Text(text = stringResource(Res.string.images_empty_btn))
             }
@@ -435,7 +436,7 @@ private fun BoxScope.SaveSuccessOverlay(visible: Boolean) {
         MaterialSymbolIcon(
             symbol = MaterialSymbol.CheckCircle,
             contentDescription = "Saved",
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(AppSpacing.lg),
             tint = MaterialTheme.colorScheme.primary,
             size = 48.dp,
             filled = true

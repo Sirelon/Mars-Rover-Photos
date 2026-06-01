@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.Box
+import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
 import coil3.compose.AsyncImage
@@ -62,7 +63,7 @@ fun MarsImageComposable(
     val showStats = state is AsyncImagePainter.State.Success
     AppCard(
         modifier = modifier
-            .padding(vertical = 8.dp)
+            .padding(vertical = AppSpacing.sm)
             .fillMaxWidth()
             .clickable(onClick = onClick),
     ) {
@@ -94,7 +95,7 @@ fun PhotoStats(
 
     Column(
         modifier = modifier
-            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .padding(horizontal = AppSpacing.sm, vertical = AppSpacing.xs)
             .fillMaxWidth(),
     ) {
         Row(
@@ -137,7 +138,7 @@ private fun LikeAction(
             tint = tint,
             size = 22.dp,
         )
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(AppSpacing.sm))
         Text(
             text = if (count > 0) "Like · ${compactCount(count)}" else "Like",
             style = MaterialTheme.typography.labelLarge,

@@ -27,6 +27,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
+import com.sirelon.marsroverphotos.presentation.theme.AppTypography
 import coil3.SingletonImageLoader
 import coil3.compose.LocalPlatformContext
 import com.sirelon.marsroverphotos.domain.settings.Theme
@@ -83,7 +85,6 @@ private fun AboutContent(
     appVersion: String,
     rateAppUrl: String
 ) {
-    val typography = MaterialTheme.typography
     val uriHandler = rememberPlatformUriHandler()
     val appReview: AppReview = koinInject()
     val scope = rememberCoroutineScope()
@@ -93,25 +94,25 @@ private fun AboutContent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = AppSpacing.lg)
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(AppSpacing.lg),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
                 painter = painterResource(Res.drawable.alien_icon),
                 contentDescription = "logo"
             )
-            Text(text = "Mars Rover Photos", style = typography.headlineSmall)
+            Text(text = "Mars Rover Photos", style = AppTypography.appTitle)
             Text(
                 text = "Browse photos taken by NASA's Mars rovers. Explore the red planet through the eyes of Curiosity, Opportunity, Spirit, Perseverance, and InSight.",
-                style = typography.bodyLarge,
+                style = AppTypography.body,
                 textAlign = TextAlign.Center
             )
 
             Column(
                 modifier = Modifier
-                    .padding(vertical = 8.dp)
+                    .padding(vertical = AppSpacing.sm)
                     .fillMaxWidth()
             ) {
                 LinkifyText(text = "API provided by ", link = "https://api.nasa.gov/")
@@ -123,7 +124,7 @@ private fun AboutContent(
                 if (appVersion.isNotEmpty()) {
                     Text(
                         text = "Version: $appVersion",
-                        modifier = Modifier.padding(4.dp)
+                        modifier = Modifier.padding(AppSpacing.xs)
                     )
                 }
             }
@@ -160,7 +161,7 @@ private fun AboutContent(
             Text(
                 text = "© $currentYear All rights reserved.",
                 style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(AppSpacing.lg)
             )
         }
 
@@ -177,12 +178,12 @@ private fun ThemeChanger(currentTheme: Theme, onThemeChange: (Theme) -> Unit) {
     AppCard(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp),
+            .padding(horizontal = AppSpacing.sm),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 16.dp)
+                .padding(top = AppSpacing.lg)
         ) {
             Text(
                 modifier = Modifier.fillMaxWidth(),
@@ -212,12 +213,12 @@ private fun FactsToggle(showFacts: Boolean, onFactsToggle: (Boolean) -> Unit) {
     AppCard(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp),
+            .padding(horizontal = AppSpacing.sm),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = AppSpacing.lg, vertical = AppSpacing.md),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
@@ -252,7 +253,7 @@ private fun LinkifyText(text: String, link: String, displayLink: String = link) 
     val colors = MaterialTheme.colorScheme
 
     Row(
-        modifier = Modifier.padding(4.dp),
+        modifier = Modifier.padding(AppSpacing.xs),
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (text.isNotEmpty()) {
