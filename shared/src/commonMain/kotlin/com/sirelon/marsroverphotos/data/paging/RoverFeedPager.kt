@@ -53,6 +53,22 @@ class RoverFeedPager(
     val currentParams: Params? get() = paramsFlow.value
 
     /**
+     * Id of the photo most recently shown in the fullscreen detail pager. The list reads (and
+     * clears) this via [consumeLastViewedPhotoId] when the viewer is closed so it can restore its
+     * scroll position to the photo the user actually swiped to — not the one they originally
+     * tapped. Only the rover-feed source sets it (other sources don't share this list's grid).
+     */
+    private val lastViewedPhotoId = MutableStateFlow<String?>(null)
+
+    fun setLastViewedPhotoId(id: String) {
+        lastViewedPhotoId.value = id
+    }
+
+    /** Return the last-viewed photo id and clear it, so it's applied at most once per viewer visit. */
+    fun consumeLastViewedPhotoId(): String? =
+        lastViewedPhotoId.value.also { lastViewedPhotoId.value = null }
+
+    /**
      * Shared, cached stream of feed photos (photos only — date headers and facts are layered
      * on by the list ViewModel). Collected by both the list grid and the detail pager.
      */

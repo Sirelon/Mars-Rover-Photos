@@ -30,6 +30,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sirelon.marsroverphotos.domain.models.Rover
+import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
+import com.sirelon.marsroverphotos.presentation.theme.AppTypography
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.presentation.ui.painter
@@ -72,9 +74,9 @@ fun RoversContent(
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 360.dp),
         modifier = modifier,
-        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        contentPadding = PaddingValues(horizontal = AppSpacing.md, vertical = AppSpacing.sm),
+        verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
+        horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
     ) {
         items(rovers, key = { it.id }) { item ->
             RoverItem(
@@ -95,14 +97,14 @@ fun RoverItem(
     modifier: Modifier = Modifier
 ) {
     AppCard(
-        modifier = modifier.padding(8.dp),
+        modifier = modifier.padding(AppSpacing.sm),
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable(onClick = { onClick(rover) })
-                .padding(8.dp)
+                .padding(AppSpacing.sm)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -123,7 +125,7 @@ fun RoverItem(
             }
             InfoText(label = "Status:", text = rover.status)
 
-            Row(modifier = Modifier.padding(8.dp)) {
+            Row(modifier = Modifier.padding(AppSpacing.sm)) {
                 Image(
                     contentScale = ContentScale.FillHeight,
                     painter = rover.painter(),
@@ -133,7 +135,7 @@ fun RoverItem(
                         .clip(shape = MaterialTheme.shapes.large),
                     contentDescription = rover.name
                 )
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(AppSpacing.sm))
                 Column(
                     modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.SpaceAround
@@ -156,7 +158,7 @@ fun RoverItem(
 private fun TitleText(text: String) {
     Text(
         text = text,
-        style = MaterialTheme.typography.headlineMedium,
+        style = AppTypography.roverTitle,
         color = MaterialTheme.colorScheme.secondary,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis
@@ -165,14 +167,13 @@ private fun TitleText(text: String) {
 
 @Composable
 private fun InfoText(label: String, text: String) {
-    val typography = MaterialTheme.typography
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = label,
-            style = typography.titleMedium,
+            style = AppTypography.infoLabel,
             color = MaterialTheme.colorScheme.secondary,
             textAlign = TextAlign.Center,
             maxLines = 2,
@@ -181,7 +182,7 @@ private fun InfoText(label: String, text: String) {
         )
         Text(
             text = text,
-            style = typography.titleSmall,
+            style = AppTypography.infoValue,
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
             maxLines = 1,

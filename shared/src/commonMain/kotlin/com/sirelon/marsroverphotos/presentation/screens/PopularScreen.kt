@@ -25,6 +25,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
+import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
+import com.sirelon.marsroverphotos.presentation.theme.AppTypography
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -135,14 +137,14 @@ private fun PopularPhotosContent(
                     modifier = Modifier
                         .weight(1f)
                         .nestedScroll(scrollBehavior.nestedScrollConnection),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+                    contentPadding = PaddingValues(horizontal = AppSpacing.md, vertical = AppSpacing.sm),
                     columns = if (gridView) {
                         StaggeredGridCells.Adaptive(minSize = 180.dp)
                     } else {
                         StaggeredGridCells.Fixed(1)
                     },
                     verticalItemSpacing = 8.dp,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm),
                     content = {
                         items(
                             count = lazyPagingItems.itemCount,
@@ -173,10 +175,10 @@ private fun PopularEmptyContent(
     CenteredColumn(modifier = modifier) {
         Text(
             text = title,
-            style = MaterialTheme.typography.bodyLarge,
+            style = AppTypography.body,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(AppSpacing.lg))
         AppButton(onClick = onRetry) {
             Text(text = "Retry")
         }

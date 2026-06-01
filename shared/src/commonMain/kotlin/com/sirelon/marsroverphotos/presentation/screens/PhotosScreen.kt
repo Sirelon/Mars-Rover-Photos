@@ -48,6 +48,8 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
+import com.sirelon.marsroverphotos.presentation.theme.AppTypography
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.PagingData
@@ -82,6 +84,7 @@ import coil3.compose.LocalPlatformContext
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -157,6 +160,21 @@ fun PhotosScreen(
                     }
                 }
             }
+    }
+
+    // On return from the fullscreen viewer, jump the grid to the photo the user was last viewing
+    // there. The detail pager and this grid share the same RoverFeedPager pages, so that photo is
+    // already in the loaded snapshot; we locate it by id (its grid index differs from the pager's
+    // because of the date headers and fact cards interleaved here). Runs once per (re)entry; the
+    // id is cleared on read so later manual scrolls aren't overridden.
+    LaunchedEffect(Unit) {
+        val targetId = viewModel.consumeLastViewedPhotoId() ?: return@LaunchedEffect
+        val index = snapshotFlow {
+            pagingItems.itemSnapshotList.indexOfFirst {
+                (it as? GridItem.PhotoItem)?.image?.id == targetId
+            }
+        }.first { it >= 0 }
+        gridState.scrollToItem(index)
     }
 
     PhotosScreen(
@@ -267,7 +285,7 @@ private fun PhotosScreen(
                             onOpenEarthDatePicker = onOpenEarthDatePicker,
                             modifier = Modifier
                                 .align(Alignment.TopCenter)
-                                .padding(top = 8.dp)
+                                .padding(top = AppSpacing.sm)
                         )
 
                         // Prepend (scroll-up) progress at the top, append (scroll-down) at the bottom.
@@ -315,15 +333,15 @@ private fun PhotosGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(
-            start = 12.dp,
-            end = 12.dp,
+            start = AppSpacing.md,
+            end = AppSpacing.md,
             // Leave room for the floating date chip at the top.
             top = 52.dp,
             // 56dp FAB + 16dp FAB padding + 8dp margin above FAB
             bottom = 80.dp
         ),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
+        horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
     ) {
         items(
             count = pagingItems.itemCount,
@@ -361,9 +379,9 @@ private fun DateHeaderRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 4.dp, vertical = 8.dp),
+            .padding(horizontal = AppSpacing.xs, vertical = AppSpacing.sm),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
     ) {
         Text(
             text = formatDisplayDate(header.earthDate),
@@ -460,10 +478,10 @@ private fun PhotoCard(
             )
             Text(
                 text = shortCaption(image.name.orEmpty()),
-                style = MaterialTheme.typography.bodySmall,
+                style = AppTypography.photoCaption,
                 color = MaterialTheme.colorScheme.secondary,
                 modifier = Modifier
-                    .padding(4.dp)
+                    .padding(AppSpacing.xs)
                     .fillMaxWidth()
                     .then(
                         if (onCameraClick != null && image.camera != null) {
@@ -481,17 +499,17 @@ private fun EmptyPhotos(title: String, btnTitle: String, callback: () -> Unit) {
     CenteredColumn(
         modifier = Modifier
             .clickable(onClick = callback)
-            .padding(32.dp)
+            .padding(AppSpacing.xxl)
     ) {
         Image(painter = painterResource(Res.drawable.alien_icon), contentDescription = null)
-        Spacer(modifier = Modifier.size(8.dp))
+        Spacer(modifier = Modifier.size(AppSpacing.sm))
         Text(
             text = title,
-            style = MaterialTheme.typography.headlineSmall,
+            style = AppTypography.appTitle,
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.size(8.dp))
-        Text(text = btnTitle, style = MaterialTheme.typography.headlineMedium)
+        Spacer(modifier = Modifier.size(AppSpacing.sm))
+        Text(text = btnTitle, style = AppTypography.roverTitle)
     }
 }
 
@@ -503,17 +521,17 @@ private fun FactCard(
     AppFactCard(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 12.dp),
+            .padding(horizontal = AppSpacing.sm, vertical = AppSpacing.md),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(AppSpacing.lg),
+            verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
             ) {
                 MaterialSymbolIcon(
                     symbol = MaterialSymbol.Info,
@@ -522,15 +540,14 @@ private fun FactCard(
                 )
                 Text(
                     text = stringResource(Res.string.did_you_know),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
+                    style = AppTypography.factHeader,
                 )
             }
 
             Text(
                 text = fact.text,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(top = 4.dp)
+                style = AppTypography.body,
+                modifier = Modifier.padding(top = AppSpacing.xs)
             )
         }
     }
@@ -544,7 +561,7 @@ private fun CameraFilterChip(camera: String, onClear: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp),
+            .padding(horizontal = AppSpacing.lg, vertical = AppSpacing.xs),
         verticalAlignment = Alignment.CenterVertically
     ) {
         AssistChip(
