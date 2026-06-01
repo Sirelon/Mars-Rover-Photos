@@ -77,6 +77,7 @@ import com.sirelon.marsroverphotos.shared.resources.educational_fact
 import com.sirelon.marsroverphotos.shared.resources.no_photos_title
 import com.sirelon.marsroverphotos.shared.resources.tap_to_retry
 import com.sirelon.marsroverphotos.utils.formatDisplayDate
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -124,6 +125,21 @@ fun PhotosScreen(
             .collect { index ->
                 solAtIndex(currentPagingItems.value, index)?.let(viewModel::onVisibleSolChanged)
             }
+    }
+
+    // On return from the fullscreen viewer, jump the grid to the photo the user was last viewing
+    // there. The detail pager and this grid share the same RoverFeedPager pages, so that photo is
+    // already in the loaded snapshot; we locate it by id (its grid index differs from the pager's
+    // because of the date headers and fact cards interleaved here). Runs once per (re)entry; the
+    // id is cleared on read so later manual scrolls aren't overridden.
+    LaunchedEffect(Unit) {
+        val targetId = viewModel.consumeLastViewedPhotoId() ?: return@LaunchedEffect
+        val index = snapshotFlow {
+            pagingItems.itemSnapshotList.indexOfFirst {
+                (it as? GridItem.PhotoItem)?.image?.id == targetId
+            }
+        }.first { it >= 0 }
+        gridState.scrollToItem(index)
     }
 
     PhotosScreen(

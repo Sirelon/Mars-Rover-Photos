@@ -163,6 +163,11 @@ class ImageViewModel(
     /** Handle image being shown (for analytics). */
     fun onShown(marsPhoto: MarsImage, page: Int) {
         Logger.d("ImageViewModel") { "Photo shown: ${marsPhoto.id} at page $page" }
+        // Remember the photo currently on screen so the rover-feed list can restore its scroll
+        // position to it when the viewer is closed. Only meaningful for the shared feed.
+        if (sourceEmitter.value == AppDestination.ImagesSource.ROVER_FEED) {
+            roverFeedPager.setLastViewedPhotoId(marsPhoto.id)
+        }
         // Analytics tracking would go here if needed
     }
 
