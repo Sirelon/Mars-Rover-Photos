@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -172,12 +173,15 @@ fun NetworkImage(
     showPlaceholder: Boolean = true,
     imageUrl: String
 ) {
-    val request = ImageRequest.Builder(LocalPlatformContext.current)
-        .data(data = imageUrl)
-        .apply {
-            crossfade(true)
-        }
-        .build()
+    val context = LocalPlatformContext.current
+    val request = remember(imageUrl) {
+        ImageRequest.Builder(context)
+            .data(data = imageUrl)
+            .apply {
+                crossfade(true)
+            }
+            .build()
+    }
     if (showPlaceholder) {
         AsyncImage(
             model = request,
