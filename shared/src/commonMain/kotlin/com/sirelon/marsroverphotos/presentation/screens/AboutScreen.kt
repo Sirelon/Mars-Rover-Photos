@@ -54,8 +54,13 @@ fun AboutScreen() {
     val viewModel: AboutViewModel = koinViewModel()
     val callbacks = LocalAboutCallbacks.current
     val coilContext = LocalPlatformContext.current
+    val currentTheme by viewModel.themeFlow.collectAsStateWithLifecycle()
+    val showFacts by viewModel.showFactsFlow.collectAsStateWithLifecycle()
     AboutContent(
-        viewModel = viewModel,
+        currentTheme = currentTheme,
+        showFacts = showFacts,
+        onThemeChange = viewModel::setTheme,
+        onFactsToggle = viewModel::toggleFacts,
         onClearCache = {
             val loader = SingletonImageLoader.get(coilContext)
             loader.diskCache?.clear()
@@ -69,7 +74,10 @@ fun AboutScreen() {
 
 @Composable
 private fun AboutContent(
-    viewModel: AboutViewModel,
+    currentTheme: Theme,
+    showFacts: Boolean,
+    onThemeChange: (Theme) -> Unit,
+    onFactsToggle: (Boolean) -> Unit,
     onClearCache: () -> Unit,
     onRateApp: () -> Unit,
     appVersion: String,
@@ -120,10 +128,8 @@ private fun AboutContent(
                 }
             }
 
-            val currentTheme by viewModel.themeFlow.collectAsStateWithLifecycle()
-            val showFacts by viewModel.showFactsFlow.collectAsStateWithLifecycle()
-            ThemeChanger(currentTheme = currentTheme, onThemeChange = viewModel::setTheme)
-            FactsToggle(showFacts = showFacts, onFactsToggle = viewModel::toggleFacts)
+            ThemeChanger(currentTheme = currentTheme, onThemeChange = onThemeChange)
+            FactsToggle(showFacts = showFacts, onFactsToggle = onFactsToggle)
 
             OutlinedButton(onClick = {
                 onClearCache()

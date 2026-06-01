@@ -28,8 +28,10 @@ import com.sirelon.marsroverphotos.utils.Logger
  * before the bound we return an empty continuation page that preserves the directional key, so the
  * next load resumes the scan — reachable photos beyond the gap are never dead-ended.
  *
- * On Refresh we scan forward then backward, so an unlucky random/picked anchor still lands on the
- * nearest day that actually has photos.
+ * On Refresh we scan forward then backward (alternating, one budget at a time) until a non-empty
+ * sol is found or the rover's full range is exhausted. Refresh never returns a continuation page:
+ * an empty itemCount produces no viewport hints, so Paging would never fire append/prepend to
+ * resume the scan.
  *
  * Fetched photos are **written through** to Room ([cacheAndMerge]) and any persisted favorite/stats
  * are merged back, so the cache stays a passive side-store (this remains a network-driven source)
@@ -73,25 +75,43 @@ class SolPagingSource(
                     FindResult.End -> terminalPage()
                 }
 
-                is LoadParams.Refresh -> {
-                    val start = params.key ?: initialSol
-                    when (val forward = findDay(start, step = +1)) {
-                        is FindResult.Found -> forward.day.toPage()
-                        is FindResult.Exhausted ->
-                            continuationPage(prevKey = clampMin(start - 1), nextKey = clampMax(forward.nextSol))
-                        FindResult.End -> when (val backward = findDay(start - 1, step = -1)) {
-                            is FindResult.Found -> backward.day.toPage()
-                            is FindResult.Exhausted ->
-                                continuationPage(prevKey = clampMin(backward.nextSol), nextKey = null)
-                            FindResult.End -> terminalPage()
-                        }
-                    }
-                }
+                is LoadParams.Refresh -> loadRefresh(params.key ?: initialSol)
             }
         } catch (e: Exception) {
             Logger.e("SolPagingSource", e) { "Error loading sol page (rover=$roverId)" }
             LoadResult.Error(e)
         }
+    }
+
+    /**
+     * Refresh must never return a continuation page (empty data with non-null keys). An empty
+     * itemCount produces no viewport hints, so Paging 3 never enqueues the append/prepend that
+     * would resume the scan — the UI stays permanently stuck on the empty/retry state.
+     *
+     * Instead, scan alternating forward/backward (one [scanBudget] at a time) until a non-empty
+     * sol is found or both directions hit the rover bounds. The loop is finite: each pass advances
+     * the frontier by [scanBudget] sols, bounded by [minSol]..[maxSol].
+     */
+    private suspend fun loadRefresh(start: Long): LoadResult<Long, MarsImage> {
+        var fwdSol: Long? = start
+        var bwdSol: Long? = start - 1
+        while (fwdSol != null || bwdSol != null) {
+            fwdSol?.let { sol ->
+                when (val r = findDay(sol, step = +1)) {
+                    is FindResult.Found -> return r.day.toPage()
+                    is FindResult.Exhausted -> fwdSol = r.nextSol
+                    FindResult.End -> fwdSol = null
+                }
+            }
+            bwdSol?.let { sol ->
+                when (val r = findDay(sol, step = -1)) {
+                    is FindResult.Found -> return r.day.toPage()
+                    is FindResult.Exhausted -> bwdSol = r.nextSol
+                    FindResult.End -> bwdSol = null
+                }
+            }
+        }
+        return terminalPage()
     }
 
     /**
