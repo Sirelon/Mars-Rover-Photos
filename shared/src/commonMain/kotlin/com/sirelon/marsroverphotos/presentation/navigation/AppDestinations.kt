@@ -33,8 +33,10 @@ sealed interface AppDestination : NavKey {
         val source: ImagesSource = ImagesSource.DIRECT_IDS,
         /** Set for [ImagesSource.ROVER_FEED] — the rover whose shared feed the pager scrolls. */
         val roverId: Long? = null,
-        /** Set for [ImagesSource.ROVER_FEED] when opened from a camera-filtered photos feed. */
+        /** Legacy single-camera filter for [ImagesSource.ROVER_FEED]. */
         val camera: String? = null,
+        /** Active camera filters for [ImagesSource.ROVER_FEED] when opened from Photos. */
+        val cameras: Set<String> = emptySet(),
     ) : AppDestination
 
     @Serializable

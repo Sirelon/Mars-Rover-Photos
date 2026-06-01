@@ -82,12 +82,13 @@ fun AppNavigation(
                 PhotosScreen(
                     roverId = key.roverId,
                     cameraFilter = key.camera,
-                    onNavigateToImages = { clickedId ->
+                    onNavigateToImages = { clickedId, cameras ->
                         navigator.navigate(
                             AppDestination.Images(
                                 selectedId = clickedId,
                                 roverId = key.roverId,
                                 camera = key.camera,
+                                cameras = cameras,
                                 source = AppDestination.ImagesSource.ROVER_FEED,
                             )
                         )

@@ -102,7 +102,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun PhotosScreen(
     roverId: Long,
-    onNavigateToImages: (clickedId: String) -> Unit,
+    onNavigateToImages: (clickedId: String, cameras: Set<String>) -> Unit,
     onBack: () -> Unit,
     onOpenSolPicker: () -> Unit,
     onOpenEarthDatePicker: () -> Unit,
@@ -216,7 +216,7 @@ private fun PhotosScreen(
     onRandomize: () -> Unit,
     onGoToLatest: () -> Unit,
     onClearCameraFilters: () -> Unit,
-    onNavigateToImages: (clickedId: String) -> Unit,
+    onNavigateToImages: (clickedId: String, cameras: Set<String>) -> Unit,
     onBack: () -> Unit,
     onOpenSolPicker: () -> Unit,
     onOpenEarthDatePicker: () -> Unit,
@@ -288,7 +288,7 @@ private fun PhotosScreen(
                             pagingItems = pagingItems,
                             gridState = gridState,
                             showCameraName = state.showCameraName,
-                            onPhotoClick = { image -> onNavigateToImages(image.id) },
+                            onPhotoClick = { image -> onNavigateToImages(image.id, state.cameraFilters) },
                         )
 
                         // Floating "sticky" date chip — mirrors the top-visible day.
