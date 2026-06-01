@@ -17,10 +17,14 @@ class AppSettings(
         const val KEY_THEME = "theme"
         const val KEY_GRID_VIEW = "gridView"
         const val KEY_SHOW_FACTS = "showFacts"
+        const val KEY_SHOW_CAMERA_NAME = "showCameraName"
     }
 
     private val _showFactsFlow = MutableStateFlow(preferences.getBoolean(KEY_SHOW_FACTS, true))
     val showFactsFlow: StateFlow<Boolean> = _showFactsFlow.asStateFlow()
+
+    private val _showCameraNameFlow = MutableStateFlow(preferences.getBoolean(KEY_SHOW_CAMERA_NAME, true))
+    val showCameraNameFlow: StateFlow<Boolean> = _showCameraNameFlow.asStateFlow()
 
     private val _gridViewFlow = MutableStateFlow(preferences.getBoolean(KEY_GRID_VIEW, false))
     val gridViewFlow: StateFlow<Boolean> = _gridViewFlow.asStateFlow()
@@ -36,6 +40,16 @@ class AppSettings(
         set(value) {
             preferences.setBoolean(KEY_SHOW_FACTS, value)
             _showFactsFlow.value = value
+        }
+
+    /**
+     * Show or hide the camera name on photo cards.
+     */
+    var showCameraName: Boolean
+        get() = preferences.getBoolean(KEY_SHOW_CAMERA_NAME, true)
+        set(value) {
+            preferences.setBoolean(KEY_SHOW_CAMERA_NAME, value)
+            _showCameraNameFlow.value = value
         }
 
     /**

@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -101,10 +102,11 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun PhotosScreen(
     roverId: Long,
-    onNavigateToImages: (clickedId: String) -> Unit,
+    onNavigateToImages: (clickedId: String, cameras: Set<String>) -> Unit,
     onBack: () -> Unit,
     onOpenSolPicker: () -> Unit,
     onOpenEarthDatePicker: () -> Unit,
+    onOpenFilters: () -> Unit,
     modifier: Modifier = Modifier,
     cameraFilter: String? = null,
     onClearCameraFilter: () -> Unit = {},
@@ -115,12 +117,19 @@ fun PhotosScreen(
     }
 
     LaunchedEffect(cameraFilter) {
-        viewModel.setCameraFilter(cameraFilter)
+        viewModel.setCameraFilters(if (cameraFilter != null) setOf(cameraFilter) else emptySet())
     }
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val pagingItems = viewModel.gridItemsFlow.collectAsLazyPagingItems()
     val gridState = rememberLazyGridState()
+
+    // Scroll to top whenever the camera filter changes so the LazyGridState's scroll position
+    // is consistent with the new PagingData. This also forces a fresh Paging 3 layout pass,
+    // which re-connects the viewport-hint mechanism that drives APPEND/PREPEND loads.
+    LaunchedEffect(state.cameraFilters) {
+        gridState.scrollToItem(0)
+    }
 
     // Keep the floating chip + pickers in sync with the top-visible day as the user scrolls.
     val currentPagingItems = rememberUpdatedState(pagingItems)
@@ -180,12 +189,15 @@ fun PhotosScreen(
         gridState = gridState,
         onRandomize = viewModel::randomize,
         onGoToLatest = viewModel::goToLatest,
-        onSetCameraFilter = viewModel::setCameraFilter,
-        onClearCameraFilter = onClearCameraFilter,
+        onClearCameraFilters = {
+            viewModel.setCameraFilters(emptySet())
+            onClearCameraFilter()
+        },
         onNavigateToImages = onNavigateToImages,
         onBack = onBack,
         onOpenSolPicker = onOpenSolPicker,
         onOpenEarthDatePicker = onOpenEarthDatePicker,
+        onOpenFilters = onOpenFilters,
         modifier = modifier,
     )
 }
@@ -203,12 +215,12 @@ private fun PhotosScreen(
     gridState: LazyGridState,
     onRandomize: () -> Unit,
     onGoToLatest: () -> Unit,
-    onSetCameraFilter: (String?) -> Unit,
-    onClearCameraFilter: () -> Unit,
-    onNavigateToImages: (clickedId: String) -> Unit,
+    onClearCameraFilters: () -> Unit,
+    onNavigateToImages: (clickedId: String, cameras: Set<String>) -> Unit,
     onBack: () -> Unit,
     onOpenSolPicker: () -> Unit,
     onOpenEarthDatePicker: () -> Unit,
+    onOpenFilters: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -222,6 +234,14 @@ private fun PhotosScreen(
                 scrollBehavior = scrollBehavior,
                 title = { Text(text = state.roverName) },
                 onBack = onBack,
+                actions = {
+                    IconButton(onClick = onOpenFilters) {
+                        MaterialSymbolIcon(
+                            symbol = MaterialSymbol.Tune,
+                            contentDescription = "Filters"
+                        )
+                    }
+                }
             )
         },
         floatingActionButton = {
@@ -236,13 +256,10 @@ private fun PhotosScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            if (!state.cameraFilter.isNullOrBlank()) {
+            if (state.cameraFilters.isNotEmpty()) {
                 CameraFilterChip(
-                    camera = state.cameraFilter,
-                    onClear = {
-                        onSetCameraFilter(null)
-                        onClearCameraFilter()
-                    }
+                    cameras = state.cameraFilters,
+                    onClear = onClearCameraFilters,
                 )
             }
 
@@ -257,8 +274,8 @@ private fun PhotosScreen(
                     )
 
                     pagingItems.itemCount == 0 -> EmptyPhotos(
-                        title = if (!state.cameraFilter.isNullOrBlank()) {
-                            "No ${state.cameraFilter} photos near Sol ${state.sol}. Try another Sol."
+                        title = if (state.cameraFilters.isNotEmpty()) {
+                            "No ${state.cameraFilters.joinToString()} photos near Sol ${state.sol}. Try another Sol."
                         } else {
                             stringResource(Res.string.no_photos_title)
                         },
@@ -270,8 +287,8 @@ private fun PhotosScreen(
                         PhotosGrid(
                             pagingItems = pagingItems,
                             gridState = gridState,
-                            onPhotoClick = { image -> onNavigateToImages(image.id) },
-                            onCameraClick = onSetCameraFilter,
+                            showCameraName = state.showCameraName,
+                            onPhotoClick = { image -> onNavigateToImages(image.id, state.cameraFilters) },
                         )
 
                         // Floating "sticky" date chip — mirrors the top-visible day.
@@ -322,8 +339,8 @@ private fun RefreshButton(
 private fun PhotosGrid(
     pagingItems: LazyPagingItems<GridItem>,
     gridState: LazyGridState,
+    showCameraName: Boolean,
     onPhotoClick: (image: MarsImage) -> Unit,
-    onCameraClick: ((cameraName: String) -> Unit)? = null
 ) {
     LazyVerticalGrid(
         state = gridState,
@@ -354,8 +371,8 @@ private fun PhotosGrid(
             when (val item = pagingItems[index]) {
                 is GridItem.PhotoItem -> PhotoCard(
                     image = item.image,
+                    showCameraName = showCameraName,
                     onPhotoClick = onPhotoClick,
-                    onCameraClick = onCameraClick
                 )
 
                 is GridItem.DateHeader -> DateHeaderRow(header = item)
@@ -458,8 +475,8 @@ private fun EdgeProgress(modifier: Modifier = Modifier) {
 @Composable
 private fun PhotoCard(
     image: MarsImage,
+    showCameraName: Boolean,
     onPhotoClick: (image: MarsImage) -> Unit,
-    onCameraClick: ((cameraName: String) -> Unit)? = null
 ) {
     AppCard(
         modifier = Modifier
@@ -473,20 +490,17 @@ private fun PhotoCard(
                     .aspectRatio(1F),
                 imageUrl = image.imageUrl
             )
-            Text(
-                text = shortCaption(image.name.orEmpty()),
-                style = AppTypography.photoCaption,
-                color = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier
-                    .padding(AppSpacing.xs)
-                    .fillMaxWidth()
-                    .then(
-                        if (onCameraClick != null && image.camera != null) {
-                            Modifier.clickable { onCameraClick(image.camera.name) }
-                        } else Modifier
-                    ),
-                textAlign = TextAlign.Center
-            )
+            if (showCameraName) {
+                Text(
+                    text = shortCaption(image.name.orEmpty()),
+                    style = AppTypography.photoCaption,
+                    color = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier
+                        .padding(AppSpacing.xs)
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }
@@ -546,14 +560,19 @@ private fun shortCaption(full: String): String =
     full.substringAfter(": ", missingDelimiterValue = full).trim()
 
 @Composable
-private fun CameraFilterChip(camera: String, onClear: () -> Unit) {
+private fun CameraFilterChip(cameras: Set<String>, onClear: () -> Unit) {
+    val label = if (cameras.size == 1) {
+        "Camera: ${cameras.first()} ×"
+    } else {
+        "Cameras: ${cameras.joinToString()} ×"
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = AppSpacing.lg, vertical = AppSpacing.xs),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        AppChip(label = "Camera: $camera ×", onClick = onClear)
+        AppChip(label = label, onClick = onClear)
     }
 }
 
@@ -626,18 +645,17 @@ private fun PhotosScreenPreview() {
                 sol = 3200L,
                 earthDate = "Aug 5, 2015",
                 maxSol = 4000L,
-                cameraFilter = null,
             ),
             pagingItems = pagingItems,
             gridState = rememberLazyGridState(),
             onRandomize = {},
             onGoToLatest = {},
-            onSetCameraFilter = {},
-            onClearCameraFilter = {},
-            onNavigateToImages = {},
+            onClearCameraFilters = {},
+            onNavigateToImages = { _, _ -> },
             onBack = {},
             onOpenSolPicker = {},
             onOpenEarthDatePicker = {},
+            onOpenFilters = {},
         )
     }
 }

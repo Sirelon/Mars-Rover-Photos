@@ -49,7 +49,8 @@ enum class MaterialSymbol(val iconName: String) {
     Error("error"),
     CheckCircle("check_circle"),
     Close("close"),
-    ExpandMore("expand_more")
+    ExpandMore("expand_more"),
+    Tune("tune")
 }
 
 /**

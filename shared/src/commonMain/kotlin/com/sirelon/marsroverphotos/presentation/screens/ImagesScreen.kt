@@ -98,7 +98,8 @@ import org.koin.compose.viewmodel.koinViewModel
  * @param selectedId  Which ID to land on initially (null → first page).
  * @param source      Where images are loaded from.
  * @param roverId     Rover id used to restore [AppDestination.ImagesSource.ROVER_FEED] after recreation.
- * @param camera      Camera filter used to restore [AppDestination.ImagesSource.ROVER_FEED] after recreation.
+ * @param camera      Legacy single-camera filter used to restore [AppDestination.ImagesSource.ROVER_FEED].
+ * @param cameras     Active camera filters used to restore [AppDestination.ImagesSource.ROVER_FEED].
  * @param onBack      Navigate back.
  */
 @Composable
@@ -108,6 +109,7 @@ fun ImagesScreen(
     source: AppDestination.ImagesSource,
     roverId: Long? = null,
     camera: String? = null,
+    cameras: Set<String> = emptySet(),
     onBack: () -> Unit,
     viewModel: ImageViewModel = koinViewModel(),
 ) {
@@ -117,13 +119,14 @@ fun ImagesScreen(
         return
     }
 
-    LaunchedEffect(photoIds, selectedId, source, roverId, camera) {
+    LaunchedEffect(photoIds, selectedId, source, roverId, camera, cameras) {
         viewModel.setImageSource(
             source = source,
             ids = photoIds,
             selectedId = selectedId,
             roverId = roverId,
             camera = camera,
+            cameras = cameras,
         )
     }
 

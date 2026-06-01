@@ -33,8 +33,10 @@ sealed interface AppDestination : NavKey {
         val source: ImagesSource = ImagesSource.DIRECT_IDS,
         /** Set for [ImagesSource.ROVER_FEED] — the rover whose shared feed the pager scrolls. */
         val roverId: Long? = null,
-        /** Set for [ImagesSource.ROVER_FEED] when opened from a camera-filtered photos feed. */
+        /** Legacy single-camera filter for [ImagesSource.ROVER_FEED]. */
         val camera: String? = null,
+        /** Active camera filters for [ImagesSource.ROVER_FEED] when opened from Photos. */
+        val cameras: Set<String> = emptySet(),
     ) : AppDestination
 
     @Serializable
@@ -59,4 +61,8 @@ sealed interface AppDestination : NavKey {
     /** Dialog destination: Earth date picker. Shares PhotosViewModel with [Photos]. */
     @Serializable
     data class PhotosEarthDatePicker(val roverId: Long) : DialogDestination
+
+    /** Dialog destination: filters sheet (camera, date, appearance). Shares PhotosViewModel with [Photos]. */
+    @Serializable
+    data class PhotosFilters(val roverId: Long) : DialogDestination
 }

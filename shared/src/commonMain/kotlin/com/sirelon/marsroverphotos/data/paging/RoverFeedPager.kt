@@ -36,7 +36,7 @@ class RoverFeedPager(
         val anchorSol: Long,
         val minSol: Long,
         val maxSol: Long,
-        val camera: String?,
+        val cameras: Set<String>,
         /**
          * Monotonic token making every explicit [setFeed] distinct. Without it, re-anchoring to
          * the *current* sol (e.g. re-picking the same date after scrolling away, or re-randomizing
@@ -83,7 +83,7 @@ class RoverFeedPager(
                         photosRepository = photosRepository,
                         imagesDao = imagesDao,
                         roverId = p.roverId,
-                        camera = p.camera,
+                        cameras = p.cameras,
                         initialSol = p.anchorSol,
                         minSol = p.minSol,
                         maxSol = p.maxSol,
@@ -93,13 +93,13 @@ class RoverFeedPager(
         }
         .cachedIn(appScope)
 
-    fun setFeed(roverId: Long, anchorSol: Long, minSol: Long, maxSol: Long, camera: String?) {
+    fun setFeed(roverId: Long, anchorSol: Long, minSol: Long, maxSol: Long, cameras: Set<String>) {
         paramsFlow.value = Params(
             roverId = roverId,
             anchorSol = anchorSol,
             minSol = minSol,
             maxSol = maxSol,
-            camera = camera,
+            cameras = cameras,
             generation = generation++,
         )
     }

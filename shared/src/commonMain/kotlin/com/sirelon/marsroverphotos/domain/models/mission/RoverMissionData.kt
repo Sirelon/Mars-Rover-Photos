@@ -117,42 +117,45 @@ object RoverMissionData {
         )
     )
 
+    // fullName values are prefixes of the instrument identifiers the NASA Mars 2020 API
+    // returns in the "instrument" field (e.g. "FRONT_HAZCAM_LEFT_A", "NAVCAM_LEFT").
+    // filterByCameras uses startsWith matching against these prefixes.
     private val perseveranceCameras = listOf(
         CameraSpec(
             name = "FHAZ",
-            fullName = "Front Hazard Avoidance Camera",
+            fullName = "FRONT_HAZCAM",
             description = "Mounted on the rover's lower front, detects hazards in the path ahead"
         ),
         CameraSpec(
             name = "RHAZ",
-            fullName = "Rear Hazard Avoidance Camera",
+            fullName = "REAR_HAZCAM",
             description = "Mounted on the rover's lower rear, monitors the area behind the rover"
         ),
         CameraSpec(
             name = "NAVCAM",
-            fullName = "Navigation Camera",
+            fullName = "NAVCAM",
             description = "Stereo cameras for 3D terrain mapping and navigation planning"
         ),
         CameraSpec(
             name = "MCZ",
-            fullName = "Mastcam-Z",
+            fullName = "MCZ",
             description = "Zoomable stereo color camera system on the mast"
         ),
         CameraSpec(
             name = "SHERLOC",
-            fullName = "Scanning Habitable Environments with Raman & Luminescence for Organics & Chemicals",
-            description = "Spectrometer and imaging system on the robotic arm"
+            fullName = "SHERLOC",
+            description = "Arm-mounted close-up imager for rock and soil imaging"
         ),
         CameraSpec(
             name = "SUPERCAM",
-            fullName = "SuperCam",
+            fullName = "SUPERCAM",
             description = "Remote sensing instrument with camera, laser, and spectrometers"
         ),
         CameraSpec(
-            name = "EDL",
-            fullName = "Entry, Descent, and Landing Cameras",
-            description = "Multiple cameras captured the landing sequence"
-        )
+            name = "SKYCAM",
+            fullName = "SKYCAM",
+            description = "Sky-facing camera for atmospheric imaging"
+        ),
     )
 
     private val insightCameras = listOf(

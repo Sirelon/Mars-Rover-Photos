@@ -35,6 +35,7 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import androidx.navigation3.runtime.NavEntry
 import com.sirelon.marsroverphotos.presentation.screens.EarthDatePickerScreen
+import com.sirelon.marsroverphotos.presentation.screens.PhotosFiltersScreen
 import com.sirelon.marsroverphotos.presentation.screens.PhotosScreen
 import com.sirelon.marsroverphotos.presentation.screens.SolPickerScreen
 import org.koin.compose.koinInject
@@ -81,12 +82,13 @@ fun AppNavigation(
                 PhotosScreen(
                     roverId = key.roverId,
                     cameraFilter = key.camera,
-                    onNavigateToImages = { clickedId ->
+                    onNavigateToImages = { clickedId, cameras ->
                         navigator.navigate(
                             AppDestination.Images(
                                 selectedId = clickedId,
                                 roverId = key.roverId,
                                 camera = key.camera,
+                                cameras = cameras,
                                 source = AppDestination.ImagesSource.ROVER_FEED,
                             )
                         )
@@ -100,6 +102,9 @@ fun AppNavigation(
                     },
                     onOpenEarthDatePicker = {
                         navigator.navigate(AppDestination.PhotosEarthDatePicker(key.roverId))
+                    },
+                    onOpenFilters = {
+                        navigator.navigate(AppDestination.PhotosFilters(key.roverId))
                     },
                 )
             }
@@ -125,6 +130,25 @@ fun AppNavigation(
                 EarthDatePickerScreen(
                     viewModel = koinViewModel(viewModelStoreOwner = LocalSharedViewModelStoreOwner.current),
                     onDismiss = { navigator.goBack() },
+                )
+            }
+
+            is AppDestination.PhotosFilters -> NavEntry<NavKey>(
+                key = key,
+                contentKey = "${photosContentKey(key.roverId)}/filters",
+                metadata = SharedViewModelStoreNavEntryDecorator.parent(photosContentKey(key.roverId)) +
+                    DialogOverlaySceneStrategy.dialogOverlay(),
+            ) {
+                PhotosFiltersScreen(
+                    viewModel = koinViewModel(viewModelStoreOwner = LocalSharedViewModelStoreOwner.current),
+                    roverId = key.roverId,
+                    onDismiss = { navigator.goBack() },
+                    onOpenSolPicker = {
+                        navigator.replaceTop(AppDestination.PhotosSolPicker(key.roverId))
+                    },
+                    onOpenEarthDatePicker = {
+                        navigator.replaceTop(AppDestination.PhotosEarthDatePicker(key.roverId))
+                    },
                 )
             }
 
@@ -265,7 +289,8 @@ private fun AppDestination.topLevelDestination(): AppDestination {
         is AppDestination.Mission,
         AppDestination.Ukraine,
         is AppDestination.PhotosSolPicker,
-        is AppDestination.PhotosEarthDatePicker -> AppDestination.Rovers
+        is AppDestination.PhotosEarthDatePicker,
+        is AppDestination.PhotosFilters -> AppDestination.Rovers
 
         AppDestination.Favorite -> AppDestination.Favorite
         AppDestination.Popular -> AppDestination.Popular
@@ -280,6 +305,7 @@ private val AppDestination.analyticsTag: String
         AppDestination.Popular -> "popular"
         AppDestination.About -> "about"
         AppDestination.Ukraine -> "ukraine"
+        is AppDestination.PhotosFilters -> "photos_filters"
         else -> "other"
     }
 
@@ -296,6 +322,7 @@ private val navBackStackConfiguration = SavedStateConfiguration {
             subclass(AppDestination.Ukraine::class, AppDestination.Ukraine.serializer())
             subclass(AppDestination.PhotosSolPicker::class, AppDestination.PhotosSolPicker.serializer())
             subclass(AppDestination.PhotosEarthDatePicker::class, AppDestination.PhotosEarthDatePicker.serializer())
+            subclass(AppDestination.PhotosFilters::class, AppDestination.PhotosFilters.serializer())
         }
     }
 }

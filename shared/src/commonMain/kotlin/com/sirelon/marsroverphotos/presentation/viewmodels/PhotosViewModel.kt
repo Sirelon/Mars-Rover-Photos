@@ -53,7 +53,7 @@ class PhotosViewModel(
 ) : ViewModel() {
 
     private val roverIdEmitter = MutableStateFlow<Long?>(null)
-    private val cameraFilterEmitter = MutableStateFlow<String?>(null)
+    private val cameraFilterEmitter = MutableStateFlow<Set<String>>(emptySet())
 
     /** Top-visible sol — drives the floating header chip and the Sol/Earth pickers. */
     private val visibleSolEmitter = MutableStateFlow<Long?>(null)
@@ -115,17 +115,19 @@ class PhotosViewModel(
         roverFlow.map { it.name to it.maxSol.coerceAtLeast(1L) },
         visibleSolEmitter.filterNotNull(),
         cameraFilterEmitter,
-    ) { roverInfo, sol, cameraFilter ->
+        appSettings.showCameraNameFlow,
+    ) { roverInfo, sol, cameraFilters, showCameraName ->
         val (roverName, maxSol) = roverInfo
         PhotosUiState(
             roverName = roverName,
             sol = sol,
             earthDate = earthDateStr(sol),
             maxSol = maxSol,
-            cameraFilter = cameraFilter,
+            cameraFilters = cameraFilters,
             datePickerSelectedMillis = earthTime(sol),
             datePickerMinMillis = minDate(),
             datePickerMaxMillis = maxDate(),
+            showCameraName = showCameraName,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -168,17 +170,29 @@ class PhotosViewModel(
     }
 
     /**
-     * Set (or clear with `null`) the camera filter. Rebuilds the feed source so the empty-sol
-     * skip stays camera-aware across all rovers.
+     * Apply a set of camera filters (empty = show all). Rebuilds the feed source synchronously
+     * using the current pager params — no DB roundtrip needed.
      */
-    fun setCameraFilter(camera: String?) {
-        val normalized = camera?.takeIf { it.isNotBlank() }
-        if (cameraFilterEmitter.value == normalized) return
-        cameraFilterEmitter.value = normalized
-        viewModelScope.launch {
-            val rover = roverFlow.first()
-            val anchor = visibleSolEmitter.value ?: roverFeedPager.currentParams?.anchorSol ?: return@launch
-            applyAnchor(rover, anchor)
+    fun setCameraFilters(cameras: Set<String>) {
+        if (cameraFilterEmitter.value == cameras) return
+        cameraFilterEmitter.value = cameras
+        val params = roverFeedPager.currentParams
+        if (params != null) {
+            val anchor = (visibleSolEmitter.value ?: params.anchorSol)
+                .coerceIn(params.minSol, params.maxSol)
+            roverFeedPager.setFeed(
+                roverId = params.roverId,
+                anchorSol = anchor,
+                minSol = params.minSol,
+                maxSol = params.maxSol,
+                cameras = cameras,
+            )
+        } else {
+            viewModelScope.launch {
+                val rover = roverFlow.first()
+                val anchor = visibleSolEmitter.value ?: return@launch
+                applyAnchor(rover, anchor)
+            }
         }
     }
 
@@ -277,7 +291,7 @@ class PhotosViewModel(
             anchorSol = clamped,
             minSol = 0L,
             maxSol = maxSol,
-            camera = cameraFilterEmitter.value,
+            cameras = cameraFilterEmitter.value,
         )
     }
 
@@ -307,11 +321,13 @@ data class PhotosUiState(
     /** Earth-date string for [sol] (e.g. "Jan 15, 2021"). */
     val earthDate: String = "",
     val maxSol: Long = 1L,
-    val cameraFilter: String? = null,
+    val cameraFilters: Set<String> = emptySet(),
     /** Earth-date millis for [sol] — the date-picker's initial selection. */
     val datePickerSelectedMillis: Long = 0L,
     /** Rover landing-date millis — lower bound for the date picker. */
     val datePickerMinMillis: Long = 0L,
     /** Rover last-date millis — upper bound for the date picker. */
     val datePickerMaxMillis: Long = 0L,
+    /** Whether to show the camera name label on photo cards. */
+    val showCameraName: Boolean = true,
 )
