@@ -1,6 +1,5 @@
 package com.sirelon.marsroverphotos.presentation.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -21,6 +19,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import com.sirelon.marsroverphotos.presentation.ui.AppButton
 import com.sirelon.marsroverphotos.presentation.ui.AppCard
+import com.sirelon.marsroverphotos.presentation.ui.AppEmptyState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -43,17 +42,14 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
-import com.sirelon.marsroverphotos.presentation.ui.CenteredColumn
 import com.sirelon.marsroverphotos.presentation.ui.MarsImageComposable
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.presentation.viewmodels.FavoriteImagesViewModel
 import com.sirelon.marsroverphotos.shared.resources.Res
-import com.sirelon.marsroverphotos.shared.resources.alien_icon
 import com.sirelon.marsroverphotos.shared.resources.favorite_empty_btn
 import com.sirelon.marsroverphotos.shared.resources.favorite_empty_title
 import com.sirelon.marsroverphotos.shared.resources.favorite_title
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -200,23 +196,13 @@ private fun FavoriteEmptyContent(
     onBtnClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    CenteredColumn(modifier = modifier) {
-        Image(
-            painter = painterResource(Res.drawable.alien_icon),
-            contentDescription = null,
-            modifier = Modifier.size(120.dp)
-        )
-        Spacer(modifier = Modifier.height(AppSpacing.lg))
-        Text(
-            text = title,
-            style = AppTypography.body,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Spacer(modifier = Modifier.height(AppSpacing.lg))
-        AppButton(onClick = onBtnClick) {
-            Text(text = btnTitle)
+    AppEmptyState(
+        title = title,
+        modifier = modifier,
+        action = {
+            AppButton(onClick = onBtnClick) { Text(text = btnTitle) }
         }
-    }
+    )
 }
 
 @Composable
