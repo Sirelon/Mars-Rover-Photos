@@ -12,14 +12,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.BottomAppBarDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
@@ -46,7 +50,7 @@ private const val ANIM_DURATION_2 = ANIM_DURATION / 2
 /**
  * Main Navigation 3 display for the app.
  */
-@OptIn(KoinExperimentalAPI::class)
+@OptIn(KoinExperimentalAPI::class, ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavigation(
     modifier: Modifier = Modifier,
@@ -153,6 +157,12 @@ fun AppNavigation(
     val dialogOverlaySceneStrategy = remember { DialogOverlaySceneStrategy<NavKey>() }
     val tracker: Tracker = koinInject()
     val isImages = chromeDestination is AppDestination.Images
+    val bottomBarScrollBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
+
+    // Reset the bottom bar to visible whenever the user navigates to a new top-level destination.
+    LaunchedEffect(chromeDestination) {
+        bottomBarScrollBehavior.state.heightOffset = 0f
+    }
 
     LaunchedEffect(deepLink) {
         val target = deepLink ?: return@LaunchedEffect
@@ -178,7 +188,10 @@ fun AppNavigation(
     CompositionLocalProvider(LocalAppNavigator provides navigator) {
         // Images screen goes fully edge-to-edge: no status-bar inset, no bottom chrome.
         Column(
-            modifier = if (isImages) modifier else modifier.windowInsetsPadding(WindowInsets.statusBars)
+            modifier = if (isImages) modifier
+            else modifier
+                .windowInsetsPadding(WindowInsets.statusBars)
+                .nestedScroll(bottomBarScrollBehavior.nestedScrollConnection)
         ) {
             AnimatedVisibility(!isImages && chromeDestination !is AppDestination.Ukraine) {
                 UkraineBanner(
@@ -242,14 +255,20 @@ fun AppNavigation(
                 )
             }
             if (!isImages) {
-                AdSlot(modifier = Modifier.fillMaxWidth())
-                MarsBottomBar(
-                    selectedDestination = chromeDestination.topLevelDestination(),
-                    onDestinationClick = { destination ->
-                        tracker.trackClick("bottom_${destination.analyticsTag}")
-                        navigator.selectTopLevel(destination)
-                    }
-                )
+                // Wrap in a column that always pads for the system navigation bar.
+                // BottomAppBar's own windowInsets are cleared to prevent double-padding.
+                Column(modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars)) {
+                    AdSlot(modifier = Modifier.fillMaxWidth())
+                    MarsBottomBar(
+                        selectedDestination = chromeDestination.topLevelDestination(),
+                        onDestinationClick = { destination ->
+                            tracker.trackClick("bottom_${destination.analyticsTag}")
+                            navigator.selectTopLevel(destination)
+                        },
+                        scrollBehavior = bottomBarScrollBehavior,
+                        windowInsets = WindowInsets(),
+                    )
+                }
             }
         }
     }

@@ -4,14 +4,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.material3.CircularProgressIndicator
 import com.sirelon.marsroverphotos.presentation.ui.AppButton
+import com.sirelon.marsroverphotos.presentation.ui.AppEmptyState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -34,7 +33,6 @@ import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.domain.settings.AppSettings
-import com.sirelon.marsroverphotos.presentation.ui.CenteredColumn
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.presentation.ui.MarsImageComposable
@@ -172,15 +170,10 @@ private fun PopularEmptyContent(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    CenteredColumn(modifier = modifier) {
-        Text(
-            text = title,
-            style = AppTypography.body,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Spacer(modifier = Modifier.height(AppSpacing.lg))
-        AppButton(onClick = onRetry) {
-            Text(text = "Retry")
-        }
-    }
+    AppEmptyState(
+        title = title,
+        modifier = modifier,
+        showImage = false,
+        action = { AppButton(onClick = onRetry) { Text(text = "Retry") } }
+    )
 }

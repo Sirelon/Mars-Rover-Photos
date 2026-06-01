@@ -23,8 +23,6 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -62,11 +60,12 @@ import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.domain.models.EducationalFact
 import com.sirelon.marsroverphotos.presentation.models.GridItem
 import com.sirelon.marsroverphotos.presentation.ui.AppCard
+import com.sirelon.marsroverphotos.presentation.ui.AppChip
+import com.sirelon.marsroverphotos.presentation.ui.AppEmptyState
 import com.sirelon.marsroverphotos.presentation.ui.AppFactCard
 import com.sirelon.marsroverphotos.presentation.ui.AppFloatingActionButton
 import com.sirelon.marsroverphotos.presentation.ui.AppOutlinedButton
 import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
-import com.sirelon.marsroverphotos.presentation.ui.CenteredColumn
 import com.sirelon.marsroverphotos.presentation.ui.CenteredProgress
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
@@ -74,15 +73,18 @@ import com.sirelon.marsroverphotos.presentation.ui.NetworkImage
 import com.sirelon.marsroverphotos.presentation.viewmodels.PhotosUiState
 import com.sirelon.marsroverphotos.presentation.viewmodels.PhotosViewModel
 import com.sirelon.marsroverphotos.shared.resources.Res
-import com.sirelon.marsroverphotos.shared.resources.alien_icon
 import com.sirelon.marsroverphotos.shared.resources.did_you_know
 import com.sirelon.marsroverphotos.shared.resources.educational_fact
 import com.sirelon.marsroverphotos.shared.resources.no_photos_title
 import com.sirelon.marsroverphotos.shared.resources.tap_to_retry
 import com.sirelon.marsroverphotos.utils.formatDisplayDate
+import coil3.SingletonImageLoader
+import coil3.compose.LocalPlatformContext
+import coil3.request.CachePolicy
+import coil3.request.ImageRequest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -135,6 +137,34 @@ fun PhotosScreen(
         snapshotFlow { gridState.firstVisibleItemIndex }
             .collect { index ->
                 solAtIndex(currentPagingItems.value, index)?.let(viewModel::onVisibleSolChanged)
+            }
+    }
+
+    // Prefetch images for items just beyond the visible grid window so they are
+    // already in Coil's cache by the time the user scrolls to them.
+    val context = LocalPlatformContext.current
+    LaunchedEffect(gridState) {
+        snapshotFlow { gridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0 }
+            .distinctUntilChanged()
+            .collect { lastVisible ->
+                val items = currentPagingItems.value
+                repeat(PREFETCH_ITEM_COUNT) { offset ->
+                    val index = lastVisible + 1 + offset
+                    if (index >= items.itemCount) return@repeat
+                    val item = items.peek(index) ?: return@repeat
+                    if (item is GridItem.PhotoItem) {
+                        SingletonImageLoader.get(context).enqueue(
+                            ImageRequest.Builder(context)
+                                .data(item.image.imageUrl)
+                                // Only warm the disk cache — do NOT write to memory cache.
+                                // Without a size constraint the cached bitmap would be at
+                                // original resolution, which evicts correctly-sized entries
+                                // that AsyncImage has loaded and causes the placeholder loop.
+                                .memoryCachePolicy(CachePolicy.DISABLED)
+                                .build()
+                        )
+                    }
+                }
             }
     }
 
@@ -477,21 +507,13 @@ private fun PhotoCard(
 
 @Composable
 private fun EmptyPhotos(title: String, btnTitle: String, callback: () -> Unit) {
-    CenteredColumn(
+    AppEmptyState(
+        title = title,
         modifier = Modifier
             .clickable(onClick = callback)
-            .padding(AppSpacing.xxl)
-    ) {
-        Image(painter = painterResource(Res.drawable.alien_icon), contentDescription = null)
-        Spacer(modifier = Modifier.size(AppSpacing.sm))
-        Text(
-            text = title,
-            style = AppTypography.appTitle,
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.size(AppSpacing.sm))
-        Text(text = btnTitle, style = AppTypography.roverTitle)
-    }
+            .padding(AppSpacing.xxl),
+        action = { Text(text = btnTitle, style = AppTypography.roverTitle) }
+    )
 }
 
 @Composable
@@ -550,18 +572,14 @@ private fun CameraFilterChip(cameras: Set<String>, onClear: () -> Unit) {
             .padding(horizontal = AppSpacing.lg, vertical = AppSpacing.xs),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        AssistChip(
-            onClick = onClear,
-            label = { Text(label) },
-            colors = AssistChipDefaults.assistChipColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                labelColor = MaterialTheme.colorScheme.onSecondaryContainer
-            )
-        )
+        AppChip(label = label, onClick = onClear)
     }
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
+
+// 10 items = 5 rows ahead for a 2-column grid.
+private const val PREFETCH_ITEM_COUNT = 10
 
 private val GridItem.gridKey: String
     get() = when (this) {
