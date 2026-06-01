@@ -651,7 +651,7 @@ private fun PhotosScreenPreview() {
             onRandomize = {},
             onGoToLatest = {},
             onClearCameraFilters = {},
-            onNavigateToImages = {},
+            onNavigateToImages = { _, _ -> },
             onBack = {},
             onOpenSolPicker = {},
             onOpenEarthDatePicker = {},
