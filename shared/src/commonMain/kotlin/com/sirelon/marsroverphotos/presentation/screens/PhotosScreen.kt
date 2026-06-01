@@ -23,8 +23,6 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -61,11 +59,12 @@ import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.domain.models.EducationalFact
 import com.sirelon.marsroverphotos.presentation.models.GridItem
 import com.sirelon.marsroverphotos.presentation.ui.AppCard
+import com.sirelon.marsroverphotos.presentation.ui.AppChip
+import com.sirelon.marsroverphotos.presentation.ui.AppEmptyState
 import com.sirelon.marsroverphotos.presentation.ui.AppFactCard
 import com.sirelon.marsroverphotos.presentation.ui.AppFloatingActionButton
 import com.sirelon.marsroverphotos.presentation.ui.AppOutlinedButton
 import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
-import com.sirelon.marsroverphotos.presentation.ui.CenteredColumn
 import com.sirelon.marsroverphotos.presentation.ui.CenteredProgress
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
@@ -73,14 +72,12 @@ import com.sirelon.marsroverphotos.presentation.ui.NetworkImage
 import com.sirelon.marsroverphotos.presentation.viewmodels.PhotosUiState
 import com.sirelon.marsroverphotos.presentation.viewmodels.PhotosViewModel
 import com.sirelon.marsroverphotos.shared.resources.Res
-import com.sirelon.marsroverphotos.shared.resources.alien_icon
 import com.sirelon.marsroverphotos.shared.resources.did_you_know
 import com.sirelon.marsroverphotos.shared.resources.educational_fact
 import com.sirelon.marsroverphotos.shared.resources.no_photos_title
 import com.sirelon.marsroverphotos.shared.resources.tap_to_retry
 import com.sirelon.marsroverphotos.utils.formatDisplayDate
 import kotlinx.coroutines.flow.flowOf
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -447,21 +444,13 @@ private fun PhotoCard(
 
 @Composable
 private fun EmptyPhotos(title: String, btnTitle: String, callback: () -> Unit) {
-    CenteredColumn(
+    AppEmptyState(
+        title = title,
         modifier = Modifier
             .clickable(onClick = callback)
-            .padding(AppSpacing.xxl)
-    ) {
-        Image(painter = painterResource(Res.drawable.alien_icon), contentDescription = null)
-        Spacer(modifier = Modifier.size(AppSpacing.sm))
-        Text(
-            text = title,
-            style = AppTypography.appTitle,
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.size(AppSpacing.sm))
-        Text(text = btnTitle, style = AppTypography.roverTitle)
-    }
+            .padding(AppSpacing.xxl),
+        action = { Text(text = btnTitle, style = AppTypography.roverTitle) }
+    )
 }
 
 @Composable
@@ -515,14 +504,7 @@ private fun CameraFilterChip(camera: String, onClear: () -> Unit) {
             .padding(horizontal = AppSpacing.lg, vertical = AppSpacing.xs),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        AssistChip(
-            onClick = onClear,
-            label = { Text("Camera: $camera ×") },
-            colors = AssistChipDefaults.assistChipColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                labelColor = MaterialTheme.colorScheme.onSecondaryContainer
-            )
-        )
+        AppChip(label = "Camera: $camera ×", onClick = onClear)
     }
 }
 
