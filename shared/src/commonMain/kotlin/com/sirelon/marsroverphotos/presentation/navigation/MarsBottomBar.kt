@@ -1,11 +1,17 @@
 package com.sirelon.marsroverphotos.presentation.navigation
 
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.BottomAppBarDefaults
+import androidx.compose.material3.BottomAppBarScrollBehavior
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.shared.resources.Res
@@ -19,13 +25,21 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MarsBottomBar(
     selectedDestination: AppDestination,
     onDestinationClick: (AppDestination) -> Unit,
     modifier: Modifier = Modifier,
+    scrollBehavior: BottomAppBarScrollBehavior? = null,
+    windowInsets: WindowInsets = BottomAppBarDefaults.windowInsets,
 ) {
-    NavigationBar(modifier = modifier) {
+    BottomAppBar(
+        modifier = modifier,
+        scrollBehavior = scrollBehavior,
+        windowInsets = windowInsets,
+        contentPadding = PaddingValues(horizontal = 0.dp, vertical = 0.dp),
+    ) {
         marsNavigationItems.forEach { item ->
             val selected = item.destination == selectedDestination
             val label = stringResource(item.label)
