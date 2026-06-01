@@ -187,6 +187,12 @@ class PhotosViewModel(
         visibleSolEmitter.value = sol
     }
 
+    /**
+     * Id of the photo last viewed in the fullscreen detail pager (or null), cleared on read. The
+     * grid uses it to scroll back to that photo when the viewer is closed. See [RoverFeedPager].
+     */
+    fun consumeLastViewedPhotoId(): String? = roverFeedPager.consumeLastViewedPhotoId()
+
     /** Anchor the feed on a random sol for the current rover. */
     fun randomize() {
         viewModelScope.launch {
