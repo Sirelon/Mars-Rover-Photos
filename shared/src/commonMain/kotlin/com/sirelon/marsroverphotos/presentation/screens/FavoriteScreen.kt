@@ -35,6 +35,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
+import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
+import com.sirelon.marsroverphotos.presentation.theme.AppTypography
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -153,10 +155,10 @@ private fun FavoritePhotosContent(
                 LazyVerticalStaggeredGrid(
                     modifier = Modifier.fillMaxSize().consumeWindowInsets(innerPadding),
                     contentPadding = PaddingValues(
-                        start = 12.dp,
-                        end = 12.dp,
-                        top = innerPadding.calculateTopPadding() + 8.dp,
-                        bottom = innerPadding.calculateBottomPadding() + 8.dp,
+                        start = AppSpacing.md,
+                        end = AppSpacing.md,
+                        top = innerPadding.calculateTopPadding() + AppSpacing.sm,
+                        bottom = innerPadding.calculateBottomPadding() + AppSpacing.sm,
                     ),
                     columns = if (gridView) {
                         StaggeredGridCells.Adaptive(minSize = 180.dp)
@@ -164,7 +166,7 @@ private fun FavoritePhotosContent(
                         StaggeredGridCells.Fixed(1)
                     },
                     verticalItemSpacing = 8.dp,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm),
                     content = {
                         items(
                             count = lazyPagingItems.itemCount,
@@ -204,13 +206,13 @@ private fun FavoriteEmptyContent(
             contentDescription = null,
             modifier = Modifier.size(120.dp)
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(AppSpacing.lg))
         Text(
             text = title,
-            style = MaterialTheme.typography.bodyLarge,
+            style = AppTypography.body,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(AppSpacing.lg))
         AppButton(onClick = onBtnClick) {
             Text(text = btnTitle)
         }
@@ -224,7 +226,7 @@ private fun LoadingMoreItem(
     AppCard(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(horizontal = AppSpacing.lg, vertical = AppSpacing.sm),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
             contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -233,7 +235,7 @@ private fun LoadingMoreItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(AppSpacing.lg),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -241,7 +243,7 @@ private fun LoadingMoreItem(
                 modifier = Modifier.size(20.dp),
                 strokeWidth = 2.dp
             )
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(AppSpacing.md))
             Text(text = "Loading more photos...")
         }
     }

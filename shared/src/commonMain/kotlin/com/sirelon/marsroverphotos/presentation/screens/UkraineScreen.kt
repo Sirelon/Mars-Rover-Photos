@@ -23,6 +23,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
+import com.sirelon.marsroverphotos.presentation.theme.AppTypography
 import com.sirelon.marsroverphotos.platform.Tracker
 import com.sirelon.marsroverphotos.platform.recordException
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
@@ -92,14 +94,14 @@ private fun UkraineInfoContent(
     onOpenUri: (String) -> Unit,
 ) {
     Column(
-        modifier = Modifier.padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.padding(AppSpacing.lg),
+        verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
             text = "Hello, I'm Oleksandr, a proud Ukrainian",
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.headlineSmall,
+            style = AppTypography.appTitle,
         )
         Text(
             text = "As you may be aware, Ukraine is currently facing a severe and merciless war. " +
