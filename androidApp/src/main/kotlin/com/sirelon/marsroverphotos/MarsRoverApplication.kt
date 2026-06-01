@@ -2,6 +2,7 @@ package com.sirelon.marsroverphotos
 
 import android.app.Application
 import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.RequestConfiguration
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sirelon.marsroverphotos.di.initKoin
 import com.sirelon.marsroverphotos.di.platformModule
@@ -63,6 +64,15 @@ class MarsRoverApplication : Application() {
 
         // Initialize AdMob
         try {
+            // Register test devices so debug ad clicks don't count as invalid traffic.
+            // Test device IDs are logged by the SDK ("setTestDeviceIds(...)").
+            if (BuildConfig.DEBUG) {
+                MobileAds.setRequestConfiguration(
+                    RequestConfiguration.Builder()
+                        .setTestDeviceIds(listOf("5E9A79263E2CEF0CABB3EB5C02E071D0"))
+                        .build()
+                )
+            }
             MobileAds.initialize(this) { status ->
                 Logger.d("MarsRoverApplication") { "AdMob init status: $status" }
             }

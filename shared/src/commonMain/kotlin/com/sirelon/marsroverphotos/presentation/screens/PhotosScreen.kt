@@ -11,11 +11,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -23,10 +25,10 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -66,7 +68,6 @@ import com.sirelon.marsroverphotos.presentation.ui.CenteredProgress
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.presentation.ui.NetworkImage
-import com.sirelon.marsroverphotos.presentation.ui.adaptiveGridCells
 import com.sirelon.marsroverphotos.presentation.viewmodels.PhotosUiState
 import com.sirelon.marsroverphotos.presentation.viewmodels.PhotosViewModel
 import com.sirelon.marsroverphotos.shared.resources.Res
@@ -167,6 +168,7 @@ private fun PhotosScreen(
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        contentWindowInsets = WindowInsets(),
         topBar = {
             AppTopBar(
                 scrollBehavior = scrollBehavior,
@@ -237,7 +239,7 @@ private fun PhotosScreen(
 
                         // Prepend (scroll-up) progress at the top, append (scroll-down) at the bottom.
                         if (pagingItems.loadState.prepend is LoadState.Loading) {
-                            EdgeProgress(modifier = Modifier.align(Alignment.TopEnd))
+                            EdgeProgress(modifier = Modifier.align(Alignment.TopCenter))
                         }
                         if (pagingItems.loadState.append is LoadState.Loading) {
                             EdgeProgress(modifier = Modifier.align(Alignment.BottomCenter))
@@ -277,7 +279,7 @@ private fun PhotosGrid(
 ) {
     LazyVerticalGrid(
         state = gridState,
-        columns = adaptiveGridCells(minColumnWidth = 180.dp),
+        columns = GridCells.Fixed(2),
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(
             start = 12.dp,
@@ -400,10 +402,8 @@ private fun FloatingDateChip(
 
 @Composable
 private fun EdgeProgress(modifier: Modifier = Modifier) {
-    CircularProgressIndicator(
-        modifier = modifier
-            .padding(12.dp)
-            .size(28.dp)
+    LinearProgressIndicator(
+        modifier = modifier.fillMaxWidth()
     )
 }
 
@@ -415,7 +415,6 @@ private fun PhotoCard(
 ) {
     AppCard(
         modifier = Modifier
-            .padding(8.dp)
             .fillMaxWidth()
             .clickable { onPhotoClick(image) },
     ) {
