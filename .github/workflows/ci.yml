@@ -57,7 +57,7 @@ jobs:
 
       # ── Unit tests ─────────────────────────────────────────────────────────
       - name: Run unit tests
-        run: ./gradlew :shared:testDebugUnitTest
+        run: ./gradlew :shared:desktopTest
 
       # ── Static analysis ────────────────────────────────────────────────────
       - name: Detekt
