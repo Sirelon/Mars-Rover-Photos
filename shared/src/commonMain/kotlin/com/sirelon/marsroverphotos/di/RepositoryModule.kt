@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos.di
 
+import com.sirelon.marsroverphotos.data.paging.RoverFeedPager
 import com.sirelon.marsroverphotos.data.repositories.FactsRepositoryImpl
 import com.sirelon.marsroverphotos.data.repositories.ImagesRepositoryImpl
 import com.sirelon.marsroverphotos.data.repositories.PhotosRepositoryImpl
@@ -26,6 +27,15 @@ val repositoryModule = module {
     // Repositories
     single<PhotosRepository> {
         PhotosRepositoryImpl(api = get())
+    }
+
+    // Shared rover-feed pager — one instance feeds both the photos list and the detail pager
+    single {
+        RoverFeedPager(
+            photosRepository = get(),
+            imagesDao = get(),
+            appScope = get()
+        )
     }
 
     single<RoversRepository> {

@@ -39,6 +39,8 @@ val navigationModule = module {
             photoIds = destination.photoIds,
             selectedId = destination.selectedId,
             source = destination.source,
+            roverId = destination.roverId,
+            camera = destination.camera,
             onBack = { navigator.goBack() }
         )
     }

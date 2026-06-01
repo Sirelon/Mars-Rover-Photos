@@ -1,5 +1,6 @@
 import java.io.FileInputStream
 import java.util.Properties
+import javax.inject.Inject
 
 plugins {
     alias(libs.plugins.android.application)
@@ -77,6 +78,56 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+}
+
+// Workaround: CMP 1.12.0-alpha01 bug — copyAndroidMainComposeResourcesToAndroidAssets has no
+// outputDirectory when the shared module uses android.kotlin.multiplatform.library (AGP 9+).
+// Copy commonMain composeResources into the APK assets via the AGP Variant API. Wiring the task's
+// output through addGeneratedSourceDirectory makes AGP add the task dependency to the merge-assets
+// step automatically — no deprecated sourceSets.assets.srcDir(..) and no afterEvaluate name match.
+val sharedResPackage = "com.sirelon.marsroverphotos.shared.resources"
+
+@CacheableTask
+abstract class CopySharedComposeResources : DefaultTask() {
+    @get:InputDirectory
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val sourceDir: DirectoryProperty
+
+    @get:Input
+    abstract val resourcePackage: Property<String>
+
+    @get:OutputDirectory
+    abstract val outputDir: DirectoryProperty
+
+    @get:Inject
+    abstract val fs: FileSystemOperations
+
+    @TaskAction
+    fun copy() {
+        fs.sync {
+            from(sourceDir)
+            into(outputDir.dir("composeResources/${resourcePackage.get()}"))
+        }
+    }
+}
+
+androidComponents {
+    onVariants { variant ->
+        val capName = variant.name.replaceFirstChar { it.uppercase() }
+        val copyTask = tasks.register<CopySharedComposeResources>("copy${capName}SharedComposeResources") {
+            sourceDir.set(
+                project(":shared").layout.buildDirectory.dir(
+                    "generated/compose/resourceGenerator/preparedResources/commonMain/composeResources"
+                )
+            )
+            resourcePackage.set(sharedResPackage)
+            dependsOn(":shared:prepareComposeResourcesTaskForCommonMain")
+        }
+        variant.sources.assets?.addGeneratedSourceDirectory(
+            copyTask,
+            CopySharedComposeResources::outputDir
+        )
     }
 }
 
