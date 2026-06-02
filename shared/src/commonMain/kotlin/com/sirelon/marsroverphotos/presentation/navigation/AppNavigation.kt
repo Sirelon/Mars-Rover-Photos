@@ -217,6 +217,8 @@ fun AppNavigation(
                     tracker.trackClick("nav_${destination.analyticsTag}")
                     navigator.selectTopLevel(destination)
                 },
+                resetScrollKey = chromeDestination,
+                bottomChrome = { AdSlot(modifier = Modifier.fillMaxWidth()) },
             ) {
                 Column(
                     modifier = Modifier
@@ -239,7 +241,6 @@ fun AppNavigation(
                     ) {
                         navDisplay()
                     }
-                    AdSlot(modifier = Modifier.fillMaxWidth())
                 }
             }
         }

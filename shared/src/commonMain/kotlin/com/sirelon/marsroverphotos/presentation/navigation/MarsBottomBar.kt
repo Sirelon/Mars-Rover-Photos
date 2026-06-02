@@ -1,10 +1,25 @@
 package com.sirelon.marsroverphotos.presentation.navigation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.BottomAppBarDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.unit.dp
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.shared.resources.Res
@@ -18,35 +33,95 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
+/**
+ * Adaptive navigation wrapper.
+ *
+ * - Compact (phone): NavigationBar at the bottom with exitAlways scroll-hide behaviour.
+ * - Medium/Expanded (tablet, desktop): NavigationRail on the start edge, always visible.
+ *
+ * [resetScrollKey] — pass the current top-level destination so the bottom bar
+ * snaps back into view whenever the user switches tabs.
+ *
+ * [bottomChrome] — content placed between the main area and the NavigationBar
+ * (e.g. an ad slot), or at the bottom of the content column for the rail layout.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MarsNavigationSuite(
     selectedDestination: AppDestination,
     onDestinationClick: (AppDestination) -> Unit,
     modifier: Modifier = Modifier,
+    resetScrollKey: Any? = null,
+    bottomChrome: @Composable () -> Unit = {},
     content: @Composable () -> Unit,
 ) {
-    NavigationSuiteScaffold(
-        navigationSuiteItems = {
-            marsNavigationItems.forEach { item ->
-                val selected = item.destination == selectedDestination
-                item(
-                    selected = selected,
-                    onClick = { onDestinationClick(item.destination) },
-                    icon = {
-                        val label = stringResource(item.label)
-                        MarsNavigationIcon(
-                            icon = item.icon,
-                            selected = selected,
-                            contentDescription = label,
-                        )
-                    },
-                    label = { Text(text = stringResource(item.label)) },
-                )
-            }
-        },
-        modifier = modifier,
-        content = content,
+    val layoutType = NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(
+        currentWindowAdaptiveInfo()
     )
+
+    when (layoutType) {
+        NavigationSuiteType.NavigationBar -> {
+            val scrollBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
+
+            // Snap the bar back to fully visible on tab switch.
+            LaunchedEffect(resetScrollKey) {
+                scrollBehavior.state.heightOffset = 0f
+            }
+
+            Column(modifier) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .nestedScroll(scrollBehavior.nestedScrollConnection),
+                ) {
+                    content()
+                }
+                bottomChrome()
+                BottomAppBar(
+                    scrollBehavior = scrollBehavior,
+                    contentPadding = PaddingValues(horizontal = 0.dp, vertical = 0.dp),
+                ) {
+                    marsNavigationItems.forEach { item ->
+                        val selected = item.destination == selectedDestination
+                        NavigationBarItem(
+                            selected = selected,
+                            onClick = { onDestinationClick(item.destination) },
+                            icon = {
+                                val label = stringResource(item.label)
+                                MarsNavigationIcon(item.icon, selected, label)
+                            },
+                            label = { Text(stringResource(item.label)) },
+                        )
+                    }
+                }
+            }
+        }
+
+        else -> {
+            Row(modifier) {
+                NavigationRail {
+                    marsNavigationItems.forEach { item ->
+                        val selected = item.destination == selectedDestination
+                        NavigationRailItem(
+                            selected = selected,
+                            onClick = { onDestinationClick(item.destination) },
+                            icon = {
+                                val label = stringResource(item.label)
+                                MarsNavigationIcon(item.icon, selected, label)
+                            },
+                            label = { Text(stringResource(item.label)) },
+                        )
+                    }
+                }
+                Column(Modifier.weight(1f)) {
+                    Box(Modifier.weight(1f)) {
+                        content()
+                    }
+                    bottomChrome()
+                }
+            }
+        }
+    }
 }
 
 @Composable
