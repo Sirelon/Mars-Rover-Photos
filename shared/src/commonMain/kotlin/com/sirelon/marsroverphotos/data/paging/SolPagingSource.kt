@@ -7,6 +7,7 @@ import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.domain.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.domain.repositories.PhotosRepository
 import com.sirelon.marsroverphotos.utils.Logger
+import kotlin.math.abs
 
 /**
  * [PagingSource] that pages Mars rover photos by **sol** (Martian day).
@@ -72,12 +73,15 @@ class SolPagingSource(
     /**
      * Finds the next non-empty page in [step] direction.
      *
-     * For unfiltered feeds: returns a continuation page on budget exhaustion so each [load]
-     * call is bounded. Paging 3 auto-enqueues another load from the continuation key.
+     * For unfiltered feeds: returns a continuation page as soon as a single [findDay] segment
+     * hits its budget, so each [load] stays bounded. Paging 3 auto-enqueues another load from
+     * the continuation key.
      *
-     * For camera-filtered feeds: loops within the same [load] call instead of returning an
-     * empty continuation page. Per the class-level comment, Paging 3 does not reliably
-     * re-trigger loads after empty pages, which would stall filtered pagination.
+     * For camera-filtered feeds: keeps scanning across segments within the same [load] (filtered
+     * data is sparse, so yielding an empty continuation page too eagerly risks stalling — Paging 3
+     * does not reliably re-trigger loads after empty pages). The cumulative scan is capped at
+     * [FILTER_LOAD_BUDGET], after which we yield a continuation page anyway, so a far-off or absent
+     * match can never walk the rover's whole sol range in one synchronous load.
      */
     private suspend fun findNextPage(start: Long, step: Int): LoadResult<Long, MarsImage> {
         var key = start
@@ -85,7 +89,9 @@ class SolPagingSource(
             when (val r = findDay(key, step)) {
                 is FindResult.Found -> return r.day.toPage()
                 is FindResult.Exhausted -> {
-                    if (cameras.isEmpty()) {
+                    val reachedLoadBudget = cameras.isNotEmpty() &&
+                        abs(r.nextSol - start) >= FILTER_LOAD_BUDGET
+                    if (cameras.isEmpty() || reachedLoadBudget) {
                         return if (step > 0) continuationPage(prevKey = null, nextKey = clampMax(r.nextSol))
                         else continuationPage(prevKey = clampMin(r.nextSol), nextKey = null)
                     }
@@ -242,8 +248,15 @@ class SolPagingSource(
     }
 
     private companion object {
-        /** Max sols probed per load() when a camera filter is active (bounds per-call latency). */
+        /** Max sols probed per [findDay] segment when a camera filter is active. */
         private const val FILTER_SCAN_BUDGET = 60
+        /**
+         * Cumulative cap on sols scanned across one filtered [load]. The filtered feed scans
+         * several [FILTER_SCAN_BUDGET] segments synchronously to keep continuation pages rare, but
+         * this ceiling bounds the worst case so a sparse/absent camera can't fire an unbounded run
+         * of sequential network probes in a single load.
+         */
+        private const val FILTER_LOAD_BUDGET = 300
         /** Max sols probed per load() for the unfiltered feed; larger since its data is dense. */
         private const val UNFILTERED_SCAN_BUDGET = 300
         private const val CACHE_KEEP_LIMIT = 2000

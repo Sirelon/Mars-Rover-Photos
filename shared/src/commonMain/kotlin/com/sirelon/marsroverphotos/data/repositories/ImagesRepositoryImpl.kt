@@ -9,9 +9,10 @@ import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.data.paging.PopularRemoteMediator
 import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
 import com.sirelon.marsroverphotos.platform.IFirebasePhotos
+import com.sirelon.marsroverphotos.utils.Logger
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.supervisorScope
 
 /**
  * Implementation of ImagesRepository.
@@ -20,7 +21,8 @@ import kotlinx.coroutines.supervisorScope
  */
 class ImagesRepositoryImpl(
     private val imagesDao: ImagesDao,
-    private val firebasePhotos: IFirebasePhotos
+    private val firebasePhotos: IFirebasePhotos,
+    private val appScope: CoroutineScope
 ) : ImagesRepository {
 
     override suspend fun saveImages(photos: List<MarsImage>) {
@@ -47,22 +49,21 @@ class ImagesRepositoryImpl(
     }
 
     override suspend fun setFavorite(item: MarsImage, favorite: Boolean) {
-        supervisorScope {
-            val m = if (favorite) 1 else -1
-            val counter = (item.stats.favorite + m).coerceAtLeast(0)
+        val m = if (favorite) 1 else -1
+        val counter = (item.stats.favorite + m).coerceAtLeast(0)
 
-            // Ensure the row exists (feed photos may not be cached yet); IGNORE keeps any
-            // existing row untouched so the explicit UPDATE below is the single source of truth.
-            imagesDao.insertImages(listOf(item))
-            imagesDao.updateFavorite(item.id, favorite, counter)
+        // Ensure the row exists (feed photos may not be cached yet); IGNORE keeps any
+        // existing row untouched so the explicit UPDATE below is the single source of truth.
+        imagesDao.insertImages(listOf(item))
+        imagesDao.updateFavorite(item.id, favorite, counter)
 
-            // Update Firebase counter in background (best-effort)
-            launch {
-                try {
-                    firebasePhotos.updatePhotoFavoriteCounter(item, favorite)
-                } catch (e: Exception) {
-                    // Log error but don't fail the operation
-                }
+        // Update the Firebase counter as a genuine fire-and-forget background task on the
+        // app scope, so it outlives this call and never blocks the favorite toggle (best-effort).
+        appScope.launch {
+            try {
+                firebasePhotos.updatePhotoFavoriteCounter(item, favorite)
+            } catch (e: Exception) {
+                Logger.e("ImagesRepositoryImpl", e) { "Failed to update Firebase favorite counter for ${item.id}" }
             }
         }
     }

@@ -67,3 +67,8 @@ jobs:
       - name: Compile Desktop
         run: ./gradlew :shared:compileKotlinDesktop
         continue-on-error: true
+
+      # ── Web (informational — failures don't block the build) ────────────────
+      - name: Compile Web (Wasm)
+        run: ./gradlew :webApp:wasmJsBrowserDistribution --console=plain
+        continue-on-error: true

@@ -179,6 +179,7 @@ kotlin {
             implementation(libs.kotlin.test)
             @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
             implementation(libs.kotlin.test.annotations.common)
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }
