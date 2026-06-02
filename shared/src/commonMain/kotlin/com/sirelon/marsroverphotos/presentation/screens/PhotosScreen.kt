@@ -124,11 +124,13 @@ fun PhotosScreen(
     val pagingItems = viewModel.gridItemsFlow.collectAsLazyPagingItems()
     val gridState = rememberLazyGridState()
 
-    // Scroll to top whenever the camera filter changes so the LazyGridState's scroll position
-    // is consistent with the new PagingData. This also forces a fresh Paging 3 layout pass,
-    // which re-connects the viewport-hint mechanism that drives APPEND/PREPEND loads.
-    LaunchedEffect(state.cameraFilters) {
-        gridState.scrollToItem(0)
+    // Scroll to top whenever the feed is re-anchored (sol/date pick, randomize, go-to-latest,
+    // camera filter change). Without this the grid keeps its previous scroll offset and the
+    // newly anchored sol stays off-screen above, so the user still sees the old day's photos.
+    LaunchedEffect(viewModel) {
+        viewModel.scrollToTopEvents.collect {
+            gridState.scrollToItem(0)
+        }
     }
 
     // Keep the floating chip + pickers in sync with the top-visible day as the user scrolls.

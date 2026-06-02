@@ -18,10 +18,14 @@ import com.sirelon.marsroverphotos.utils.RoverDateUtil
 import com.sirelon.marsroverphotos.utils.formatDisplayDate
 import kotlin.time.Clock
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
@@ -57,6 +61,17 @@ class PhotosViewModel(
 
     /** Top-visible sol — drives the floating header chip and the Sol/Earth pickers. */
     private val visibleSolEmitter = MutableStateFlow<Long?>(null)
+
+    /**
+     * Fires every time the feed is re-anchored (date/sol picker, randomize, go-to-latest, camera
+     * filter change). The grid collects this to scroll back to item 0 so the user actually sees
+     * the newly anchored sol — otherwise the previous scroll offset keeps the old day on screen.
+     */
+    private val _scrollToTopEvents = MutableSharedFlow<Unit>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+    )
+    val scrollToTopEvents: SharedFlow<Unit> = _scrollToTopEvents.asSharedFlow()
 
     private var dateUtil: RoverDateUtil? = null
 
@@ -194,6 +209,7 @@ class PhotosViewModel(
                 maxSol = params.maxSol,
                 cameras = cameras,
             )
+            _scrollToTopEvents.tryEmit(Unit)
         } else {
             viewModelScope.launch {
                 val rover = roverFlow.first()
@@ -300,6 +316,7 @@ class PhotosViewModel(
             maxSol = maxSol,
             cameras = cameraFilterEmitter.value,
         )
+        _scrollToTopEvents.tryEmit(Unit)
     }
 
     private fun getSol(): Long = visibleSolEmitter.value ?: 0L
