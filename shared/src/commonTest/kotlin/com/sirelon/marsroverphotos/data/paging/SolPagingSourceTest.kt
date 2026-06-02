@@ -107,6 +107,32 @@ class SolPagingSourceTest {
         assertEquals(300, repo.probedSols.size)
     }
 
+    // 5b. Regression (Codex P2): a camera-filtered load must ALSO stay bounded. Before the fix the
+    // filtered branch looped on every Exhausted segment, so a far-off/absent camera match could
+    // walk the whole rover range (thousands of probes) in one synchronous load. It now caps the
+    // cumulative scan at FILTER_LOAD_BUDGET (300 sols) and yields a continuation page.
+    @Test
+    fun append_filteredFeedBoundsScanPerLoad() = runTest {
+        val repo = FakePhotosRepository(emptyMap())
+        val src = source(
+            emptyMap(),
+            cameras = setOf("FHAZ"),
+            minSol = 0,
+            maxSol = 10_000,
+            initialSol = 0,
+            repo = repo,
+        )
+
+        val result = src.load(PagingSource.LoadParams.Append(0L, 5, false))
+
+        val p = page(result)
+        assertTrue(p.data.isEmpty())
+        assertNull(p.prevKey)
+        assertEquals(300L, p.nextKey)
+        // Bounded to ~FILTER_LOAD_BUDGET sols, NOT the full 10_000-sol range.
+        assertTrue(repo.probedSols.size <= 300, "filtered load must stay bounded, was ${repo.probedSols.size}")
+    }
+
     // 6a. Refresh with photos near start returns a non-empty page.
     @Test
     fun refresh_withPhotosReturnsNonEmptyPage() = runTest {
