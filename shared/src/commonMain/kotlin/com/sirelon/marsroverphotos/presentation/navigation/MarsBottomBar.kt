@@ -1,17 +1,10 @@
 package com.sirelon.marsroverphotos.presentation.navigation
 
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.BottomAppBarDefaults
-import androidx.compose.material3.BottomAppBarScrollBehavior
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.shared.resources.Res
@@ -25,39 +18,35 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MarsBottomBar(
+fun MarsNavigationSuite(
     selectedDestination: AppDestination,
     onDestinationClick: (AppDestination) -> Unit,
     modifier: Modifier = Modifier,
-    scrollBehavior: BottomAppBarScrollBehavior? = null,
-    windowInsets: WindowInsets = BottomAppBarDefaults.windowInsets,
+    content: @Composable () -> Unit,
 ) {
-    BottomAppBar(
+    NavigationSuiteScaffold(
+        navigationSuiteItems = {
+            marsNavigationItems.forEach { item ->
+                val selected = item.destination == selectedDestination
+                item(
+                    selected = selected,
+                    onClick = { onDestinationClick(item.destination) },
+                    icon = {
+                        val label = stringResource(item.label)
+                        MarsNavigationIcon(
+                            icon = item.icon,
+                            selected = selected,
+                            contentDescription = label,
+                        )
+                    },
+                    label = { Text(text = stringResource(item.label)) },
+                )
+            }
+        },
         modifier = modifier,
-        scrollBehavior = scrollBehavior,
-        windowInsets = windowInsets,
-        contentPadding = PaddingValues(horizontal = 0.dp, vertical = 0.dp),
-    ) {
-        marsNavigationItems.forEach { item ->
-            val selected = item.destination == selectedDestination
-            val label = stringResource(item.label)
-
-            NavigationBarItem(
-                selected = selected,
-                onClick = { onDestinationClick(item.destination) },
-                icon = {
-                    MarsNavigationIcon(
-                        icon = item.icon,
-                        selected = selected,
-                        contentDescription = label,
-                    )
-                },
-                label = { Text(text = label) },
-            )
-        }
-    }
+        content = content,
+    )
 }
 
 @Composable
@@ -68,21 +57,17 @@ private fun MarsNavigationIcon(
     modifier: Modifier = Modifier,
 ) {
     when (icon) {
-        is MarsNavigationItemIcon.Drawable -> {
-            Icon(
-                painter = painterResource(icon.resource),
-                contentDescription = contentDescription,
-                modifier = modifier,
-            )
-        }
-        is MarsNavigationItemIcon.Symbol -> {
-            MaterialSymbolIcon(
-                symbol = icon.symbol,
-                contentDescription = contentDescription,
-                modifier = modifier,
-                filled = selected,
-            )
-        }
+        is MarsNavigationItemIcon.Drawable -> Icon(
+            painter = painterResource(icon.resource),
+            contentDescription = contentDescription,
+            modifier = modifier,
+        )
+        is MarsNavigationItemIcon.Symbol -> MaterialSymbolIcon(
+            symbol = icon.symbol,
+            contentDescription = contentDescription,
+            modifier = modifier,
+            filled = selected,
+        )
     }
 }
 
@@ -94,7 +79,6 @@ private data class MarsNavigationItem(
 
 private sealed interface MarsNavigationItemIcon {
     data class Drawable(val resource: DrawableResource) : MarsNavigationItemIcon
-
     data class Symbol(val symbol: MaterialSymbol) : MarsNavigationItemIcon
 }
 
