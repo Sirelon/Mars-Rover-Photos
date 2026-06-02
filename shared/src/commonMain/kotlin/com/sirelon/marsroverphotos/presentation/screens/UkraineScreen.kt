@@ -2,23 +2,33 @@ package com.sirelon.marsroverphotos.presentation.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
+import com.sirelon.marsroverphotos.presentation.theme.AppTypography
 import com.sirelon.marsroverphotos.platform.Tracker
 import com.sirelon.marsroverphotos.platform.recordException
+import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
+import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.presentation.ui.UkraineBanner
 import com.sirelon.marsroverphotos.presentation.ui.rememberPlatformUriHandler
 import org.koin.compose.koinInject
@@ -27,8 +37,9 @@ import org.koin.compose.koinInject
  * Full-screen Ukraine info screen. Describes the current situation in Ukraine and
  * provides outbound links to external resources.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UkraineScreen() {
+fun UkraineScreen(onBack: () -> Unit) {
     val uriHandler = rememberPlatformUriHandler()
     val tracker: Tracker = koinInject()
 
@@ -40,26 +51,40 @@ fun UkraineScreen() {
         }
     }
 
-    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-        CompositionLocalProvider(
-            LocalTextStyle provides MaterialTheme.typography.titleMedium.copy(
-                textAlign = TextAlign.Center,
-            ),
-        ) {
-            UkraineInfoContent(
-                onTrackClick = { event -> tracker.trackClick(event) },
-                onOpenUri = ::openUri,
+    Scaffold(
+        contentWindowInsets = WindowInsets(),
+        topBar = {
+            AppTopBar(
+                title = { Text("Ukraine") },
+                onBack = onBack,
             )
         }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
+        ) {
+            CompositionLocalProvider(
+                LocalTextStyle provides MaterialTheme.typography.titleMedium.copy(
+                    textAlign = TextAlign.Center,
+                ),
+            ) {
+                UkraineInfoContent(
+                    onTrackClick = { event -> tracker.trackClick(event) },
+                    onOpenUri = ::openUri,
+                )
+            }
 
-        UkraineBanner(
-            modifier = Modifier.fillMaxWidth(),
-            title = "Glory to Ukraine",
-            onClick = {
-                tracker.trackClick("UkraineBanner_Bottom")
-                openUri("https://twitter.com/search?q=%23StandWithUkraine")
-            },
-        )
+            UkraineBanner(
+                modifier = Modifier.fillMaxWidth(),
+                title = "Glory to Ukraine",
+                onClick = {
+                    tracker.trackClick("UkraineBanner_Bottom")
+                    openUri("https://twitter.com/search?q=%23StandWithUkraine")
+                },
+            )
+        }
     }
 }
 
@@ -69,14 +94,14 @@ private fun UkraineInfoContent(
     onOpenUri: (String) -> Unit,
 ) {
     Column(
-        modifier = Modifier.padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.padding(AppSpacing.lg),
+        verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
             text = "Hello, I'm Oleksandr, a proud Ukrainian",
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.titleSmall,
+            style = AppTypography.appTitle,
         )
         Text(
             text = "As you may be aware, Ukraine is currently facing a severe and merciless war. " +
@@ -94,7 +119,7 @@ private fun UkraineInfoContent(
                 onOpenUri("https://en.wikipedia.org/wiki/Rashism")
             },
         ) {
-            Text(text = "rashism.")
+            Text(text = "rashism.", textDecoration = TextDecoration.Underline)
         }
         Text(
             text = "The sheer brutality of it is unfathomable in the 21st century. Yet, Ukraine " +
@@ -124,7 +149,7 @@ private fun UkraineInfoContent(
                 onOpenUri("https://war.ukraine.ua/")
             },
         ) {
-            Text(text = "https://war.ukraine.ua/")
+            Text(text = "https://war.ukraine.ua/", textDecoration = TextDecoration.Underline)
         }
         Text(text = "If you have any questions, reach me via email")
         TextButton(
@@ -133,7 +158,7 @@ private fun UkraineInfoContent(
                 onOpenUri("mailto:sasha.sirelon@gmail.com")
             },
         ) {
-            Text(text = "sasha.sirelon@gmail.com")
+            Text(text = "sasha.sirelon@gmail.com", textDecoration = TextDecoration.Underline)
         }
         Text(
             text = "Thanks a bunch – we're all in this together!",

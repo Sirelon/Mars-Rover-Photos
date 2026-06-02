@@ -1,6 +1,8 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.library)
+    alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.kotlin.serialization)
@@ -16,11 +18,17 @@ kotlin {
         freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
-    // Android target
-    androidTarget()
+    // Android target — namespace/compileSdk/minSdk live here with com.android.kotlin.multiplatform.library
+    // jvmToolchain(17) above already covers the JVM target for this Android compilation.
+    android {
+        namespace = "com.sirelon.marsroverphotos.shared"
+        compileSdk = 37
+        minSdk = 23
+    }
 
-    // iOS targets (iosX64 dropped — CMP 1.11.0 no longer publishes iosX64 klibs;
-    // use iosSimulatorArm64 for Apple Silicon simulators)
+    // iOS targets — XCFramework bundles both slices so Xcode picks the right one
+    // for simulator and real device builds automatically.
+    val xcf = XCFramework("shared")
     listOf(
         iosArm64(),
         iosSimulatorArm64()
@@ -28,9 +36,8 @@ kotlin {
         target.binaries.framework {
             baseName = "shared"
             isStatic = true
-
-            // Export dependencies to iOS
             export(libs.koin.core)
+            xcf.add(this)
         }
     }
 
@@ -50,13 +57,14 @@ kotlin {
     sourceSets {
         // Common source set - shared across all platforms
         commonMain.dependencies {
-            // Compose Multiplatform
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
+            // Compose Multiplatform (direct coordinates — compose.XXX shorthands deprecated in 1.12+)
+            implementation(libs.compose.mp.runtime)
+            implementation(libs.compose.mp.foundation)
+            implementation(libs.compose.mp.material3)
+            implementation(libs.compose.mp.material3.adaptive.nav.suite)
+            implementation(libs.compose.mp.ui)
+            implementation(libs.compose.mp.components.resources)
+            implementation(libs.compose.mp.components.ui.tooling.preview)
 
             // Ktor (networking)
             implementation(libs.ktor.core)
@@ -82,6 +90,9 @@ kotlin {
             implementation(libs.coil)
             implementation(libs.coil.network)
 
+            // Zoomable (pinch-to-zoom for Compose Multiplatform)
+            implementation(libs.zoomable)
+
             // Immutable collections
             implementation(libs.kotlinx.collections.immutable)
 
@@ -92,6 +103,7 @@ kotlin {
             // Navigation 3
             implementation(libs.navigation3.runtime)
             implementation(libs.navigation3.ui)
+            implementation(libs.lifecycle.viewmodel.navigation3)
 
             // Kermit logging
             implementation(libs.kermit)
@@ -102,6 +114,8 @@ kotlin {
 
             // Room KMP (Android, iOS, Desktop only - no WASM support)
             implementation(libs.androidx.room.runtime)
+            // room-paging supports all KMP targets since room3 3.0.0-alpha05 (b/339934824)
+            implementation(libs.androidx.room.paging)
 
             // GitLive Firebase KMP (Firestore supports all platforms)
             implementation(libs.gitlive.firebase.firestore)
@@ -113,10 +127,6 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
-            implementation(libs.lifecycle.viewmodel.navigation3)
-
-            // Room paging (Android-only — confirmed: KSP does not support PagingSource on non-Android targets)
-            implementation(libs.androidx.room.paging)
 
             // Firebase native (Android-only — GitLive wraps these, still needed for Android init)
             implementation(libs.firebase.analytics.versioned)
@@ -130,6 +140,12 @@ kotlin {
 
             // AndroidX
             implementation(libs.androidx.ktx)
+
+            // AdMob (real banner is rendered from AdSlot.android.kt)
+            implementation(libs.play.services.ads)
+
+            // Google Play in-app review (Android only)
+            implementation(libs.play.review.ktx)
         }
 
         // iOS-specific dependencies
@@ -147,6 +163,7 @@ kotlin {
                 implementation(compose.desktop.currentOs)
                 implementation(libs.ktor.client.okhttp)
                 implementation(libs.kotlinx.coroutines.swing)
+                implementation(libs.androidx.sqlite.bundled)
             }
         }
 
@@ -162,30 +179,13 @@ kotlin {
             implementation(libs.kotlin.test)
             @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
             implementation(libs.kotlin.test.annotations.common)
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }
 
 compose.resources {
     packageOfResClass = "com.sirelon.marsroverphotos.shared.resources"
-}
-
-android {
-    namespace = "com.sirelon.marsroverphotos.shared"
-    compileSdk = 36
-
-    defaultConfig {
-        minSdk = 23
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    buildFeatures {
-        compose = true
-    }
 }
 
 room3 {

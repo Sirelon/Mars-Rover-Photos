@@ -1,9 +1,13 @@
 package com.sirelon.marsroverphotos.presentation.ui
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
@@ -43,7 +47,10 @@ enum class MaterialSymbol(val iconName: String) {
     Flag("flag"),
     CameraAlt("photo_camera"),
     Error("error"),
-    CheckCircle("check_circle")
+    CheckCircle("check_circle"),
+    Close("close"),
+    ExpandMore("expand_more"),
+    Tune("tune")
 }
 
 /**
@@ -73,18 +80,26 @@ fun MaterialSymbolIcon(
 ) {
     val fontFamily = materialSymbolsFontFamily(filled = filled, weight = weight)
 
-    // Convert size to sp for font size
-    val fontSize = (size.value * 1.5).sp // Adjust multiplier as needed for proper sizing
+    val fontSize = size.value.sp
 
-    Text(
-        text = symbol.iconName,
+    Box(
         modifier = modifier.size(size),
-        color = tint,
-        fontFamily = fontFamily,
-        fontSize = fontSize,
-        textAlign = TextAlign.Center,
-        maxLines = 1
-    )
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = symbol.iconName,
+            modifier = Modifier.wrapContentSize(unbounded = true),
+            color = tint,
+            fontFamily = fontFamily,
+            fontSize = fontSize,
+            lineHeight = fontSize,
+            textAlign = TextAlign.Center,
+            maxLines = 1,
+            style = LocalTextStyle.current.copy(
+                platformStyle = null
+            ),
+        )
+    }
 }
 
 /**

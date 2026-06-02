@@ -9,9 +9,10 @@ import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.data.paging.PopularRemoteMediator
 import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
 import com.sirelon.marsroverphotos.platform.IFirebasePhotos
+import com.sirelon.marsroverphotos.utils.Logger
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.supervisorScope
 
 /**
  * Implementation of ImagesRepository.
@@ -20,7 +21,8 @@ import kotlinx.coroutines.supervisorScope
  */
 class ImagesRepositoryImpl(
     private val imagesDao: ImagesDao,
-    private val firebasePhotos: IFirebasePhotos
+    private val firebasePhotos: IFirebasePhotos,
+    private val appScope: CoroutineScope
 ) : ImagesRepository {
 
     override suspend fun saveImages(photos: List<MarsImage>) {
@@ -33,41 +35,45 @@ class ImagesRepositoryImpl(
 
     override fun loadFavoriteImages(): Flow<List<MarsImage>> = imagesDao.loadFavoriteImages()
 
-    // TODO: Re-enable when room-paging supports all KMP targets
-    // override fun loadFavoritePagedSource(): Flow<PagingData<MarsImage>> {
-    //     return Pager(
-    //         config = PagingConfig(pageSize = 10, initialLoadSize = 10),
-    //         pagingSourceFactory = { imagesDao.loadFavoritePagedSource() }
-    //     ).flow
-    // }
+    override fun loadPopularImages(): Flow<List<MarsImage>> = imagesDao.loadPopularImages()
+
+    override fun loadFavoritePagedSource(): Flow<PagingData<MarsImage>> {
+        return Pager(
+            config = PagingConfig(pageSize = 10, initialLoadSize = 10, enablePlaceholders = false),
+            pagingSourceFactory = { imagesDao.loadFavoritePagedSource() }
+        ).flow
+    }
 
     override suspend fun updateFavForImage(item: MarsImage) {
-        supervisorScope {
-            val favorite = !item.favorite
-            val m = if (favorite) 1 else -1
-            val counter = item.stats.favorite + (1 * m)
+        setFavorite(item, !item.favorite)
+    }
 
-            imagesDao.updateFavorite(item.id, favorite, counter)
+    override suspend fun setFavorite(item: MarsImage, favorite: Boolean) {
+        val m = if (favorite) 1 else -1
+        val counter = (item.stats.favorite + m).coerceAtLeast(0)
 
-            // Update Firebase counter in background
-            launch {
-                try {
-                    firebasePhotos.updatePhotoFavoriteCounter(item, favorite)
-                } catch (e: Exception) {
-                    // Log error but don't fail the operation
-                    // Firebase update is best-effort
-                }
+        // Ensure the row exists (feed photos may not be cached yet); IGNORE keeps any
+        // existing row untouched so the explicit UPDATE below is the single source of truth.
+        imagesDao.insertImages(listOf(item))
+        imagesDao.updateFavorite(item.id, favorite, counter)
+
+        // Update the Firebase counter as a genuine fire-and-forget background task on the
+        // app scope, so it outlives this call and never blocks the favorite toggle (best-effort).
+        appScope.launch {
+            try {
+                firebasePhotos.updatePhotoFavoriteCounter(item, favorite)
+            } catch (e: Exception) {
+                Logger.e("ImagesRepositoryImpl", e) { "Failed to update Firebase favorite counter for ${item.id}" }
             }
         }
     }
 
-    // TODO: Re-enable when room-paging supports all KMP targets
-    // @OptIn(ExperimentalPagingApi::class)
-    // override fun loadPopularPagedSource(): Flow<PagingData<MarsImage>> {
-    //     return Pager(
-    //         config = PagingConfig(pageSize = 20, initialLoadSize = 20),
-    //         pagingSourceFactory = { imagesDao.loadPopularPagedSource() },
-    //         remoteMediator = PopularRemoteMediator(firebasePhotos, imagesDao)
-    //     ).flow
-    // }
+    @OptIn(ExperimentalPagingApi::class)
+    override fun loadPopularPagedSource(): Flow<PagingData<MarsImage>> {
+        return Pager(
+            config = PagingConfig(pageSize = 20, initialLoadSize = 20, enablePlaceholders = false),
+            pagingSourceFactory = { imagesDao.loadPopularPagedSource() },
+            remoteMediator = PopularRemoteMediator(firebasePhotos, imagesDao)
+        ).flow
+    }
 }

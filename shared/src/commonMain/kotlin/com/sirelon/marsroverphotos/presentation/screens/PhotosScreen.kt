@@ -1,8 +1,6 @@
 package com.sirelon.marsroverphotos.presentation.screens
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
@@ -10,248 +8,480 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Slider
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
+import com.sirelon.marsroverphotos.presentation.theme.AppTypography
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.domain.models.EducationalFact
 import com.sirelon.marsroverphotos.presentation.models.GridItem
-import com.sirelon.marsroverphotos.presentation.ui.CenteredColumn
+import com.sirelon.marsroverphotos.presentation.ui.AppCard
+import com.sirelon.marsroverphotos.presentation.ui.AppChip
+import com.sirelon.marsroverphotos.presentation.ui.AppEmptyState
+import com.sirelon.marsroverphotos.presentation.ui.AppFactCard
+import com.sirelon.marsroverphotos.presentation.ui.AppFloatingActionButton
+import com.sirelon.marsroverphotos.presentation.ui.AppOutlinedButton
+import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
 import com.sirelon.marsroverphotos.presentation.ui.CenteredProgress
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.presentation.ui.NetworkImage
-import com.sirelon.marsroverphotos.presentation.ui.PlatformDatePickerDialog
-import com.sirelon.marsroverphotos.presentation.ui.adaptiveGridCells
+import com.sirelon.marsroverphotos.presentation.viewmodels.PhotosUiState
 import com.sirelon.marsroverphotos.presentation.viewmodels.PhotosViewModel
 import com.sirelon.marsroverphotos.shared.resources.Res
-import com.sirelon.marsroverphotos.shared.resources.alien_icon
-import com.sirelon.marsroverphotos.shared.resources.cancel
-import com.sirelon.marsroverphotos.shared.resources.choose
 import com.sirelon.marsroverphotos.shared.resources.did_you_know
-import com.sirelon.marsroverphotos.shared.resources.earth_date_fmt
 import com.sirelon.marsroverphotos.shared.resources.educational_fact
 import com.sirelon.marsroverphotos.shared.resources.no_photos_title
-import com.sirelon.marsroverphotos.shared.resources.photo_refresh
-import com.sirelon.marsroverphotos.shared.resources.select
-import com.sirelon.marsroverphotos.shared.resources.select_date
-import com.sirelon.marsroverphotos.shared.resources.sol_date_fmt
-import com.sirelon.marsroverphotos.shared.resources.sol_description
-import com.sirelon.marsroverphotos.shared.resources.sol_label
-import com.sirelon.marsroverphotos.shared.resources.sol_max_error_fmt
 import com.sirelon.marsroverphotos.shared.resources.tap_to_retry
-import kotlin.time.Instant
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atStartOfDayIn
-import kotlinx.datetime.toLocalDateTime
-import org.jetbrains.compose.resources.painterResource
+import com.sirelon.marsroverphotos.utils.formatDisplayDate
+import coil3.SingletonImageLoader
+import coil3.compose.LocalPlatformContext
+import coil3.request.CachePolicy
+import coil3.request.ImageRequest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
+// ── State-holder composable ───────────────────────────────────────────────────
+
+/**
+ * State-holder entry point: collects [PhotosViewModel.uiState] and the paged feed, and
+ * delegates layout to the private [PhotosScreen] UI overload.
+ *
+ * The feed is an infinite, bidirectional sol-paged list (`gridItemsFlow`). The floating date
+ * chip mirrors the top-visible day and opens the Sol/Earth pickers (separate nav entries that
+ * share this screen's [PhotosViewModel]).
+ */
 @Composable
 fun PhotosScreen(
     roverId: Long,
-    onNavigateToImages: (String) -> Unit,
+    onNavigateToImages: (clickedId: String, cameras: Set<String>) -> Unit,
+    onBack: () -> Unit,
+    onOpenSolPicker: () -> Unit,
+    onOpenEarthDatePicker: () -> Unit,
+    onOpenFilters: () -> Unit,
     modifier: Modifier = Modifier,
+    cameraFilter: String? = null,
+    onClearCameraFilter: () -> Unit = {},
     viewModel: PhotosViewModel = koinViewModel()
 ) {
-    var maxSol by remember { mutableLongStateOf(1L) }
-
     LaunchedEffect(roverId) {
         viewModel.setRoverId(roverId)
-        maxSol = viewModel.maxSol().coerceAtLeast(1L)
     }
 
-    val gridItems by viewModel.gridItemsFlow.collectAsState(initial = null)
-    val photos = remember(gridItems) {
-        gridItems?.mapNotNull { item ->
-            (item as? GridItem.PhotoItem)?.image
-        }.orEmpty()
+    LaunchedEffect(cameraFilter) {
+        viewModel.setCameraFilters(if (cameraFilter != null) setOf(cameraFilter) else emptySet())
     }
-    val sol by viewModel.solFlow.collectAsState(initial = 0L)
 
-    var openSolDialog by rememberSaveable { mutableStateOf(false) }
-    var openEarthDateDialog by rememberSaveable { mutableStateOf(false) }
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val pagingItems = viewModel.gridItemsFlow.collectAsLazyPagingItems()
+    val gridState = rememberLazyGridState()
 
-    SolDialog(
-        maxSol = maxSol,
-        openDialog = openSolDialog,
-        sol = sol,
-        onClose = { openSolDialog = false },
-        onChoose = {
-            viewModel.loadBySol(it)
-            openSolDialog = false
-        }
-    )
+    // Scroll to top whenever the camera filter changes so the LazyGridState's scroll position
+    // is consistent with the new PagingData. This also forces a fresh Paging 3 layout pass,
+    // which re-connects the viewport-hint mechanism that drives APPEND/PREPEND loads.
+    LaunchedEffect(state.cameraFilters) {
+        gridState.scrollToItem(0)
+    }
 
-    Box(modifier = modifier.fillMaxSize()) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            Row(modifier = Modifier.height(52.dp)) {
-                HeaderButton(stringResource(Res.string.sol_date_fmt, sol)) {
-                    openSolDialog = true
-                }
-                HorizontalDivider(
-                    modifier = Modifier
-                        .width(1.dp)
-                        .fillMaxHeight()
-                )
-                HeaderButton(stringResource(Res.string.earth_date_fmt, viewModel.earthDateStr(sol))) {
-                    openEarthDateDialog = true
-                }
+    // Keep the floating chip + pickers in sync with the top-visible day as the user scrolls.
+    val currentPagingItems = rememberUpdatedState(pagingItems)
+    LaunchedEffect(gridState) {
+        snapshotFlow { gridState.firstVisibleItemIndex }
+            .collect { index ->
+                solAtIndex(currentPagingItems.value, index)?.let(viewModel::onVisibleSolChanged)
             }
+    }
 
-            if (openEarthDateDialog) {
-                PlatformDatePickerDialog(
-                    selectedDate = millisToUtcLocalDate(viewModel.dateFromSol()),
-                    minDate = millisToUtcLocalDate(viewModel.minDate()),
-                    maxDate = millisToUtcLocalDate(viewModel.maxDate()),
-                    onDateSelected = { selectedDate ->
-                        viewModel.setEarthTime(selectedDate.toUtcMillis())
-                        openEarthDateDialog = false
-                    },
-                    onDismissRequest = { openEarthDateDialog = false },
-                    title = stringResource(Res.string.select_date),
-                    confirmText = stringResource(Res.string.select),
-                    dismissText = stringResource(Res.string.cancel)
-                )
-            }
-
-            Crossfade(targetState = gridItems, label = "[Anim]:PhotosProgress") { items ->
-                when {
-                    items == null -> CenteredProgress()
-                    items.isEmpty() -> {
-                        EmptyPhotos(
-                            title = stringResource(Res.string.no_photos_title),
-                            btnTitle = stringResource(Res.string.tap_to_retry),
-                            callback = { viewModel.randomize() }
+    // Prefetch images for items just beyond the visible grid window so they are
+    // already in Coil's cache by the time the user scrolls to them.
+    val context = LocalPlatformContext.current
+    LaunchedEffect(gridState) {
+        snapshotFlow { gridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0 }
+            .distinctUntilChanged()
+            .collect { lastVisible ->
+                val items = currentPagingItems.value
+                repeat(PREFETCH_ITEM_COUNT) { offset ->
+                    val index = lastVisible + 1 + offset
+                    if (index >= items.itemCount) return@repeat
+                    val item = items.peek(index) ?: return@repeat
+                    if (item is GridItem.PhotoItem) {
+                        SingletonImageLoader.get(context).enqueue(
+                            ImageRequest.Builder(context)
+                                .data(item.image.imageUrl)
+                                // Only warm the disk cache — do NOT write to memory cache.
+                                // Without a size constraint the cached bitmap would be at
+                                // original resolution, which evicts correctly-sized entries
+                                // that AsyncImage has loaded and causes the placeholder loop.
+                                .memoryCachePolicy(CachePolicy.DISABLED)
+                                .build()
                         )
                     }
+                }
+            }
+    }
+
+    // On return from the fullscreen viewer, jump the grid to the photo the user was last viewing
+    // there. The detail pager and this grid share the same RoverFeedPager pages, so that photo is
+    // already in the loaded snapshot; we locate it by id (its grid index differs from the pager's
+    // because of the date headers and fact cards interleaved here). Runs once per (re)entry; the
+    // id is cleared on read so later manual scrolls aren't overridden.
+    LaunchedEffect(Unit) {
+        val targetId = viewModel.consumeLastViewedPhotoId() ?: return@LaunchedEffect
+        val index = snapshotFlow {
+            pagingItems.itemSnapshotList.indexOfFirst {
+                (it as? GridItem.PhotoItem)?.image?.id == targetId
+            }
+        }.first { it >= 0 }
+        gridState.scrollToItem(index)
+    }
+
+    PhotosScreen(
+        state = state,
+        pagingItems = pagingItems,
+        gridState = gridState,
+        onRandomize = viewModel::randomize,
+        onGoToLatest = viewModel::goToLatest,
+        onClearCameraFilters = {
+            viewModel.setCameraFilters(emptySet())
+            onClearCameraFilter()
+        },
+        onNavigateToImages = onNavigateToImages,
+        onBack = onBack,
+        onOpenSolPicker = onOpenSolPicker,
+        onOpenEarthDatePicker = onOpenEarthDatePicker,
+        onOpenFilters = onOpenFilters,
+        modifier = modifier,
+    )
+}
+
+// ── UI composable ─────────────────────────────────────────────────────────────
+
+/**
+ * Pure UI overload: knows nothing about [PhotosViewModel]. Safe to preview and unit-test.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun PhotosScreen(
+    state: PhotosUiState,
+    pagingItems: LazyPagingItems<GridItem>,
+    gridState: LazyGridState,
+    onRandomize: () -> Unit,
+    onGoToLatest: () -> Unit,
+    onClearCameraFilters: () -> Unit,
+    onNavigateToImages: (clickedId: String, cameras: Set<String>) -> Unit,
+    onBack: () -> Unit,
+    onOpenSolPicker: () -> Unit,
+    onOpenEarthDatePicker: () -> Unit,
+    onOpenFilters: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val refresh = pagingItems.loadState.refresh
+
+    Scaffold(
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        contentWindowInsets = WindowInsets(),
+        topBar = {
+            AppTopBar(
+                scrollBehavior = scrollBehavior,
+                title = { Text(text = state.roverName) },
+                onBack = onBack,
+                actions = {
+                    IconButton(onClick = onOpenFilters) {
+                        MaterialSymbolIcon(
+                            symbol = MaterialSymbol.Tune,
+                            contentDescription = "Filters"
+                        )
+                    }
+                }
+            )
+        },
+        floatingActionButton = {
+            RefreshButton(
+                visible = pagingItems.itemCount > 0,
+                onClick = onGoToLatest
+            )
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            if (state.cameraFilters.isNotEmpty()) {
+                CameraFilterChip(
+                    cameras = state.cameraFilters,
+                    onClear = onClearCameraFilters,
+                )
+            }
+
+            Box(modifier = Modifier.fillMaxSize()) {
+                when {
+                    refresh is LoadState.Loading && pagingItems.itemCount == 0 -> CenteredProgress()
+
+                    refresh is LoadState.Error && pagingItems.itemCount == 0 -> EmptyPhotos(
+                        title = stringResource(Res.string.no_photos_title),
+                        btnTitle = stringResource(Res.string.tap_to_retry),
+                        callback = { pagingItems.retry() }
+                    )
+
+                    pagingItems.itemCount == 0 -> EmptyPhotos(
+                        title = if (state.cameraFilters.isNotEmpty()) {
+                            "No ${state.cameraFilters.joinToString()} photos near Sol ${state.sol}. Try another Sol."
+                        } else {
+                            stringResource(Res.string.no_photos_title)
+                        },
+                        btnTitle = stringResource(Res.string.tap_to_retry),
+                        callback = onRandomize
+                    )
+
                     else -> {
-                        PhotosList(items) { image ->
-                            viewModel.onPhotoClick()
-                            onNavigateToImages(image.id)
+                        PhotosGrid(
+                            pagingItems = pagingItems,
+                            gridState = gridState,
+                            showCameraName = state.showCameraName,
+                            onPhotoClick = { image -> onNavigateToImages(image.id, state.cameraFilters) },
+                        )
+
+                        // Floating "sticky" date chip — mirrors the top-visible day.
+                        FloatingDateChip(
+                            sol = state.sol,
+                            earthDate = state.earthDate,
+                            onOpenSolPicker = onOpenSolPicker,
+                            onOpenEarthDatePicker = onOpenEarthDatePicker,
+                            modifier = Modifier
+                                .align(Alignment.TopCenter)
+                                .padding(top = AppSpacing.sm)
+                        )
+
+                        // Prepend (scroll-up) progress at the top, append (scroll-down) at the bottom.
+                        if (pagingItems.loadState.prepend is LoadState.Loading) {
+                            EdgeProgress(modifier = Modifier.align(Alignment.TopCenter))
+                        }
+                        if (pagingItems.loadState.append is LoadState.Loading) {
+                            EdgeProgress(modifier = Modifier.align(Alignment.BottomCenter))
                         }
                     }
                 }
             }
         }
-
-        RefreshButton(
-            visible = photos.isNotEmpty(),
-            modifier = Modifier.align(Alignment.BottomEnd),
-            onClick = { viewModel.goToLatest() }
-        )
     }
 }
 
 @Composable
 private fun RefreshButton(
     visible: Boolean,
-    modifier: Modifier,
     onClick: () -> Unit,
 ) {
     AnimatedVisibility(
         visible = visible,
-        modifier = modifier.padding(16.dp),
         enter = fadeIn(),
         exit = fadeOut()
     ) {
-        FloatingActionButton(onClick = onClick) {
+        AppFloatingActionButton(onClick = onClick) {
             MaterialSymbolIcon(
                 symbol = MaterialSymbol.Autorenew,
-                contentDescription = stringResource(Res.string.photo_refresh)
+                contentDescription = "Jump to latest Sol"
             )
         }
     }
 }
 
 @Composable
-private fun PhotosList(
-    gridItems: List<GridItem>,
-    onPhotoClick: (image: MarsImage) -> Unit
+private fun PhotosGrid(
+    pagingItems: LazyPagingItems<GridItem>,
+    gridState: LazyGridState,
+    showCameraName: Boolean,
+    onPhotoClick: (image: MarsImage) -> Unit,
 ) {
     LazyVerticalGrid(
-        columns = adaptiveGridCells(minColumnWidth = 160.dp),
-        modifier = Modifier.fillMaxSize()
+        state = gridState,
+        columns = GridCells.Fixed(2),
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(
+            start = AppSpacing.md,
+            end = AppSpacing.md,
+            // Leave room for the floating date chip at the top.
+            top = 52.dp,
+            // 56dp FAB + 16dp FAB padding + 8dp margin above FAB
+            bottom = 80.dp
+        ),
+        verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
+        horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
     ) {
         items(
-            items = gridItems,
-            key = { item ->
-                when (item) {
-                    is GridItem.PhotoItem -> item.id
-                    is GridItem.FactItem -> item.id
-                }
-            },
-            contentType = { item ->
-                when (item) {
-                    is GridItem.PhotoItem -> "MarsPhotoContentType"
-                    is GridItem.FactItem -> "FactCardContentType"
-                }
-            },
-            span = { item ->
-                when (item) {
+            count = pagingItems.itemCount,
+            key = pagingItems.itemKey { it.gridKey },
+            contentType = pagingItems.itemContentType { it.contentType },
+            span = { index ->
+                when (pagingItems.peek(index)) {
                     is GridItem.PhotoItem -> GridItemSpan(1)
-                    is GridItem.FactItem -> GridItemSpan(maxLineSpan)
+                    else -> GridItemSpan(maxLineSpan)
                 }
             }
-        ) { item ->
-            when (item) {
-                is GridItem.PhotoItem -> PhotoCard(image = item.image, onPhotoClick = onPhotoClick)
+        ) { index ->
+            when (val item = pagingItems[index]) {
+                is GridItem.PhotoItem -> PhotoCard(
+                    image = item.image,
+                    showCameraName = showCameraName,
+                    onPhotoClick = onPhotoClick,
+                )
+
+                is GridItem.DateHeader -> DateHeaderRow(header = item)
+
                 is GridItem.FactItem -> FactCard(fact = item.fact)
+
+                null -> Unit
             }
         }
     }
 }
 
 @Composable
+private fun DateHeaderRow(
+    header: GridItem.DateHeader,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = AppSpacing.xs, vertical = AppSpacing.sm),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
+    ) {
+        Text(
+            text = formatDisplayDate(header.earthDate),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+        )
+        Text(
+            text = "Sol ${header.sol}",
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun FloatingDateChip(
+    sol: Long,
+    earthDate: String,
+    onOpenSolPicker: () -> Unit,
+    onOpenEarthDatePicker: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    Box(modifier = modifier) {
+        Surface(
+            modifier = Modifier.clickable { expanded = true },
+            shape = MaterialTheme.shapes.large,
+            color = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            tonalElevation = 3.dp,
+            shadowElevation = 4.dp,
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Text(
+                    text = if (earthDate.isNotBlank()) "Sol $sol · $earthDate" else "Sol $sol",
+                    style = MaterialTheme.typography.labelLarge,
+                    maxLines = 1,
+                )
+                MaterialSymbolIcon(
+                    symbol = MaterialSymbol.ExpandMore,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                    size = 18.dp
+                )
+            }
+        }
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            DropdownMenuItem(
+                text = { Text("Pick by Sol") },
+                onClick = {
+                    expanded = false
+                    onOpenSolPicker()
+                }
+            )
+            DropdownMenuItem(
+                text = { Text("Pick by Earth date") },
+                onClick = {
+                    expanded = false
+                    onOpenEarthDatePicker()
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun EdgeProgress(modifier: Modifier = Modifier) {
+    LinearProgressIndicator(
+        modifier = modifier.fillMaxWidth()
+    )
+}
+
+@Composable
 private fun PhotoCard(
     image: MarsImage,
-    onPhotoClick: (image: MarsImage) -> Unit
+    showCameraName: Boolean,
+    onPhotoClick: (image: MarsImage) -> Unit,
 ) {
-    Card(
+    AppCard(
         modifier = Modifier
-            .padding(8.dp)
             .fillMaxWidth()
             .clickable { onPhotoClick(image) },
-        shape = MaterialTheme.shapes.large
     ) {
         Column(verticalArrangement = Arrangement.SpaceBetween) {
             NetworkImage(
@@ -260,133 +490,30 @@ private fun PhotoCard(
                     .aspectRatio(1F),
                 imageUrl = image.imageUrl
             )
-            Text(
-                text = image.name.orEmpty(),
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(4.dp).fillMaxWidth(),
-                textAlign = TextAlign.Center
-            )
-        }
-    }
-}
-
-@Composable
-private fun SolDialog(
-    openDialog: Boolean,
-    maxSol: Long,
-    sol: Long,
-    onClose: () -> Unit,
-    onChoose: (sol: Long) -> Unit
-) {
-    if (openDialog) {
-        var selectedSol: Long? by remember(sol) { mutableStateOf(sol) }
-        var errorMessage by remember { mutableStateOf<String?>(null) }
-
-        AlertDialog(
-            onDismissRequest = onClose,
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        val resolvedSol = selectedSol
-                        if (resolvedSol != null) {
-                            onChoose(resolvedSol)
-                        } else {
-                            onClose()
-                        }
-                    }
-                ) {
-                    Text(stringResource(Res.string.choose))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = onClose) {
-                    Text(stringResource(Res.string.cancel))
-                }
-            },
-            title = { Text(text = stringResource(Res.string.sol_description)) },
-            text = {
-                val maxSolError = stringResource(Res.string.sol_max_error_fmt, maxSol)
-                SolChanger(selectedSol, maxSol, errorMessage) { nextSol ->
-                    if ((nextSol ?: 0L) > maxSol) {
-                        selectedSol = maxSol
-                        errorMessage = maxSolError
-                    } else {
-                        selectedSol = nextSol
-                        errorMessage = null
-                    }
-                }
+            if (showCameraName) {
+                Text(
+                    text = shortCaption(image.name.orEmpty()),
+                    style = AppTypography.photoCaption,
+                    color = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier
+                        .padding(AppSpacing.xs)
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
             }
-        )
-    }
-}
-
-@Composable
-private fun SolChanger(
-    sol: Long?,
-    maxSol: Long,
-    errorMessage: String?,
-    onSolChanged: (sol: Long?) -> Unit
-) {
-    val sliderMax = maxSol.coerceAtLeast(1L)
-    Column {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = stringResource(Res.string.sol_label),
-                modifier = Modifier.weight(1f),
-                style = MaterialTheme.typography.titleLarge
-            )
-            OutlinedTextField(
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                value = sol?.toString().orEmpty(),
-                modifier = Modifier.weight(1f),
-                singleLine = true,
-                onValueChange = { onSolChanged(it.toLongOrNull()) }
-            )
         }
-        Slider(
-            value = (sol ?: 0L).coerceIn(0L, sliderMax).toFloat(),
-            valueRange = 0f..sliderMax.toFloat(),
-            onValueChange = { onSolChanged(it.toLong()) }
-        )
-        if (!errorMessage.isNullOrBlank()) {
-            Text(
-                text = errorMessage,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-        }
-    }
-}
-
-@Composable
-private fun RowScope.HeaderButton(text: String, onClick: () -> Unit) {
-    TextButton(
-        modifier = Modifier
-            .weight(1f)
-            .animateContentSize(),
-        onClick = onClick
-    ) {
-        Text(
-            text = text,
-            textAlign = TextAlign.Center
-        )
     }
 }
 
 @Composable
 private fun EmptyPhotos(title: String, btnTitle: String, callback: () -> Unit) {
-    CenteredColumn(
+    AppEmptyState(
+        title = title,
         modifier = Modifier
             .clickable(onClick = callback)
-            .padding(32.dp)
-    ) {
-        Image(painter = painterResource(Res.drawable.alien_icon), contentDescription = null)
-        Spacer(modifier = Modifier.size(8.dp))
-        Text(text = title, style = MaterialTheme.typography.headlineSmall, textAlign = TextAlign.Center)
-        Spacer(modifier = Modifier.size(8.dp))
-        Text(text = btnTitle, style = MaterialTheme.typography.headlineMedium)
-    }
+            .padding(AppSpacing.xxl),
+        action = { Text(text = btnTitle, style = AppTypography.roverTitle) }
+    )
 }
 
 @Composable
@@ -394,51 +521,141 @@ private fun FactCard(
     fact: EducationalFact,
     modifier: Modifier = Modifier
 ) {
-    Card(
+    AppFactCard(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            .padding(horizontal = AppSpacing.sm, vertical = AppSpacing.md),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(AppSpacing.lg),
+            verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
             ) {
                 MaterialSymbolIcon(
                     symbol = MaterialSymbol.Info,
                     contentDescription = stringResource(Res.string.educational_fact),
-                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
                     modifier = Modifier.size(24.dp)
                 )
                 Text(
                     text = stringResource(Res.string.did_you_know),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                    style = AppTypography.factHeader,
                 )
             }
 
             Text(
                 text = fact.text,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
-                modifier = Modifier.padding(top = 4.dp)
+                style = AppTypography.body,
+                modifier = Modifier.padding(top = AppSpacing.xs)
             )
         }
     }
 }
 
-private fun millisToUtcLocalDate(timeMillis: Long): LocalDate =
-    Instant.fromEpochMilliseconds(timeMillis).toLocalDateTime(TimeZone.UTC).date
+private fun shortCaption(full: String): String =
+    full.substringAfter(": ", missingDelimiterValue = full).trim()
 
-private fun LocalDate.toUtcMillis(): Long =
-    atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
+@Composable
+private fun CameraFilterChip(cameras: Set<String>, onClear: () -> Unit) {
+    val label = if (cameras.size == 1) {
+        "Camera: ${cameras.first()} ×"
+    } else {
+        "Cameras: ${cameras.joinToString()} ×"
+    }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = AppSpacing.lg, vertical = AppSpacing.xs),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        AppChip(label = label, onClick = onClear)
+    }
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+// 10 items = 5 rows ahead for a 2-column grid.
+private const val PREFETCH_ITEM_COUNT = 10
+
+private val GridItem.gridKey: String
+    get() = when (this) {
+        is GridItem.PhotoItem -> id
+        is GridItem.FactItem -> id
+        is GridItem.DateHeader -> id
+    }
+
+private val GridItem.contentType: String
+    get() = when (this) {
+        is GridItem.PhotoItem -> "photo"
+        is GridItem.FactItem -> "fact"
+        is GridItem.DateHeader -> "header"
+    }
+
+/**
+ * Sol of the day at (or just above) [index] — used to drive the floating header. For a
+ * [GridItem.FactItem] (no sol of its own) it scans backward to the nearest photo/header.
+ */
+private fun solAtIndex(pagingItems: LazyPagingItems<GridItem>, index: Int): Long? {
+    if (pagingItems.itemCount == 0) return null
+    var i = index.coerceIn(0, pagingItems.itemCount - 1)
+    while (i >= 0) {
+        when (val item = pagingItems.peek(i)) {
+            is GridItem.PhotoItem -> return item.image.sol
+            is GridItem.DateHeader -> return item.sol
+            else -> i--
+        }
+    }
+    return null
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun PhotosScreenPreview() {
+    val sampleImage = MarsImage(
+        id = "preview_1",
+        order = 0,
+        sol = 3200L,
+        name = "Curiosity: FHAZ",
+        imageUrl = "https://example.com/img.jpg",
+        earthDate = "2015-08-05",
+        camera = com.sirelon.marsroverphotos.domain.models.RoverCamera(
+            id = 1,
+            name = "FHAZ",
+            fullName = "Front Hazard Avoidance Camera"
+        ),
+        favorite = false,
+        popular = false,
+        stats = MarsImage.Stats(see = 42, scale = 0, save = 2, share = 1, favorite = 5),
+    )
+    val sampleItems: List<GridItem> = listOf(
+        GridItem.DateHeader(sol = 3200L, earthDate = "2015-08-05"),
+        GridItem.PhotoItem(sampleImage),
+        GridItem.PhotoItem(sampleImage.copy(id = "preview_2", name = "Curiosity: MAST")),
+    )
+    val pagingItems = flowOf(PagingData.from(sampleItems)).collectAsLazyPagingItems()
+    MaterialTheme {
+        PhotosScreen(
+            state = PhotosUiState(
+                roverName = "Curiosity",
+                sol = 3200L,
+                earthDate = "Aug 5, 2015",
+                maxSol = 4000L,
+            ),
+            pagingItems = pagingItems,
+            gridState = rememberLazyGridState(),
+            onRandomize = {},
+            onGoToLatest = {},
+            onClearCameraFilters = {},
+            onNavigateToImages = { _, _ -> },
+            onBack = {},
+            onOpenSolPicker = {},
+            onOpenEarthDatePicker = {},
+            onOpenFilters = {},
+        )
+    }
+}

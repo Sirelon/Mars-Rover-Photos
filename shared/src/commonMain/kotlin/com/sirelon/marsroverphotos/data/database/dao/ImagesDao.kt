@@ -45,16 +45,33 @@ interface ImagesDao {
     @Query("SELECT * FROM images WHERE popular = 1 ORDER BY `order` ASC")
     fun loadPopularImages(): Flow<List<MarsImage>>
 
-    // TODO: PagingSource requires room-paging which is Android-only for now.
-    // Confirmed: Room KSP does not support PagingSource return type on non-Android targets.
-    // @Query("SELECT * FROM images WHERE favorite = 1 ORDER BY `order` ASC")
-    // fun loadFavoritePagedSource(): PagingSource<Int, MarsImage>
-    //
-    // @Query("SELECT * FROM images WHERE popular = 1 ORDER BY `order` ASC")
-    // fun loadPopularPagedSource(): PagingSource<Int, MarsImage>
+    // room-paging supports all KMP targets since room3 3.0.0-alpha05 (b/339934824)
+    @Query("SELECT * FROM images WHERE favorite = 1 ORDER BY `order` ASC")
+    fun loadFavoritePagedSource(): PagingSource<Int, MarsImage>
+
+    @Query("SELECT * FROM images WHERE popular = 1 ORDER BY `order` ASC")
+    fun loadPopularPagedSource(): PagingSource<Int, MarsImage>
 
     @Query("DELETE FROM images WHERE popular = 1")
     suspend fun deleteAllPopular()
+
+    /**
+     * Evicts cached (non-favorite, non-popular) images, keeping the [keepCount] most-recently
+     * cached rows. Recency is expressed by SQLite's implicit `rowid` (monotonic with insertion):
+     * the `order` column is reset per-sol so it does not express recency across sols.
+     */
+    @Query("""
+        DELETE FROM images
+        WHERE favorite = 0
+          AND popular = 0
+          AND id NOT IN (
+            SELECT id FROM images
+            WHERE favorite = 0 AND popular = 0
+            ORDER BY rowid DESC
+            LIMIT :keepCount
+          )
+    """)
+    suspend fun deleteNonUserImagesBeyondCount(keepCount: Int)
 
     // TODO: Re-enable when Room KMP fixes Kotlin/Native @Transaction support
     // Do not name it 'withTransaction' see more here: https://issuetracker.google.com/issues/275678088

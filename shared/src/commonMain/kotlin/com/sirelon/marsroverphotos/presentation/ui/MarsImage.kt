@@ -4,8 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
@@ -13,20 +11,25 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Card
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.Box
+import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
 import coil3.compose.LocalPlatformContext
+import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -59,12 +62,11 @@ fun MarsImageComposable(
 
     val state by painter.state.collectAsState()
     val showStats = state is AsyncImagePainter.State.Success
-    Card(
+    AppCard(
         modifier = modifier
-            .padding(vertical = 8.dp)
+            .padding(vertical = AppSpacing.sm)
             .fillMaxWidth()
             .clickable(onClick = onClick),
-        shape = MaterialTheme.shapes.large
     ) {
         Column {
             Image(
@@ -84,28 +86,64 @@ fun MarsImageComposable(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun PhotoStats(marsImage: MarsImage, onFavoriteClick: () -> Unit) {
+fun PhotoStats(
+    marsImage: MarsImage,
+    onFavoriteClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val stats = marsImage.stats
 
-    FlowRow(
-        modifier = Modifier
-            .padding(8.dp)
+    Column(
+        modifier = modifier
+            .padding(horizontal = AppSpacing.sm, vertical = AppSpacing.xs)
             .fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceAround,
-        verticalArrangement = Arrangement.Center
     ) {
-
-        StatsInfoText(stats.see, MaterialSymbol.Visibility, "counterSee")
-        StatsInfoText(stats.scale, MaterialSymbol.ZoomIn, "counterScale")
-        StatsInfoText(stats.save, MaterialSymbol.Save, "counterSave")
-        StatsInfoText(stats.share, MaterialSymbol.Share, "counterShare")
-
-        MarsImageFavoriteToggle(
+        Row(
             modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            StatsInfoText(stats.see, MaterialSymbol.Visibility, "Views")
+            StatsInfoText(stats.scale, MaterialSymbol.ZoomIn, "Zooms")
+            StatsInfoText(stats.save, MaterialSymbol.Save, "Saves")
+            StatsInfoText(stats.share, MaterialSymbol.Share, "Shares")
+        }
+        LikeAction(
+            count = stats.favorite,
             checked = marsImage.favorite,
-            onCheckedChange = { onFavoriteClick() }
+            onClick = onFavoriteClick,
+        )
+    }
+}
+
+@Composable
+private fun LikeAction(
+    count: Long,
+    checked: Boolean,
+    onClick: () -> Unit,
+) {
+    val tint = if (checked) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+    ) {
+        MaterialSymbolIcon(
+            symbol = MaterialSymbol.Favorite,
+            contentDescription = if (checked) "Unlike" else "Like",
+            filled = checked,
+            tint = tint,
+            size = 22.dp,
+        )
+        Spacer(modifier = Modifier.width(AppSpacing.sm))
+        Text(
+            text = if (count > 0) "Like · ${compactCount(count)}" else "Like",
+            style = MaterialTheme.typography.labelLarge,
+            color = tint,
         )
     }
 }
@@ -123,7 +161,7 @@ fun MarsImageFavoriteToggle(
     ) {
         MaterialSymbolIcon(
             symbol = MaterialSymbol.Favorite,
-            contentDescription = null, // handled by click label of parent
+            contentDescription = "Favorites",
             filled = checked
         )
     }
@@ -136,36 +174,70 @@ fun NetworkImage(
     showPlaceholder: Boolean = true,
     imageUrl: String
 ) {
-    val request = ImageRequest.Builder(LocalPlatformContext.current)
-        .data(data = imageUrl)
-        .apply {
-            crossfade(true)
-        }
-        .build()
-    AsyncImage(
-        model = request,
-        contentDescription = imageUrl,
-        modifier = modifier,
-        contentScale = contentScale,
-        placeholder = if (showPlaceholder) painterResource(Res.drawable.img_placeholder) else null
-    )
+    val context = LocalPlatformContext.current
+    val request = remember(imageUrl) {
+        ImageRequest.Builder(context)
+            .data(data = imageUrl)
+            .apply {
+                crossfade(true)
+            }
+            .build()
+    }
+    if (showPlaceholder) {
+        AsyncImage(
+            model = request,
+            contentDescription = imageUrl,
+            modifier = modifier,
+            contentScale = contentScale,
+            placeholder = painterResource(Res.drawable.img_placeholder)
+        )
+    } else {
+        SubcomposeAsyncImage(
+            model = request,
+            contentDescription = imageUrl,
+            modifier = modifier,
+            contentScale = contentScale,
+            loading = {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            }
+        )
+    }
 }
 
 @Composable
 private fun StatsInfoText(counter: Long, symbol: MaterialSymbol, desc: String) {
-
-    if (counter <= 0) return
-
     Row(verticalAlignment = Alignment.CenterVertically) {
         MaterialSymbolIcon(
             symbol = symbol,
             contentDescription = desc,
-            size = 20.dp
+            size = 16.dp,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Spacer(modifier = Modifier.width(6.dp))
+        Spacer(modifier = Modifier.width(2.dp))
         Text(
-            text = counter.toString(),
-            style = MaterialTheme.typography.bodySmall,
+            text = if (counter > 0) compactCount(counter) else "0",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
         )
     }
+}
+
+private fun compactCount(value: Long): String {
+    val abs = if (value < 0) -value else value
+    return when {
+        abs < 1_000 -> value.toString()
+        abs < 10_000 -> formatOneDecimal(value, 1_000) + "K"
+        abs < 1_000_000 -> (value / 1_000).toString() + "K"
+        abs < 10_000_000 -> formatOneDecimal(value, 1_000_000) + "M"
+        else -> (value / 1_000_000).toString() + "M"
+    }
+}
+
+private fun formatOneDecimal(value: Long, divisor: Int): String {
+    val whole = value / divisor
+    val tenths = ((value % divisor) * 10 / divisor)
+    return if (tenths == 0L) whole.toString() else "$whole.$tenths"
 }

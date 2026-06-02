@@ -7,9 +7,8 @@ import com.sirelon.marsroverphotos.presentation.navigation.LocalAppNavigator
 import com.sirelon.marsroverphotos.presentation.screens.AboutScreen
 import com.sirelon.marsroverphotos.presentation.screens.FavoriteScreen
 import com.sirelon.marsroverphotos.presentation.screens.ImagesScreen
-import com.sirelon.marsroverphotos.presentation.screens.RoverMissionInfoScreen
-import com.sirelon.marsroverphotos.presentation.screens.PhotosScreen
 import com.sirelon.marsroverphotos.presentation.screens.PopularScreen
+import com.sirelon.marsroverphotos.presentation.screens.RoverMissionInfoScreen
 import com.sirelon.marsroverphotos.presentation.screens.RoversScreen
 import com.sirelon.marsroverphotos.presentation.screens.UkraineScreen
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -29,26 +28,20 @@ val navigationModule = module {
         )
     }
 
-    navigation<AppDestination.Photos> { destination ->
-        val navigator = LocalAppNavigator.current
-        PhotosScreen(
-            roverId = destination.roverId,
-            onNavigateToImages = { photoId ->
-                navigator.navigate(
-                    AppDestination.Images(
-                        photoIds = listOf(photoId),
-                        selectedId = photoId
-                    )
-                )
-            }
-        )
-    }
+    // AppDestination.Photos and its dialog destinations (PhotosSolPicker, PhotosEarthDatePicker)
+    // are declared as raw NavEntry in AppNavigation: they need a camera-independent contentKey so
+    // the shared PhotosViewModel survives camera-filter changes, and the dialogs name the Photos
+    // entry as their ViewModelStore parent (see SharedViewModelStoreNavEntryDecorator).
 
     navigation<AppDestination.Images> { destination ->
         val navigator = LocalAppNavigator.current
         ImagesScreen(
             photoIds = destination.photoIds,
             selectedId = destination.selectedId,
+            source = destination.source,
+            roverId = destination.roverId,
+            camera = destination.camera,
+            cameras = destination.cameras,
             onBack = { navigator.goBack() }
         )
     }
@@ -56,11 +49,11 @@ val navigationModule = module {
     navigation<AppDestination.Favorite> {
         val navigator = LocalAppNavigator.current
         FavoriteScreen(
-            onNavigateToImages = { image, allImages ->
+            onNavigateToImages = { image ->
                 navigator.navigate(
                     AppDestination.Images(
-                        photoIds = allImages.map { it.id },
-                        selectedId = image.id
+                        selectedId = image.id,
+                        source = AppDestination.ImagesSource.FAVORITES,
                     )
                 )
             },
@@ -69,14 +62,32 @@ val navigationModule = module {
     }
 
     navigation<AppDestination.Popular> {
-        PopularScreen()
+        val navigator = LocalAppNavigator.current
+        PopularScreen(
+            onNavigateToImages = { image ->
+                navigator.navigate(
+                    AppDestination.Images(
+                        selectedId = image.id,
+                        source = AppDestination.ImagesSource.POPULAR,
+                    )
+                )
+            }
+        )
     }
 
     navigation<AppDestination.Mission> { destination ->
         val navigator = LocalAppNavigator.current
         RoverMissionInfoScreen(
             roverId = destination.roverId,
-            onBack = { navigator.goBack() }
+            onBack = { navigator.goBack() },
+            onCameraClick = { cameraAbbrev ->
+                navigator.navigate(
+                    AppDestination.Photos(
+                        roverId = destination.roverId,
+                        camera = cameraAbbrev
+                    )
+                )
+            }
         )
     }
 
@@ -85,6 +96,7 @@ val navigationModule = module {
     }
 
     navigation<AppDestination.Ukraine> {
-        UkraineScreen()
+        val navigator = LocalAppNavigator.current
+        UkraineScreen(onBack = { navigator.goBack() })
     }
 }

@@ -14,10 +14,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
 
 /**
- * Custom Snackbar component for Mars Rover Photos app.
- * Displays messages with optional action button.
+ * Design-system snackbar with an optional action button.
  *
  * @param modifier Modifier for the snackbar host
  * @param snackbarHostState State controlling the snackbar
@@ -55,32 +55,32 @@ fun MarsSnackbar(
 }
 
 /**
- * Radio button with text label component.
+ * Radio button with a composable label slot.
  *
- * @param text The label text to display
  * @param selected Whether the radio button is selected
- * @param modifier Modifier for the component
  * @param onClick Callback when the component is clicked
+ * @param modifier Modifier for the component
+ * @param labelContent The label rendered below the radio button
  */
 @Composable
 fun RadioButtonText(
-    text: String,
     selected: Boolean,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    labelContent: @Composable () -> Unit,
 ) {
     Column(
         modifier = modifier
             .clickable(onClick = onClick)
-            .padding(all = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+            .padding(all = AppSpacing.lg),
+        verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)
     ) {
         RadioButton(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             selected = selected,
             onClick = null
         )
-        Text(text = text)
+        labelContent()
     }
 }
 
@@ -88,9 +88,9 @@ fun RadioButtonText(
  * Disables scroll overscroll effect (glow on Android, bounce on iOS).
  * Useful for custom scroll implementations or when overscroll is not desired.
  *
- * Platform-specific implementation via expect/actual.
- *
  * @param content The content to display without overscroll effect
  */
 @Composable
-expect fun NoScrollEffect(content: @Composable () -> Unit)
+fun NoScrollEffect(content: @Composable () -> Unit) {
+    content()
+}

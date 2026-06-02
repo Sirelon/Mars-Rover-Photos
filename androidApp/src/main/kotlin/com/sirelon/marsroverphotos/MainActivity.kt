@@ -2,6 +2,7 @@ package com.sirelon.marsroverphotos
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,6 +11,8 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.sirelon.marsroverphotos.gdpr.GdprHelper
+import com.sirelon.marsroverphotos.platform.ActivityProvider
 import com.sirelon.marsroverphotos.presentation.App
 import com.sirelon.marsroverphotos.presentation.navigation.DeepLink
 import com.sirelon.marsroverphotos.utils.Logger
@@ -21,13 +24,24 @@ import com.sirelon.marsroverphotos.widget.WidgetExtraImageId
  */
 class MainActivity : ComponentActivity() {
     private var pendingDeepLink: DeepLink? by mutableStateOf(null)
+    private val gdprHelper = GdprHelper(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Install Android 12+ splash screen
         installSplashScreen()
 
         super.onCreate(savedInstanceState)
+        // Register this Activity so shared-module code (e.g. Play in-app review)
+        // can reach an Activity reference without leaking it.
+        ActivityProvider.set(this)
         enableEdgeToEdge()
+        // Prevent the system from adding a translucent scrim over the NavigationBar —
+        // the app's NavigationBar background provides the necessary contrast.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            window.isNavigationBarContrastEnforced = false
+        }
+
+        gdprHelper.init()
 
         // Handle deep link if present
         handleDeepLink(intent)
@@ -40,6 +54,7 @@ class MainActivity : ComponentActivity() {
                 appVersion = BuildConfig.VERSION_NAME
             )
         }
+
     }
 
     private fun openStoreListing() {
@@ -54,6 +69,11 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         handleDeepLink(intent)
+    }
+
+    override fun onDestroy() {
+        ActivityProvider.clear(this)
+        super.onDestroy()
     }
 
     /**

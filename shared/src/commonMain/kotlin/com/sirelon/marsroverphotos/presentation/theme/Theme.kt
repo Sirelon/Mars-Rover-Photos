@@ -5,6 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 
 /**
@@ -15,20 +16,32 @@ val primaryDark = Color(0xFF6200EE)
 val primaryVariant = Color(0xFF1A283D)
 val accent = Color(0xFFFC6C4B)
 
+/** Lighter blue used for section headers and rover titles in Mission Info. */
+val primaryLight = Color(0xFF7FA6D8)
+
+/** Navy used for the Fun Facts card background. */
+val primaryNavy = Color(0xFF1A283D)
+
 /**
  * Dark color scheme for the app.
  */
 val DarkColorPalette = darkColorScheme(
     primary = primary,
-    secondary = accent,
+    onPrimary = Color.Black,
+    primaryContainer = primaryNavy,        // Fun Facts card background
+    onPrimaryContainer = Color.White,
+    secondary = accent,                    // coral — rover names, captions, FAB, selected nav
+    onSecondary = Color.Black,
+    secondaryContainer = Color(0xFF2A3A4D), // "Did You Know?" fact card
+    onSecondaryContainer = Color(0xFFDCE6F2),
+    tertiary = primaryLight,               // lighter blue — section headers, Mission Info titles
+    onTertiary = Color.Black,
     background = Color(0xFF121212),
     surface = Color(0xFF121212),
     error = Color(0xFFCF6679),
-    onPrimary = Color.Black,
-    onSecondary = Color.Black,
     onBackground = Color.White,
     onSurface = Color.White,
-    onError = Color.Black
+    onError = Color.Black,
 )
 
 /**
@@ -36,16 +49,54 @@ val DarkColorPalette = darkColorScheme(
  */
 val LightColorPalette = lightColorScheme(
     primary = primary,
+    onPrimary = Color.White,
+    primaryContainer = Color(0xFFD4E3F5),
+    onPrimaryContainer = Color(0xFF1A283D),
     secondary = accent,
+    onSecondary = Color.Black,
+    secondaryContainer = Color(0xFFE4ECF6),
+    onSecondaryContainer = Color(0xFF1A283D),
+    tertiary = primary,
+    onTertiary = Color.White,
     background = Color.White,
     surface = Color.White,
     error = Color(0xFFB00020),
-    onPrimary = Color.White,
-    onSecondary = Color.Black,
     onBackground = Color.Black,
     onSurface = Color.Black,
-    onError = Color.White
+    onError = Color.White,
 )
+
+/**
+ * Overlays brand-critical color slots onto any [ColorScheme].
+ *
+ * Dynamic color (Material You) replaces the full palette with wallpaper-derived
+ * colors, which would override the design-system tokens for secondary (coral),
+ * secondaryContainer, tertiary, and primaryContainer. This function restores
+ * those slots so branded components always render correctly.
+ */
+private fun ColorScheme.withBrandOverrides(darkTheme: Boolean): ColorScheme = if (darkTheme) {
+    copy(
+        secondary = accent,
+        onSecondary = Color.Black,
+        secondaryContainer = Color(0xFF2A3A4D),
+        onSecondaryContainer = Color(0xFFDCE6F2),
+        tertiary = primaryLight,
+        onTertiary = Color.Black,
+        primaryContainer = primaryNavy,
+        onPrimaryContainer = Color.White,
+    )
+} else {
+    copy(
+        secondary = accent,
+        onSecondary = Color.Black,
+        secondaryContainer = Color(0xFFE4ECF6),
+        onSecondaryContainer = Color(0xFF1A283D),
+        tertiary = primary,
+        onTertiary = Color.White,
+        primaryContainer = Color(0xFFD4E3F5),
+        onPrimaryContainer = Color(0xFF1A283D),
+    )
+}
 
 /**
  * Main theme composable for Mars Rover Photos app.
@@ -62,15 +113,16 @@ fun MarsRoverPhotosTheme(
     content: @Composable () -> Unit
 ) {
     val colors = when {
-        // Dynamic color is available on Android 12+ (API 31+)
+        // Dynamic color (Material You) on Android 12+: use wallpaper-derived scheme
+        // but restore brand-critical slots so design-system components are consistent.
         dynamicColor && supportsDynamicColor() -> {
             if (darkTheme) {
-                getDynamicDarkColorScheme()
+                getDynamicDarkColorScheme().withBrandOverrides(darkTheme = true)
             } else {
-                getDynamicLightColorScheme()
+                getDynamicLightColorScheme().withBrandOverrides(darkTheme = false)
             }
         }
-        // Fall back to static color schemes
+        // Fall back to fully static brand palettes
         darkTheme -> DarkColorPalette
         else -> LightColorPalette
     }
@@ -86,6 +138,7 @@ fun MarsRoverPhotosTheme(
  * Platform-specific implementation.
  */
 @Composable
+@ReadOnlyComposable
 expect fun isSystemInDarkTheme(): Boolean
 
 /**
@@ -93,6 +146,7 @@ expect fun isSystemInDarkTheme(): Boolean
  * Returns true for Android 12+ (API 31+), false for other platforms.
  */
 @Composable
+@ReadOnlyComposable
 expect fun supportsDynamicColor(): Boolean
 
 /**
@@ -100,6 +154,7 @@ expect fun supportsDynamicColor(): Boolean
  * Returns static dark scheme for platforms without dynamic color support.
  */
 @Composable
+@ReadOnlyComposable
 expect fun getDynamicDarkColorScheme(): ColorScheme
 
 /**
@@ -107,4 +162,5 @@ expect fun getDynamicDarkColorScheme(): ColorScheme
  * Returns static light scheme for platforms without dynamic color support.
  */
 @Composable
+@ReadOnlyComposable
 expect fun getDynamicLightColorScheme(): ColorScheme

@@ -25,12 +25,47 @@
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
-		<true/>
+		<false/>
 	</dict>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Mars Rover Photos needs access to save rover photos to your Photos library.</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>We use this to show you relevant ads and improve the app experience.</string>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-7516059448019339~1086903880</string>
+	<key>SKAdNetworkItems</key>
+	<array>
+		<dict>
+			<key>SKAdNetworkIdentifier</key>
+			<string>cstr6suwn9.skadnetwork</string>
+		</dict>
+	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.sirelon.marsroverphotos</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>marsrover</string>
+			</array>
+			</dict>
+	</array>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 	<key>UILaunchScreen</key>
-	<dict/>
+	<dict>
+		<!-- Mars orange/red background matching the app icon -->
+		<key>UIColorName</key>
+		<string>SplashBackground</string>
+		<!-- Show the app icon centered on the splash -->
+		<key>UIImageName</key>
+		<string>SplashIcon</string>
+		<key>UIImageRespectsSafeAreaInsets</key>
+		<true/>
+	</dict>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>

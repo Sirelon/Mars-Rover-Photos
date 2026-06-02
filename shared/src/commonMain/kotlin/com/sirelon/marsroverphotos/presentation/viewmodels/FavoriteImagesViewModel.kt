@@ -2,28 +2,40 @@ package com.sirelon.marsroverphotos.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
+import com.sirelon.marsroverphotos.domain.settings.AppSettings
 import com.sirelon.marsroverphotos.platform.Tracker
 import com.sirelon.marsroverphotos.utils.Logger
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /**
  * ViewModel for the favorite images screen.
- * Loads user's favorite images.
+ * Loads user's favorite images with paging support.
  *
  * Created on 25.08.2020 12:13 for Mars-Rover-Photos.
  */
 class FavoriteImagesViewModel(
     private val imagesRepository: ImagesRepository,
-    private val tracker: Tracker
+    private val tracker: Tracker,
+    private val appSettings: AppSettings,
 ) : ViewModel() {
 
-    /**
-     * Flow of favorite images.
-     */
-    val favoriteImagesFlow: Flow<List<MarsImage>> = imagesRepository.loadFavoriteImages()
+    val favoritePagedFlow: Flow<PagingData<MarsImage>> = imagesRepository
+        .loadFavoritePagedSource()
+        .cachedIn(viewModelScope)
+
+    val gridViewState = appSettings.gridViewFlow
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = false
+        )
 
     /**
      * Track an analytics event.
@@ -35,6 +47,7 @@ class FavoriteImagesViewModel(
 
     /**
      * Toggle favorite status for an image.
+     * Room invalidates the PagingSource automatically after the DB write.
      * @param image The image to update
      */
     fun updateFavForImage(image: MarsImage) {
@@ -50,5 +63,10 @@ class FavoriteImagesViewModel(
                 }
             }
         }
+    }
+
+    fun onGridChange(bool: Boolean) {
+        track("click_grid_view")
+        appSettings.gridView = bool
     }
 }

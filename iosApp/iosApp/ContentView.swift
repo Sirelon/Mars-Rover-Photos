@@ -4,7 +4,11 @@ import shared
 struct ContentView: View {
     var body: some View {
         ComposeView()
-            .ignoresSafeArea(.keyboard) // Allow Compose to handle keyboard
+            // Extend behind ALL safe areas (status bar, home indicator, keyboard).
+            // Compose Multiplatform receives the system WindowInsets and applies its own
+            // padding via windowInsetsPadding(WindowInsets.statusBars/navigationBars/ime),
+            // so SwiftUI must not add its own safe-area inset on top.
+            .ignoresSafeArea(.all)
     }
 }
 

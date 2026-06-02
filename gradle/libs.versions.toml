@@ -1,11 +1,11 @@
 [versions]
 # Core
 kotlin = "2.3.21"
-androidGradlePlugin = "9.2.0"
+androidGradlePlugin = "9.2.1"
 ksp = "2.3.7"
 
 # Compose Multiplatform
-compose-multiplatform = "1.11.0"
+compose-multiplatform = "1.12.0-alpha01"
 
 # AndroidX
 # https://developer.android.com/jetpack/androidx/releases/activity
@@ -13,26 +13,24 @@ activityCompose = "1.13.0"
 # https://developer.android.com/jetpack/androidx/releases/appcompat
 appcompat = "1.7.1"
 # https://developer.android.com/jetpack/androidx/releases/annotation
-annotation = "1.9.1"
+annotation = "1.10.0"
 ktx = "1.18.0"
 # https://developer.android.com/jetpack/androidx/releases/lifecycle
 lifecycle = "2.10.0"
 lifecycle-androidx = "2.10.0"
 # https://developer.android.com/jetpack/androidx/releases/compose
-compose = "1.11.0"
+compose = "1.11.2"
 # https://developer.android.com/jetpack/androidx/releases/compose-material3
-compose-material3 = "1.4.0"
-compose-material3-adaptive-navigation-suite = "1.4.0"
-material3WindowSizeClass = "1.4.0"
+compose-material3 = "1.5.0-alpha20"
 # https://developer.android.com/jetpack/androidx/releases/glance
 glance = "1.2.0-rc01"
 # https://developer.android.com/jetpack/androidx/releases/paging
-paging = "3.4.2"
-paging-kmp = "3.4.2"
+paging = "3.5.0"
+paging-kmp = "3.5.0"
 # https://developer.android.com/jetpack/androidx/releases/room
 room = "3.0.0-alpha05"
 # https://developer.android.com/jetpack/androidx/releases/work
-work = "2.11.0"
+work = "2.11.2"
 # https://developer.android.com/jetpack/androidx/releases/core
 core-splashscreen = "1.2.0"
 
@@ -48,7 +46,7 @@ kotlinx-datetime = "0.7.1"
 # https://github.com/Kotlin/kotlinx.coroutines
 kotlinx-coroutines = "1.11.0"
 # https://github.com/ktorio/ktor/releases
-ktor = "3.4.3"
+ktor = "3.5.0"
 # https://github.com/touchlab/Kermit
 kermit = "2.1.0"
 # https://github.com/InsertKoinIO/koin
@@ -64,26 +62,26 @@ gitliveFirebase = "2.4.0"
 # Firebase
 # https://firebase.google.com/support/release-notes/android
 firebaseBom = "34.13.0"
-firebaseAnalyticsVersion = "23.0.0"
-firebaseCrashlyticsVersion = "20.0.3"
-firebaseFirestoreVersion = "26.0.2"
-firebaseMessagingVersion = "25.0.1"
+firebaseAnalyticsVersion = "23.2.0"
+firebaseCrashlyticsVersion = "20.0.6"
+firebaseFirestoreVersion = "26.3.0"
+firebaseMessagingVersion = "25.0.2"
 
 # Testing
 mockito = "1.6.0"
 
 # Android-only libraries
-playServicesAds = "25.1.0"
+playServicesAds = "25.3.0"
 # https://developers.google.com/admob/android/privacy/release-notes
 userMessagingPlatform = "4.0.0"
 # https://github.com/usuiat/Zoomable/releases
-zoomable = "2.9.0"
+zoomable = "2.12.0"
+# https://developer.android.com/guide/playcore/in-app-review/release-notes
+playReview = "2.0.2"
 
-# Legacy (to be removed)
-navigation3 = "1.1.0"
-lifecycle-navigation3 = "2.10.0"
-navigationevent = "1.0.1"
-timber = "5.0.1"
+# Navigation 3
+navigation3 = "1.1.1"
+lifecycle-navigation3 = "2.11.0-beta02"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -95,11 +93,21 @@ androidx-glance-appwidget = { module = "androidx.glance:glance-appwidget", versi
 androidx-room-runtime = { group = "androidx.room3", name = "room3-runtime", version.ref = "room" }
 androidx-room-compiler = { group = "androidx.room3", name = "room3-compiler", version.ref = "room" }
 androidx-room-paging = { group = "androidx.room3", name = "room3-paging", version.ref = "room" }
+androidx-sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version = "2.7.0-alpha05" }
 androidx-paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging" }
 androidx-paging-runtime-ktx = { group = "androidx.paging", name = "paging-runtime-ktx", version.ref = "paging" }
 
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "core-splashscreen" }
+
+# Compose Multiplatform (KMP) — direct coordinates replacing deprecated compose.XXX shorthands
+compose-mp-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-multiplatform" }
+compose-mp-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-multiplatform" }
+compose-mp-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "compose-multiplatform" }
+compose-mp-material3-adaptive-nav-suite = { module = "org.jetbrains.compose.material3:material3-adaptive-navigation-suite", version.ref = "compose-multiplatform" }
+compose-mp-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-multiplatform" }
+compose-mp-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose-multiplatform" }
+compose-mp-components-ui-tooling-preview = { module = "org.jetbrains.compose.components:components-ui-tooling-preview", version.ref = "compose-multiplatform" }
 
 coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
@@ -125,6 +133,7 @@ kotlin-test-annotations-common = { module = "org.jetbrains.kotlin:kotlin-test-an
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlin-collections-immutable" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlin-serialization" }
 ksp = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "ksp" }
@@ -138,6 +147,7 @@ koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", versi
 koin-compose-navigation3 = { module = "io.insert-koin:koin-compose-navigation3", version.ref = "koin" }
 
 # Ktor Multiplatform
+
 ktor-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
 ktor-client-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
 ktor-client-darwin = { group = "io.ktor", name = "ktor-client-darwin", version.ref = "ktor" }
@@ -163,23 +173,16 @@ androidx-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-com
 navigation3-runtime = { group = "androidx.navigation3", name = "navigation3-runtime", version.ref = "navigation3" }
 navigation3-ui = { group = "org.jetbrains.androidx.navigation3", name = "navigation3-ui", version.ref = "navigation3" }
 lifecycle-viewmodel-navigation3 = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-navigation3", version.ref = "lifecycle-navigation3" }
-navigationevent = { group = "androidx.navigationevent", name = "navigationevent", version.ref = "navigationevent" }
-navigationevent-compose = { group = "androidx.navigationevent", name = "navigationevent-compose", version.ref = "navigationevent" }
 mockito-kotlin = { module = "com.nhaarman:mockito-kotlin", version.ref = "mockito" }
 
-compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "compose" }
-compose-ui-util = { group = "androidx.compose.ui", name = "ui-util", version.ref = "compose" }
-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "compose" }
+# Android-only Compose (used by androidApp widget/glance code)
 compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "compose" }
 compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "compose-material3" }
-compose-material3-adaptive-navigation-suite = { group = "androidx.compose.material3", name = "material3-adaptive-navigation-suite", version.ref = "compose-material3-adaptive-navigation-suite" }
-compose-material3-window-size = { group = "androidx.compose.material3", name = "material3-window-size-class", version.ref = "compose-material3" }
 
 play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "playServicesAds" }
 user-messaging-platform = { module = "com.google.android.ump:user-messaging-platform", version.ref = "userMessagingPlatform" }
-timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 zoomable = { module = "net.engawapg.lib:zoomable", version.ref = "zoomable" }
-androidx-material3-window-size-class1 = { group = "androidx.compose.material3", name = "material3-window-size-class", version.ref = "material3WindowSizeClass" }
+play-review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "playReview" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

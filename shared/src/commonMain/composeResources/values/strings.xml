@@ -19,10 +19,10 @@
     <string name="action_rate">Rate this app</string>
     <string name="label_photos_total">Total photos: </string>
     <string name="sol_description">The term sol is used by planetary astronomers to refer to the duration of a solar day on Mars.\nA mean Martian solar day is 24 hours, 39 minutes, and 35.244 seconds.</string>
-    <string name="sol_date_fmt">Sol date: \n%d</string>
-    <string name="earth_date_fmt">Earth date: \n%s</string>
+    <string name="sol_date_fmt">Sol date: \n%1$d</string>
+    <string name="earth_date_fmt">Earth date: \n%1$s</string>
     <string name="sol_label">Sol: </string>
-    <string name="sol_max_error_fmt">The max sol for this rover is %d</string>
+    <string name="sol_max_error_fmt">The max sol for this rover is %1$d</string>
     <string name="select_date">Select date</string>
     <string name="choose">Choose</string>
     <string name="select">Select</string>
@@ -34,6 +34,9 @@
     <string name="no_photos_title">The rover didn\'t take any photos on this date.</string>
     <string name="favorite_empty_btn">Go to rovers</string>
     <string name="favorite_empty_title">No favorite photos yet.\nYou can save any photos you like.\nJust mark them as "favorite".</string>
+    <string name="popular_empty_title">No popular photos available.\nCheck back later!</string>
+    <string name="images_empty_title">No photos available.</string>
+    <string name="images_empty_btn">Go back</string>
 
     <!-- Navigation labels -->
     <string name="nav_rovers">Rovers</string>

@@ -40,7 +40,7 @@ internal fun buildTimelineMilestones(rover: Rover): List<TimelineMilestone> {
     milestones.add(
         TimelineMilestone(
             label = "Launch",
-            date = rover.launchDate,
+            date = formatDisplayDate(rover.launchDate),
             sol = null,
             type = MilestoneType.LAUNCH
         )
@@ -50,7 +50,7 @@ internal fun buildTimelineMilestones(rover: Rover): List<TimelineMilestone> {
     milestones.add(
         TimelineMilestone(
             label = "Landing",
-            date = rover.landingDate,
+            date = formatDisplayDate(rover.landingDate),
             sol = 0,
             type = MilestoneType.LANDING
         )
@@ -60,7 +60,7 @@ internal fun buildTimelineMilestones(rover: Rover): List<TimelineMilestone> {
     milestones.add(
         TimelineMilestone(
             label = "Current",
-            date = rover.maxDate,
+            date = formatDisplayDate(rover.maxDate),
             sol = rover.maxSol,
             type = MilestoneType.CURRENT
         )
@@ -71,7 +71,7 @@ internal fun buildTimelineMilestones(rover: Rover): List<TimelineMilestone> {
         milestones.add(
             TimelineMilestone(
                 label = "End",
-                date = rover.maxDate,
+                date = formatDisplayDate(rover.maxDate),
                 sol = rover.maxSol,
                 type = MilestoneType.END
             )

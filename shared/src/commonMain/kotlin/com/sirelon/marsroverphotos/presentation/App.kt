@@ -5,8 +5,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Modifier
 import com.sirelon.marsroverphotos.domain.settings.AppSettings
 import com.sirelon.marsroverphotos.domain.settings.Theme
@@ -15,8 +15,8 @@ import com.sirelon.marsroverphotos.presentation.navigation.AppNavigation
 import com.sirelon.marsroverphotos.presentation.navigation.DeepLink
 import com.sirelon.marsroverphotos.presentation.navigation.LocalAboutCallbacks
 import com.sirelon.marsroverphotos.presentation.theme.MarsRoverPhotosTheme
-import com.sirelon.marsroverphotos.presentation.ui.isSystemInDarkTheme
-import com.sirelon.marsroverphotos.presentation.ui.supportsDynamicColor
+import com.sirelon.marsroverphotos.presentation.theme.isSystemInDarkTheme
+import com.sirelon.marsroverphotos.presentation.theme.supportsDynamicColor
 import org.koin.compose.koinInject
 
 /**
@@ -32,7 +32,7 @@ fun App(
     rateAppUrl: String = ""
 ) {
     val appSettings: AppSettings = koinInject()
-    val theme by appSettings.themeFlow.collectAsState()
+    val theme by appSettings.themeFlow.collectAsStateWithLifecycle()
     val systemDarkTheme = isSystemInDarkTheme()
     val dynamicColor = supportsDynamicColor()
 

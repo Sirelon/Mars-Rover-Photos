@@ -9,9 +9,10 @@
 /* Begin PBXBuildFile section */
 		9E2B4A262B8F3D0100C4A5E2 /* MarsRoverApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E2B4A212B8F3D0100C4A5E2 /* MarsRoverApp.swift */; };
 		9E2B4A272B8F3D0100C4A5E2 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E2B4A222B8F3D0100C4A5E2 /* ContentView.swift */; };
-		9E2B4A282B8F3D0100C4A5E2 /* shared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E2B4A242B8F3D0100C4A5E2 /* shared.framework */; };
-		9E2B4A292B8F3D0100C4A5E2 /* shared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9E2B4A242B8F3D0100C4A5E2 /* shared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		9E2B4A282B8F3D0100C4A5E2 /* shared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E2B4A242B8F3D0100C4A5E2 /* shared.framework */; };
+		E1E8324BB9DB46D5AC0EDE56 /* shared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9E2B4A242B8F3D0100C4A5E2 /* shared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9E2B4A362B8F3D0100C4A5E2 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9E2B4A352B8F3D0100C4A5E2 /* GoogleService-Info.plist */; };
+		BA2278222FBE0E6B00AF0A32 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BA2278212FBE0E6B00AF0A32 /* Assets.xcassets */; };
 		BA2278142FBE0E6B00AF0A32 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = BA2278132FBE0E6B00AF0A32 /* FirebaseAnalytics */; };
 		BA2278162FBE0E6B00AF0A32 /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = BA2278152FBE0E6B00AF0A32 /* FirebaseAnalyticsCore */; };
 		BA2278182FBE0E6B00AF0A32 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = BA2278172FBE0E6B00AF0A32 /* FirebaseCore */; };
@@ -19,6 +20,9 @@
 		BA22781C2FBE0E6B00AF0A32 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = BA22781B2FBE0E6B00AF0A32 /* FirebaseFirestore */; };
 		BA22781E2FBE0E6B00AF0A32 /* FirebasePerformance in Frameworks */ = {isa = PBXBuildFile; productRef = BA22781D2FBE0E6B00AF0A32 /* FirebasePerformance */; };
 		BA2278202FBE0E6B00AF0A32 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = BA22781F2FBE0E6B00AF0A32 /* FirebaseStorage */; };
+		BAA1110001000000A0000011 /* BannerAdFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA1110001000000A0000010 /* BannerAdFactory.swift */; };
+		BAA1110002000000A0000014 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = BAA1110002000000A0000013 /* GoogleMobileAds */; };
+		BAA1110003000000A0000017 /* UserMessagingPlatform in Frameworks */ = {isa = PBXBuildFile; productRef = BAA1110003000000A0000016 /* UserMessagingPlatform */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,7 +32,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				9E2B4A292B8F3D0100C4A5E2 /* shared.framework in Embed Frameworks */,
+				E1E8324BB9DB46D5AC0EDE56 /* shared.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -39,9 +43,12 @@
 		9E2B4A212B8F3D0100C4A5E2 /* MarsRoverApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarsRoverApp.swift; sourceTree = "<group>"; };
 		9E2B4A222B8F3D0100C4A5E2 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		9E2B4A232B8F3D0100C4A5E2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		9E2B4A242B8F3D0100C4A5E2 /* shared.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = shared.framework; path = ../shared/build/bin/iosSimulatorArm64/debugFramework/shared.framework; sourceTree = SOURCE_ROOT; };
+		726B44A0A95A4F0F9D5E8B75 /* iosApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iosApp.entitlements; sourceTree = "<group>"; };
+		9E2B4A242B8F3D0100C4A5E2 /* shared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = shared.xcframework; path = ../shared/build/XCFrameworks/debug/shared.xcframework; sourceTree = SOURCE_ROOT; };
 		9E2B4A252B8F3D0100C4A5E2 /* iosApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9E2B4A352B8F3D0100C4A5E2 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		BAA1110001000000A0000010 /* BannerAdFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerAdFactory.swift; sourceTree = "<group>"; };
+		BA2278212FBE0E6B00AF0A32 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,8 +62,10 @@
 				BA22781A2FBE0E6B00AF0A32 /* FirebaseCrashlytics in Frameworks */,
 				BA2278182FBE0E6B00AF0A32 /* FirebaseCore in Frameworks */,
 				BA2278202FBE0E6B00AF0A32 /* FirebaseStorage in Frameworks */,
-				9E2B4A282B8F3D0100C4A5E2 /* shared.framework in Frameworks */,
+				9E2B4A282B8F3D0100C4A5E2 /* shared.xcframework in Frameworks */,
 				BA22781C2FBE0E6B00AF0A32 /* FirebaseFirestore in Frameworks */,
+				BAA1110002000000A0000014 /* GoogleMobileAds in Frameworks */,
+				BAA1110003000000A0000017 /* UserMessagingPlatform in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,9 +94,12 @@
 			children = (
 				9E2B4A212B8F3D0100C4A5E2 /* MarsRoverApp.swift */,
 				9E2B4A222B8F3D0100C4A5E2 /* ContentView.swift */,
-				9E2B4A232B8F3D0100C4A5E2 /* Info.plist */,
-				9E2B4A352B8F3D0100C4A5E2 /* GoogleService-Info.plist */,
-			);
+				BAA1110001000000A0000010 /* BannerAdFactory.swift */,
+					9E2B4A232B8F3D0100C4A5E2 /* Info.plist */,
+					726B44A0A95A4F0F9D5E8B75 /* iosApp.entitlements */,
+					9E2B4A352B8F3D0100C4A5E2 /* GoogleService-Info.plist */,
+					BA2278212FBE0E6B00AF0A32 /* Assets.xcassets */,
+				);
 			path = iosApp;
 			sourceTree = "<group>";
 		};
@@ -117,6 +129,8 @@
 				BA22781B2FBE0E6B00AF0A32 /* FirebaseFirestore */,
 				BA22781D2FBE0E6B00AF0A32 /* FirebasePerformance */,
 				BA22781F2FBE0E6B00AF0A32 /* FirebaseStorage */,
+				BAA1110002000000A0000013 /* GoogleMobileAds */,
+				BAA1110003000000A0000016 /* UserMessagingPlatform */,
 			);
 			productName = iosApp;
 			productReference = 9E2B4A252B8F3D0100C4A5E2 /* iosApp.app */;
@@ -148,6 +162,8 @@
 			mainGroup = 9E2B4A1D2B8F3D0100C4A5E2;
 			packageReferences = (
 				BA2278122FBE0E6B00AF0A32 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				BAA1110002000000A0000012 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
+				BAA1110003000000A0000015 /* XCRemoteSwiftPackageReference "swift-package-manager-google-user-messaging-platform" */,
 			);
 			productRefGroup = 9E2B4A1E2B8F3D0100C4A5E2 /* Products */;
 			projectDirPath = "";
@@ -164,6 +180,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9E2B4A362B8F3D0100C4A5E2 /* GoogleService-Info.plist in Resources */,
+				BA2278222FBE0E6B00AF0A32 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -187,7 +204,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"$SRCROOT/..\"\n./gradlew :shared:linkDebugFrameworkIosSimulatorArm64\n";
+			shellScript = "cd \"$SRCROOT/..\"\n./gradlew :shared:assembleSharedDebugXCFramework\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -198,6 +215,7 @@
 			files = (
 				9E2B4A262B8F3D0100C4A5E2 /* MarsRoverApp.swift in Sources */,
 				9E2B4A272B8F3D0100C4A5E2 /* ContentView.swift in Sources */,
+				BAA1110001000000A0000011 /* BannerAdFactory.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -327,13 +345,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+					CODE_SIGN_STYLE = Automatic;
+					CODE_SIGN_ENTITLEMENTS = iosApp/iosApp.entitlements;
+					CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 5MF89WU7WQ;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SRCROOT)/../shared/build/bin/iosSimulatorArm64/debugFramework",
-					"$(inherited)",
-				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = NO;
@@ -357,13 +372,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+					CODE_SIGN_STYLE = Automatic;
+					CODE_SIGN_ENTITLEMENTS = iosApp/iosApp.entitlements;
+					CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 5MF89WU7WQ;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SRCROOT)/../shared/build/bin/iosSimulatorArm64/releaseFramework",
-					"$(inherited)",
-				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = NO;
@@ -414,6 +426,22 @@
 				minimumVersion = 12.13.0;
 			};
 		};
+		BAA1110002000000A0000012 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.0.0;
+			};
+		};
+		BAA1110003000000A0000015 /* XCRemoteSwiftPackageReference "swift-package-manager-google-user-messaging-platform" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-user-messaging-platform";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -451,6 +479,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = BA2278122FBE0E6B00AF0A32 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseStorage;
+		};
+		BAA1110002000000A0000013 /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BAA1110002000000A0000012 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
+		};
+		BAA1110003000000A0000016 /* GoogleUserMessagingPlatform */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BAA1110003000000A0000015 /* XCRemoteSwiftPackageReference "swift-package-manager-google-user-messaging-platform" */;
+			productName = GoogleUserMessagingPlatform;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
