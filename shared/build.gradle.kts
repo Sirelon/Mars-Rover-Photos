@@ -163,6 +163,7 @@ kotlin {
                 implementation(compose.desktop.currentOs)
                 implementation(libs.ktor.client.okhttp)
                 implementation(libs.kotlinx.coroutines.swing)
+                implementation(libs.androidx.sqlite.bundled)
             }
         }
 

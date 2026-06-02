@@ -24,4 +24,4 @@ include(":shared")
 include(":androidApp")
 // include(":iosApp")  // Not yet created
 include(":desktopApp")
-// include(":webApp")  // Temporarily disabled while debugging
+include(":webApp")
