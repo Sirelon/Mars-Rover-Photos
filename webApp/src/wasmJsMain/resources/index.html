@@ -74,24 +74,25 @@
         <div class="spinner"></div>
     </div>
 
-    <canvas id="ComposeTarget"></canvas>
+    <div id="ComposeTarget"></div>
 
     <script src="marsRoverPhotosWeb.js"></script>
     <script>
-        // Hide splash and reveal canvas once Compose is ready
-        const canvas = document.getElementById('ComposeTarget');
+        // Hide splash once Compose inserts its canvas into #ComposeTarget
+        const container = document.getElementById('ComposeTarget');
         const splash = document.getElementById('splash');
 
         const observer = new MutationObserver(() => {
-            if (canvas.width > 0) {
-                canvas.classList.add('ready');
+            const canvas = container.querySelector('canvas');
+            if (canvas && canvas.width > 0) {
+                container.classList.add('ready');
                 splash.style.transition = 'opacity 0.3s';
                 splash.style.opacity = '0';
                 setTimeout(() => splash.remove(), 300);
                 observer.disconnect();
             }
         });
-        observer.observe(canvas, { attributes: true, attributeFilter: ['width'] });
+        observer.observe(container, { childList: true, subtree: true, attributes: true });
     </script>
 </body>
 </html>

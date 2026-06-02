@@ -7,7 +7,7 @@ plugins {
 kotlin {
     @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
     wasmJs {
-        moduleName = "marsRoverPhotosWeb"
+        outputModuleName.set("marsRoverPhotosWeb")
         browser {
             commonWebpackConfig {
                 outputFileName = "marsRoverPhotosWeb.js"
@@ -19,14 +19,10 @@ kotlin {
     sourceSets {
         val wasmJsMain by getting {
             dependencies {
-                // Shared KMP module
-                implementation(project(":shared"))
-
-                // Compose for Web
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.material3)
-                implementation(compose.ui)
+                implementation(libs.compose.mp.runtime)
+                implementation(libs.compose.mp.foundation)
+                implementation(libs.compose.mp.material3)
+                implementation(libs.compose.mp.ui)
             }
         }
     }
