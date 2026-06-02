@@ -67,11 +67,18 @@ class PhotosViewModel(
      */
     private val factPoolFlow = MutableStateFlow<List<EducationalFact>>(emptyList())
 
-    private val roverFlow: Flow<Rover> = roverIdEmitter
+    private val roverStateFlow: StateFlow<Rover?> = roverIdEmitter
         .filterNotNull()
         .mapNotNull { roversRepository.loadRoverById(it) }
         .onEach { dateUtil = RoverDateUtil(it) }
         .catch { e -> Logger.e("PhotosViewModel", e) { "Error loading rover" } }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = null,
+        )
+
+    private val roverFlow: Flow<Rover> = roverStateFlow.filterNotNull()
 
     /**
      * Paged grid stream: the shared feed photos with date-section headers inserted at sol

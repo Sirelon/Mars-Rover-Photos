@@ -49,7 +49,8 @@ val repositoryModule = module {
     single<ImagesRepository> {
         ImagesRepositoryImpl(
             imagesDao = get(),
-            firebasePhotos = get()
+            firebasePhotos = get(),
+            appScope = get()
         )
     }
 
