@@ -1,6 +1,7 @@
 package com.sirelon.marsroverphotos.presentation.navigation
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.runtime.movableContentOf
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -11,19 +12,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material3.BottomAppBarDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
@@ -50,7 +48,7 @@ private const val ANIM_DURATION_2 = ANIM_DURATION / 2
 /**
  * Main Navigation 3 display for the app.
  */
-@OptIn(KoinExperimentalAPI::class, ExperimentalMaterial3Api::class)
+@OptIn(KoinExperimentalAPI::class)
 @Composable
 fun AppNavigation(
     modifier: Modifier = Modifier,
@@ -58,10 +56,15 @@ fun AppNavigation(
     deepLink: DeepLink? = null,
     onDeepLinkConsumed: (() -> Unit)? = null
 ) {
-    val backStack = rememberNavBackStack(
-        configuration = navBackStackConfiguration,
-        elements = arrayOf(startDestination)
-    )
+    // Nav3 + Desktop: providing `elements` to rememberNavBackStack causes the start
+    // destination to be added twice when saved-state restoration also returns the same
+    // key — `SaveableStateHolder` then throws "Key used multiple times". Fix: start
+    // with an empty back stack and add the start destination only when truly empty.
+    val backStack = rememberNavBackStack(configuration = navBackStackConfiguration)
+    remember(backStack) {
+        if (backStack.isEmpty()) backStack.add(startDestination)
+    }
+
     val navigator = remember(backStack) { AppNavigator(backStack) }
     val entryDecorators = rememberAppNavEntryDecorators()
     val currentDestination = backStack.lastOrNull() as? AppDestination ?: startDestination
@@ -158,12 +161,6 @@ fun AppNavigation(
     val dialogOverlaySceneStrategy = remember { DialogOverlaySceneStrategy<NavKey>() }
     val tracker: Tracker = koinInject()
     val isImages = chromeDestination is AppDestination.Images
-    val bottomBarScrollBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
-
-    // Reset the bottom bar to visible whenever the user navigates to a new top-level destination.
-    LaunchedEffect(chromeDestination) {
-        bottomBarScrollBehavior.state.heightOffset = 0f
-    }
 
     LaunchedEffect(deepLink) {
         val target = deepLink ?: return@LaunchedEffect
@@ -186,89 +183,75 @@ fun AppNavigation(
         onDeepLinkConsumed?.invoke()
     }
 
+    // movableContentOf prevents NavDisplay from being disposed+remounted when the adaptive
+    // layout branch switches (NavBar ↔ NavRail on Desktop window resize / initial render).
+    // Without this, SaveableStateHolder registers the same key twice during applyLateChanges.
+    val navDisplay = remember {
+      movableContentOf {
+        NavDisplay(
+            backStack = backStack,
+            onBack = { navigator.goBack() },
+            entryDecorators = entryDecorators,
+            sceneStrategies = listOf(dialogOverlaySceneStrategy),
+            entryProvider = entryProvider,
+            // Forward navigation: new screen slides in from the right
+            transitionSpec = {
+                (slideInHorizontally(tween(ANIM_DURATION)) { it } + fadeIn(tween(ANIM_DURATION))) togetherWith
+                    (slideOutHorizontally(tween(ANIM_DURATION)) { -it / 5 } + fadeOut(tween(ANIM_DURATION_2)))
+            },
+            // Standard back: previous screen revealed from the left
+            popTransitionSpec = {
+                (slideInHorizontally(tween(ANIM_DURATION)) { -it / 5 } + fadeIn(tween(ANIM_DURATION))) togetherWith
+                    (slideOutHorizontally(tween(ANIM_DURATION)) { it } + fadeOut(tween(ANIM_DURATION_2)))
+            },
+            // Predictive back: same curve — NavDisplay drives this interactively
+            // with the system's back gesture progress on Android 14+
+            predictivePopTransitionSpec = {
+                (slideInHorizontally(tween(ANIM_DURATION)) { -it / 5 } + fadeIn(tween(ANIM_DURATION))) togetherWith
+                    (slideOutHorizontally(tween(ANIM_DURATION)) { it } + fadeOut(tween(ANIM_DURATION_2)))
+            },
+        )
+      }
+    }
+
     CompositionLocalProvider(LocalAppNavigator provides navigator) {
-        // Images screen goes fully edge-to-edge: no status-bar inset, no bottom chrome.
-        Column(
-            modifier = if (isImages) modifier
-            else modifier
-                .windowInsetsPadding(WindowInsets.statusBars)
-                .nestedScroll(bottomBarScrollBehavior.nestedScrollConnection)
-        ) {
-            AnimatedVisibility(!isImages && chromeDestination !is AppDestination.Ukraine) {
-                UkraineBanner(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        tracker.trackClick("UkraineBanner_Root")
-                        navigator.navigate(AppDestination.Ukraine)
-                    },
-                )
+        if (isImages) {
+            // Images screen goes fully edge-to-edge: no status-bar inset, no navigation chrome.
+            Box(modifier = modifier.background(MaterialTheme.colorScheme.background)) {
+                navDisplay()
             }
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    // Opaque background prevents previous navigation entries from
-                    // showing through during transitions or when a screen composable
-                    // doesn't fill its entire allocated area (esp. visible on iOS).
-                    .background(MaterialTheme.colorScheme.background)
+        } else {
+            MarsNavigationSuite(
+                modifier = modifier,
+                selectedDestination = chromeDestination.topLevelDestination(),
+                onDestinationClick = { destination ->
+                    tracker.trackClick("nav_${destination.analyticsTag}")
+                    navigator.selectTopLevel(destination)
+                },
+                resetScrollKey = chromeDestination,
+                bottomChrome = { AdSlot(modifier = Modifier.fillMaxWidth()) },
             ) {
-                NavDisplay(
-                    backStack = backStack,
-                    onBack = { navigator.goBack() },
-                    entryDecorators = entryDecorators,
-                    sceneStrategies = listOf(dialogOverlaySceneStrategy),
-                    entryProvider = entryProvider,
-                    // Forward navigation: new screen slides in from the right
-                    transitionSpec = {
-                        (slideInHorizontally(tween(ANIM_DURATION)) { it } + fadeIn(
-                            tween(
-                                ANIM_DURATION
-                            )
-                        )) togetherWith
-                                (slideOutHorizontally(tween(ANIM_DURATION)) { -it / 5 } + fadeOut(
-                                    tween(
-                                        ANIM_DURATION_2
-                                    )
-                                ))
-                    },
-                    // Standard back: previous screen revealed from the left
-                    popTransitionSpec = {
-                        (slideInHorizontally(tween(ANIM_DURATION)) { -it / 5 } + fadeIn(
-                            tween(
-                                ANIM_DURATION
-                            )
-                        )) togetherWith
-                                (slideOutHorizontally(tween(ANIM_DURATION)) { it } + fadeOut(
-                                    tween(
-                                        ANIM_DURATION_2
-                                    )
-                                ))
-                    },
-                    // Predictive back: same curve — NavDisplay drives this interactively
-                    // with the system's back gesture progress on Android 14+
-                    predictivePopTransitionSpec = {
-                        (slideInHorizontally(tween(ANIM_DURATION)) { -it / 5 } + fadeIn(
-                            tween(ANIM_DURATION)
-                        )) togetherWith
-                                (slideOutHorizontally(tween(ANIM_DURATION)) { it } + fadeOut(
-                                    tween(ANIM_DURATION_2)
-                                ))
-                    },
-                )
-            }
-            if (!isImages) {
-                // Wrap in a column that always pads for the system navigation bar.
-                // BottomAppBar's own windowInsets are cleared to prevent double-padding.
-                Column(modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars)) {
-                    AdSlot(modifier = Modifier.fillMaxWidth())
-                    MarsBottomBar(
-                        selectedDestination = chromeDestination.topLevelDestination(),
-                        onDestinationClick = { destination ->
-                            tracker.trackClick("bottom_${destination.analyticsTag}")
-                            navigator.selectTopLevel(destination)
-                        },
-                        scrollBehavior = bottomBarScrollBehavior,
-                        windowInsets = WindowInsets(),
-                    )
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .windowInsetsPadding(WindowInsets.statusBars),
+                ) {
+                    AnimatedVisibility(chromeDestination !is AppDestination.Ukraine) {
+                        UkraineBanner(
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = {
+                                tracker.trackClick("UkraineBanner_Root")
+                                navigator.navigate(AppDestination.Ukraine)
+                            },
+                        )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .background(MaterialTheme.colorScheme.background),
+                    ) {
+                        navDisplay()
+                    }
                 }
             }
         }
