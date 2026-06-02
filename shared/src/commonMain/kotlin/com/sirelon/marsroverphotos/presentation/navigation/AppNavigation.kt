@@ -1,6 +1,7 @@
 package com.sirelon.marsroverphotos.presentation.navigation
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.runtime.movableContentOf
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -55,10 +56,15 @@ fun AppNavigation(
     deepLink: DeepLink? = null,
     onDeepLinkConsumed: (() -> Unit)? = null
 ) {
-    val backStack = rememberNavBackStack(
-        configuration = navBackStackConfiguration,
-        elements = arrayOf(startDestination)
-    )
+    // Nav3 + Desktop: providing `elements` to rememberNavBackStack causes the start
+    // destination to be added twice when saved-state restoration also returns the same
+    // key — `SaveableStateHolder` then throws "Key used multiple times". Fix: start
+    // with an empty back stack and add the start destination only when truly empty.
+    val backStack = rememberNavBackStack(configuration = navBackStackConfiguration)
+    remember(backStack) {
+        if (backStack.isEmpty()) backStack.add(startDestination)
+    }
+
     val navigator = remember(backStack) { AppNavigator(backStack) }
     val entryDecorators = rememberAppNavEntryDecorators()
     val currentDestination = backStack.lastOrNull() as? AppDestination ?: startDestination
@@ -177,7 +183,11 @@ fun AppNavigation(
         onDeepLinkConsumed?.invoke()
     }
 
-    val navDisplay = @Composable {
+    // movableContentOf prevents NavDisplay from being disposed+remounted when the adaptive
+    // layout branch switches (NavBar ↔ NavRail on Desktop window resize / initial render).
+    // Without this, SaveableStateHolder registers the same key twice during applyLateChanges.
+    val navDisplay = remember {
+      movableContentOf {
         NavDisplay(
             backStack = backStack,
             onBack = { navigator.goBack() },
@@ -201,6 +211,7 @@ fun AppNavigation(
                     (slideOutHorizontally(tween(ANIM_DURATION)) { it } + fadeOut(tween(ANIM_DURATION_2)))
             },
         )
+      }
     }
 
     CompositionLocalProvider(LocalAppNavigator provides navigator) {
