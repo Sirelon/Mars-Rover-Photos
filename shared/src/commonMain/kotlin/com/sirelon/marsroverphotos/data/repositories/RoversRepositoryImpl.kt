@@ -66,11 +66,12 @@ class RoversRepositoryImpl(
                 // opens, ensuring goToLatest() anchors on the real latest sol.
                 launch {
                     try {
-                        val latestSol = api.getCuriosityLatestSol()
-                        if (latestSol != null) {
-                            roverDao.updateMaxSol(CURIOSITY_ID, latestSol)
-                            Logger.d("RoversRepository") { "Updated Curiosity maxSol to $latestSol" }
-                        }
+                        val latestSol = api.getCuriosityLatestSol() ?: return@launch
+                        val curiosity = roverDao.loadRoverById(CURIOSITY_ID) ?: return@launch
+                        val dateUtil = RoverDateUtil(curiosity)
+                        val maxDate = dateUtil.parseTime(dateUtil.dateFromSol(latestSol))
+                        roverDao.updateMaxSolAndDate(CURIOSITY_ID, latestSol, maxDate)
+                        Logger.d("RoversRepository") { "Updated Curiosity maxSol=$latestSol, maxDate=$maxDate" }
                     } catch (e: Exception) {
                         Logger.e("RoversRepository", e) { "Error fetching Curiosity maxSol from MSL feed" }
                     }
