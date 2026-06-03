@@ -1,13 +1,11 @@
 package com.sirelon.marsroverphotos.data.network
 
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
-import com.sirelon.marsroverphotos.data.network.models.RoverInfo
+import com.sirelon.marsroverphotos.data.network.models.NasaImagesSearchResponse
 import com.sirelon.marsroverphotos.domain.models.CURIOSITY_ID
 import com.sirelon.marsroverphotos.domain.models.INSIGHT_ID
-import com.sirelon.marsroverphotos.domain.models.OPPORTUNITY_ID
 import com.sirelon.marsroverphotos.domain.models.PERSEVERANCE_ID
 import com.sirelon.marsroverphotos.domain.models.PhotosQueryRequest
-import com.sirelon.marsroverphotos.domain.models.SPIRIT_ID
 import com.sirelon.marsroverphotos.platform.createHttpClientEngine
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
@@ -79,18 +77,13 @@ class RestApi {
             }
 
             INSIGHT_ID -> {
-                nasaApi.getInsightRawImages(from = "$sol:sol", to = "$sol:sol").list.mapToUi()
+                nasaApi.getRawImages("insight", from = "$sol:sol", to = "$sol:sol").list.mapToUi()
             }
 
-            CURIOSITY_ID -> nasaApi.getRoverPhotos("Curiosity", sol, query.camera).list.mapToUi()
-
-            OPPORTUNITY_ID -> nasaApi.getRoverPhotos(
-                "Opportunity",
-                sol,
-                query.camera
-            ).list.mapToUi()
-
-            SPIRIT_ID -> nasaApi.getRoverPhotos("Spirit", sol, query.camera).list.mapToUi()
+            CURIOSITY_ID -> {
+                nasaApi.getRawImages("msl", from = "$sol:sol", to = "$sol:sol")
+                    .list.mapToUiMsl()
+            }
 
             else -> throw IllegalArgumentException("Unsupported rover id: ${query.roverId}")
         }
@@ -106,12 +99,25 @@ class RestApi {
         return response.photos.preveranceToUI()
     }
 
-    suspend fun getRoverInfo(roverName: String): RoverInfo =
-        nasaApi.getRoverInfo(roverName).roverInfo
-
     suspend fun getInsightLatestPhotos(): List<MarsImage> {
-        return nasaApi.getInsightRawImages().list.mapToUi()
+        return nasaApi.getRawImages("insight").list.mapToUi()
     }
+
+    suspend fun getCuriosityLatestPhotos(): List<MarsImage> {
+        return nasaApi.getRawImages("msl").list.mapToUiMsl()
+    }
+
+    /** Returns the latest Curiosity sol from the MSL raw feed (feed is ordered newest-first). */
+    suspend fun getCuriosityLatestSol(): Long? {
+        return nasaApi.getRawImages("msl").list.firstOrNull()?.sol
+    }
+
+    /** Fetches one page of images.nasa.gov search results (1-based page index). */
+    suspend fun searchImages(
+        query: String,
+        page: Int,
+        pageSize: Int = 100,
+    ): NasaImagesSearchResponse = nasaApi.searchImages(query, page, pageSize)
 
     suspend fun getPerseveranceLatestPhotos(count: Int = 1): List<MarsImage> {
         val response = nasaApi.getPerseveranceRawImages(count = count)

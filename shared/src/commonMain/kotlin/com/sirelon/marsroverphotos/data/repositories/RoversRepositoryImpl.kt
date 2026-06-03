@@ -2,7 +2,6 @@ package com.sirelon.marsroverphotos.data.repositories
 
 import com.sirelon.marsroverphotos.data.database.dao.RoverDao
 import com.sirelon.marsroverphotos.data.network.RestApi
-import com.sirelon.marsroverphotos.data.network.models.RoverInfo
 import com.sirelon.marsroverphotos.domain.models.CURIOSITY_ID
 import com.sirelon.marsroverphotos.domain.models.INSIGHT_ID
 import com.sirelon.marsroverphotos.domain.models.OPPORTUNITY_ID
@@ -14,13 +13,8 @@ import com.sirelon.marsroverphotos.utils.Logger
 import com.sirelon.marsroverphotos.utils.RoverDateUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlin.time.Clock
 
@@ -67,14 +61,22 @@ class RoversRepositoryImpl(
                     }
                 }
 
-                // Load latest rover info from NASA API
+                // Derive Curiosity maxSol from the MSL raw feed (mars-photos manifests are dead).
+                // Runs concurrently with seeding so the DB is updated before the photos screen
+                // opens, ensuring goToLatest() anchors on the real latest sol.
                 launch {
                     try {
-                        loadFromServer()
+                        val latestSol = api.getCuriosityLatestSol() ?: return@launch
+                        val curiosity = roverDao.loadRoverById(CURIOSITY_ID) ?: return@launch
+                        val dateUtil = RoverDateUtil(curiosity)
+                        val maxDate = dateUtil.parseTime(dateUtil.dateFromSol(latestSol))
+                        roverDao.updateMaxSolAndDate(CURIOSITY_ID, latestSol, maxDate)
+                        Logger.d("RoversRepository") { "Updated Curiosity maxSol=$latestSol, maxDate=$maxDate" }
                     } catch (e: Exception) {
-                        Logger.e("RoversRepository", e) { "Error loading rover info from server" }
+                        Logger.e("RoversRepository", e) { "Error fetching Curiosity maxSol from MSL feed" }
                     }
                 }
+
             } catch (e: Exception) {
                 Logger.e("RoversRepository", e) { "Error initializing RoversRepository" }
             }
@@ -168,45 +170,6 @@ class RoversRepositoryImpl(
             Logger.d("RoversRepository") { "Rovers seeded successfully" }
         } catch (e: Exception) {
             Logger.e("RoversRepository", e) { "Error seeding rovers" }
-        }
-    }
-
-    /**
-     * Load rover information from NASA API and update the database.
-     * Only updates Curiosity, Opportunity, and Spirit (older rovers with stable API).
-     */
-    private suspend fun loadFromServer() = coroutineScope {
-        try {
-            val roversName = listOf("curiosity", "opportunity", "spirit")
-            val rovers = roversName.asFlow()
-                .map { async { api.getRoverInfo(it) } }
-                .map { it.await() }
-                .toList()
-
-            updateRoversByInfo(rovers)
-            Logger.d("RoversRepository") { "Loaded ${rovers.size} rovers from server" }
-        } catch (e: Exception) {
-            Logger.e("RoversRepository", e) { "Error loading rovers from server" }
-        }
-    }
-
-    private suspend fun updateRoversByInfo(list: List<RoverInfo>) {
-        list.forEach { updateRoverByInfo(it) }
-    }
-
-    private suspend fun updateRoverByInfo(roverInfo: RoverInfo) {
-        try {
-            Logger.d("RoversRepository") { "Updating rover: ${roverInfo.name}" }
-            roverDao.updateRover(
-                name = roverInfo.name,
-                landingDate = roverInfo.landingDate,
-                launchDate = roverInfo.launchDate,
-                maxSol = roverInfo.maxSol,
-                maxDate = roverInfo.maxDate,
-                totalPhotos = roverInfo.totalPhotos
-            )
-        } catch (e: Exception) {
-            Logger.e("RoversRepository", e) { "Error updating rover: ${roverInfo.name}" }
         }
     }
 

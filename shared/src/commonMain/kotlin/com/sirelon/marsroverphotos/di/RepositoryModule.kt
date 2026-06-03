@@ -34,6 +34,7 @@ val repositoryModule = module {
         RoverFeedPager(
             photosRepository = get(),
             imagesDao = get(),
+            restApi = get(),
             appScope = get()
         )
     }
