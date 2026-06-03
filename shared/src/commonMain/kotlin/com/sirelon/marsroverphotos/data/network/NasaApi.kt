@@ -14,8 +14,8 @@ import io.ktor.client.request.parameter
  */
 internal class NasaApi(private val ktor: HttpClient) {
 
-    suspend fun getInsightRawImages(
-        mission: String = "insight",
+    suspend fun getRawImages(
+        mission: String,
         from: String? = null,
         to: String? = null,
     ): PhotosResponse {

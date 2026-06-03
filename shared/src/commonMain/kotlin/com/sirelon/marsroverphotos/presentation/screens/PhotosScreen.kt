@@ -248,8 +248,8 @@ private fun PhotosScreen(
         },
         floatingActionButton = {
             RefreshButton(
-                visible = pagingItems.itemCount > 0 && state.showSolControls,
-                onClick = onGoToLatest
+                visible = pagingItems.itemCount > 0,
+                onClick = if (state.showSolControls) onGoToLatest else onRandomize
             )
         }
     ) { innerPadding ->

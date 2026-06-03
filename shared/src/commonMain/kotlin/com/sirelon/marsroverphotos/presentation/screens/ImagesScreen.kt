@@ -531,6 +531,7 @@ private fun ImagesPager(
                     contentScale = ContentScale.Fit,
                     imageUrl = nasaImageOrigUrl(marsImage.imageUrl),
                     showPlaceholder = false,
+                    placeholderMemoryCacheKey = marsImage.imageUrl,
                 )
 
                 // Controls layer — image fills full screen; controls stay above nav bar

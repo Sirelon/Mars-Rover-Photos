@@ -224,9 +224,15 @@ class PhotosViewModel(
 
     fun consumeLastViewedPhotoId(): String? = roverFeedPager.consumeLastViewedPhotoId()
 
-    /** No-op in page mode. */
     fun randomize() {
-        if (roverIdEmitter.value?.usesPageFeed() == true) return
+        val roverId = roverIdEmitter.value ?: return
+        if (roverId.usesPageFeed()) {
+            roverFeedPager.setFeed(
+                roverId = roverId,
+                mode = FeedMode.Page(roverId.pageQuery(), shuffleSeed = Random.nextLong()),
+            )
+            return
+        }
         viewModelScope.launch {
             val rover = roverFlow.first()
             val sol = Random.nextLong(0L, rover.maxSol.coerceAtLeast(1L))

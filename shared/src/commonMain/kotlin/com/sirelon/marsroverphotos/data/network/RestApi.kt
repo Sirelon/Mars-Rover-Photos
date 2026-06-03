@@ -77,11 +77,11 @@ class RestApi {
             }
 
             INSIGHT_ID -> {
-                nasaApi.getInsightRawImages(from = "$sol:sol", to = "$sol:sol").list.mapToUi()
+                nasaApi.getRawImages("insight", from = "$sol:sol", to = "$sol:sol").list.mapToUi()
             }
 
             CURIOSITY_ID -> {
-                nasaApi.getInsightRawImages(mission = "msl", from = "$sol:sol", to = "$sol:sol")
+                nasaApi.getRawImages("msl", from = "$sol:sol", to = "$sol:sol")
                     .list.mapToUiMsl()
             }
 
@@ -100,16 +100,16 @@ class RestApi {
     }
 
     suspend fun getInsightLatestPhotos(): List<MarsImage> {
-        return nasaApi.getInsightRawImages().list.mapToUi()
+        return nasaApi.getRawImages("insight").list.mapToUi()
     }
 
     suspend fun getCuriosityLatestPhotos(): List<MarsImage> {
-        return nasaApi.getInsightRawImages(mission = "msl").list.mapToUiMsl()
+        return nasaApi.getRawImages("msl").list.mapToUiMsl()
     }
 
     /** Returns the latest Curiosity sol from the MSL raw feed (feed is ordered newest-first). */
     suspend fun getCuriosityLatestSol(): Long? {
-        return nasaApi.getInsightRawImages(mission = "msl").list.firstOrNull()?.sol
+        return nasaApi.getRawImages("msl").list.firstOrNull()?.sol
     }
 
     /** Fetches one page of images.nasa.gov search results (1-based page index). */

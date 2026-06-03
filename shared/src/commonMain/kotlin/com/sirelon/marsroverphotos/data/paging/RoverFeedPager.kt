@@ -98,8 +98,10 @@ class RoverFeedPager(
                     initialKey = 1,
                     pagingSourceFactory = {
                         val query = mode.query
+                        val shuffleSeed = mode.shuffleSeed
                         ImagesSearchPagingSource(
                             imagesDao = imagesDao,
+                            shuffleSeed = shuffleSeed,
                             fetchPage = { page ->
                                 val response = restApi.searchImages(query, page)
                                 val startIndex = (page - 1) * 100

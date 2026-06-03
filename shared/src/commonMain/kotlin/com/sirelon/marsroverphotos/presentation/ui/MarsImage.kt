@@ -31,6 +31,7 @@ import coil3.compose.AsyncImagePainter
 import coil3.compose.LocalPlatformContext
 import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.rememberAsyncImagePainter
+import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import coil3.size.Scale
@@ -172,14 +173,18 @@ fun NetworkImage(
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Crop,
     showPlaceholder: Boolean = true,
-    imageUrl: String
+    imageUrl: String,
+    placeholderMemoryCacheKey: String? = null,
 ) {
     val context = LocalPlatformContext.current
-    val request = remember(imageUrl) {
+    val request = remember(imageUrl, placeholderMemoryCacheKey) {
         ImageRequest.Builder(context)
             .data(data = imageUrl)
             .apply {
                 crossfade(true)
+                if (placeholderMemoryCacheKey != null) {
+                    placeholderMemoryCacheKey(MemoryCache.Key(placeholderMemoryCacheKey))
+                }
             }
             .build()
     }
@@ -190,6 +195,16 @@ fun NetworkImage(
             modifier = modifier,
             contentScale = contentScale,
             placeholder = painterResource(Res.drawable.img_placeholder)
+        )
+    } else if (placeholderMemoryCacheKey != null) {
+        // Memory-cached placeholder (e.g. grid thumbnail) shows instantly; crossfades to full-res.
+        // AsyncImage lets Coil handle the placeholder — SubcomposeAsyncImage's loading slot would
+        // override it and show the spinner instead.
+        AsyncImage(
+            model = request,
+            contentDescription = imageUrl,
+            modifier = modifier,
+            contentScale = contentScale,
         )
     } else {
         SubcomposeAsyncImage(
