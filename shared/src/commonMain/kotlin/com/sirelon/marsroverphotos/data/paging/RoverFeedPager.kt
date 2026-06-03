@@ -51,6 +51,11 @@ class RoverFeedPager(
     private val paramsFlow = MutableStateFlow<Params?>(null)
     private var generation = 0L
 
+    // In-memory cache of the full result list from images.nasa.gov, keyed by query string.
+    // Populated after the first network fetch for a query; subsequent reshuffles (same query,
+    // new seed) reorder this list instantly without any network round-trip.
+    private val pageCache = mutableMapOf<String, List<MarsImage>>()
+
     /** Current feed params, or null until [setFeed] is first called. */
     val currentParams: Params? get() = paramsFlow.value
 
@@ -102,6 +107,8 @@ class RoverFeedPager(
                         ImagesSearchPagingSource(
                             imagesDao = imagesDao,
                             shuffleSeed = shuffleSeed,
+                            cachedImages = pageCache[query],
+                            onAllImagesFetched = { images -> pageCache[query] = images },
                             fetchPage = { page ->
                                 val response = restApi.searchImages(query, page)
                                 val startIndex = (page - 1) * 100

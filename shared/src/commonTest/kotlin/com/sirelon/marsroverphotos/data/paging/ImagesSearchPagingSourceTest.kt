@@ -197,4 +197,79 @@ class ImagesSearchPagingSourceTest {
         assertEquals(100, p.data.size)   // 50 pages × 2 items/page
         assertNull(p.nextKey)
     }
+
+    // 13. Cache hit: when cachedImages is provided, fetchPage is never called.
+    @Test
+    fun load_cacheHit_skipsNetwork() = runTest {
+        var fetchCallCount = 0
+        val cached = (1..5).map { marsImage("cached$it", 0L) }
+        val src = ImagesSearchPagingSource(
+            pageSize = 100,
+            imagesDao = FakeImagesDao(),
+            cachedImages = cached,
+            fetchPage = { _ ->
+                fetchCallCount++
+                ImagesSearchPagingSource.PageResult(emptyList(), 0)
+            },
+        )
+        val p = page(src.load(PagingSource.LoadParams.Refresh(null, 100, false)))
+        assertEquals(0, fetchCallCount)
+        assertEquals(cached.size, p.data.size)
+    }
+
+    // 14. onAllImagesFetched is invoked with merged images after a network fetch.
+    @Test
+    fun load_networkFetch_callsOnAllImagesFetched() = runTest {
+        val images = (1..3).map { marsImage("n$it", 0L) }
+        var captured: List<MarsImage>? = null
+        val src = ImagesSearchPagingSource(
+            pageSize = 100,
+            imagesDao = FakeImagesDao(),
+            onAllImagesFetched = { captured = it },
+            fetchPage = { ImagesSearchPagingSource.PageResult(images, totalHits = 3) },
+        )
+        src.load(PagingSource.LoadParams.Refresh(null, 100, false))
+        assertEquals(3, captured?.size)
+    }
+
+    // 15. Cache hit: onAllImagesFetched is NOT called (no network fetch happened).
+    @Test
+    fun load_cacheHit_doesNotCallOnAllImagesFetched() = runTest {
+        var callCount = 0
+        val cached = listOf(marsImage("c1", 0L))
+        val src = ImagesSearchPagingSource(
+            pageSize = 100,
+            imagesDao = FakeImagesDao(),
+            cachedImages = cached,
+            onAllImagesFetched = { callCount++ },
+            fetchPage = { ImagesSearchPagingSource.PageResult(emptyList(), 0) },
+        )
+        src.load(PagingSource.LoadParams.Refresh(null, 100, false))
+        assertEquals(0, callCount)
+    }
+
+    // 16. Cache + shuffle: different seeds applied to the same cached list produce different orders.
+    @Test
+    fun load_cacheHit_differentSeedsDifferentOrders() = runTest {
+        val cached = (1..20).map { marsImage("c$it", 0L) }
+        val p1 = page(
+            ImagesSearchPagingSource(
+                pageSize = 100,
+                imagesDao = FakeImagesDao(),
+                cachedImages = cached,
+                shuffleSeed = 1L,
+                fetchPage = { ImagesSearchPagingSource.PageResult(emptyList(), 0) },
+            ).load(PagingSource.LoadParams.Refresh(null, 100, false))
+        )
+        val p2 = page(
+            ImagesSearchPagingSource(
+                pageSize = 100,
+                imagesDao = FakeImagesDao(),
+                cachedImages = cached,
+                shuffleSeed = 999L,
+                fetchPage = { ImagesSearchPagingSource.PageResult(emptyList(), 0) },
+            ).load(PagingSource.LoadParams.Refresh(null, 100, false))
+        )
+        assertTrue(p1.data.map { it.id } != p2.data.map { it.id })
+    }
 }
