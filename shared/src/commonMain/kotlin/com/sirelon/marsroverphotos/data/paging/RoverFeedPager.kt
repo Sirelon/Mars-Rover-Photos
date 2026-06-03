@@ -6,6 +6,8 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.sirelon.marsroverphotos.data.database.dao.ImagesDao
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
+import com.sirelon.marsroverphotos.data.network.RestApi
+import com.sirelon.marsroverphotos.data.network.toMarsImages
 import com.sirelon.marsroverphotos.domain.repositories.PhotosRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,15 +30,13 @@ import kotlinx.coroutines.flow.flatMapLatest
 class RoverFeedPager(
     private val photosRepository: PhotosRepository,
     private val imagesDao: ImagesDao,
+    private val restApi: RestApi,
     appScope: CoroutineScope,
 ) {
 
     data class Params(
         val roverId: Long,
-        val anchorSol: Long,
-        val minSol: Long,
-        val maxSol: Long,
-        val cameras: Set<String>,
+        val mode: FeedMode,
         /**
          * Monotonic token making every explicit [setFeed] distinct. Without it, re-anchoring to
          * the *current* sol (e.g. re-picking the same date after scrolling away, or re-randomizing
@@ -44,7 +44,9 @@ class RoverFeedPager(
          * the Pager never rebuilds and the feed appears "stuck / not updating".
          */
         val generation: Long,
-    )
+    ) {
+        val solMode: FeedMode.Sol? get() = mode as? FeedMode.Sol
+    }
 
     private val paramsFlow = MutableStateFlow<Params?>(null)
     private var generation = 0L
@@ -75,31 +77,48 @@ class RoverFeedPager(
     val pagedFlow: Flow<PagingData<MarsImage>> = paramsFlow
         .filterNotNull()
         .flatMapLatest { p ->
-            Pager(
-                config = pagingConfig,
-                initialKey = p.anchorSol,
-                pagingSourceFactory = {
-                    SolPagingSource(
-                        photosRepository = photosRepository,
-                        imagesDao = imagesDao,
-                        roverId = p.roverId,
-                        cameras = p.cameras,
-                        initialSol = p.anchorSol,
-                        minSol = p.minSol,
-                        maxSol = p.maxSol,
-                    )
-                },
-            ).flow
+            when (val mode = p.mode) {
+                is FeedMode.Sol -> Pager(
+                    config = pagingConfig,
+                    initialKey = mode.anchorSol,
+                    pagingSourceFactory = {
+                        SolPagingSource(
+                            photosRepository = photosRepository,
+                            imagesDao = imagesDao,
+                            roverId = p.roverId,
+                            cameras = mode.cameras,
+                            initialSol = mode.anchorSol,
+                            minSol = mode.minSol,
+                            maxSol = mode.maxSol,
+                        )
+                    },
+                ).flow
+                is FeedMode.Page -> Pager(
+                    config = pageSearchConfig,
+                    initialKey = 1,
+                    pagingSourceFactory = {
+                        val query = mode.query
+                        ImagesSearchPagingSource(
+                            imagesDao = imagesDao,
+                            fetchPage = { page ->
+                                val response = restApi.searchImages(query, page)
+                                val startIndex = (page - 1) * 100
+                                ImagesSearchPagingSource.PageResult(
+                                    images = response.toMarsImages(startIndex),
+                                    totalHits = response.collection.metadata?.totalHits ?: 0,
+                                )
+                            },
+                        )
+                    },
+                ).flow
+            }
         }
         .cachedIn(appScope)
 
-    fun setFeed(roverId: Long, anchorSol: Long, minSol: Long, maxSol: Long, cameras: Set<String>) {
+    fun setFeed(roverId: Long, mode: FeedMode) {
         paramsFlow.value = Params(
             roverId = roverId,
-            anchorSol = anchorSol,
-            minSol = minSol,
-            maxSol = maxSol,
-            cameras = cameras,
+            mode = mode,
             generation = generation++,
         )
     }
@@ -109,6 +128,12 @@ class RoverFeedPager(
             pageSize = 20,
             prefetchDistance = 10,
             initialLoadSize = 20,
+            enablePlaceholders = false,
+        )
+        private val pageSearchConfig = PagingConfig(
+            pageSize = 100,
+            prefetchDistance = 20,
+            initialLoadSize = 100,
             enablePlaceholders = false,
         )
     }

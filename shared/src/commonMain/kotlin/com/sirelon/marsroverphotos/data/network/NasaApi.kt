@@ -1,8 +1,8 @@
 package com.sirelon.marsroverphotos.data.network
 
+import com.sirelon.marsroverphotos.data.network.models.NasaImagesSearchResponse
 import com.sirelon.marsroverphotos.data.network.models.PerseverancePhotosResponse
 import com.sirelon.marsroverphotos.data.network.models.PhotosResponse
-import com.sirelon.marsroverphotos.data.network.models.RoverResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -14,40 +14,27 @@ import io.ktor.client.request.parameter
  */
 internal class NasaApi(private val ktor: HttpClient) {
 
-    private companion object {
-        private const val APIKEY = "zyVCPOCqaNBoEambV3n4awUf6TuaPZsHn1trst5E"
-        private const val APIKEY_ARG = "api_key"
-    }
-
-    suspend fun getRoverInfo(
-        roverName: String,
-        apiKey: String = APIKEY
-    ): RoverResponse {
-        return ktor.get("/mars-photos/api/v1/manifests/$roverName") {
-            parameter(APIKEY_ARG, apiKey)
-        }.body()
-    }
-
-    suspend fun getRoverPhotos(
-        roverName: String,
-        sol: Long?,
-        camera: String?,
-        apiKey: String = APIKEY,
-    ): PhotosResponse {
-        return ktor.get("/mars-photos/api/v1/rovers/$roverName/photos") {
-            parameter(APIKEY_ARG, apiKey)
-            parameter("sol", sol)
-            parameter("camera", camera)
-        }.body()
-    }
-
     suspend fun getInsightRawImages(
+        mission: String = "insight",
         from: String? = null,
         to: String? = null,
     ): PhotosResponse {
-        return ktor.get("https://mars.nasa.gov/api/v1/raw_image_items/?order=sol+desc%2Cdate_taken+desc&per_page=100&page=0&condition_1=insight:mission") {
+        return ktor.get("https://mars.nasa.gov/api/v1/raw_image_items/?order=sol+desc%2Cdate_taken+desc&per_page=100&page=0&condition_1=$mission:mission") {
             parameter("condition_2", from)
             parameter("condition_3", to)
+        }.body()
+    }
+
+    suspend fun searchImages(
+        q: String,
+        page: Int,
+        pageSize: Int = 100,
+    ): NasaImagesSearchResponse {
+        return ktor.get("https://images-api.nasa.gov/search") {
+            parameter("q", q)
+            parameter("media_type", "image")
+            parameter("page", page)
+            parameter("page_size", pageSize)
         }.body()
     }
 

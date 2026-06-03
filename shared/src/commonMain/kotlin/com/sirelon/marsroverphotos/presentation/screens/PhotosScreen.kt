@@ -235,18 +235,20 @@ private fun PhotosScreen(
                 title = { Text(text = state.roverName) },
                 onBack = onBack,
                 actions = {
-                    IconButton(onClick = onOpenFilters) {
-                        MaterialSymbolIcon(
-                            symbol = MaterialSymbol.Tune,
-                            contentDescription = "Filters"
-                        )
+                    if (state.showSolControls) {
+                        IconButton(onClick = onOpenFilters) {
+                            MaterialSymbolIcon(
+                                symbol = MaterialSymbol.Tune,
+                                contentDescription = "Filters"
+                            )
+                        }
                     }
                 }
             )
         },
         floatingActionButton = {
             RefreshButton(
-                visible = pagingItems.itemCount > 0,
+                visible = pagingItems.itemCount > 0 && state.showSolControls,
                 onClick = onGoToLatest
             )
         }
@@ -256,7 +258,7 @@ private fun PhotosScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            if (state.cameraFilters.isNotEmpty()) {
+            if (state.showSolControls && state.cameraFilters.isNotEmpty()) {
                 CameraFilterChip(
                     cameras = state.cameraFilters,
                     onClear = onClearCameraFilters,
@@ -291,16 +293,18 @@ private fun PhotosScreen(
                             onPhotoClick = { image -> onNavigateToImages(image.id, state.cameraFilters) },
                         )
 
-                        // Floating "sticky" date chip — mirrors the top-visible day.
-                        FloatingDateChip(
-                            sol = state.sol,
-                            earthDate = state.earthDate,
-                            onOpenSolPicker = onOpenSolPicker,
-                            onOpenEarthDatePicker = onOpenEarthDatePicker,
-                            modifier = Modifier
-                                .align(Alignment.TopCenter)
-                                .padding(top = AppSpacing.sm)
-                        )
+                        // Floating "sticky" date chip — mirrors the top-visible day (sol mode only).
+                        if (state.showSolControls) {
+                            FloatingDateChip(
+                                sol = state.sol,
+                                earthDate = state.earthDate,
+                                onOpenSolPicker = onOpenSolPicker,
+                                onOpenEarthDatePicker = onOpenEarthDatePicker,
+                                modifier = Modifier
+                                    .align(Alignment.TopCenter)
+                                    .padding(top = AppSpacing.sm)
+                            )
+                        }
 
                         // Prepend (scroll-up) progress at the top, append (scroll-down) at the bottom.
                         if (pagingItems.loadState.prepend is LoadState.Loading) {

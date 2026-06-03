@@ -62,6 +62,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
+import com.sirelon.marsroverphotos.data.network.nasaImageOrigUrl
 import com.sirelon.marsroverphotos.presentation.navigation.AppDestination
 import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
 import com.sirelon.marsroverphotos.presentation.ui.CenteredProgress
@@ -250,15 +251,19 @@ private fun ImagesPagerContent(
         snapshotFlow { pagerState.currentPage }.collect { page ->
             val marsPhoto = pagingItems.peek(page) ?: return@collect
             onShown(marsPhoto, page)
-            titleState = buildString {
-                append("Sol ")
-                append(marsPhoto.sol)
-                val cam = marsPhoto.camera?.fullName
-                    ?.trim()
-                    ?.takeIf { it.isNotBlank() && it != "Unknown Camera" }
-                if (cam != null) {
-                    append(" · ")
-                    append(cam)
+            titleState = if (marsPhoto.sol == 0L && marsPhoto.camera == null) {
+                marsPhoto.name.orEmpty().ifBlank { "Mars Rover Photos" }
+            } else {
+                buildString {
+                    append("Sol ")
+                    append(marsPhoto.sol)
+                    val cam = marsPhoto.camera?.fullName
+                        ?.trim()
+                        ?.takeIf { it.isNotBlank() && it != "Unknown Camera" }
+                    if (cam != null) {
+                        append(" · ")
+                        append(cam)
+                    }
                 }
             }
         }
@@ -524,7 +529,7 @@ private fun ImagesPager(
                             detectTapGestures(onTap = { onTap() })
                         },
                     contentScale = ContentScale.Fit,
-                    imageUrl = marsImage.imageUrl,
+                    imageUrl = nasaImageOrigUrl(marsImage.imageUrl),
                     showPlaceholder = false,
                 )
 
