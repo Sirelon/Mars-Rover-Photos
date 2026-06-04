@@ -1,50 +1,70 @@
 package com.sirelon.marsroverphotos.presentation.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.unit.dp
-import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
-import com.sirelon.marsroverphotos.presentation.theme.AppTypography
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
 import coil3.SingletonImageLoader
 import coil3.compose.LocalPlatformContext
 import com.sirelon.marsroverphotos.domain.settings.Theme
 import com.sirelon.marsroverphotos.platform.AppReview
 import com.sirelon.marsroverphotos.presentation.navigation.LocalAboutCallbacks
-import com.sirelon.marsroverphotos.presentation.ui.AppButton
-import com.sirelon.marsroverphotos.presentation.ui.AppCard
-import com.sirelon.marsroverphotos.presentation.ui.AppOutlinedButton
+import com.sirelon.marsroverphotos.presentation.theme.AppSize
+import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
+import com.sirelon.marsroverphotos.presentation.theme.primaryVariant
+import com.sirelon.marsroverphotos.presentation.ui.AppBadge
+import com.sirelon.marsroverphotos.presentation.ui.AppIconBox
+import com.sirelon.marsroverphotos.presentation.ui.AppOutlinedCard
+import com.sirelon.marsroverphotos.presentation.ui.BadgeRow
+import com.sirelon.marsroverphotos.presentation.ui.CardShape
 import com.sirelon.marsroverphotos.presentation.ui.MarsSnackbar
-import com.sirelon.marsroverphotos.presentation.ui.RadioButtonText
+import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
+import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
+import com.sirelon.marsroverphotos.presentation.ui.SegmentedControl
+import com.sirelon.marsroverphotos.presentation.ui.SettingsRow
+import com.sirelon.marsroverphotos.presentation.ui.SettingsRowDivider
+import com.sirelon.marsroverphotos.presentation.ui.SettingsRowIndent
+import com.sirelon.marsroverphotos.presentation.ui.SettingsSectionLabel
+import com.sirelon.marsroverphotos.presentation.ui.StatusBadge
 import com.sirelon.marsroverphotos.presentation.ui.rememberPlatformUriHandler
 import com.sirelon.marsroverphotos.presentation.viewmodels.AboutViewModel
-import kotlinx.coroutines.launch
 import com.sirelon.marsroverphotos.shared.resources.Res
 import com.sirelon.marsroverphotos.shared.resources.alien_icon
 import kotlin.time.Clock
+import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.painterResource
@@ -89,80 +109,110 @@ private fun AboutContent(
     val appReview: AppReview = koinInject()
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+    val colors = MaterialTheme.colorScheme
+    val live = liveColor()
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().background(colors.background)) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = AppSpacing.lg)
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(AppSpacing.lg),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                painter = painterResource(Res.drawable.alien_icon),
-                contentDescription = "logo"
-            )
-            Text(text = "Mars Rover Photos", style = AppTypography.appTitle)
-            Text(
-                text = "Browse photos taken by NASA's Mars rovers. Explore the red planet through the eyes of Curiosity, Opportunity, Spirit, Perseverance, and InSight.",
-                style = AppTypography.body,
-                textAlign = TextAlign.Center
-            )
+            // Hero is full-bleed: it sits outside the capped column so its gradient
+            // reaches both screen edges on every surface.
+            Hero(appVersion = appVersion, live = live)
 
+            // Settings content fills the width (minus the screen padding) until the window
+            // reaches the EXPANDED width class — the same adaptive source the navigation uses
+            // ([currentWindowAdaptiveInfo]) — beyond which it caps at [AppSize.contentMaxWidth]
+            // and centers within the parent column.
+            val expandedWidth = currentWindowAdaptiveInfo().windowSizeClass
+                .isWidthAtLeastBreakpoint(WIDTH_DP_EXPANDED_LOWER_BOUND)
+            val contentWidth = if (expandedWidth) {
+                Modifier.widthIn(max = AppSize.contentMaxWidth)
+            } else {
+                Modifier.fillMaxWidth()
+            }
             Column(
-                modifier = Modifier
-                    .padding(vertical = AppSpacing.sm)
-                    .fillMaxWidth()
+                modifier = contentWidth
+                    .padding(horizontal = AppSpacing.lg)
+                    .padding(bottom = AppSpacing.xxl),
+                verticalArrangement = Arrangement.spacedBy(AppSpacing.xl)
             ) {
-                LinkifyText(text = "API provided by ", link = "https://api.nasa.gov/")
-                LinkifyText(
-                    text = "Email: ",
-                    link = "mailto:sasha.sirelon@gmail.com",
-                    displayLink = "sasha.sirelon@gmail.com"
-                )
-                if (appVersion.isNotEmpty()) {
-                    Text(
-                        text = "Version: $appVersion",
-                        modifier = Modifier.padding(AppSpacing.xs)
+                Blurb()
+
+                SettingsSection(label = "Appearance") {
+                    ThemeRow(currentTheme = currentTheme, onThemeChange = onThemeChange)
+                    SettingsRowDivider()
+                    SettingsRow(
+                        icon = MaterialSymbol.Info,
+                        iconContainer = colors.secondaryContainer,
+                        iconTint = colors.onSecondaryContainer,
+                        label = "Fact Cards",
+                        sub = if (showFacts) "\"Did You Know?\" cards visible" else "Fact cards hidden",
+                        trailing = {
+                            Switch(checked = showFacts, onCheckedChange = onFactsToggle)
+                        }
                     )
                 }
-            }
 
-            ThemeChanger(currentTheme = currentTheme, onThemeChange = onThemeChange)
-            FactsToggle(showFacts = showFacts, onFactsToggle = onFactsToggle)
+                SettingsSection(label = "Data") {
+                    SettingsRow(
+                        icon = MaterialSymbol.Delete,
+                        iconContainer = colors.error.copy(alpha = 0.16f),
+                        iconTint = colors.error,
+                        label = "Clear Cache",
+                        sub = "Free up storage used by cached photos",
+                        onClick = {
+                            onClearCache()
+                            scope.launch { snackbarHostState.showSnackbar("Cache cleared") }
+                        }
+                    )
+                }
 
-            AppOutlinedButton(onClick = {
-                onClearCache()
-                scope.launch { snackbarHostState.showSnackbar("Cache cleared") }
-            }) {
-                Text(text = "Clear Cache")
-            }
-
-            AppButton(
-                onClick = {
-                    scope.launch {
-                        val shown = appReview.requestReview()
-                        if (!shown) {
-                            if (rateAppUrl.isNotBlank()) {
-                                uriHandler.openUri(rateAppUrl)
-                            } else {
-                                onRateApp()
+                SettingsSection(label = "Connect") {
+                    SettingsRow(
+                        icon = MaterialSymbol.Public,
+                        iconContainer = live.copy(alpha = 0.15f),
+                        iconTint = live,
+                        label = "NASA Open API",
+                        sub = "api.nasa.gov",
+                        onClick = { uriHandler.openUri("https://api.nasa.gov/") }
+                    )
+                    SettingsRowDivider()
+                    SettingsRow(
+                        icon = MaterialSymbol.Star,
+                        iconContainer = colors.secondary.copy(alpha = 0.18f),
+                        iconTint = colors.secondary,
+                        label = "Rate the App",
+                        sub = "Enjoying Mars? Leave a review",
+                        onClick = {
+                            scope.launch {
+                                val shown = appReview.requestReview()
+                                if (!shown) {
+                                    if (rateAppUrl.isNotBlank()) {
+                                        uriHandler.openUri(rateAppUrl)
+                                    } else {
+                                        onRateApp()
+                                    }
+                                }
                             }
                         }
-                    }
+                    )
+                    SettingsRowDivider()
+                    SettingsRow(
+                        icon = MaterialSymbol.Reviews,
+                        iconContainer = colors.tertiary.copy(alpha = 0.16f),
+                        iconTint = colors.tertiary,
+                        label = "Send Feedback",
+                        sub = "Report a bug or suggest a feature",
+                        onClick = { uriHandler.openUri("mailto:sasha.sirelon@gmail.com") }
+                    )
                 }
-            ) {
-                Text(text = "Rate App")
-            }
 
-            val currentYear = Clock.System.now()
-                .toLocalDateTime(TimeZone.currentSystemDefault()).year
-            Text(
-                text = "© $currentYear All rights reserved.",
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(AppSpacing.lg)
-            )
+                Footer()
+            }
         }
 
         MarsSnackbar(
@@ -173,97 +223,189 @@ private fun AboutContent(
     }
 }
 
+/** Section label + grouped card — the About screen's grouped-settings glue. */
 @Composable
-private fun ThemeChanger(currentTheme: Theme, onThemeChange: (Theme) -> Unit) {
-    AppCard(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = AppSpacing.sm),
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = AppSpacing.lg)
-        ) {
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = "Change the app theme",
-                style = MaterialTheme.typography.titleLarge.copy(textAlign = TextAlign.Center)
-            )
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                RadioButtonText(selected = currentTheme == Theme.WHITE, onClick = { onThemeChange(Theme.WHITE) }) {
-                    Text("White")
-                }
-                RadioButtonText(selected = currentTheme == Theme.DARK, onClick = { onThemeChange(Theme.DARK) }) {
-                    Text("Dark")
-                }
-                RadioButtonText(selected = currentTheme == Theme.SYSTEM, onClick = { onThemeChange(Theme.SYSTEM) }) {
-                    Text("System")
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun FactsToggle(showFacts: Boolean, onFactsToggle: (Boolean) -> Unit) {
-    AppCard(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = AppSpacing.sm),
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = AppSpacing.lg, vertical = AppSpacing.md),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "Educational Facts",
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Text(
-                    text = "Show \"Did You Know?\" fact cards while browsing photos.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            Switch(
-                checked = showFacts,
-                onCheckedChange = onFactsToggle
-            )
-        }
+private fun SettingsSection(label: String, content: @Composable () -> Unit) {
+    Column {
+        SettingsSectionLabel(text = label)
+        AppOutlinedCard { content() }
     }
 }
 
 /**
- * Shows a label followed by a tappable hyperlink.
- *
- * Uses [Modifier.clickable] on the link portion rather than [detectTapGestures] so the
- * tap reliably fires on iOS inside a vertically scrollable container.
+ * Live / "connected" status green. Not part of the M3 palette, so it is resolved per applied
+ * theme (dark vs light) off the background luminance — keeping it legible in both themes,
+ * matching the design's `--t-active` (#5BBF86 dark / #2E9E63 light).
  */
 @Composable
-private fun LinkifyText(text: String, link: String, displayLink: String = link) {
-    val uriHandler = rememberPlatformUriHandler()
-    val textStyle = LocalTextStyle.current
-    val colors = MaterialTheme.colorScheme
+private fun liveColor(): Color =
+    if (MaterialTheme.colorScheme.background.luminance() < 0.5f) Color(0xFF5BBF86) else Color(0xFF2E9E63)
 
-    Row(
-        modifier = Modifier.padding(AppSpacing.xs),
-        verticalAlignment = Alignment.CenterVertically
+/**
+ * Hero gradient top tint — resolved per applied theme so the gradient reads correctly in both.
+ * Dark keeps the deep navy [primaryVariant]; light uses a soft light-blue (the design's light
+ * variant, ~#DCE8F6) so the hero fades light-blue→white instead of navy→white.
+ */
+@Composable
+private fun heroTopColor(): Color =
+    if (MaterialTheme.colorScheme.background.luminance() < 0.5f) primaryVariant else Color(0xFFDCE8F6)
+
+@Composable
+private fun Hero(appVersion: String, live: Color) {
+    val colors = MaterialTheme.colorScheme
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Brush.verticalGradient(listOf(heroTopColor(), colors.background)))
+            .padding(horizontal = AppSpacing.xl)
+            .padding(top = AppSize.heroTopPadding, bottom = AppSpacing.xxl),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(AppSpacing.lg)
     ) {
-        if (text.isNotEmpty()) {
-            Text(text = text, style = textStyle)
+        Box(contentAlignment = Alignment.Center) {
+            // Soft coral radial glow
+            Box(
+                modifier = Modifier
+                    .size(AppSize.heroGlow)
+                    .background(
+                        Brush.radialGradient(listOf(colors.secondary.copy(alpha = 0.20f), Color.Transparent)),
+                        shape = CircleShape
+                    )
+            )
+            // Thin coral ring
+            Box(
+                modifier = Modifier
+                    .size(AppSize.heroRing)
+                    .border(AppSize.hairline, colors.secondary.copy(alpha = 0.22f), CircleShape)
+            )
+            Image(
+                painter = painterResource(Res.drawable.alien_icon),
+                contentDescription = "Mars Rover Photos",
+                modifier = Modifier
+                    .size(AppSize.heroMascot)
+                    .shadow(AppSize.heroShadow, CircleShape)
+                    .clip(CircleShape)
+            )
         }
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = "Mars Rover Photos",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = colors.onBackground,
+                textAlign = TextAlign.Center
+            )
+            Spacer(Modifier.height(AppSpacing.xs))
+            Text(
+                text = "Real NASA rover photography · Red Planet direct",
+                style = MaterialTheme.typography.bodySmall,
+                color = colors.onSurfaceVariant,
+                textAlign = TextAlign.Center
+            )
+        }
+        BadgeRow {
+            AppBadge(text = "v$appVersion")
+            StatusBadge(label = "NASA API", color = live)
+        }
+    }
+}
+
+@Composable
+private fun Blurb() {
+    val colors = MaterialTheme.colorScheme
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(CardShape)
+            .background(colors.secondaryContainer)
+            .padding(horizontal = AppSpacing.lg, vertical = AppSpacing.lg),
+        horizontalArrangement = Arrangement.spacedBy(AppSpacing.md)
+    ) {
+        MaterialSymbolIcon(
+            symbol = MaterialSymbol.Info,
+            contentDescription = null,
+            tint = colors.onSecondaryContainer,
+            size = AppSize.iconInline
+        )
         Text(
-            text = displayLink,
-            style = textStyle.copy(textDecoration = TextDecoration.Underline),
-            color = colors.primary,
-            modifier = Modifier.clickable { uriHandler.openUri(link) }
+            text = "Discover Mars with exploration rovers! A great selection of recent and historic " +
+                "photos directly from the Red Planet. Maybe you'll even spot signs of Martian life ;-)",
+            style = MaterialTheme.typography.bodyMedium,
+            color = colors.onSecondaryContainer
+        )
+    }
+}
+
+/** Theme row: identity line + segmented control on its own line so it fits any width. */
+@Composable
+private fun ThemeRow(currentTheme: Theme, onThemeChange: (Theme) -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = AppSpacing.lg, vertical = AppSize.rowVerticalPadding),
+        verticalArrangement = Arrangement.spacedBy(AppSpacing.md)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(AppSize.rowIconGap)
+        ) {
+            AppIconBox(
+                symbol = MaterialSymbol.Tune,
+                container = colors.tertiary.copy(alpha = 0.16f),
+                tint = colors.tertiary
+            )
+            Column {
+                Text(
+                    text = "App Theme",
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Medium,
+                    color = colors.onSurface
+                )
+                Text(
+                    text = "Color scheme",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = colors.onSurfaceVariant
+                )
+            }
+        }
+        // Indent to align under the label (icon-box + gap).
+        Row(modifier = Modifier.padding(start = SettingsRowIndent)) {
+            SegmentedControl(
+                options = listOf(Theme.DARK, Theme.WHITE, Theme.SYSTEM),
+                selected = currentTheme,
+                onSelect = onThemeChange,
+                label = { theme ->
+                    when (theme) {
+                        Theme.DARK -> "Dark"
+                        Theme.WHITE -> "Light"
+                        Theme.SYSTEM -> "System"
+                    }
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun Footer() {
+    val colors = MaterialTheme.colorScheme
+    val currentYear = Clock.System.now()
+        .toLocalDateTime(TimeZone.currentSystemDefault()).year
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(AppSpacing.xs)
+    ) {
+        Text(
+            text = "© $currentYear · All rights reserved",
+            style = MaterialTheme.typography.bodySmall,
+            color = colors.onSurfaceVariant
+        )
+        Text(
+            text = "Made with ♥ · Standing with 🇺🇦",
+            style = MaterialTheme.typography.labelSmall,
+            color = colors.onSurfaceVariant
         )
     }
 }

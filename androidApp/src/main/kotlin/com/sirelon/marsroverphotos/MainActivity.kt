@@ -51,7 +51,8 @@ class MainActivity : ComponentActivity() {
                 deepLink = pendingDeepLink,
                 onDeepLinkConsumed = { pendingDeepLink = null },
                 onRateApp = ::openStoreListing,
-                appVersion = BuildConfig.VERSION_NAME
+                appVersion = BuildConfig.VERSION_NAME,
+                rateAppUrl = "https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}"
             )
         }
 

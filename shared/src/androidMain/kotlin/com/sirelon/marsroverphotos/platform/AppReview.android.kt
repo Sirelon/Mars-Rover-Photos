@@ -1,6 +1,7 @@
 package com.sirelon.marsroverphotos.platform
 
 import android.content.Context
+import android.content.pm.ApplicationInfo
 import com.google.android.play.core.ktx.launchReview
 import com.google.android.play.core.ktx.requestReview
 import com.google.android.play.core.review.ReviewException
@@ -26,6 +27,14 @@ class AndroidAppReview(
     override suspend fun requestReview(): Boolean {
         val activity = activityProvider() ?: run {
             Logger.w(TAG) { "No Activity available for in-app review" }
+            return false
+        }
+        // On debuggable builds the in-app review UI never renders (Play has no backing for the
+        // app), yet the flow still completes "successfully" — which would swallow the tap. Report
+        // "not shown" so the caller reliably falls back to the store listing.
+        val debuggable = (context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
+        if (debuggable) {
+            Logger.w(TAG) { "Debuggable build — skipping in-app review, falling back to store" }
             return false
         }
         return try {

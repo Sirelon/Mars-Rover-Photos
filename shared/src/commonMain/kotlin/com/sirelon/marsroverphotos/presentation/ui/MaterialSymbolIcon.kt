@@ -14,8 +14,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sirelon.marsroverphotos.presentation.theme.AppSize
 import com.sirelon.marsroverphotos.shared.resources.Res
 import com.sirelon.marsroverphotos.shared.resources.material_symbols_outlined
 import kotlin.math.max
@@ -50,7 +50,11 @@ enum class MaterialSymbol(val iconName: String) {
     CheckCircle("check_circle"),
     Close("close"),
     ExpandMore("expand_more"),
-    Tune("tune")
+    Tune("tune"),
+    Delete("delete"),
+    Public("public"),
+    ChevronRight("chevron_right"),
+    Reviews("reviews")
 }
 
 /**
@@ -74,7 +78,7 @@ fun MaterialSymbolIcon(
     contentDescription: String?,
     modifier: Modifier = Modifier,
     tint: Color = LocalContentColor.current,
-    size: Dp = 24.dp,
+    size: Dp = AppSize.iconDefault,
     filled: Boolean = false,
     weight: Int = 400
 ) {
