@@ -40,8 +40,8 @@ android {
         applicationId = "com.sirelon.marsroverphotos"
         minSdk = 23
         targetSdk = 36
-        versionCode = 48
-        versionName = "3.0.0"
+        versionCode = AppVersion.code
+        versionName = AppVersion.name
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

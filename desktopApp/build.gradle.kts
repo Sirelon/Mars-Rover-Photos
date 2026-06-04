@@ -32,7 +32,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "Mars Rover Photos"
-            packageVersion = "3.0.0"
+            packageVersion = AppVersion.name
 
             description = "Explore Mars through NASA rover photos"
             vendor = "Sirelon"
