@@ -88,7 +88,7 @@ Stable design-system pieces (path = `shared/src/commonMain/kotlin/com/sirelon/ma
 | `AppOutlinedCard` | `ui/AppOutlinedCard.kt` | **Non-elevated** grouped card: `surfaceContainerHigh` fill + hairline outline + 16dp radius. Exports `CardShape`. Use for grouped lists/surfaces; not a flag on `AppCard`. |
 | `AppIconBox` | `ui/AppIconBox.kt` | Tinted rounded container holding a `MaterialSymbol` (tinted container + icon). General — use anywhere a colored icon tile is needed. |
 | `AppBadge` / `StatusBadge` / `BadgeRow` | `ui/Badges.kt` | `AppBadge` = neutral outlined pill; `StatusBadge(label, color)` = colored dot + label (parameterized); `BadgeRow` = slot row composing them. |
-| `SegmentedControl<T>` | `ui/SegmentedControl.kt` | Generic pill selector with an **animated sliding** indicator (measured bounds, ~200ms emphasized tween) + **swipe/drag** to change; tap retained. API: `options, selected, onSelect, label`. |
+| `SegmentedControl<T>` | `ui/SegmentedControl.kt` | Generic pill selector with an **animated sliding** indicator (measured bounds, ~200ms emphasized tween). Drag to slide through options continuously; tap to jump. Uses `draggable` + `rememberDraggableState` — never cancelled mid-gesture by recomposition. API: `options, selected, onSelect, label`. |
 | `AppChip` | `ui/AppChip.kt` | secondaryContainer assist chip. |
 | `AppButton` / `AppOutlinedButton` | `ui/AppButton.kt` | Brand buttons. |
 | `MaterialSymbolIcon` + `MaterialSymbol` | `ui/MaterialSymbolIcon.kt` | Icon font; add glyphs to the enum. Default size `AppSize.iconDefault` (24dp). |
@@ -120,3 +120,7 @@ See `AboutScreen.kt` for the pattern (full-bleed hero + content capped at `AppSi
   `AppIconBox`, `AppOutlinedCard`, `AppBadge`/`StatusBadge`/`BadgeRow`, animated+swipeable
   `SegmentedControl<T>`, and the `AppSize` token class. Added the adaptive-centering pattern
   (`windowSizeClass.isWidthAtLeastBreakpoint`).
+- 2026-06-04 — Fixed `SegmentedControl` drag gesture on iOS CMP: replaced `pointerInput`/
+  `awaitEachGesture` with `draggable` + `rememberDraggableState`. Root cause: `pointerInput` keys
+  included `offsets.toList()`, so each recomposition triggered by `onSelect` restarted the gesture
+  coroutine mid-drag. `rememberDraggableState` is stable across recompositions and immune to this.
