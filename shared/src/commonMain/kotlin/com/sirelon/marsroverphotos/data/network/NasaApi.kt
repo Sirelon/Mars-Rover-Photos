@@ -41,12 +41,12 @@ internal class NasaApi(private val ktor: HttpClient) {
     }
 
     suspend fun getPerseveranceRawImages(
-        count: Int = 500,
-        page: Int = 0,
+        count: Int = 100,
+        sol: String? = null,
     ): PerseverancePhotosResponse {
         return ktor.get("https://mars.nasa.gov/rss/api/?feed=raw_images&category=mars2020&feedtype=json&order=sol+desc") {
             parameter("num", count)
-            parameter("page", page)
+            parameter("condition_3", sol)
         }.body()
     }
 }

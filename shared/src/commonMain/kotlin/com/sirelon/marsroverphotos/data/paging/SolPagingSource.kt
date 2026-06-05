@@ -5,7 +5,6 @@ import androidx.paging.PagingState
 import com.sirelon.marsroverphotos.data.database.dao.ImagesDao
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.domain.models.PhotosQueryRequest
-import com.sirelon.marsroverphotos.domain.models.isPageBased
 import com.sirelon.marsroverphotos.domain.repositories.PhotosRepository
 import com.sirelon.marsroverphotos.utils.Logger
 import kotlin.math.abs
@@ -66,7 +65,6 @@ class SolPagingSource(
      * [initialSol] (the page anchor set by [RoverFeedPager.setFeed]).
      */
     override fun getRefreshKey(state: PagingState<Long, MarsImage>): Long? {
-        if (isPageBased(roverId)) return null
         val anchor = state.anchorPosition ?: return null
         return state.closestItemToPosition(anchor)?.sol
     }

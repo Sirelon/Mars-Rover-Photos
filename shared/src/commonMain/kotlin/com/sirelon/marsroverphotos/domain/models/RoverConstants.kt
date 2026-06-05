@@ -21,7 +21,7 @@ fun isPageBased(roverId: Long): Boolean =
  * Items returned per API page for each page-based rover.
  */
 fun perPageFor(roverId: Long): Int = when (roverId) {
-    PERSEVERANCE_ID -> 500
+    PERSEVERANCE_ID -> 100
     INSIGHT_ID -> 100
     else -> 0
 }

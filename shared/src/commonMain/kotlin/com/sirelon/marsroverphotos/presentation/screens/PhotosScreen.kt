@@ -312,13 +312,11 @@ private fun PhotosScreen(
                             onPhotoClick = { image -> onNavigateToImages(image.id, state.cameraFilters) },
                         )
 
-                        // Floating "sticky" date chip — sol mode only; hidden for page-based rovers
-                        // (Perseverance/Insight) until a real sol is visible (sol > 0).
-                        if (state.showSolControls && (!state.isPageBased || state.sol > 0)) {
+                        if (state.showSolControls) {
                             FloatingDateChip(
                                 sol = state.sol,
                                 earthDate = state.earthDate,
-                                isPageBased = state.isPageBased,
+                                isPageBased = false,
                                 onOpenSolPicker = onOpenSolPicker,
                                 onOpenEarthDatePicker = onOpenEarthDatePicker,
                                 modifier = Modifier
@@ -450,7 +448,7 @@ private fun FloatingDateChip(
     var expanded by remember { mutableStateOf(false) }
     Box(modifier = modifier) {
         Surface(
-            modifier = if (isPageBased) Modifier else Modifier.clickable { expanded = true },
+            modifier = Modifier.clickable { expanded = true },
             shape = MaterialTheme.shapes.large,
             color = MaterialTheme.colorScheme.secondaryContainer,
             contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
@@ -463,22 +461,32 @@ private fun FloatingDateChip(
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 Text(
-                    text = if (earthDate.isNotBlank()) "Sol $sol · $earthDate" else "Sol $sol",
+                    text = when {
+                        isPageBased -> "Page $sol"
+                        earthDate.isNotBlank() -> "Sol $sol · $earthDate"
+                        else -> "Sol $sol"
+                    },
                     style = MaterialTheme.typography.labelLarge,
                     maxLines = 1,
                 )
-                if (!isPageBased) {
-                    MaterialSymbolIcon(
-                        symbol = MaterialSymbol.ExpandMore,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp),
-                        size = 18.dp
-                    )
-                }
+                MaterialSymbolIcon(
+                    symbol = MaterialSymbol.ExpandMore,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                    size = 18.dp
+                )
             }
         }
-        if (!isPageBased) {
-            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            if (isPageBased) {
+                DropdownMenuItem(
+                    text = { Text("Pick by page") },
+                    onClick = {
+                        expanded = false
+                        onOpenSolPicker()
+                    }
+                )
+            } else {
                 DropdownMenuItem(
                     text = { Text("Pick by Sol") },
                     onClick = {
