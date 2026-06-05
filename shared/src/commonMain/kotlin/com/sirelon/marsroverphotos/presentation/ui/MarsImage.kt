@@ -1,6 +1,5 @@
 package com.sirelon.marsroverphotos.presentation.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,8 +15,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -27,13 +27,9 @@ import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
 import coil3.compose.AsyncImage
-import coil3.compose.AsyncImagePainter
 import coil3.compose.LocalPlatformContext
-import coil3.compose.SubcomposeAsyncImage
-import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.request.crossfade
-import coil3.size.Scale
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.shared.resources.Res
 import com.sirelon.marsroverphotos.shared.resources.img_placeholder
@@ -51,17 +47,8 @@ fun MarsImageComposable(
     onFavoriteClick: () -> Unit
 ) {
     val imageUrl = marsImage.imageUrl
+    var showStats by remember(imageUrl) { mutableStateOf(false) }
 
-    val painter = rememberAsyncImagePainter(
-        ImageRequest.Builder(LocalPlatformContext.current).data(data = imageUrl)
-            .apply(block = fun ImageRequest.Builder.() {
-                crossfade(true)
-                scale(Scale.FILL)
-            }).build()
-    )
-
-    val state by painter.state.collectAsState()
-    val showStats = state is AsyncImagePainter.State.Success
     AppCard(
         modifier = modifier
             .padding(vertical = AppSpacing.sm)
@@ -69,14 +56,19 @@ fun MarsImageComposable(
             .clickable(onClick = onClick),
     ) {
         Column {
-            Image(
+            AsyncImage(
+                model = ImageRequest.Builder(LocalPlatformContext.current)
+                    .data(imageUrl)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = imageUrl,
                 modifier = Modifier
                     .defaultMinSize(minHeight = 100.dp)
                     .fillMaxWidth(),
                 contentScale = ContentScale.FillWidth,
-                painter = painter,
                 alignment = Alignment.TopCenter,
-                contentDescription = imageUrl
+                placeholder = painterResource(Res.drawable.img_placeholder),
+                onSuccess = { showStats = true },
             )
 
             if (showStats) {
@@ -192,17 +184,22 @@ fun NetworkImage(
             placeholder = painterResource(Res.drawable.img_placeholder)
         )
     } else {
-        SubcomposeAsyncImage(
-            model = request,
-            contentDescription = imageUrl,
-            modifier = modifier,
-            contentScale = contentScale,
-            loading = {
+        var isLoading by remember(imageUrl) { mutableStateOf(true) }
+        Box(modifier = modifier) {
+            AsyncImage(
+                model = request,
+                contentDescription = imageUrl,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = contentScale,
+                onSuccess = { isLoading = false },
+                onError = { isLoading = false },
+            )
+            if (isLoading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
             }
-        )
+        }
     }
 }
 
