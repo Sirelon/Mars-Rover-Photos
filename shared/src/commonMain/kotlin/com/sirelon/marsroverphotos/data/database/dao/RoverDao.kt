@@ -23,6 +23,12 @@ interface RoverDao {
     @Query("UPDATE rover SET totalPhotos = :photos WHERE id = :roverId")
     suspend fun updateRoverCountPhotos(roverId: Long, photos: Long)
 
+    @Query("UPDATE rover SET maxSol = :maxSol WHERE id = :roverId")
+    suspend fun updateMaxSol(roverId: Long, maxSol: Long)
+
+    @Query("UPDATE rover SET maxSol = :maxSol, maxDate = :maxDate WHERE id = :roverId")
+    suspend fun updateMaxSolAndDate(roverId: Long, maxSol: Long, maxDate: String)
+
     @Query("SELECT * FROM rover")
     fun getRovers(): Flow<List<Rover>>
 

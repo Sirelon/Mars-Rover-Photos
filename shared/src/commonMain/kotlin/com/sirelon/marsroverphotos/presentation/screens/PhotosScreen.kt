@@ -38,6 +38,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -46,6 +47,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
 import com.sirelon.marsroverphotos.presentation.theme.AppTypography
@@ -82,6 +84,7 @@ import coil3.SingletonImageLoader
 import coil3.compose.LocalPlatformContext
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -123,12 +126,15 @@ fun PhotosScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val pagingItems = viewModel.gridItemsFlow.collectAsLazyPagingItems()
     val gridState = rememberLazyGridState()
+    val scope = rememberCoroutineScope()
 
-    // Scroll to top whenever the camera filter changes so the LazyGridState's scroll position
-    // is consistent with the new PagingData. This also forces a fresh Paging 3 layout pass,
-    // which re-connects the viewport-hint mechanism that drives APPEND/PREPEND loads.
-    LaunchedEffect(state.cameraFilters) {
-        gridState.scrollToItem(0)
+    // Scroll to top whenever the feed is re-anchored (sol/date pick, randomize, go-to-latest,
+    // camera filter change). Without this the grid keeps its previous scroll offset and the
+    // newly anchored sol stays off-screen above, so the user still sees the old day's photos.
+    LaunchedEffect(viewModel) {
+        viewModel.scrollToTopEvents.collect {
+            gridState.scrollToItem(0)
+        }
     }
 
     // Keep the floating chip + pickers in sync with the top-visible day as the user scrolls.
@@ -187,7 +193,12 @@ fun PhotosScreen(
         state = state,
         pagingItems = pagingItems,
         gridState = gridState,
-        onRandomize = viewModel::randomize,
+        onRandomize = {
+            viewModel.randomize()
+            // Scroll to top so the reshuffled order is immediately visible. Only for page-mode
+            // rovers (Spirit/Opportunity) where showSolControls is false; sol rovers are unchanged.
+            if (!state.showSolControls) scope.launch { gridState.scrollToItem(0) }
+        },
         onGoToLatest = viewModel::goToLatest,
         onClearCameraFilters = {
             viewModel.setCameraFilters(emptySet())
@@ -235,11 +246,13 @@ private fun PhotosScreen(
                 title = { Text(text = state.roverName) },
                 onBack = onBack,
                 actions = {
-                    IconButton(onClick = onOpenFilters) {
-                        MaterialSymbolIcon(
-                            symbol = MaterialSymbol.Tune,
-                            contentDescription = "Filters"
-                        )
+                    if (state.showSolControls) {
+                        IconButton(onClick = onOpenFilters) {
+                            MaterialSymbolIcon(
+                                symbol = MaterialSymbol.Tune,
+                                contentDescription = "Filters"
+                            )
+                        }
                     }
                 }
             )
@@ -247,7 +260,7 @@ private fun PhotosScreen(
         floatingActionButton = {
             RefreshButton(
                 visible = pagingItems.itemCount > 0,
-                onClick = onGoToLatest
+                onClick = if (state.showSolControls) onGoToLatest else onRandomize
             )
         }
     ) { innerPadding ->
@@ -256,7 +269,7 @@ private fun PhotosScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            if (state.cameraFilters.isNotEmpty()) {
+            if (state.showSolControls && state.cameraFilters.isNotEmpty()) {
                 CameraFilterChip(
                     cameras = state.cameraFilters,
                     onClear = onClearCameraFilters,
@@ -291,16 +304,18 @@ private fun PhotosScreen(
                             onPhotoClick = { image -> onNavigateToImages(image.id, state.cameraFilters) },
                         )
 
-                        // Floating "sticky" date chip — mirrors the top-visible day.
-                        FloatingDateChip(
-                            sol = state.sol,
-                            earthDate = state.earthDate,
-                            onOpenSolPicker = onOpenSolPicker,
-                            onOpenEarthDatePicker = onOpenEarthDatePicker,
-                            modifier = Modifier
-                                .align(Alignment.TopCenter)
-                                .padding(top = AppSpacing.sm)
-                        )
+                        // Floating "sticky" date chip — mirrors the top-visible day (sol mode only).
+                        if (state.showSolControls) {
+                            FloatingDateChip(
+                                sol = state.sol,
+                                earthDate = state.earthDate,
+                                onOpenSolPicker = onOpenSolPicker,
+                                onOpenEarthDatePicker = onOpenEarthDatePicker,
+                                modifier = Modifier
+                                    .align(Alignment.TopCenter)
+                                    .padding(top = AppSpacing.sm)
+                            )
+                        }
 
                         // Prepend (scroll-up) progress at the top, append (scroll-down) at the bottom.
                         if (pagingItems.loadState.prepend is LoadState.Loading) {
@@ -498,7 +513,9 @@ private fun PhotoCard(
                     modifier = Modifier
                         .padding(AppSpacing.xs)
                         .fillMaxWidth(),
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
         }

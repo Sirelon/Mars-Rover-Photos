@@ -28,5 +28,10 @@ data class MarsPhoto(
     val earthDate: String,
 
     @SerialName(value = "camera")
-    val camera: RoverCamera?
+    val camera: RoverCamera? = null,
+
+    // Flat instrument identifier used by mars.nasa.gov raw-image feeds (e.g. "MAST_RIGHT").
+    // Absent in the old mars-photos API responses; defaults to null for backward compatibility.
+    @SerialName(value = "instrument")
+    val instrument: String? = null
 )
