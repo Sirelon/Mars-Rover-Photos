@@ -5,6 +5,9 @@ import androidx.paging.PagingState
 import com.sirelon.marsroverphotos.data.database.dao.ImagesDao
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.utils.Logger
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlin.random.Random
 
 /**
@@ -49,22 +52,25 @@ class ImagesSearchPagingSource(
             val merged = if (cachedImages != null) {
                 cachedImages
             } else {
-                val allImages = mutableListOf<MarsImage>()
-                var page = 1
-                var totalHits = 0
-
-                while (true) {
-                    val result = fetchPage(page)
-                    if (result.totalHits > 0) totalHits = result.totalHits
-                    allImages += result.images
-                    if (result.images.isEmpty() || result.images.size < pageSize || allImages.size >= totalHits) break
-                    if (page >= MAX_PAGES) {
-                        Logger.w("ImagesSearchPagingSource") { "Safety cap reached after $page pages; truncating at ${allImages.size} images" }
-                        break
+                val first = fetchPage(1)
+                val totalPages = if (first.totalHits > 0)
+                    ((first.totalHits + pageSize - 1) / pageSize).coerceAtMost(MAX_PAGES)
+                else 1
+                val allImages = if (totalPages <= 1) {
+                    first.images
+                } else {
+                    coroutineScope {
+                        val rest = (2..totalPages).map { p ->
+                            async {
+                                try { fetchPage(p).images } catch (e: Exception) { emptyList() }
+                            }
+                        }
+                        first.images + rest.awaitAll().flatten()
                     }
-                    page++
                 }
-
+                if (totalPages >= MAX_PAGES) {
+                    Logger.w("ImagesSearchPagingSource") { "Safety cap reached; truncating at ${allImages.size} images" }
+                }
                 cacheAndMerge(allImages).also { onAllImagesFetched?.invoke(it) }
             }
             val ordered = if (shuffleSeed != null) {

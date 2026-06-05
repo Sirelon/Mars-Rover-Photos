@@ -316,7 +316,7 @@ class PhotosViewModel(
     private fun applyPageFeed(rover: Rover) {
         roverFeedPager.setFeed(
             roverId = rover.id,
-            mode = FeedMode.Page(rover.id.pageQuery()),
+            mode = FeedMode.Page(rover.id.pageQuery(), shuffleSeed = Random.nextLong()),
         )
     }
 
