@@ -5,18 +5,21 @@ import androidx.paging.PagingState
 import com.sirelon.marsroverphotos.data.database.dao.ImagesDao
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.domain.models.PhotosQueryRequest
+import com.sirelon.marsroverphotos.domain.models.isPageBased
 import com.sirelon.marsroverphotos.domain.repositories.PhotosRepository
 import com.sirelon.marsroverphotos.utils.Logger
 import kotlin.math.abs
 
 /**
- * [PagingSource] that pages Mars rover photos by **sol** (Martian day).
+ * [PagingSource] that pages Mars rover photos by **position key** — either a **sol** (Martian day)
+ * for sol-based rovers (Curiosity, Opportunity, Spirit) or a **page number** for page-based rovers
+ * (Perseverance, Insight).
  *
- * Each page is one non-empty sol's photos:
- *  - APPEND  walks forward  (sol + 1, sol + 2, …) — scroll down / swipe to next days
- *  - PREPEND walks backward (sol - 1, sol - 2, …) — scroll up / swipe to earlier days
+ * The key type is [Long] in both modes:
+ *  - Sol-based: key = sol number; APPEND walks sol+1, sol+2, …; PREPEND walks sol-1, sol-2, …
+ *  - Page-based: key = API page number; APPEND walks page+1, …; PREPEND walks page-1, …
  *
- * Empty sols are skipped **inside a single [load]** by scanning to the next non-empty sol — we
+ * Empty positions (sols or pages with no photos) are skipped **inside a single [load]** — we
  * never return an empty `LoadResult.Page` mid-stream, because Paging does not reliably re-trigger
  * the next load after an empty page (that is the classic "scrolling sometimes stalls" bug). A load
  * therefore returns either a non-empty page, a continuation page (a scan budget was hit before any
@@ -30,9 +33,13 @@ import kotlin.math.abs
  * next load resumes the scan — reachable photos beyond the gap are never dead-ended.
  *
  * On Refresh we scan forward then backward (alternating, one budget at a time) until a non-empty
- * sol is found or the rover's full range is exhausted. Refresh never returns a continuation page:
- * an empty itemCount produces no viewport hints, so Paging would never fire append/prepend to
+ * position is found or the rover's full range is exhausted. Refresh never returns a continuation
+ * page: an empty itemCount produces no viewport hints, so Paging would never fire append/prepend to
  * resume the scan.
+ *
+ * For page-based rovers [getRefreshKey] always returns null (the pager key is a page number, not a
+ * sol, so the photo's `sol` field cannot be used to recover the page); the pager restarts from the
+ * [initialSol] (which is the anchor page set by [RoverFeedPager.setFeed]).
  *
  * Fetched photos are **written through** to Room ([cacheAndMerge]) and any persisted favorite/stats
  * are merged back, so the cache stays a passive side-store (this remains a network-driven source)
@@ -51,8 +58,15 @@ class SolPagingSource(
     /** Inserts since the last cache eviction; eviction runs only every [EVICT_EVERY_N_LOADS]. */
     private var loadsSinceEviction = 0
 
-    /** Refresh re-centers on the sol of the item closest to the current scroll anchor. */
+    /**
+     * Refresh re-centers on the sol of the item closest to the current scroll anchor.
+     *
+     * For page-based rovers (Perseverance, Insight) the pager key is a page number, not a sol,
+     * so we cannot recover the page from a photo's sol field. Return null to restart from
+     * [initialSol] (the page anchor set by [RoverFeedPager.setFeed]).
+     */
     override fun getRefreshKey(state: PagingState<Long, MarsImage>): Long? {
+        if (isPageBased(roverId)) return null
         val anchor = state.anchorPosition ?: return null
         return state.closestItemToPosition(anchor)?.sol
     }

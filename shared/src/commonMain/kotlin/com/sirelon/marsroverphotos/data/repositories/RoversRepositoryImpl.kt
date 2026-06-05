@@ -49,7 +49,7 @@ class RoversRepositoryImpl(
                 // Seed initial rover data
                 seedRovers()
 
-                // Start observing Perseverance photo count updates
+                // Observe and persist photo counts for page-based rovers as they are fetched.
                 launch {
                     try {
                         api.perseveranceTotalImages.collectLatest { totalPhotos ->
@@ -58,6 +58,26 @@ class RoversRepositoryImpl(
                         }
                     } catch (e: Exception) {
                         Logger.e("RoversRepository", e) { "Error observing Perseverance photo count" }
+                    }
+                }
+                launch {
+                    try {
+                        api.insightTotalImages.collectLatest { totalPhotos ->
+                            Logger.d("RoversRepository") { "Insight total photos: $totalPhotos" }
+                            roverDao.updateRoverCountPhotos(INSIGHT_ID, totalPhotos)
+                        }
+                    } catch (e: Exception) {
+                        Logger.e("RoversRepository", e) { "Error observing Insight photo count" }
+                    }
+                }
+
+                // Proactively fetch 1 Perseverance photo so total_images is populated early,
+                // giving randomize() an accurate page range on first open.
+                launch {
+                    try {
+                        api.getPerseveranceLatestPhotos(count = 1)
+                    } catch (e: Exception) {
+                        Logger.e("RoversRepository", e) { "Error pre-fetching Perseverance count" }
                     }
                 }
 
@@ -101,7 +121,8 @@ class RoversRepositoryImpl(
                 status = "active",
                 maxSol = 95,
                 maxDate = "2021-07-30",
-                totalPhotos = 74525
+                // Rough estimate for June 2026 (~1900 sols active); updated at runtime from API.
+                totalPhotos = 350_000
             )
             val dateUtilP = RoverDateUtil(perseveranceBase)
             val perseverance = perseveranceBase.copy(
@@ -109,22 +130,18 @@ class RoversRepositoryImpl(
                 maxSol = dateUtilP.solFromDate(currentTimeMillis)
             )
 
-            // Insight (active)
-            val insightBase = Rover(
+            // Insight (mission ended ~Dec 2022, sol ~1435)
+            // The mission is complete — do not extend maxSol beyond the actual last sol.
+            val insight = Rover(
                 id = INSIGHT_ID,
                 name = "Insight",
                 drawableName = "img_insight",
                 landingDate = "2018-11-26",
                 launchDate = "2018-05-05",
-                status = "active",
-                maxSol = 126,
-                maxDate = "2021-05-26",
+                status = "complete",
+                maxSol = 1435,
+                maxDate = "2022-12-21",
                 totalPhotos = 5731
-            )
-            val dateUtil = RoverDateUtil(insightBase)
-            val insight = insightBase.copy(
-                maxDate = dateUtil.parseTime(currentTimeMillis),
-                maxSol = dateUtil.solFromDate(currentTimeMillis)
             )
 
             // Curiosity (active)

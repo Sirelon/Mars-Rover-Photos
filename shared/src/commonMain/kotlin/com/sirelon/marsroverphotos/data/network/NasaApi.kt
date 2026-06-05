@@ -18,10 +18,12 @@ internal class NasaApi(private val ktor: HttpClient) {
         mission: String,
         from: String? = null,
         to: String? = null,
+        page: Int = 0,
     ): PhotosResponse {
-        return ktor.get("https://mars.nasa.gov/api/v1/raw_image_items/?order=sol+desc%2Cdate_taken+desc&per_page=100&page=0&condition_1=$mission:mission") {
+        return ktor.get("https://mars.nasa.gov/api/v1/raw_image_items/?order=sol+desc%2Cdate_taken+desc&per_page=100&condition_1=$mission:mission") {
             parameter("condition_2", from)
             parameter("condition_3", to)
+            parameter("page", page)
         }.body()
     }
 
@@ -40,11 +42,11 @@ internal class NasaApi(private val ktor: HttpClient) {
 
     suspend fun getPerseveranceRawImages(
         count: Int = 500,
-        sol: String? = null,
+        page: Int = 0,
     ): PerseverancePhotosResponse {
-        return ktor.get("https://mars.nasa.gov/rss/api/?feed=raw_images&category=mars2020&feedtype=json&page=0&order=sol+desc") {
+        return ktor.get("https://mars.nasa.gov/rss/api/?feed=raw_images&category=mars2020&feedtype=json&order=sol+desc") {
             parameter("num", count)
-            parameter("condition_3", sol)
+            parameter("page", page)
         }.body()
     }
 }

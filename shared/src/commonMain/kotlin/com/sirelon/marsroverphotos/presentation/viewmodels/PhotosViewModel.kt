@@ -13,6 +13,8 @@ import com.sirelon.marsroverphotos.data.paging.usesPageFeed
 import com.sirelon.marsroverphotos.domain.models.CURIOSITY_ID
 import com.sirelon.marsroverphotos.domain.models.EducationalFact
 import com.sirelon.marsroverphotos.domain.models.Rover
+import com.sirelon.marsroverphotos.domain.models.isPageBased
+import com.sirelon.marsroverphotos.domain.models.perPageFor
 import com.sirelon.marsroverphotos.domain.repositories.FactsRepository
 import com.sirelon.marsroverphotos.domain.repositories.RoversRepository
 import com.sirelon.marsroverphotos.domain.settings.AppSettings
@@ -138,21 +140,32 @@ class PhotosViewModel(
      */
     val uiState: StateFlow<PhotosUiState> = combine(
         roverStateFlow.filterNotNull(),
-        visibleSolEmitter,
+        visibleSolEmitter.map { it ?: 0L },
         cameraFilterEmitter,
         appSettings.showCameraNameFlow,
     ) { rover, sol, cameraFilters, showCameraName ->
-        if (rover.id.usesPageFeed()) {
-            PhotosUiState(roverName = rover.name, showSolControls = false)
-        } else {
-            val solValue = sol ?: 0L
-            PhotosUiState(
+        when {
+            rover.id.usesPageFeed() -> PhotosUiState(roverName = rover.name, showSolControls = false)
+            isPageBased(rover.id) -> PhotosUiState(
                 roverName = rover.name,
-                sol = solValue,
-                earthDate = earthDateStr(solValue),
+                sol = sol,
+                earthDate = "",
                 maxSol = rover.maxSol.coerceAtLeast(1L),
                 cameraFilters = cameraFilters,
-                datePickerSelectedMillis = earthTime(solValue),
+                datePickerSelectedMillis = 0L,
+                datePickerMinMillis = 0L,
+                datePickerMaxMillis = 0L,
+                showCameraName = showCameraName,
+                showSolControls = true,
+                isPageBased = true,
+            )
+            else -> PhotosUiState(
+                roverName = rover.name,
+                sol = sol,
+                earthDate = earthDateStr(sol),
+                maxSol = rover.maxSol.coerceAtLeast(1L),
+                cameraFilters = cameraFilters,
+                datePickerSelectedMillis = earthTime(sol),
                 datePickerMinMillis = minDate(),
                 datePickerMaxMillis = maxDate(),
                 showCameraName = showCameraName,
@@ -211,8 +224,11 @@ class PhotosViewModel(
         val params = roverFeedPager.currentParams
         val solMode = params?.solMode
         if (params != null && solMode != null) {
-            val anchor = (visibleSolEmitter.value ?: solMode.anchorSol)
-                .coerceIn(solMode.minSol, solMode.maxSol)
+            val anchor = if (isPageBased(params.roverId)) {
+                solMode.anchorSol
+            } else {
+                (visibleSolEmitter.value ?: solMode.anchorSol).coerceIn(solMode.minSol, solMode.maxSol)
+            }
             roverFeedPager.setFeed(
                 roverId = params.roverId,
                 mode = FeedMode.Sol(
@@ -251,21 +267,26 @@ class PhotosViewModel(
         }
         viewModelScope.launch {
             val rover = roverFlow.first()
-            val sol = Random.nextLong(0L, rover.maxSol.coerceAtLeast(1L))
-            applyAnchor(rover, sol)
+            if (isPageBased(rover.id)) {
+                val perPage = perPageFor(rover.id)
+                val maxPage = (rover.totalPhotos.toLong() / perPage).coerceAtLeast(1L)
+                applyAnchor(rover, Random.nextLong(0L, maxPage))
+            } else {
+                applyAnchor(rover, Random.nextLong(0L, rover.maxSol.coerceAtLeast(1L)))
+            }
         }
     }
 
-    /** No-op in page mode. */
     fun goToLatest() {
         if (roverIdEmitter.value?.usesPageFeed() == true) return
         viewModelScope.launch {
             val rover = roverFlow.first()
-            val target = (rover.maxSol - 1).coerceAtLeast(0L)
-            if (roverFeedPager.currentParams?.solMode?.anchorSol == target) {
-                randomize()
+            val current = roverFeedPager.currentParams?.solMode?.anchorSol
+            if (isPageBased(rover.id)) {
+                if (current == 0L) randomize() else applyAnchor(rover, 0L)
             } else {
-                applyAnchor(rover, target)
+                val target = (rover.maxSol - 1).coerceAtLeast(0L)
+                if (current == target) randomize() else applyAnchor(rover, target)
             }
         }
     }
@@ -328,18 +349,34 @@ class PhotosViewModel(
     }
 
     private fun applyAnchor(rover: Rover, sol: Long) {
-        val maxSol = rover.maxSol.coerceAtLeast(1L)
-        val clamped = sol.coerceIn(0L, maxSol)
-        visibleSolEmitter.value = clamped
-        roverFeedPager.setFeed(
-            roverId = rover.id,
-            mode = FeedMode.Sol(
-                anchorSol = clamped,
-                minSol = 0L,
-                maxSol = maxSol,
-                cameras = cameraFilterEmitter.value,
-            ),
-        )
+        if (isPageBased(rover.id)) {
+            val perPage = perPageFor(rover.id)
+            val maxPage = (rover.totalPhotos.toLong() / perPage).coerceAtLeast(1L)
+            val clamped = sol.coerceIn(0L, maxPage)
+            if (visibleSolEmitter.value == null) visibleSolEmitter.value = 0L
+            roverFeedPager.setFeed(
+                roverId = rover.id,
+                mode = FeedMode.Sol(
+                    anchorSol = clamped,
+                    minSol = 0L,
+                    maxSol = maxPage,
+                    cameras = cameraFilterEmitter.value,
+                ),
+            )
+        } else {
+            val maxSol = rover.maxSol.coerceAtLeast(1L)
+            val clamped = sol.coerceIn(0L, maxSol)
+            visibleSolEmitter.value = clamped
+            roverFeedPager.setFeed(
+                roverId = rover.id,
+                mode = FeedMode.Sol(
+                    anchorSol = clamped,
+                    minSol = 0L,
+                    maxSol = maxSol,
+                    cameras = cameraFilterEmitter.value,
+                ),
+            )
+        }
         _scrollToTopEvents.tryEmit(Unit)
     }
 
@@ -375,4 +412,6 @@ data class PhotosUiState(
     val showCameraName: Boolean = true,
     /** False for page-mode rovers (Spirit/Opportunity) — hides sol nav, date picker, camera filter. */
     val showSolControls: Boolean = true,
+    /** True for Perseverance/Insight — feed uses page numbers, sol/date pickers are unavailable. */
+    val isPageBased: Boolean = false,
 )

@@ -137,6 +137,14 @@ fun PhotosScreen(
         }
     }
 
+    // Scroll to top on every refresh (e.g. after randomize / go-to-latest) so the user
+    // immediately sees the loading indicator rather than stale content mid-list.
+    LaunchedEffect(pagingItems.loadState.refresh) {
+        if (pagingItems.loadState.refresh is LoadState.Loading) {
+            gridState.scrollToItem(0)
+        }
+    }
+
     // Keep the floating chip + pickers in sync with the top-visible day as the user scrolls.
     val currentPagingItems = rememberUpdatedState(pagingItems)
     LaunchedEffect(gridState) {
@@ -304,11 +312,13 @@ private fun PhotosScreen(
                             onPhotoClick = { image -> onNavigateToImages(image.id, state.cameraFilters) },
                         )
 
-                        // Floating "sticky" date chip — mirrors the top-visible day (sol mode only).
-                        if (state.showSolControls) {
+                        // Floating "sticky" date chip — sol mode only; hidden for page-based rovers
+                        // (Perseverance/Insight) until a real sol is visible (sol > 0).
+                        if (state.showSolControls && (!state.isPageBased || state.sol > 0)) {
                             FloatingDateChip(
                                 sol = state.sol,
                                 earthDate = state.earthDate,
+                                isPageBased = state.isPageBased,
                                 onOpenSolPicker = onOpenSolPicker,
                                 onOpenEarthDatePicker = onOpenEarthDatePicker,
                                 modifier = Modifier
@@ -317,8 +327,11 @@ private fun PhotosScreen(
                             )
                         }
 
-                        // Prepend (scroll-up) progress at the top, append (scroll-down) at the bottom.
-                        if (pagingItems.loadState.prepend is LoadState.Loading) {
+                        // Refresh progress (e.g. after randomize) shown at the top when old items
+                        // are still visible. Prepend and append progress shown at edges while scrolling.
+                        if (refresh is LoadState.Loading && pagingItems.itemCount > 0) {
+                            EdgeProgress(modifier = Modifier.align(Alignment.TopCenter))
+                        } else if (pagingItems.loadState.prepend is LoadState.Loading) {
                             EdgeProgress(modifier = Modifier.align(Alignment.TopCenter))
                         }
                         if (pagingItems.loadState.append is LoadState.Loading) {
@@ -429,6 +442,7 @@ private fun DateHeaderRow(
 private fun FloatingDateChip(
     sol: Long,
     earthDate: String,
+    isPageBased: Boolean,
     onOpenSolPicker: () -> Unit,
     onOpenEarthDatePicker: () -> Unit,
     modifier: Modifier = Modifier,
@@ -436,7 +450,7 @@ private fun FloatingDateChip(
     var expanded by remember { mutableStateOf(false) }
     Box(modifier = modifier) {
         Surface(
-            modifier = Modifier.clickable { expanded = true },
+            modifier = if (isPageBased) Modifier else Modifier.clickable { expanded = true },
             shape = MaterialTheme.shapes.large,
             color = MaterialTheme.colorScheme.secondaryContainer,
             contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
@@ -453,29 +467,33 @@ private fun FloatingDateChip(
                     style = MaterialTheme.typography.labelLarge,
                     maxLines = 1,
                 )
-                MaterialSymbolIcon(
-                    symbol = MaterialSymbol.ExpandMore,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp),
-                    size = 18.dp
-                )
+                if (!isPageBased) {
+                    MaterialSymbolIcon(
+                        symbol = MaterialSymbol.ExpandMore,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                        size = 18.dp
+                    )
+                }
             }
         }
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            DropdownMenuItem(
-                text = { Text("Pick by Sol") },
-                onClick = {
-                    expanded = false
-                    onOpenSolPicker()
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("Pick by Earth date") },
-                onClick = {
-                    expanded = false
-                    onOpenEarthDatePicker()
-                }
-            )
+        if (!isPageBased) {
+            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                DropdownMenuItem(
+                    text = { Text("Pick by Sol") },
+                    onClick = {
+                        expanded = false
+                        onOpenSolPicker()
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("Pick by Earth date") },
+                    onClick = {
+                        expanded = false
+                        onOpenEarthDatePicker()
+                    }
+                )
+            }
         }
     }
 }
