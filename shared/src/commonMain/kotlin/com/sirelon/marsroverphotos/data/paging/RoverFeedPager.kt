@@ -11,12 +11,14 @@ import com.sirelon.marsroverphotos.data.network.toMarsImages
 import com.sirelon.marsroverphotos.domain.repositories.PhotosRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 
 /**
  * App-singleton holder for the rover photo feed's paged stream.
@@ -39,19 +41,24 @@ class RoverFeedPager(
     data class Params(
         val roverId: Long,
         val mode: FeedMode,
-        /**
-         * Monotonic token making every explicit [setFeed] distinct. Without it, re-anchoring to
-         * the *current* sol (e.g. re-picking the same date after scrolling away, or re-randomizing
-         * to the same sol) produces an equal [Params] that [MutableStateFlow] conflates away, so
-         * the Pager never rebuilds and the feed appears "stuck / not updating".
-         */
-        val generation: Long,
     ) {
         val solMode: FeedMode.Sol? get() = mode as? FeedMode.Sol
     }
 
-    private val paramsFlow = MutableStateFlow<Params?>(null)
-    private var generation = 0L
+    /**
+     * Event-style stream of feed requests. Deliberately a [MutableSharedFlow], NOT a StateFlow: a
+     * SharedFlow does NOT conflate equal values, so re-anchoring to the *current* sol (re-picking
+     * the same date after scrolling away, or re-randomizing to the same sol) still re-emits and
+     * rebuilds the Pager — a StateFlow would drop the duplicate and the feed would appear "stuck".
+     * `replay = 1` lets late collectors (the detail pager) pick up the active feed.
+     */
+    private val paramsFlow = MutableSharedFlow<Params>(
+        replay = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+    )
+
+    /** Latest params, for synchronous reads by callers. Mutated only from [setFeed] (main thread). */
+    private var latestParams: Params? = null
 
     // In-memory cache of the full result list from images.nasa.gov, keyed by query string.
     // Populated after the first network fetch for a query; subsequent reshuffles (same query,
@@ -59,15 +66,20 @@ class RoverFeedPager(
     private val pageCache = mutableMapOf<String, List<MarsImage>>()
 
     /** Current feed params, or null until [setFeed] is first called. */
-    val currentParams: Params? get() = paramsFlow.value
+    val currentParams: Params? get() = latestParams
+
+    private val _currentRoverId = MutableStateFlow<Long?>(null)
 
     /**
-     * Rover id the feed is currently built for (null until the first [setFeed]). The list ViewModel
-     * gates its grid on this: while this app-singleton pager still holds the *previous* rover's
-     * cached pages (the [cachedIn] replay), the newly opened rover's screen shows a loading
-     * placeholder instead of briefly rendering the previous rover's photos.
+     * Rover id of the most recently EMITTED page — updated as data flows out of [pagedFlow], not
+     * when [setFeed] is called. The list ViewModel gates its grid on this: while this app-singleton
+     * pager still holds the *previous* rover's cached pages (the [cachedIn] replay), the newly
+     * opened rover's screen shows a loading placeholder instead of briefly rendering the previous
+     * rover's photos. Tracking the emitted data (rather than the requested params) keeps the gate in
+     * lockstep with what the list actually receives, so the placeholder stays up for the whole feed
+     * rebuild instead of flashing the previous rover while the new Pager spins up.
      */
-    val currentRoverId: Flow<Long?> = paramsFlow.map { it?.roverId }.distinctUntilChanged()
+    val currentRoverId: StateFlow<Long?> = _currentRoverId.asStateFlow()
 
     /**
      * Id of the photo most recently shown in the fullscreen detail pager. The list reads (and
@@ -90,9 +102,8 @@ class RoverFeedPager(
      * on by the list ViewModel). Collected by both the list grid and the detail pager.
      */
     val pagedFlow: Flow<PagingData<MarsImage>> = paramsFlow
-        .filterNotNull()
         .flatMapLatest { p ->
-            when (val mode = p.mode) {
+            val pages = when (val mode = p.mode) {
                 is FeedMode.Sol -> Pager(
                     config = pagingConfig,
                     initialKey = mode.anchorSol,
@@ -131,15 +142,16 @@ class RoverFeedPager(
                     },
                 ).flow
             }
+            // Tag the rover as each page is emitted (not when params change), so [currentRoverId]
+            // stays in lockstep with the data the list actually receives.
+            pages.onEach { _currentRoverId.value = p.roverId }
         }
         .cachedIn(appScope)
 
     fun setFeed(roverId: Long, mode: FeedMode) {
-        paramsFlow.value = Params(
-            roverId = roverId,
-            mode = mode,
-            generation = generation++,
-        )
+        val params = Params(roverId = roverId, mode = mode)
+        latestParams = params
+        paramsFlow.tryEmit(params)
     }
 
     private companion object {
