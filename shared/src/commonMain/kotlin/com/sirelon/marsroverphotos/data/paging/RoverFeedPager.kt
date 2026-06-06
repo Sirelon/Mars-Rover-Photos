@@ -13,8 +13,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 
 /**
  * App-singleton holder for the rover photo feed's paged stream.
@@ -58,6 +60,14 @@ class RoverFeedPager(
 
     /** Current feed params, or null until [setFeed] is first called. */
     val currentParams: Params? get() = paramsFlow.value
+
+    /**
+     * Rover id the feed is currently built for (null until the first [setFeed]). The list ViewModel
+     * gates its grid on this: while this app-singleton pager still holds the *previous* rover's
+     * cached pages (the [cachedIn] replay), the newly opened rover's screen shows a loading
+     * placeholder instead of briefly rendering the previous rover's photos.
+     */
+    val currentRoverId: Flow<Long?> = paramsFlow.map { it?.roverId }.distinctUntilChanged()
 
     /**
      * Id of the photo most recently shown in the fullscreen detail pager. The list reads (and

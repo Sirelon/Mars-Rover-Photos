@@ -2,6 +2,8 @@ package com.sirelon.marsroverphotos.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.LoadState
+import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.insertSeparators
@@ -100,11 +102,17 @@ class PhotosViewModel(
      */
     val gridItemsFlow: Flow<PagingData<GridItem>> = combine(
         roverFeedPager.pagedFlow,
-        roverIdEmitter.filterNotNull().map { it.usesPageFeed() },
+        roverFeedPager.currentRoverId,
+        roverIdEmitter.filterNotNull(),
         appSettings.showFactsFlow,
         factPoolFlow,
-    ) { pagingData, isPageMode, factsEnabled, factPool ->
-        if (isPageMode) {
+    ) { pagingData, pagerRoverId, roverId, factsEnabled, factPool ->
+        if (pagerRoverId != roverId) {
+            // The app-singleton pager still holds the previous rover's feed (its cachedIn replay)
+            // because this rover's feed hasn't been applied yet (sol rovers anchor asynchronously
+            // in init). Show a loading placeholder instead of the previous rover's photos.
+            LOADING_PLACEHOLDER
+        } else if (roverId.usesPageFeed()) {
             pagingData.pagingMap { photo -> GridItem.PhotoItem(photo) as GridItem }
         } else {
             pagingData
@@ -346,6 +354,18 @@ class PhotosViewModel(
     private companion object {
         private const val FACT_POOL_SIZE = 15
         private const val FACT_EVERY_N_DAYS = 3L
+
+        /**
+         * Emitted by [gridItemsFlow] while the shared pager still points at the previous rover, so
+         * the grid shows a spinner (refresh = Loading) rather than the previous rover's photos.
+         */
+        private val LOADING_PLACEHOLDER: PagingData<GridItem> = PagingData.empty(
+            sourceLoadStates = LoadStates(
+                refresh = LoadState.Loading,
+                prepend = LoadState.NotLoading(endOfPaginationReached = false),
+                append = LoadState.NotLoading(endOfPaginationReached = false),
+            ),
+        )
     }
 }
 

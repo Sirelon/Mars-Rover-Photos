@@ -81,6 +81,7 @@ import com.sirelon.marsroverphotos.shared.resources.no_photos_title
 import com.sirelon.marsroverphotos.shared.resources.tap_to_retry
 import com.sirelon.marsroverphotos.utils.formatDisplayDate
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -149,12 +150,17 @@ fun PhotosScreen(
     // id is cleared on read so later manual scrolls aren't overridden.
     LaunchedEffect(Unit) {
         val targetId = viewModel.consumeLastViewedPhotoId() ?: return@LaunchedEffect
-        val index = snapshotFlow {
-            pagingItems.itemSnapshotList.indexOfFirst {
-                (it as? GridItem.PhotoItem)?.image?.id == targetId
-            }
-        }.first { it >= 0 }
-        gridState.scrollToItem(index)
+        // Bound the wait: if the photo never lands in the loaded snapshot (e.g. the feed was
+        // re-anchored or the camera filter changed while the viewer was open) the index would
+        // stay -1 forever, so cap it instead of suspending this effect indefinitely.
+        val index = withTimeoutOrNull(SCROLL_RESTORE_TIMEOUT_MS) {
+            snapshotFlow {
+                pagingItems.itemSnapshotList.indexOfFirst {
+                    (it as? GridItem.PhotoItem)?.image?.id == targetId
+                }
+            }.first { it >= 0 }
+        }
+        if (index != null) gridState.scrollToItem(index)
     }
 
     PhotosScreen(
@@ -276,7 +282,6 @@ private fun PhotosScreen(
                             FloatingDateChip(
                                 sol = state.sol,
                                 earthDate = state.earthDate,
-                                isPageBased = false,
                                 onOpenSolPicker = onOpenSolPicker,
                                 onOpenEarthDatePicker = onOpenEarthDatePicker,
                                 modifier = Modifier
@@ -400,7 +405,6 @@ private fun DateHeaderRow(
 private fun FloatingDateChip(
     sol: Long,
     earthDate: String,
-    isPageBased: Boolean,
     onOpenSolPicker: () -> Unit,
     onOpenEarthDatePicker: () -> Unit,
     modifier: Modifier = Modifier,
@@ -421,11 +425,7 @@ private fun FloatingDateChip(
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 Text(
-                    text = when {
-                        isPageBased -> "Page $sol"
-                        earthDate.isNotBlank() -> "Sol $sol · $earthDate"
-                        else -> "Sol $sol"
-                    },
+                    text = if (earthDate.isNotBlank()) "Sol $sol · $earthDate" else "Sol $sol",
                     style = MaterialTheme.typography.labelLarge,
                     maxLines = 1,
                 )
@@ -438,30 +438,20 @@ private fun FloatingDateChip(
             }
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            if (isPageBased) {
-                DropdownMenuItem(
-                    text = { Text("Pick by page") },
-                    onClick = {
-                        expanded = false
-                        onOpenSolPicker()
-                    }
-                )
-            } else {
-                DropdownMenuItem(
-                    text = { Text("Pick by Sol") },
-                    onClick = {
-                        expanded = false
-                        onOpenSolPicker()
-                    }
-                )
-                DropdownMenuItem(
-                    text = { Text("Pick by Earth date") },
-                    onClick = {
-                        expanded = false
-                        onOpenEarthDatePicker()
-                    }
-                )
-            }
+            DropdownMenuItem(
+                text = { Text("Pick by Sol") },
+                onClick = {
+                    expanded = false
+                    onOpenSolPicker()
+                }
+            )
+            DropdownMenuItem(
+                text = { Text("Pick by Earth date") },
+                onClick = {
+                    expanded = false
+                    onOpenEarthDatePicker()
+                }
+            )
         }
     }
 }
@@ -580,6 +570,10 @@ private fun CameraFilterChip(cameras: Set<String>, onClear: () -> Unit) {
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
+
+// Max time to wait for the last-viewed photo to appear in the loaded snapshot before giving up
+// on restoring the grid scroll position (see the scroll-restore LaunchedEffect above).
+private const val SCROLL_RESTORE_TIMEOUT_MS = 3000L
 
 private val GridItem.gridKey: String
     get() = when (this) {

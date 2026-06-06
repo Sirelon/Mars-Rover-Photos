@@ -60,11 +60,11 @@ class ImagesSearchPagingSource(
                     first.images
                 } else {
                     coroutineScope {
-                        val rest = (2..totalPages).map { p ->
-                            async {
-                                try { fetchPage(p).images } catch (e: Exception) { emptyList() }
-                            }
-                        }
+                        // Fetch the remaining pages concurrently. A failure on ANY page propagates
+                        // (awaitAll rethrows, coroutineScope cancels the siblings) so the whole load
+                        // fails with LoadResult.Error and the UI can retry — rather than silently
+                        // serving a partial dataset with a page missing.
+                        val rest = (2..totalPages).map { p -> async { fetchPage(p).images } }
                         first.images + rest.awaitAll().flatten()
                     }
                 }
