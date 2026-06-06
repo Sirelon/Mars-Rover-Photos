@@ -184,6 +184,9 @@ class RoversRepositoryImpl(
             )
 
             roverDao.insertRovers(perseverance, insight, curiosity, opportunity, spirit)
+            // Force-update Insight's mission-complete bounds for upgraded installs that
+            // had stale active/wrong-sol data from a previous version (insertRovers ignores conflicts).
+            roverDao.updateRoverMissionBounds(INSIGHT_ID, "complete", 1435, "2022-12-21", 5731)
             Logger.d("RoversRepository") { "Rovers seeded successfully" }
         } catch (e: Exception) {
             Logger.e("RoversRepository", e) { "Error seeding rovers" }

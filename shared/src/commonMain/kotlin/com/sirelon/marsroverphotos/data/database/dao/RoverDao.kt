@@ -45,4 +45,7 @@ interface RoverDao {
         maxDate: String,
         totalPhotos: Int
     )
+
+    @Query("UPDATE rover SET status = :status, maxSol = :maxSol, maxDate = :maxDate, totalPhotos = :totalPhotos WHERE id = :roverId")
+    suspend fun updateRoverMissionBounds(roverId: Long, status: String, maxSol: Long, maxDate: String, totalPhotos: Int)
 }

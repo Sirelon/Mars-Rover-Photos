@@ -83,9 +83,13 @@ class PhotosViewModel(
 
     private val factPoolFlow = MutableStateFlow<List<EducationalFact>>(emptyList())
 
-    private val roverStateFlow: StateFlow<Rover?> = roverIdEmitter
+    private val roverStateFlow: StateFlow<Rover?> = combine(
+        roverIdEmitter.filterNotNull(),
+        roversRepository.getRovers(),
+    ) { roverId, rovers ->
+        rovers.firstOrNull { it.id == roverId }
+    }
         .filterNotNull()
-        .mapNotNull { roversRepository.loadRoverById(it) }
         .onEach { dateUtil = RoverDateUtil(it) }
         .catch { e -> Logger.e("PhotosViewModel", e) { "Error loading rover" } }
         .stateIn(
@@ -191,7 +195,9 @@ class PhotosViewModel(
             if (dateUtil == null) dateUtil = RoverDateUtil(rover)
             if (!rover.id.usesPageFeed()) {
                 if (rover.id == CURIOSITY_ID) {
-                    goToLatest()
+                    val initialLatestSol = (rover.maxSol - 1).coerceAtLeast(0L)
+                    applyAnchor(rover, initialLatestSol)
+                    followCuriosityLatestRefresh(initialLatestSol)
                 } else {
                     randomize()
                 }
@@ -324,6 +330,20 @@ class PhotosViewModel(
             mode = FeedMode.Page(roverId.pageQuery(), shuffleSeed = Random.nextLong()),
         )
         _scrollToTopEvents.tryEmit(Unit)
+    }
+
+    private fun followCuriosityLatestRefresh(initialLatestSol: Long) {
+        viewModelScope.launch {
+            roverFlow.collect { rover ->
+                if (rover.id != CURIOSITY_ID) return@collect
+                val refreshedLatestSol = (rover.maxSol - 1).coerceAtLeast(0L)
+                if (refreshedLatestSol <= initialLatestSol) return@collect
+                val currentAnchor = roverFeedPager.currentParams?.solMode?.anchorSol
+                if (currentAnchor == initialLatestSol) {
+                    applyAnchor(rover, refreshedLatestSol)
+                }
+            }
+        }
     }
 
     private fun applyAnchor(rover: Rover, sol: Long) {

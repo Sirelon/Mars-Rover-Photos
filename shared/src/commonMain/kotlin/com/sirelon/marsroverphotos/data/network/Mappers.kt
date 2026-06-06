@@ -110,7 +110,7 @@ fun PerseveranceCameraResponse.toUI(): RoverCamera {
  *   `…/PIA05040~large.jpg`  → `…/PIA05040~orig.jpg`
  *   `…/PIA05040.jpg`        → `…/PIA05040.jpg` (unchanged)
  */
-internal fun nasaImageOrigUrl(href: String): String {
+fun nasaImageOrigUrl(href: String): String {
     val match = SIZE_TOKEN_REGEX.find(href) ?: return href
     val ext = match.groupValues[2]
     return href.substring(0, match.range.first) + "~orig.$ext"
