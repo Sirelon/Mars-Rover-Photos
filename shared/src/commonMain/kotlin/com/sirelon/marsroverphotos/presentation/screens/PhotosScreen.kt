@@ -137,14 +137,6 @@ fun PhotosScreen(
         }
     }
 
-    // Scroll to top on every refresh (e.g. after randomize / go-to-latest) so the user
-    // immediately sees the loading indicator rather than stale content mid-list.
-    LaunchedEffect(pagingItems.loadState.refresh) {
-        if (pagingItems.loadState.refresh is LoadState.Loading) {
-            gridState.scrollToItem(0)
-        }
-    }
-
     // Keep the floating chip + pickers in sync with the top-visible day as the user scrolls.
     val currentPagingItems = rememberUpdatedState(pagingItems)
     LaunchedEffect(gridState) {

@@ -310,6 +310,7 @@ class PhotosViewModel(
             roverId = rover.id,
             mode = FeedMode.Page(rover.id.pageQuery(), shuffleSeed = Random.nextLong()),
         )
+        _scrollToTopEvents.tryEmit(Unit)
     }
 
     private fun applyAnchor(rover: Rover, sol: Long) {
