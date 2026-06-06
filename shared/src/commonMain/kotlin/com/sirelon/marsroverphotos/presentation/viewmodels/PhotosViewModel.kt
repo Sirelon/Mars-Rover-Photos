@@ -181,20 +181,12 @@ class PhotosViewModel(
         viewModelScope.launch {
             val rover = roverFlow.first()
             if (dateUtil == null) dateUtil = RoverDateUtil(rover)
-            val existing = roverFeedPager.currentParams
-            if (existing?.roverId == rover.id) {
-                // Returning from detail viewer — keep the existing pager state.
-                if (!rover.id.usesPageFeed()) {
-                    if (visibleSolEmitter.value == null) visibleSolEmitter.value = existing.solMode?.anchorSol
-                }
+            if (rover.id.usesPageFeed()) {
+                applyPageFeed(rover)
+            } else if (rover.id == CURIOSITY_ID) {
+                goToLatest()
             } else {
-                if (rover.id.usesPageFeed()) {
-                    applyPageFeed(rover)
-                } else if (rover.id == CURIOSITY_ID) {
-                    goToLatest()
-                } else {
-                    randomize()
-                }
+                randomize()
             }
         }
     }
