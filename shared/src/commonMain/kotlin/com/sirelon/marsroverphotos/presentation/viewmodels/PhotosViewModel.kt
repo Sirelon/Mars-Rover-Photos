@@ -181,18 +181,26 @@ class PhotosViewModel(
         viewModelScope.launch {
             val rover = roverFlow.first()
             if (dateUtil == null) dateUtil = RoverDateUtil(rover)
-            if (rover.id.usesPageFeed()) {
-                applyPageFeed(rover)
-            } else if (rover.id == CURIOSITY_ID) {
-                goToLatest()
-            } else {
-                randomize()
+            if (!rover.id.usesPageFeed()) {
+                if (rover.id == CURIOSITY_ID) {
+                    goToLatest()
+                } else {
+                    randomize()
+                }
             }
+            // Page-feed rovers (Spirit/Opportunity) are handled synchronously in setRoverId so
+            // the fresh shuffle is set before any compose frame renders, making the stale
+            // cachedIn(appScope) replay invisible.
         }
     }
 
     fun setRoverId(roverId: Long) {
         roverIdEmitter.tryEmit(roverId)
+        if (roverId.usesPageFeed()) {
+            // Apply immediately — before the compose frame renders — so the cached (stale)
+            // PagingData from the previous session is replaced before the UI sees it.
+            applyPageFeed(roverId)
+        }
     }
 
     fun setCameraFilters(cameras: Set<String>) {
@@ -233,10 +241,7 @@ class PhotosViewModel(
     fun randomize() {
         val roverId = roverIdEmitter.value ?: return
         if (roverId.usesPageFeed()) {
-            roverFeedPager.setFeed(
-                roverId = roverId,
-                mode = FeedMode.Page(roverId.pageQuery(), shuffleSeed = Random.nextLong()),
-            )
+            applyPageFeed(roverId)
             return
         }
         viewModelScope.launch {
@@ -305,10 +310,10 @@ class PhotosViewModel(
         Clock.System.now().toEpochMilliseconds()
     }
 
-    private fun applyPageFeed(rover: Rover) {
+    private fun applyPageFeed(roverId: Long) {
         roverFeedPager.setFeed(
-            roverId = rover.id,
-            mode = FeedMode.Page(rover.id.pageQuery(), shuffleSeed = Random.nextLong()),
+            roverId = roverId,
+            mode = FeedMode.Page(roverId.pageQuery(), shuffleSeed = Random.nextLong()),
         )
         _scrollToTopEvents.tryEmit(Unit)
     }
