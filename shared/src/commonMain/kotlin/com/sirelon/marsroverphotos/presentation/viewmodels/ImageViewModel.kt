@@ -4,7 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
+import com.sirelon.marsroverphotos.data.network.nasaImageOrigUrl
+import com.sirelon.marsroverphotos.data.paging.FeedMode
 import com.sirelon.marsroverphotos.data.paging.RoverFeedPager
+import com.sirelon.marsroverphotos.data.paging.pageQuery
+import com.sirelon.marsroverphotos.data.paging.usesPageFeed
 import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
 import com.sirelon.marsroverphotos.domain.repositories.RoversRepository
 import com.sirelon.marsroverphotos.platform.ImageOperationResult
@@ -107,9 +111,16 @@ class ImageViewModel(
     ) {
         if (roverId == null) return
 
-        val effectiveCameras = if (cameras.isNotEmpty()) cameras else if (camera != null) setOf(camera) else emptySet()
         val current = roverFeedPager.currentParams
-        if (current?.roverId == roverId && current.cameras == effectiveCameras) return
+
+        if (roverId.usesPageFeed()) {
+            if (current?.roverId == roverId && current.mode is FeedMode.Page) return
+            roverFeedPager.setFeed(roverId = roverId, mode = FeedMode.Page(roverId.pageQuery()))
+            return
+        }
+
+        val effectiveCameras = if (cameras.isNotEmpty()) cameras else if (camera != null) setOf(camera) else emptySet()
+        if (current?.roverId == roverId && current.solMode?.cameras == effectiveCameras) return
 
         viewModelScope.launch {
             val rover = roversRepository.loadRoverById(roverId) ?: return@launch
@@ -119,10 +130,12 @@ class ImageViewModel(
             val maxSol = rover.maxSol.coerceAtLeast(1L)
             roverFeedPager.setFeed(
                 roverId = rover.id,
-                anchorSol = anchorSol.coerceIn(0L, maxSol),
-                minSol = 0L,
-                maxSol = maxSol,
-                cameras = effectiveCameras,
+                mode = FeedMode.Sol(
+                    anchorSol = anchorSol.coerceIn(0L, maxSol),
+                    minSol = 0L,
+                    maxSol = maxSol,
+                    cameras = effectiveCameras,
+                ),
             )
         }
     }
@@ -144,8 +157,9 @@ class ImageViewModel(
 
     /** Save an image to device storage. */
     fun saveImage(photo: MarsImage) {
+        val fullResPhoto = photo.copy(imageUrl = nasaImageOrigUrl(photo.imageUrl))
         viewModelScope.launch {
-            when (val result = imageOperations.saveImage(photo)) {
+            when (val result = imageOperations.saveImage(fullResPhoto)) {
                 is ImageOperationResult.Success -> {
                     Logger.d("ImageViewModel") { "Image saved: ${result.message}" }
                     uiEventEmitter.send(UiEvent.PhotoSaved(result.message))
@@ -160,8 +174,9 @@ class ImageViewModel(
 
     /** Share an image via platform share mechanisms. */
     fun shareMarsImage(marsImage: MarsImage) {
+        val fullResImage = marsImage.copy(imageUrl = nasaImageOrigUrl(marsImage.imageUrl))
         viewModelScope.launch {
-            when (val result = imageOperations.shareImage(marsImage)) {
+            when (val result = imageOperations.shareImage(fullResImage)) {
                 is ImageOperationResult.Success ->
                     Logger.d("ImageViewModel") { "Image shared successfully" }
                 is ImageOperationResult.Error -> {

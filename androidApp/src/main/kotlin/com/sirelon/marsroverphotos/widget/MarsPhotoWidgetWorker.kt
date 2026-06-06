@@ -20,12 +20,13 @@ import coil3.request.ImageRequest
 import coil3.toBitmap
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.data.network.RestApi
+import com.sirelon.marsroverphotos.data.network.toMarsImages
+import com.sirelon.marsroverphotos.data.paging.pageQuery
 import com.sirelon.marsroverphotos.domain.models.CURIOSITY_ID
 import com.sirelon.marsroverphotos.domain.models.INSIGHT_ID
 import com.sirelon.marsroverphotos.domain.models.OPPORTUNITY_ID
 import com.sirelon.marsroverphotos.domain.models.PERSEVERANCE_ID
 import com.sirelon.marsroverphotos.domain.models.SPIRIT_ID
-import com.sirelon.marsroverphotos.domain.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
 import com.sirelon.marsroverphotos.platform.Tracker
 import com.sirelon.marsroverphotos.utils.Logger
@@ -111,33 +112,10 @@ public class MarsPhotoWidgetWorker(
         return when (roverId) {
             INSIGHT_ID -> api.getInsightLatestPhotos().firstOrNull()
             PERSEVERANCE_ID -> api.getPerseveranceLatestPhotos().firstOrNull()
-            CURIOSITY_ID, OPPORTUNITY_ID, SPIRIT_ID -> fetchLatestByManifest(roverId)
-            else -> fetchLatestByManifest(roverId)
+            CURIOSITY_ID -> api.getCuriosityLatestPhotos().firstOrNull()
+            SPIRIT_ID, OPPORTUNITY_ID -> api.searchImages(roverId.pageQuery(), 1, 1).toMarsImages().firstOrNull()
+            else -> api.getCuriosityLatestPhotos().firstOrNull()
         }
-    }
-
-    private suspend fun fetchLatestByManifest(roverId: Long): MarsImage? {
-        val roverName = when (roverId) {
-            CURIOSITY_ID -> "curiosity"
-            OPPORTUNITY_ID -> "opportunity"
-            SPIRIT_ID -> "spirit"
-            PERSEVERANCE_ID -> "perseverance"
-            else -> "curiosity"
-        }
-        val roverInfo = api.getRoverInfo(roverName)
-        var sol = roverInfo.maxSol
-
-        repeat(MaxSolLookback) {
-            val photos = api.getRoversPhotos(PhotosQueryRequest(roverId, sol, null))
-            if (photos.isNotEmpty()) {
-                return photos.first()
-            }
-            sol -= 1
-            if (sol <= 0) {
-                return null
-            }
-        }
-        return null
     }
 
     private suspend fun loadBitmap(context: Context, url: String): Bitmap? = withContext(Dispatchers.IO) {
@@ -167,7 +145,6 @@ public class MarsPhotoWidgetWorker(
     companion object {
         private const val UniqueWorkName = "mars_photo_widget_daily"
         private const val UniqueImmediateWork = "mars_photo_widget_now"
-        private const val MaxSolLookback = 30
 
         fun enqueuePeriodic(context: Context) {
             val constraints = Constraints.Builder()

@@ -2,7 +2,6 @@ package com.sirelon.marsroverphotos.data.repositories
 
 import com.sirelon.marsroverphotos.data.database.dao.RoverDao
 import com.sirelon.marsroverphotos.data.network.RestApi
-import com.sirelon.marsroverphotos.data.network.models.RoverInfo
 import com.sirelon.marsroverphotos.domain.models.CURIOSITY_ID
 import com.sirelon.marsroverphotos.domain.models.INSIGHT_ID
 import com.sirelon.marsroverphotos.domain.models.OPPORTUNITY_ID
@@ -14,13 +13,8 @@ import com.sirelon.marsroverphotos.utils.Logger
 import com.sirelon.marsroverphotos.utils.RoverDateUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlin.time.Clock
 
@@ -55,7 +49,7 @@ class RoversRepositoryImpl(
                 // Seed initial rover data
                 seedRovers()
 
-                // Start observing Perseverance photo count updates
+                // Observe and persist photo counts for page-based rovers as they are fetched.
                 launch {
                     try {
                         api.perseveranceTotalImages.collectLatest { totalPhotos ->
@@ -66,15 +60,43 @@ class RoversRepositoryImpl(
                         Logger.e("RoversRepository", e) { "Error observing Perseverance photo count" }
                     }
                 }
-
-                // Load latest rover info from NASA API
                 launch {
                     try {
-                        loadFromServer()
+                        api.insightTotalImages.collectLatest { totalPhotos ->
+                            Logger.d("RoversRepository") { "Insight total photos: $totalPhotos" }
+                            roverDao.updateRoverCountPhotos(INSIGHT_ID, totalPhotos)
+                        }
                     } catch (e: Exception) {
-                        Logger.e("RoversRepository", e) { "Error loading rover info from server" }
+                        Logger.e("RoversRepository", e) { "Error observing Insight photo count" }
                     }
                 }
+
+                // Proactively fetch 1 Perseverance photo so total_images is populated early,
+                // giving randomize() an accurate page range on first open.
+                launch {
+                    try {
+                        api.getPerseveranceLatestPhotos(count = 1)
+                    } catch (e: Exception) {
+                        Logger.e("RoversRepository", e) { "Error pre-fetching Perseverance count" }
+                    }
+                }
+
+                // Derive Curiosity maxSol from the MSL raw feed (mars-photos manifests are dead).
+                // Runs concurrently with seeding so the DB is updated before the photos screen
+                // opens, ensuring goToLatest() anchors on the real latest sol.
+                launch {
+                    try {
+                        val latestSol = api.getCuriosityLatestSol() ?: return@launch
+                        val curiosity = roverDao.loadRoverById(CURIOSITY_ID) ?: return@launch
+                        val dateUtil = RoverDateUtil(curiosity)
+                        val maxDate = dateUtil.parseTime(dateUtil.dateFromSol(latestSol))
+                        roverDao.updateMaxSolAndDate(CURIOSITY_ID, latestSol, maxDate)
+                        Logger.d("RoversRepository") { "Updated Curiosity maxSol=$latestSol, maxDate=$maxDate" }
+                    } catch (e: Exception) {
+                        Logger.e("RoversRepository", e) { "Error fetching Curiosity maxSol from MSL feed" }
+                    }
+                }
+
             } catch (e: Exception) {
                 Logger.e("RoversRepository", e) { "Error initializing RoversRepository" }
             }
@@ -99,7 +121,8 @@ class RoversRepositoryImpl(
                 status = "active",
                 maxSol = 95,
                 maxDate = "2021-07-30",
-                totalPhotos = 74525
+                // Rough estimate for June 2026 (~1900 sols active); updated at runtime from API.
+                totalPhotos = 350_000
             )
             val dateUtilP = RoverDateUtil(perseveranceBase)
             val perseverance = perseveranceBase.copy(
@@ -107,22 +130,18 @@ class RoversRepositoryImpl(
                 maxSol = dateUtilP.solFromDate(currentTimeMillis)
             )
 
-            // Insight (active)
-            val insightBase = Rover(
+            // Insight (mission ended ~Dec 2022, sol ~1435)
+            // The mission is complete — do not extend maxSol beyond the actual last sol.
+            val insight = Rover(
                 id = INSIGHT_ID,
                 name = "Insight",
                 drawableName = "img_insight",
                 landingDate = "2018-11-26",
                 launchDate = "2018-05-05",
-                status = "active",
-                maxSol = 126,
-                maxDate = "2021-05-26",
+                status = "complete",
+                maxSol = 1435,
+                maxDate = "2022-12-21",
                 totalPhotos = 5731
-            )
-            val dateUtil = RoverDateUtil(insightBase)
-            val insight = insightBase.copy(
-                maxDate = dateUtil.parseTime(currentTimeMillis),
-                maxSol = dateUtil.solFromDate(currentTimeMillis)
             )
 
             // Curiosity (active)
@@ -165,48 +184,12 @@ class RoversRepositoryImpl(
             )
 
             roverDao.insertRovers(perseverance, insight, curiosity, opportunity, spirit)
+            // Force-update Insight's mission-complete bounds for upgraded installs that
+            // had stale active/wrong-sol data from a previous version (insertRovers ignores conflicts).
+            roverDao.updateRoverMissionBounds(INSIGHT_ID, "complete", 1435, "2022-12-21", 5731)
             Logger.d("RoversRepository") { "Rovers seeded successfully" }
         } catch (e: Exception) {
             Logger.e("RoversRepository", e) { "Error seeding rovers" }
-        }
-    }
-
-    /**
-     * Load rover information from NASA API and update the database.
-     * Only updates Curiosity, Opportunity, and Spirit (older rovers with stable API).
-     */
-    private suspend fun loadFromServer() = coroutineScope {
-        try {
-            val roversName = listOf("curiosity", "opportunity", "spirit")
-            val rovers = roversName.asFlow()
-                .map { async { api.getRoverInfo(it) } }
-                .map { it.await() }
-                .toList()
-
-            updateRoversByInfo(rovers)
-            Logger.d("RoversRepository") { "Loaded ${rovers.size} rovers from server" }
-        } catch (e: Exception) {
-            Logger.e("RoversRepository", e) { "Error loading rovers from server" }
-        }
-    }
-
-    private suspend fun updateRoversByInfo(list: List<RoverInfo>) {
-        list.forEach { updateRoverByInfo(it) }
-    }
-
-    private suspend fun updateRoverByInfo(roverInfo: RoverInfo) {
-        try {
-            Logger.d("RoversRepository") { "Updating rover: ${roverInfo.name}" }
-            roverDao.updateRover(
-                name = roverInfo.name,
-                landingDate = roverInfo.landingDate,
-                launchDate = roverInfo.launchDate,
-                maxSol = roverInfo.maxSol,
-                maxDate = roverInfo.maxDate,
-                totalPhotos = roverInfo.totalPhotos
-            )
-        } catch (e: Exception) {
-            Logger.e("RoversRepository", e) { "Error updating rover: ${roverInfo.name}" }
         }
     }
 

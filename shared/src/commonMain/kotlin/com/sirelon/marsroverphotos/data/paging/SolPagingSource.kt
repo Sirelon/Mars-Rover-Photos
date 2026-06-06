@@ -10,18 +10,18 @@ import com.sirelon.marsroverphotos.utils.Logger
 import kotlin.math.abs
 
 /**
- * [PagingSource] that pages Mars rover photos by **sol** (Martian day).
+ * [PagingSource] that pages Mars rover photos by **sol** (Martian day). Used for every rover whose
+ * feed is sol-keyed: Curiosity, Perseverance, and Insight. Spirit and Opportunity instead use
+ * [ImagesSearchPagingSource] (see [FeedMode] and `Long.usesPageFeed`).
  *
- * Each page is one non-empty sol's photos:
- *  - APPEND  walks forward  (sol + 1, sol + 2, …) — scroll down / swipe to next days
- *  - PREPEND walks backward (sol - 1, sol - 2, …) — scroll up / swipe to earlier days
+ * The key type is [Long] = sol number: APPEND walks sol+1, sol+2, …; PREPEND walks sol-1, sol-2, …
  *
- * Empty sols are skipped **inside a single [load]** by scanning to the next non-empty sol — we
- * never return an empty `LoadResult.Page` mid-stream, because Paging does not reliably re-trigger
- * the next load after an empty page (that is the classic "scrolling sometimes stalls" bug). A load
- * therefore returns either a non-empty page, a continuation page (a scan budget was hit before any
- * photos, see below), or a terminal page (`prevKey`/`nextKey` = null) once the rover's
- * [minSol]/[maxSol] bound is actually reached.
+ * Empty sols (no photos) are skipped **inside a single [load]** — we never return an empty
+ * `LoadResult.Page` mid-stream, because Paging does not reliably re-trigger the next load after an
+ * empty page (that is the classic "scrolling sometimes stalls" bug). A load therefore returns
+ * either a non-empty page, a continuation page (a scan budget was hit before any photos, see below),
+ * or a terminal page (`prevKey`/`nextKey` = null) once the rover's [minSol]/[maxSol] bound is
+ * actually reached.
  *
  * To bound per-load latency every scan is capped at a finite budget ([scanBudget]) so a single load
  * can never fire an unbounded run of network probes across a long gap (rover safe-mode/solar-
@@ -29,10 +29,10 @@ import kotlin.math.abs
  * before the bound we return an empty continuation page that preserves the directional key, so the
  * next load resumes the scan — reachable photos beyond the gap are never dead-ended.
  *
- * On Refresh we scan forward then backward (alternating, one budget at a time) until a non-empty
- * sol is found or the rover's full range is exhausted. Refresh never returns a continuation page:
- * an empty itemCount produces no viewport hints, so Paging would never fire append/prepend to
- * resume the scan.
+ * On Refresh we scan forward then backward (alternating, one budget at a time) until a non-empty sol
+ * is found, the rover's full range is exhausted, or the cumulative [REFRESH_SCAN_LIMIT] is reached.
+ * Refresh never returns a continuation page: an empty itemCount produces no viewport hints, so
+ * Paging would never fire append/prepend to resume the scan.
  *
  * Fetched photos are **written through** to Room ([cacheAndMerge]) and any persisted favorite/stats
  * are merged back, so the cache stays a passive side-store (this remains a network-driven source)
@@ -109,7 +109,10 @@ class SolPagingSource(
      *
      * Instead, scan alternating forward/backward (one [scanBudget] at a time) until a non-empty
      * sol is found or both directions hit the rover bounds. The loop is finite: each pass advances
-     * the frontier by [scanBudget] sols, bounded by [minSol]..[maxSol].
+     * the frontier by [scanBudget] sols, bounded by [minSol]..[maxSol]. As an extra guard — Refresh
+     * is user-triggered, so its latency is visible — a direction also stops once its frontier passes
+     * [REFRESH_SCAN_LIMIT] sols from the anchor without a hit, so a refresh anchored inside a long
+     * empty gap returns a terminal page instead of probing the rover's whole range synchronously.
      */
     private suspend fun loadRefresh(start: Long): LoadResult<Long, MarsImage> {
         var fwdSol: Long? = start
@@ -118,14 +121,16 @@ class SolPagingSource(
             fwdSol?.let { sol ->
                 when (val r = findDay(sol, step = +1)) {
                     is FindResult.Found -> return r.day.toPage()
-                    is FindResult.Exhausted -> fwdSol = r.nextSol
+                    is FindResult.Exhausted ->
+                        fwdSol = r.nextSol.takeIf { abs(it - start) < REFRESH_SCAN_LIMIT }
                     FindResult.End -> fwdSol = null
                 }
             }
             bwdSol?.let { sol ->
                 when (val r = findDay(sol, step = -1)) {
                     is FindResult.Found -> return r.day.toPage()
-                    is FindResult.Exhausted -> bwdSol = r.nextSol
+                    is FindResult.Exhausted ->
+                        bwdSol = r.nextSol.takeIf { abs(it - start) < REFRESH_SCAN_LIMIT }
                     FindResult.End -> bwdSol = null
                 }
             }
@@ -259,6 +264,13 @@ class SolPagingSource(
         private const val FILTER_LOAD_BUDGET = 300
         /** Max sols probed per load() for the unfiltered feed; larger since its data is dense. */
         private const val UNFILTERED_SCAN_BUDGET = 300
+        /**
+         * Cumulative per-direction cap for a single Refresh scan. Bounds the worst case (a refresh
+         * anchored inside a long empty gap) to ~2 × this many sequential probes instead of the
+         * rover's whole sol range. Generous enough to cover any realistic gap for the dense
+         * sol-keyed feeds (Curiosity, Perseverance, Insight).
+         */
+        private const val REFRESH_SCAN_LIMIT = 2000
         private const val CACHE_KEEP_LIMIT = 2000
         /** Run cache eviction once every this many cached pages (keeps it off the hot path). */
         private const val EVICT_EVERY_N_LOADS = 20

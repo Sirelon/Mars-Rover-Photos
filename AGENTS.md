@@ -25,6 +25,15 @@ Run commands from the repository root so the Gradle wrapper can supply the pinne
 ## Coding Style & Naming Conventions
 Kotlin files use four-space indentation, `val` first, and explicit visibility for public APIs. Compose functions and classes stay in PascalCase, constants in `UPPER_SNAKE_CASE`, and extension files match their receiver (`ImageRequestExt.kt`). Keep packages cohesive; add a `feature/*` subpackage for new screens. Run `./gradlew detekt` before review instead of hand-tuning formatting.
 
+## Design System & UI/UX
+Before writing or changing any Compose UI, read **[docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md)** — the
+living design-system doc. It carries the prescriptive UI/UX rules (token usage, the `App*` component
+family, adaptive-nav ownership), a component index with file links, and the non-obvious insights
+(e.g. dark `surface` == `background`, no green slot in the M3 palette, the full Material Symbols font).
+Reuse the `App*` components in `presentation/ui/` before adding new ones; never inline raw `.dp` literals
+(use `AppSpacing` / `AppSize`) or hardcode theme colors (use `MaterialTheme.colorScheme`). **Keep the doc
+updated**: when you add a reusable component, a token, or learn a UI gotcha, record it there.
+
 ## Testing Guidelines
 Place unit specs in `shared/src/commonTest` (or `androidTest` for Android-instrumented tests), mirroring the source package and ending class names with `*Test`. Use JUnit4 and Mockito-Kotlin for Android tests. Compose UI or Room integration checks belong in `androidApp/src/androidTest` and should describe the scenario in the test name. Cover paging boundaries, offline caching, and error flows whenever you touch those areas.
 

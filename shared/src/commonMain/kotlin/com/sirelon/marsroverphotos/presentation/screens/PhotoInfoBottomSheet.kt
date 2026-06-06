@@ -73,17 +73,21 @@ fun PhotoInfoBottomSheet(
                 )
             }
 
-            // Sol and Earth Date
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    InfoSection(title = "Sol", content = image.sol.toString())
+            // Sol and Earth Date — Sol is absent for page-mode rovers (Spirit/Opportunity, sol=0).
+            if (image.sol != 0L) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        InfoSection(title = "Sol", content = image.sol.toString())
+                    }
+                    Column(modifier = Modifier.weight(1f)) {
+                        InfoSection(title = "Earth Date", content = formatEarthDate(image.earthDate))
+                    }
                 }
-                Column(modifier = Modifier.weight(1f)) {
-                    InfoSection(title = "Earth Date", content = formatEarthDate(image.earthDate))
-                }
+            } else if (image.earthDate.isNotBlank()) {
+                InfoSection(title = "Date", content = formatEarthDate(image.earthDate))
             }
 
             // Statistics

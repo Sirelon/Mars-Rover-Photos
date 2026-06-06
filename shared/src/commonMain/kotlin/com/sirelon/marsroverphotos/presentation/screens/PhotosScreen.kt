@@ -38,6 +38,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -46,6 +47,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
 import com.sirelon.marsroverphotos.presentation.theme.AppTypography
@@ -78,6 +80,8 @@ import com.sirelon.marsroverphotos.shared.resources.educational_fact
 import com.sirelon.marsroverphotos.shared.resources.no_photos_title
 import com.sirelon.marsroverphotos.shared.resources.tap_to_retry
 import com.sirelon.marsroverphotos.utils.formatDisplayDate
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -119,12 +123,15 @@ fun PhotosScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val pagingItems = viewModel.gridItemsFlow.collectAsLazyPagingItems()
     val gridState = rememberLazyGridState()
+    val scope = rememberCoroutineScope()
 
-    // Scroll to top whenever the camera filter changes so the LazyGridState's scroll position
-    // is consistent with the new PagingData. This also forces a fresh Paging 3 layout pass,
-    // which re-connects the viewport-hint mechanism that drives APPEND/PREPEND loads.
-    LaunchedEffect(state.cameraFilters) {
-        gridState.scrollToItem(0)
+    // Scroll to top whenever the feed is re-anchored (sol/date pick, randomize, go-to-latest,
+    // camera filter change). Without this the grid keeps its previous scroll offset and the
+    // newly anchored sol stays off-screen above, so the user still sees the old day's photos.
+    LaunchedEffect(viewModel) {
+        viewModel.scrollToTopEvents.collect {
+            gridState.scrollToItem(0)
+        }
     }
 
     // Keep the floating chip + pickers in sync with the top-visible day as the user scrolls.
@@ -143,19 +150,29 @@ fun PhotosScreen(
     // id is cleared on read so later manual scrolls aren't overridden.
     LaunchedEffect(Unit) {
         val targetId = viewModel.consumeLastViewedPhotoId() ?: return@LaunchedEffect
-        val index = snapshotFlow {
-            pagingItems.itemSnapshotList.indexOfFirst {
-                (it as? GridItem.PhotoItem)?.image?.id == targetId
-            }
-        }.first { it >= 0 }
-        gridState.scrollToItem(index)
+        // Bound the wait: if the photo never lands in the loaded snapshot (e.g. the feed was
+        // re-anchored or the camera filter changed while the viewer was open) the index would
+        // stay -1 forever, so cap it instead of suspending this effect indefinitely.
+        val index = withTimeoutOrNull(SCROLL_RESTORE_TIMEOUT_MS) {
+            snapshotFlow {
+                pagingItems.itemSnapshotList.indexOfFirst {
+                    (it as? GridItem.PhotoItem)?.image?.id == targetId
+                }
+            }.first { it >= 0 }
+        }
+        if (index != null) gridState.scrollToItem(index)
     }
 
     PhotosScreen(
         state = state,
         pagingItems = pagingItems,
         gridState = gridState,
-        onRandomize = viewModel::randomize,
+        onRandomize = {
+            viewModel.randomize()
+            // Scroll to top so the reshuffled order is immediately visible. Only for page-mode
+            // rovers (Spirit/Opportunity) where showSolControls is false; sol rovers are unchanged.
+            if (!state.showSolControls) scope.launch { gridState.scrollToItem(0) }
+        },
         onGoToLatest = viewModel::goToLatest,
         onClearCameraFilters = {
             viewModel.setCameraFilters(emptySet())
@@ -203,11 +220,13 @@ private fun PhotosScreen(
                 title = { Text(text = state.roverName) },
                 onBack = onBack,
                 actions = {
-                    IconButton(onClick = onOpenFilters) {
-                        MaterialSymbolIcon(
-                            symbol = MaterialSymbol.Tune,
-                            contentDescription = "Filters"
-                        )
+                    if (state.showSolControls) {
+                        IconButton(onClick = onOpenFilters) {
+                            MaterialSymbolIcon(
+                                symbol = MaterialSymbol.Tune,
+                                contentDescription = "Filters"
+                            )
+                        }
                     }
                 }
             )
@@ -215,7 +234,7 @@ private fun PhotosScreen(
         floatingActionButton = {
             RefreshButton(
                 visible = pagingItems.itemCount > 0,
-                onClick = onGoToLatest
+                onClick = if (state.showSolControls) onGoToLatest else onRandomize
             )
         }
     ) { innerPadding ->
@@ -224,7 +243,7 @@ private fun PhotosScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            if (state.cameraFilters.isNotEmpty()) {
+            if (state.showSolControls && state.cameraFilters.isNotEmpty()) {
                 CameraFilterChip(
                     cameras = state.cameraFilters,
                     onClear = onClearCameraFilters,
@@ -259,19 +278,23 @@ private fun PhotosScreen(
                             onPhotoClick = { image -> onNavigateToImages(image.id, state.cameraFilters) },
                         )
 
-                        // Floating "sticky" date chip — mirrors the top-visible day.
-                        FloatingDateChip(
-                            sol = state.sol,
-                            earthDate = state.earthDate,
-                            onOpenSolPicker = onOpenSolPicker,
-                            onOpenEarthDatePicker = onOpenEarthDatePicker,
-                            modifier = Modifier
-                                .align(Alignment.TopCenter)
-                                .padding(top = AppSpacing.sm)
-                        )
+                        if (state.showSolControls) {
+                            FloatingDateChip(
+                                sol = state.sol,
+                                earthDate = state.earthDate,
+                                onOpenSolPicker = onOpenSolPicker,
+                                onOpenEarthDatePicker = onOpenEarthDatePicker,
+                                modifier = Modifier
+                                    .align(Alignment.TopCenter)
+                                    .padding(top = AppSpacing.sm)
+                            )
+                        }
 
-                        // Prepend (scroll-up) progress at the top, append (scroll-down) at the bottom.
-                        if (pagingItems.loadState.prepend is LoadState.Loading) {
+                        // Refresh progress (e.g. after randomize) shown at the top when old items
+                        // are still visible. Prepend and append progress shown at edges while scrolling.
+                        if (refresh is LoadState.Loading && pagingItems.itemCount > 0) {
+                            EdgeProgress(modifier = Modifier.align(Alignment.TopCenter))
+                        } else if (pagingItems.loadState.prepend is LoadState.Loading) {
                             EdgeProgress(modifier = Modifier.align(Alignment.TopCenter))
                         }
                         if (pagingItems.loadState.append is LoadState.Loading) {
@@ -466,7 +489,9 @@ private fun PhotoCard(
                     modifier = Modifier
                         .padding(AppSpacing.xs)
                         .fillMaxWidth(),
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
         }
@@ -545,6 +570,10 @@ private fun CameraFilterChip(cameras: Set<String>, onClear: () -> Unit) {
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
+
+// Max time to wait for the last-viewed photo to appear in the loaded snapshot before giving up
+// on restoring the grid scroll position (see the scroll-restore LaunchedEffect above).
+private const val SCROLL_RESTORE_TIMEOUT_MS = 3000L
 
 private val GridItem.gridKey: String
     get() = when (this) {
