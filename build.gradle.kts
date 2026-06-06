@@ -32,6 +32,9 @@ detekt {
     autoCorrect = true
 }
 
+// Versioning tasks (bumpVersion / syncIosVersion) — see gradle/versioning.gradle.kts
+apply(from = "gradle/versioning.gradle.kts")
+
 // To check performance run script
 // ./gradlew assembleRelease -PcomposeCompilerReports=true
 // what's need to pay attention for check here https://github.com/androidx/androidx/blob/androidx-main/compose/compiler/design/compiler-metrics.md#enabling-metrics
