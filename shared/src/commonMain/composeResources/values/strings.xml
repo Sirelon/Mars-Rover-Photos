@@ -38,6 +38,24 @@
     <string name="images_empty_title">No photos available.</string>
     <string name="images_empty_btn">Go back</string>
 
+    <!-- Rover mission blurbs -->
+    <string name="rover_blurb_curiosity">Car-sized, nuclear-powered, climbing Mount Sharp since 2012.</string>
+    <string name="rover_blurb_opportunity">Built for 90 sols, it roamed for nearly 15 Earth years.</string>
+    <string name="rover_blurb_spirit">Found mineral evidence of ancient water before going silent.</string>
+    <string name="rover_blurb_insight">A stationary lander probing the deep interior of Mars.</string>
+    <string name="rover_blurb_perseverance">Hunting for ancient life and caching rock in Jezero Crater.</string>
+
+    <!-- Rovers screen header + search -->
+    <string name="rovers_title">Mars Rovers</string>
+    <string name="rovers_subtitle_fmt">%1$d missions · %2$d active</string>
+    <string name="rovers_search_placeholder">Search rovers</string>
+    <string name="rovers_search_empty_fmt">No rovers match \"%1$s\"</string>
+
+    <!-- Rover row metric-strip labels -->
+    <string name="metric_label_photos">photos</string>
+    <string name="metric_label_sols">sols</string>
+    <string name="metric_label_last">last</string>
+
     <!-- Navigation labels -->
     <string name="nav_rovers">Rovers</string>
     <string name="nav_favorite">Favorites</string>

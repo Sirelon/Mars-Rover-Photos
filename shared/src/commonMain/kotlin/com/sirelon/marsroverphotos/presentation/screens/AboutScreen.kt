@@ -44,6 +44,7 @@ import com.sirelon.marsroverphotos.platform.AppReview
 import com.sirelon.marsroverphotos.presentation.navigation.LocalAboutCallbacks
 import com.sirelon.marsroverphotos.presentation.theme.AppSize
 import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
+import com.sirelon.marsroverphotos.presentation.theme.activeStatusColor
 import com.sirelon.marsroverphotos.presentation.theme.primaryVariant
 import com.sirelon.marsroverphotos.presentation.ui.AppBadge
 import com.sirelon.marsroverphotos.presentation.ui.AppIconBox
@@ -110,7 +111,7 @@ private fun AboutContent(
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val colors = MaterialTheme.colorScheme
-    val live = liveColor()
+    val live = activeStatusColor()
 
     Box(modifier = Modifier.fillMaxSize().background(colors.background)) {
         Column(
@@ -231,15 +232,6 @@ private fun SettingsSection(label: String, content: @Composable () -> Unit) {
         AppOutlinedCard { content() }
     }
 }
-
-/**
- * Live / "connected" status green. Not part of the M3 palette, so it is resolved per applied
- * theme (dark vs light) off the background luminance — keeping it legible in both themes,
- * matching the design's `--t-active` (#5BBF86 dark / #2E9E63 light).
- */
-@Composable
-private fun liveColor(): Color =
-    if (MaterialTheme.colorScheme.background.luminance() < 0.5f) Color(0xFF5BBF86) else Color(0xFF2E9E63)
 
 /**
  * Hero gradient top tint — resolved per applied theme so the gradient reads correctly in both.

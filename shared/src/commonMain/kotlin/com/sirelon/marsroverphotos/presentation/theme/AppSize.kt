@@ -42,6 +42,19 @@ object AppSize {
     /** 16dp — grouped / outlined card corner radius. */
     val cardRadius: Dp = 16.dp
 
+    /** 2dp — resting card elevation (matches the M3 elevated [AppCard] default). */
+    val cardElevationResting: Dp = 2.dp
+
+    /** 6dp — raised card elevation on desktop hover (the subtle lift on a rover row). */
+    val cardElevationHover: Dp = 6.dp
+
+    /** 112dp — fixed width of the full-height portrait thumbnail in a rover row. */
+    val roverThumbWidth: Dp = 112.dp
+
+    /** 40dp — trailing space reserved on a rover row's title line so the name/chip never
+     *  collide with the overlaid top-end info button. */
+    val roverInfoReserve: Dp = 40.dp
+
     /** 13dp — settings-row top/bottom padding. */
     val rowVerticalPadding: Dp = 13.dp
 

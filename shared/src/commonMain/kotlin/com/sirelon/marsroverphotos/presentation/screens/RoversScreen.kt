@@ -1,45 +1,78 @@
 package com.sirelon.marsroverphotos.presentation.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
-import com.sirelon.marsroverphotos.presentation.ui.AppCard
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
+import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import com.sirelon.marsroverphotos.domain.models.Rover
+import com.sirelon.marsroverphotos.presentation.theme.AppSize
 import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
-import com.sirelon.marsroverphotos.presentation.theme.AppTypography
+import com.sirelon.marsroverphotos.presentation.theme.activeStatusColor
+import com.sirelon.marsroverphotos.presentation.ui.AppCard
+import com.sirelon.marsroverphotos.presentation.ui.AppEmptyState
+import com.sirelon.marsroverphotos.presentation.ui.AppMetricItem
+import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
+import com.sirelon.marsroverphotos.presentation.ui.StatusBadge
+import com.sirelon.marsroverphotos.presentation.ui.blurb
 import com.sirelon.marsroverphotos.presentation.ui.painter
 import com.sirelon.marsroverphotos.presentation.viewmodels.RoversViewModel
 import com.sirelon.marsroverphotos.shared.resources.Res
-import com.sirelon.marsroverphotos.shared.resources.label_photos_total
+import com.sirelon.marsroverphotos.shared.resources.metric_label_last
+import com.sirelon.marsroverphotos.shared.resources.metric_label_photos
+import com.sirelon.marsroverphotos.shared.resources.metric_label_sols
+import com.sirelon.marsroverphotos.shared.resources.rovers_search_empty_fmt
+import com.sirelon.marsroverphotos.shared.resources.rovers_search_placeholder
+import com.sirelon.marsroverphotos.shared.resources.rovers_subtitle_fmt
+import com.sirelon.marsroverphotos.shared.resources.rovers_title
+import com.sirelon.marsroverphotos.utils.formatCompact
 import com.sirelon.marsroverphotos.utils.formatDisplayDate
-import com.sirelon.marsroverphotos.utils.formatThousands
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -50,9 +83,14 @@ fun RoversScreen(
 ) {
     val viewModel: RoversViewModel = koinViewModel()
     val rovers by viewModel.rovers.collectAsStateWithLifecycle()
+    val filteredRovers by viewModel.filteredRovers.collectAsStateWithLifecycle()
+    val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
 
     RoversContent(
-        rovers = rovers,
+        rovers = filteredRovers,
+        allRovers = rovers,
+        searchQuery = searchQuery,
+        onSearchQueryChange = viewModel::onSearchQueryChange,
         onClick = { rover ->
             viewModel.onRoverClicked(rover)
             onNavigateToPhotos(rover.id)
@@ -64,27 +102,147 @@ fun RoversScreen(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoversContent(
     rovers: List<Rover>,
+    allRovers: List<Rover>,
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
     onClick: (rover: Rover) -> Unit,
     onMissionInfoClick: (rover: Rover) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    LazyVerticalGrid(
-        columns = GridCells.Adaptive(minSize = 360.dp),
-        modifier = modifier,
-        contentPadding = PaddingValues(horizontal = AppSpacing.md, vertical = AppSpacing.sm),
-        verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
-        horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
-    ) {
-        items(rovers, key = { it.id }) { item ->
-            RoverItem(
-                modifier = Modifier.fillMaxWidth(),
-                rover = item,
-                onClick = onClick,
-                onMissionInfoClick = onMissionInfoClick
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+    // 1 column on compact, 2 on medium AND expanded — same adaptive source as the nav suite.
+    val columns = if (windowSizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_MEDIUM_LOWER_BOUND)) 2 else 1
+    // Cap+center the whole content column only in the EXPANDED width class (the AboutScreen pattern).
+    val expandedWidth = windowSizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_EXPANDED_LOWER_BOUND)
+    val contentWidth = if (expandedWidth) {
+        Modifier.widthIn(max = AppSize.contentMaxWidth)
+    } else {
+        Modifier.fillMaxWidth()
+    }
+
+    val colors = MaterialTheme.colorScheme
+    val activeCount = allRovers.count { it.status.equals("active", ignoreCase = true) }
+
+    // Search stays hidden behind the top-bar search action until the user opts in. The flag is
+    // saveable so it survives recreation, and search mode also stays visible whenever a query is
+    // active — the VM-held query outlives this composable, so the field + clear action must never
+    // disappear while filtering a non-empty query.
+    var searchActive by rememberSaveable { mutableStateOf(false) }
+    val showSearch = searchActive || searchQuery.isNotBlank()
+    val focusRequester = remember { FocusRequester() }
+
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    Scaffold(
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        contentWindowInsets = WindowInsets(),
+        topBar = {
+            AppTopBar(
+                title = {
+                    if (showSearch) {
+                        OutlinedTextField(
+                            value = searchQuery,
+                            onValueChange = onSearchQueryChange,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .focusRequester(focusRequester),
+                            singleLine = true,
+                            shape = MaterialTheme.shapes.large,
+                            leadingIcon = {
+                                MaterialSymbolIcon(
+                                    symbol = MaterialSymbol.Search,
+                                    contentDescription = null,
+                                    tint = colors.onSurfaceVariant
+                                )
+                            },
+                            placeholder = { Text(stringResource(Res.string.rovers_search_placeholder)) }
+                        )
+                    } else {
+                        Text(text = stringResource(Res.string.rovers_title))
+                    }
+                },
+                subtitle = if (showSearch) {
+                    null
+                } else {
+                    {
+                        Text(
+                            text = stringResource(
+                                Res.string.rovers_subtitle_fmt,
+                                allRovers.size,
+                                activeCount
+                            ),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = colors.onSurfaceVariant
+                        )
+                    }
+                },
+                windowInsets = WindowInsets(0, 0, 0, 0),
+                actions = {
+                    if (showSearch) {
+                        IconButton(onClick = {
+                            searchActive = false
+                            onSearchQueryChange("")
+                        }) {
+                            MaterialSymbolIcon(
+                                symbol = MaterialSymbol.Close,
+                                contentDescription = "Close search"
+                            )
+                        }
+                    } else {
+                        IconButton(onClick = { searchActive = true }) {
+                            MaterialSymbolIcon(
+                                symbol = MaterialSymbol.Search,
+                                contentDescription = "Search"
+                            )
+                        }
+                    }
+                },
+                scrollBehavior = scrollBehavior,
             )
+        }
+    ) { innerPadding ->
+        // Focus the field the moment search mode turns on so the keyboard appears immediately.
+        LaunchedEffect(searchActive) {
+            if (searchActive) focusRequester.requestFocus()
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .consumeWindowInsets(innerPadding),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            if (rovers.isEmpty() && searchQuery.isNotBlank()) {
+                AppEmptyState(
+                    title = stringResource(Res.string.rovers_search_empty_fmt, searchQuery),
+                    showImage = false,
+                    modifier = contentWidth
+                )
+            } else {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(columns),
+                    modifier = contentWidth.fillMaxSize(),
+                    contentPadding = PaddingValues(
+                        start = AppSpacing.md,
+                        end = AppSpacing.md,
+                        top = innerPadding.calculateTopPadding() + AppSpacing.sm,
+                        bottom = innerPadding.calculateBottomPadding() + AppSpacing.sm
+                    ),
+                    verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
+                    horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
+                ) {
+                    items(rovers, key = { it.id }) { item ->
+                        RoverItem(
+                            modifier = Modifier.fillMaxWidth(),
+                            rover = item,
+                            onClick = onClick,
+                            onMissionInfoClick = onMissionInfoClick
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -97,97 +255,107 @@ fun RoverItem(
     modifier: Modifier = Modifier
 ) {
     AppCard(
-        modifier = modifier.padding(AppSpacing.sm),
+        modifier = modifier,
+        onClick = { onClick(rover) },
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(onClick = { onClick(rover) })
-                .padding(AppSpacing.sm)
-        ) {
+        Box(modifier = Modifier.fillMaxWidth()) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Min)
+                    .padding(AppSpacing.md),
+                horizontalArrangement = Arrangement.spacedBy(AppSpacing.md)
             ) {
-                Box(
-                    modifier = Modifier.weight(1f),
-                    contentAlignment = Alignment.Center
-                ) {
-                    TitleText(rover.name)
-                }
-                IconButton(onClick = { onMissionInfoClick(rover) }) {
-                    MaterialSymbolIcon(
-                        symbol = MaterialSymbol.Info,
-                        contentDescription = "Mission Info"
+                Image(
+                    painter = rover.painter(),
+                    contentDescription = rover.name,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .width(AppSize.roverThumbWidth)
+                        .fillMaxHeight()
+                        .clip(MaterialTheme.shapes.medium)
+                )
+                Column(modifier = Modifier.weight(1f)) {
+                    TitleLine(rover)
+                    Spacer(modifier = Modifier.height(AppSpacing.sm))
+                    Text(
+                        text = rover.blurb(),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
                     )
+                    Spacer(modifier = Modifier.height(AppSpacing.md))
+                    HorizontalDivider(
+                        thickness = AppSize.hairline,
+                        color = MaterialTheme.colorScheme.outline
+                    )
+                    Spacer(modifier = Modifier.height(AppSpacing.md))
+                    MetricStrip(rover)
                 }
             }
-            InfoText(label = "Status:", text = rover.status)
-
-            Row(modifier = Modifier.padding(AppSpacing.sm)) {
-                Image(
-                    contentScale = ContentScale.FillHeight,
-                    painter = rover.painter(),
-                    modifier = Modifier
-                        .height(175.dp)
-                        .weight(1f)
-                        .clip(shape = MaterialTheme.shapes.large),
-                    contentDescription = rover.name
+            IconButton(
+                onClick = { onMissionInfoClick(rover) },
+                modifier = Modifier.align(Alignment.TopEnd)
+            ) {
+                MaterialSymbolIcon(
+                    symbol = MaterialSymbol.Info,
+                    contentDescription = "Mission Info",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Spacer(modifier = Modifier.width(AppSpacing.sm))
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.SpaceAround
-                ) {
-                    InfoText(
-                        label = stringResource(Res.string.label_photos_total),
-                        text = formatThousands(rover.totalPhotos)
-                    )
-                    InfoText(label = "Current sol:", text = "${rover.maxSol}")
-                    InfoText(label = "Last photo date:", text = formatDisplayDate(rover.maxDate))
-                    InfoText(label = "Launch date from Earth:", text = formatDisplayDate(rover.launchDate))
-                    InfoText(label = "Landing date on Mars:", text = formatDisplayDate(rover.landingDate))
-                }
             }
         }
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun TitleText(text: String) {
-    Text(
-        text = text,
-        style = AppTypography.roverTitle,
-        color = MaterialTheme.colorScheme.secondary,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis
-    )
-}
-
-@Composable
-private fun InfoText(label: String, text: String) {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
+private fun TitleLine(rover: Rover) {
+    val active = rover.status.equals("active", ignoreCase = true)
+    // FlowRow so a long rover name + status chip wrap gracefully instead of truncating tight.
+    FlowRow(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(end = AppSize.roverInfoReserve),
+        horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm),
+        verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)
     ) {
         Text(
-            text = label,
-            style = AppTypography.infoLabel,
+            text = rover.name,
+            style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.secondary,
-            textAlign = TextAlign.Center,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.fillMaxWidth()
-        )
-        Text(
-            text = text,
-            style = AppTypography.infoValue,
-            color = MaterialTheme.colorScheme.onSurface,
-            textAlign = TextAlign.Center,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.fillMaxWidth()
+            overflow = TextOverflow.Ellipsis
+        )
+        StatusBadge(
+            label = if (active) "Active" else "Complete",
+            color = if (active) activeStatusColor() else MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun MetricStrip(rover: Rover) {
+    FlowRow(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(AppSpacing.lg),
+        verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)
+    ) {
+        AppMetricItem(
+            symbol = MaterialSymbol.Collections,
+            value = formatCompact(rover.totalPhotos),
+            label = stringResource(Res.string.metric_label_photos)
+        )
+        AppMetricItem(
+            symbol = MaterialSymbol.Schedule,
+            value = formatCompact(rover.maxSol),
+            label = stringResource(Res.string.metric_label_sols)
+        )
+        AppMetricItem(
+            symbol = MaterialSymbol.Event,
+            value = formatDisplayDate(rover.maxDate),
+            label = stringResource(Res.string.metric_label_last)
         )
     }
 }
