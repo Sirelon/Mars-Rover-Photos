@@ -2,6 +2,7 @@ package com.sirelon.marsroverphotos.presentation.screens
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -83,6 +84,8 @@ import com.sirelon.marsroverphotos.shared.resources.images_empty_btn
 import com.sirelon.marsroverphotos.shared.resources.images_empty_title
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
+import com.sirelon.marsroverphotos.presentation.navigation.LocalSharedTransitionScope
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -189,6 +192,7 @@ fun ImagesScreen(
                 onFavoriteClick = viewModel::setFavorite,
                 onSaveClick = viewModel::saveImage,
                 onShareClick = viewModel::shareMarsImage,
+                selectedId = selectedId,
             )
         }
     }
@@ -234,6 +238,7 @@ private fun ImagesPagerContent(
     onFavoriteClick: (MarsImage, Boolean) -> Unit,
     onSaveClick: (MarsImage) -> Unit,
     onShareClick: (MarsImage) -> Unit,
+    selectedId: String? = null,
 ) {
     var titleState by remember { mutableStateOf("Mars Rover Photos") }
     var showInfoSheet by remember { mutableStateOf(false) }
@@ -322,6 +327,7 @@ private fun ImagesPagerContent(
             onTap = onTap,
             onFavoriteClick = onFavoriteClick,
             onScaleChange = { page, scale -> pageScales[page] = scale },
+            selectedId = selectedId,
         )
 
         OnEvent(uiEvent = uiEvent)
@@ -477,6 +483,7 @@ private fun InfoIcon(onClick: () -> Unit) {
 
 // ─── Pager ───────────────────────────────────────────────────────────────────
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun ImagesPager(
     pagerState: PagerState,
@@ -485,6 +492,7 @@ private fun ImagesPager(
     onTap: () -> Unit,
     onFavoriteClick: (MarsImage, Boolean) -> Unit,
     onScaleChange: (page: Int, scale: Float) -> Unit,
+    selectedId: String? = null,
 ) {
     // Immediate visual feedback for the heart: the paged item's favorite flag is correct on load
     // (merged from Room by the write-through cache) but can't be mutated in place after a tap,
@@ -517,9 +525,21 @@ private fun ImagesPager(
             }
 
             Box(modifier = Modifier.fillMaxSize()) {
+                val sharedScope = LocalSharedTransitionScope.current
+                val sharedModifier = if (sharedScope != null && marsImage.id == selectedId) {
+                    val animScope = LocalNavAnimatedContentScope.current
+                    with(sharedScope) {
+                        Modifier.sharedElement(
+                            sharedContentState = rememberSharedContentState(key = "photo_${marsImage.id}"),
+                            animatedVisibilityScope = animScope,
+                        )
+                    }
+                } else Modifier
+
                 NetworkImage(
                     modifier = Modifier
                         .fillMaxSize()
+                        .then(sharedModifier)
                         .zoomable(
                             zoomState = zoomState,
                             scrollGesturePropagation = ScrollGesturePropagation.NotZoomed,

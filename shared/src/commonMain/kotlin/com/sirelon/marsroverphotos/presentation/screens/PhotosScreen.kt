@@ -1,6 +1,7 @@
 package com.sirelon.marsroverphotos.presentation.screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
@@ -90,6 +91,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
+import com.sirelon.marsroverphotos.presentation.navigation.LocalSharedTransitionScope
 import org.koin.compose.viewmodel.koinViewModel
 
 // ── State-holder composable ───────────────────────────────────────────────────
@@ -487,24 +490,42 @@ private fun EdgeProgress(modifier: Modifier = Modifier) {
     )
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun PhotoCard(
     image: MarsImage,
     showCameraName: Boolean,
     onPhotoClick: (image: MarsImage) -> Unit,
 ) {
+    val sharedScope = LocalSharedTransitionScope.current
     AppCard(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onPhotoClick(image) },
     ) {
         Column(verticalArrangement = Arrangement.SpaceBetween) {
-            NetworkImage(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1F),
-                imageUrl = image.imageUrl
-            )
+            if (sharedScope != null) {
+                val animScope = LocalNavAnimatedContentScope.current
+                with(sharedScope) {
+                    NetworkImage(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(1F)
+                            .sharedElement(
+                                sharedContentState = rememberSharedContentState(key = "photo_${image.id}"),
+                                animatedVisibilityScope = animScope,
+                            ),
+                        imageUrl = image.imageUrl,
+                    )
+                }
+            } else {
+                NetworkImage(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1F),
+                    imageUrl = image.imageUrl,
+                )
+            }
             if (showCameraName) {
                 Text(
                     text = shortCaption(image.name.orEmpty()),
