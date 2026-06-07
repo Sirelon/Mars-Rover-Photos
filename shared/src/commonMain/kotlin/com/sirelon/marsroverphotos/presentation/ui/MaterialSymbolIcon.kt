@@ -54,7 +54,11 @@ enum class MaterialSymbol(val iconName: String) {
     Delete("delete"),
     Public("public"),
     ChevronRight("chevron_right"),
-    Reviews("reviews")
+    Reviews("reviews"),
+    Collections("collections"),
+    Schedule("schedule"),
+    Event("event"),
+    Search("search")
 }
 
 /**
