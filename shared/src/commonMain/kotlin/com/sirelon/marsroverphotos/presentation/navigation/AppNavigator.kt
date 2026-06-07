@@ -1,5 +1,8 @@
 package com.sirelon.marsroverphotos.presentation.navigation
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
@@ -42,3 +45,6 @@ class AppNavigator(
 val LocalAppNavigator = staticCompositionLocalOf<AppNavigator> {
     error("AppNavigator not provided")
 }
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+val LocalSharedTransitionScope = compositionLocalOf<SharedTransitionScope?> { null }
