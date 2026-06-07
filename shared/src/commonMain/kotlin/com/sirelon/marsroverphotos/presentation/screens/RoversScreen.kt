@@ -36,6 +36,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -126,8 +127,12 @@ fun RoversContent(
     val colors = MaterialTheme.colorScheme
     val activeCount = allRovers.count { it.status.equals("active", ignoreCase = true) }
 
-    // Search stays hidden behind the top-bar search action until the user opts in.
-    var searchActive by remember { mutableStateOf(false) }
+    // Search stays hidden behind the top-bar search action until the user opts in. The flag is
+    // saveable so it survives recreation, and search mode also stays visible whenever a query is
+    // active — the VM-held query outlives this composable, so the field + clear action must never
+    // disappear while filtering a non-empty query.
+    var searchActive by rememberSaveable { mutableStateOf(false) }
+    val showSearch = searchActive || searchQuery.isNotBlank()
     val focusRequester = remember { FocusRequester() }
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -137,7 +142,7 @@ fun RoversContent(
         topBar = {
             AppTopBar(
                 title = {
-                    if (searchActive) {
+                    if (showSearch) {
                         OutlinedTextField(
                             value = searchQuery,
                             onValueChange = onSearchQueryChange,
@@ -159,7 +164,7 @@ fun RoversContent(
                         Text(text = stringResource(Res.string.rovers_title))
                     }
                 },
-                subtitle = if (searchActive) {
+                subtitle = if (showSearch) {
                     null
                 } else {
                     {
@@ -176,7 +181,7 @@ fun RoversContent(
                 },
                 windowInsets = WindowInsets(0, 0, 0, 0),
                 actions = {
-                    if (searchActive) {
+                    if (showSearch) {
                         IconButton(onClick = {
                             searchActive = false
                             onSearchQueryChange("")
