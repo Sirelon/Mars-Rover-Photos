@@ -1,13 +1,5 @@
 package com.sirelon.marsroverphotos.presentation.navigation
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -53,8 +45,6 @@ import org.jetbrains.compose.resources.stringResource
  * [bottomChrome] — content placed between the main area and the NavigationBar
  * (e.g. an ad slot), or at the bottom of the content column for the rail layout.
  */
-private const val CHROME_ANIM_MS = 400
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MarsNavigationSuite(
@@ -62,7 +52,6 @@ fun MarsNavigationSuite(
     onDestinationClick: (AppDestination) -> Unit,
     modifier: Modifier = Modifier,
     resetScrollKey: Any? = null,
-    showChrome: Boolean = true,
     bottomChrome: @Composable () -> Unit = {},
     content: @Composable () -> Unit,
 ) {
@@ -87,30 +76,22 @@ fun MarsNavigationSuite(
                 ) {
                     content()
                 }
-                AnimatedVisibility(
-                    visible = showChrome,
-                    enter = slideInVertically(tween(CHROME_ANIM_MS)) { it } + fadeIn(tween(CHROME_ANIM_MS)),
-                    exit = slideOutVertically(tween(CHROME_ANIM_MS)) { it } + fadeOut(tween(CHROME_ANIM_MS / 2)),
+                bottomChrome()
+                BottomAppBar(
+                    scrollBehavior = scrollBehavior,
+                    contentPadding = PaddingValues(horizontal = 0.dp, vertical = 0.dp),
                 ) {
-                    Column {
-                        bottomChrome()
-                        BottomAppBar(
-                            scrollBehavior = scrollBehavior,
-                            contentPadding = PaddingValues(horizontal = 0.dp, vertical = 0.dp),
-                        ) {
-                            marsNavigationItems.forEach { item ->
-                                val selected = item.destination == selectedDestination
-                                NavigationBarItem(
-                                    selected = selected,
-                                    onClick = { onDestinationClick(item.destination) },
-                                    icon = {
-                                        val label = stringResource(item.label)
-                                        MarsNavigationIcon(item.icon, selected, label)
-                                    },
-                                    label = { Text(stringResource(item.label)) },
-                                )
-                            }
-                        }
+                    marsNavigationItems.forEach { item ->
+                        val selected = item.destination == selectedDestination
+                        NavigationBarItem(
+                            selected = selected,
+                            onClick = { onDestinationClick(item.destination) },
+                            icon = {
+                                val label = stringResource(item.label)
+                                MarsNavigationIcon(item.icon, selected, label)
+                            },
+                            label = { Text(stringResource(item.label)) },
+                        )
                     }
                 }
             }
@@ -118,37 +99,25 @@ fun MarsNavigationSuite(
 
         else -> {
             Row(modifier) {
-                AnimatedVisibility(
-                    visible = showChrome,
-                    enter = slideInHorizontally(tween(CHROME_ANIM_MS)) { -it } + fadeIn(tween(CHROME_ANIM_MS)),
-                    exit = slideOutHorizontally(tween(CHROME_ANIM_MS)) { -it } + fadeOut(tween(CHROME_ANIM_MS / 2)),
-                ) {
-                    NavigationRail {
-                        marsNavigationItems.forEach { item ->
-                            val selected = item.destination == selectedDestination
-                            NavigationRailItem(
-                                selected = selected,
-                                onClick = { onDestinationClick(item.destination) },
-                                icon = {
-                                    val label = stringResource(item.label)
-                                    MarsNavigationIcon(item.icon, selected, label)
-                                },
-                                label = { Text(stringResource(item.label)) },
-                            )
-                        }
+                NavigationRail {
+                    marsNavigationItems.forEach { item ->
+                        val selected = item.destination == selectedDestination
+                        NavigationRailItem(
+                            selected = selected,
+                            onClick = { onDestinationClick(item.destination) },
+                            icon = {
+                                val label = stringResource(item.label)
+                                MarsNavigationIcon(item.icon, selected, label)
+                            },
+                            label = { Text(stringResource(item.label)) },
+                        )
                     }
                 }
                 Column(Modifier.weight(1f)) {
                     Box(Modifier.weight(1f)) {
                         content()
                     }
-                    AnimatedVisibility(
-                        visible = showChrome,
-                        enter = slideInVertically(tween(CHROME_ANIM_MS)) { it } + fadeIn(tween(CHROME_ANIM_MS)),
-                        exit = slideOutVertically(tween(CHROME_ANIM_MS)) { it } + fadeOut(tween(CHROME_ANIM_MS / 2)),
-                    ) {
-                        bottomChrome()
-                    }
+                    bottomChrome()
                 }
             }
         }

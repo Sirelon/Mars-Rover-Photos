@@ -35,7 +35,6 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import androidx.navigation3.runtime.NavEntry
 import com.sirelon.marsroverphotos.presentation.screens.EarthDatePickerScreen
-import com.sirelon.marsroverphotos.presentation.screens.ImagesScreen
 import com.sirelon.marsroverphotos.presentation.screens.PhotosFiltersScreen
 import com.sirelon.marsroverphotos.presentation.screens.PhotosScreen
 import com.sirelon.marsroverphotos.presentation.screens.SolPickerScreen
@@ -139,28 +138,6 @@ fun AppNavigation(
                 )
             }
 
-            is AppDestination.Images -> NavEntry<NavKey>(
-                key = key,
-                metadata = NavDisplay.transitionSpec {
-                    fadeIn(tween(ANIM_DURATION)) togetherWith fadeOut(tween(ANIM_DURATION_2))
-                } + NavDisplay.popTransitionSpec {
-                    fadeIn(tween(ANIM_DURATION)) togetherWith fadeOut(tween(ANIM_DURATION_2))
-                } + NavDisplay.predictivePopTransitionSpec { _ ->
-                    fadeIn(tween(ANIM_DURATION)) togetherWith fadeOut(tween(ANIM_DURATION_2))
-                },
-            ) {
-                val nav = LocalAppNavigator.current
-                ImagesScreen(
-                    photoIds = key.photoIds,
-                    selectedId = key.selectedId,
-                    source = key.source,
-                    roverId = key.roverId,
-                    camera = key.camera,
-                    cameras = key.cameras,
-                    onBack = { nav.goBack() },
-                )
-            }
-
             is AppDestination.PhotosFilters -> NavEntry<NavKey>(
                 key = key,
                 contentKey = "${photosContentKey(key.roverId)}/filters",
@@ -244,40 +221,43 @@ fun AppNavigation(
     }
 
     CompositionLocalProvider(LocalAppNavigator provides navigator) {
-        MarsNavigationSuite(
-            modifier = modifier,
-            selectedDestination = chromeDestination.topLevelDestination(),
-            onDestinationClick = { destination ->
-                tracker.trackClick("nav_${destination.analyticsTag}")
-                navigator.selectTopLevel(destination)
-            },
-            resetScrollKey = chromeDestination,
-            showChrome = !isImages,
-            bottomChrome = { AdSlot(modifier = Modifier.fillMaxWidth()) },
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .then(
-                        if (!isImages) Modifier.windowInsetsPadding(WindowInsets.statusBars)
-                        else Modifier
-                    ),
+        if (isImages) {
+            // Images screen goes fully edge-to-edge: no status-bar inset, no navigation chrome.
+            Box(modifier = modifier.background(MaterialTheme.colorScheme.background)) {
+                navDisplay()
+            }
+        } else {
+            MarsNavigationSuite(
+                modifier = modifier,
+                selectedDestination = chromeDestination.topLevelDestination(),
+                onDestinationClick = { destination ->
+                    tracker.trackClick("nav_${destination.analyticsTag}")
+                    navigator.selectTopLevel(destination)
+                },
+                resetScrollKey = chromeDestination,
+                bottomChrome = { AdSlot(modifier = Modifier.fillMaxWidth()) },
             ) {
-                AnimatedVisibility(chromeDestination !is AppDestination.Ukraine) {
-                    UkraineBanner(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {
-                            tracker.trackClick("UkraineBanner_Root")
-                            navigator.navigate(AppDestination.Ukraine)
-                        },
-                    )
-                }
-                Box(
+                Column(
                     modifier = Modifier
-                        .weight(1f)
-                        .background(MaterialTheme.colorScheme.background),
+                        .fillMaxSize()
+                        .windowInsetsPadding(WindowInsets.statusBars),
                 ) {
-                    navDisplay()
+                    AnimatedVisibility(chromeDestination !is AppDestination.Ukraine) {
+                        UkraineBanner(
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = {
+                                tracker.trackClick("UkraineBanner_Root")
+                                navigator.navigate(AppDestination.Ukraine)
+                            },
+                        )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .background(MaterialTheme.colorScheme.background),
+                    ) {
+                        navDisplay()
+                    }
                 }
             }
         }

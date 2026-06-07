@@ -6,6 +6,7 @@ import com.sirelon.marsroverphotos.presentation.navigation.AppDestination
 import com.sirelon.marsroverphotos.presentation.navigation.LocalAppNavigator
 import com.sirelon.marsroverphotos.presentation.screens.AboutScreen
 import com.sirelon.marsroverphotos.presentation.screens.FavoriteScreen
+import com.sirelon.marsroverphotos.presentation.screens.ImagesScreen
 import com.sirelon.marsroverphotos.presentation.screens.PopularScreen
 import com.sirelon.marsroverphotos.presentation.screens.RoverMissionInfoScreen
 import com.sirelon.marsroverphotos.presentation.screens.RoversScreen
@@ -32,8 +33,18 @@ val navigationModule = module {
     // the shared PhotosViewModel survives camera-filter changes, and the dialogs name the Photos
     // entry as their ViewModelStore parent (see SharedViewModelStoreNavEntryDecorator).
 
-    // AppDestination.Images is declared as a raw NavEntry in AppNavigation so it can carry
-    // NavDisplay.transitionSpec metadata (fade instead of the default horizontal slide).
+    navigation<AppDestination.Images> { destination ->
+        val navigator = LocalAppNavigator.current
+        ImagesScreen(
+            photoIds = destination.photoIds,
+            selectedId = destination.selectedId,
+            source = destination.source,
+            roverId = destination.roverId,
+            camera = destination.camera,
+            cameras = destination.cameras,
+            onBack = { navigator.goBack() }
+        )
+    }
 
     navigation<AppDestination.Favorite> {
         val navigator = LocalAppNavigator.current
