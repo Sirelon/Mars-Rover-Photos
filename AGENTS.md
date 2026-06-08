@@ -6,7 +6,7 @@ This is a Kotlin Multiplatform project. The module layout:
 - `androidApp/` — Android shell: `MainActivity`, `MarsRoverApplication`, widget, GDPR helper, app icons
 - `desktopApp/` — Desktop shell
 - `iosApp/` — Swift/iOS shell, Xcode project, Firebase config
-- `webApp/` — Web/WASM (currently disabled; see `WASM_WEB_SUPPORT.md`)
+- `webApp/` — experimental standalone WASM shell; shared web support is still disabled (see `WASM_WEB_SUPPORT.md`)
 
 Feature screens and view models live in `shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation`. Android-specific implementations go in `shared/src/androidMain` or `androidApp/`. Static-analysis configuration is stored under `config/detekt/`.
 
@@ -17,7 +17,8 @@ Beta, alpha, and RC dependency versions are acceptable in this project. Prefer t
 
 ## Build, Test, and Development Commands
 - `./gradlew assembleDebug` — build the debuggable APK with the repository Compose compiler flags.
-- `./gradlew testDebugUnitTest` — run JVM unit tests; execute before every commit.
+- `./gradlew testDebugUnitTest` — run Android-side JVM unit tests.
+- `./gradlew :shared:desktopTest` — run the shared KMP/common tests on the desktop JVM target.
 - `./gradlew connectedDebugAndroidTest` — launch instrumentation tests on an attached emulator or device.
 - `./gradlew detekt` — lint and autocorrect according to `config/detekt/detekt.yml`.
 Run commands from the repository root so the Gradle wrapper can supply the pinned toolchain.
@@ -39,15 +40,15 @@ Before writing or changing any Compose UI, read **[docs/DESIGN_SYSTEM.md](docs/D
 living design-system doc. It carries the prescriptive UI/UX rules (token usage, the `App*` component
 family, adaptive-nav ownership), a component index with file links, and the non-obvious insights
 (e.g. dark `surface` == `background`, no green slot in the M3 palette, the full Material Symbols font).
-Reuse the `App*` components in `presentation/ui/` before adding new ones; never inline raw `.dp` literals
-(use `AppSpacing` / `AppSize`) or hardcode theme colors (use `MaterialTheme.colorScheme`). **Keep the doc
+Reuse the `App*` components in `presentation/ui/` before adding new ones; prefer `AppSpacing` /
+`AppSize` over adding new raw `.dp` literals, and use `MaterialTheme.colorScheme` instead of hardcoded theme colors. **Keep the doc
 updated**: when you add a reusable component, a token, or learn a UI gotcha, record it there.
 
 ## Testing Guidelines
 Place unit specs in `shared/src/commonTest` (or `androidTest` for Android-instrumented tests), mirroring the source package and ending class names with `*Test`. Use JUnit4 and Mockito-Kotlin for Android tests. Compose UI or Room integration checks belong in `androidApp/src/androidTest` and should describe the scenario in the test name. Cover paging boundaries, offline caching, and error flows whenever you touch those areas.
 
 ## Commit & Pull Request Guidelines
-Follow the existing history with concise imperative subject lines under ~70 characters (e.g., `Fix release build`). Keep functional changes grouped per commit. Pull requests need a short summary, call out UI or API changes, link issues, and attach emulator screenshots or recordings when visuals move. Confirm `assembleDebug`, `testDebugUnitTest`, and `detekt` succeed before requesting review.
+Follow the existing history with concise imperative subject lines under ~70 characters (e.g., `Fix release build`). Keep functional changes grouped per commit. Pull requests need a short summary, call out UI or API changes, link issues, and attach emulator screenshots or recordings when visuals move. Confirm `assembleDebug`, `testDebugUnitTest`, `:shared:desktopTest`, and `detekt` succeed before requesting review.
 
 ## Security & Configuration Tips
 Signing data comes from `keystore.properties`; keep it local and out of version control. Avoid committing `local.properties`, API keys, or regenerated `*.jks` files. Prefer runtime configuration or encrypted storage for new secrets and alert maintainers immediately if a credential leaks.

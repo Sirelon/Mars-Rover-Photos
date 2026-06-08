@@ -4,8 +4,9 @@
 non-obvious UI/UX fact about this codebase. It exists so future sessions don't re-derive the
 conventions or reinvent components under new names. Keep entries short and prescriptive.
 
-The app is **Compose Multiplatform** (Android / iOS / Desktop; Web/WASM disabled). All shared UI
-lives in `shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/`:
+The app is **Compose Multiplatform** for Android / iOS / Desktop. The repo also contains an
+experimental `webApp/` WASM shell, but the shared `:shared` UI target is still disabled there. All
+shared UI lives in `shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/`:
 - `theme/` — color scheme, tokens (spacing, sizes, typography)
 - `ui/` — reusable design-system components (the `App*` family)
 - `navigation/` — the adaptive nav shell
@@ -20,7 +21,8 @@ coral **accent/secondary** (`#FC6C4B`, "the Mars accent"). Light theme is white-
 
 ### Tokens, never raw literals
 - **Spacing / padding / gaps** → `AppSpacing` (`theme/AppSpacing.kt`, 8dp grid: `xs`4 `sm`8 `md`12
-  `lg`16 `xl`24 `xxl`32 `x3l`48). Never a bare `.dp` for spacing.
+  `lg`16 `xl`24 `xxl`32 `x3l`48). New layout spacing should use tokens; a few older reusable
+  helpers still contain inline `dp` literals and should be normalized when touched.
 - **Component dimensions & corner radii** → `AppSize` (`theme/AppSize.kt`). Add a token here rather
   than inlining a size literal. If a needed value is neither a grid spacing nor a clear size, prefer
   extending `AppSize` over leaving a magic number.
@@ -101,8 +103,13 @@ Stable design-system pieces (path = `shared/src/commonMain/kotlin/com/sirelon/ma
 | `AppChip` | `ui/AppChip.kt` | secondaryContainer assist chip. |
 | `AppButton` / `AppOutlinedButton` | `ui/AppButton.kt` | Brand buttons. |
 | `MaterialSymbolIcon` + `MaterialSymbol` | `ui/MaterialSymbolIcon.kt` | Icon font; add glyphs to the enum. Default size `AppSize.iconDefault` (24dp). |
-| `MarsSnackbar` | `ui/` | Branded snackbar host. |
+| `AppTopBar` | `ui/AppTopBar.kt` | Shared top app bar with optional subtitle, back handling, and custom nav/action slots. |
+| `AppEmptyState` | `ui/AppEmptyState.kt` | Shared empty/error state with optional alien mascot and action slot. |
+| `AppFloatingActionButton` | `ui/AppFloatingActionButton.kt` | Branded FAB that defaults to the Mars accent (`colorScheme.secondary`). |
+| `MarsSnackbar` | `ui/widgets.kt` | Branded snackbar host. |
 | `MarsImage` | `ui/MarsImage.kt` | Coil-backed image. |
+| `PlatformDatePickerDialog` | `ui/PlatformDatePicker.kt` | Compose-only cross-platform date picker dialog with min/max range support. |
+| `CenteredColumn` / `CenteredProgress` | `ui/CenteredComponents.kt` | Shared centering primitives for loading and empty states. |
 | `MarsNavigationSuite` | `navigation/MarsBottomBar.kt` | Adaptive bottom bar ↔ nav rail (compact ↔ medium/expanded). |
 | `AppSpacing` | `theme/AppSpacing.kt` | 8dp-grid **spacing** tokens. |
 | `AppSize` | `theme/AppSize.kt` | Component **dimension/radius** tokens (icon/card/hero/content-width, etc.). |
