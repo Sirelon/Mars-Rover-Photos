@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -18,7 +19,6 @@ import androidx.compose.ui.unit.sp
 import com.sirelon.marsroverphotos.presentation.theme.AppSize
 import com.sirelon.marsroverphotos.shared.resources.Res
 import com.sirelon.marsroverphotos.shared.resources.material_symbols_outlined
-import kotlin.math.max
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.Font as ResourceFont
 
@@ -119,13 +119,16 @@ private fun materialSymbolsFontFamily(
     filled: Boolean,
     weight: Int
 ): FontFamily {
-    val resolvedWeight = if (filled) max(weight, 600) else weight
-    val fontWeight = FontWeight(resolvedWeight.coerceIn(100, 700))
-
+    val fontWeight = FontWeight(weight.coerceIn(100, 700))
     return FontFamily(
         ResourceFont(
             Res.font.material_symbols_outlined,
-            weight = fontWeight
+            weight = fontWeight,
+            variationSettings = FontVariation.Settings(
+                FontVariation.Setting("FILL", if (filled) 1f else 0f),
+                FontVariation.Setting("wght", weight.toFloat()),
+                FontVariation.Setting("opsz", 24f),
+            ),
         )
     )
 }

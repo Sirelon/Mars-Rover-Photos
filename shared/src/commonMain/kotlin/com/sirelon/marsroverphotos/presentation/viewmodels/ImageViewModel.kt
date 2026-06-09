@@ -144,7 +144,10 @@ class ImageViewModel(
      * stays correct across repeated taps even though the paged item isn't reactively updated).
      * [ImagesRepository.setFavorite] ensures the row exists first for not-yet-cached feed photos.
      */
+    val favoriteOverrides get() = roverFeedPager.favoriteOverrides
+
     fun setFavorite(image: MarsImage, favorite: Boolean) {
+        roverFeedPager.favoriteOverrides[image.id] = favorite
         viewModelScope.launch {
             try {
                 imagesRepository.setFavorite(image, favorite)

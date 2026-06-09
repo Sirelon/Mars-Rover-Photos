@@ -5,7 +5,9 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,14 +39,17 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -72,6 +77,9 @@ import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
 import com.sirelon.marsroverphotos.presentation.ui.CenteredProgress
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
+import com.sirelon.marsroverphotos.presentation.ui.LikeHeartOverlay
+import com.sirelon.marsroverphotos.presentation.ui.MarsImageFavoriteToggle
+import com.sirelon.marsroverphotos.presentation.ui.rememberLikeHeartState
 import com.sirelon.marsroverphotos.presentation.ui.NetworkImage
 import com.sirelon.marsroverphotos.presentation.viewmodels.PhotosUiState
 import com.sirelon.marsroverphotos.presentation.viewmodels.PhotosViewModel
@@ -208,6 +216,8 @@ fun PhotosScreen(
             onClearCameraFilter()
         },
         onNavigateToImages = onNavigateToImages,
+        onFavoriteClick = viewModel::toggleFavorite,
+        favoriteOverrides = viewModel.favoriteOverrides,
         onBack = onBack,
         onOpenSolPicker = onOpenSolPicker,
         onOpenEarthDatePicker = onOpenEarthDatePicker,
@@ -231,6 +241,8 @@ private fun PhotosScreen(
     onGoToLatest: () -> Unit,
     onClearCameraFilters: () -> Unit,
     onNavigateToImages: (clickedId: String, cameras: Set<String>) -> Unit,
+    onFavoriteClick: (image: MarsImage) -> Unit,
+    favoriteOverrides: SnapshotStateMap<String, Boolean>,
     onBack: () -> Unit,
     onOpenSolPicker: () -> Unit,
     onOpenEarthDatePicker: () -> Unit,
@@ -305,6 +317,8 @@ private fun PhotosScreen(
                             gridState = gridState,
                             showCameraName = state.showCameraName,
                             onPhotoClick = { image -> onNavigateToImages(image.id, state.cameraFilters) },
+                            onFavoriteClick = onFavoriteClick,
+                            favoriteOverrides = favoriteOverrides,
                         )
 
                         // Floating "sticky" date chip — mirrors the top-visible day (sol mode only).
@@ -359,6 +373,8 @@ private fun PhotosGrid(
     gridState: LazyGridState,
     showCameraName: Boolean,
     onPhotoClick: (image: MarsImage) -> Unit,
+    onFavoriteClick: (image: MarsImage) -> Unit,
+    favoriteOverrides: SnapshotStateMap<String, Boolean>,
 ) {
     LazyVerticalGrid(
         state = gridState,
@@ -387,11 +403,16 @@ private fun PhotosGrid(
             }
         ) { index ->
             when (val item = pagingItems[index]) {
-                is GridItem.PhotoItem -> PhotoCard(
-                    image = item.image,
-                    showCameraName = showCameraName,
-                    onPhotoClick = onPhotoClick,
-                )
+                is GridItem.PhotoItem -> {
+                    val checked = favoriteOverrides[item.image.id] ?: item.image.favorite
+                    PhotoCard(
+                        image = item.image,
+                        checked = checked,
+                        showCameraName = showCameraName,
+                        onPhotoClick = onPhotoClick,
+                        onFavoriteClick = onFavoriteClick,
+                    )
+                }
 
                 is GridItem.DateHeader -> DateHeaderRow(header = item)
 
@@ -494,9 +515,13 @@ private fun EdgeProgress(modifier: Modifier = Modifier) {
 @Composable
 private fun PhotoCard(
     image: MarsImage,
+    checked: Boolean,
     showCameraName: Boolean,
     onPhotoClick: (image: MarsImage) -> Unit,
+    onFavoriteClick: (image: MarsImage) -> Unit,
 ) {
+    val heartState = rememberLikeHeartState()
+
     val sharedScope = LocalSharedTransitionScope.current
     AppCard(
         modifier = Modifier
@@ -504,26 +529,53 @@ private fun PhotoCard(
             .clickable { onPhotoClick(image) },
     ) {
         Column(verticalArrangement = Arrangement.SpaceBetween) {
-            if (sharedScope != null) {
-                val animScope = LocalNavAnimatedContentScope.current
-                with(sharedScope) {
+            Box(modifier = Modifier.fillMaxWidth()) {
+                if (sharedScope != null) {
+                    val animScope = LocalNavAnimatedContentScope.current
+                    with(sharedScope) {
+                        NetworkImage(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .aspectRatio(1F)
+                                .sharedElement(
+                                    sharedContentState = rememberSharedContentState(key = "photo_${image.id}"),
+                                    animatedVisibilityScope = animScope,
+                                ),
+                            imageUrl = image.imageUrl,
+                        )
+                    }
+                } else {
                     NetworkImage(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .aspectRatio(1F)
-                            .sharedElement(
-                                sharedContentState = rememberSharedContentState(key = "photo_${image.id}"),
-                                animatedVisibilityScope = animScope,
-                            ),
+                            .aspectRatio(1F),
                         imageUrl = image.imageUrl,
                     )
                 }
-            } else {
-                NetworkImage(
+                LikeHeartOverlay(
+                    visible = heartState.visible,
+                    modifier = Modifier.align(Alignment.Center),
+                )
+                val sharedFavModifier: Modifier = if (sharedScope != null) {
+                    val animScope = LocalNavAnimatedContentScope.current
+                    with(sharedScope) {
+                        Modifier.sharedElement(
+                            sharedContentState = rememberSharedContentState(key = "photo_favorite_${image.id}"),
+                            animatedVisibilityScope = animScope,
+                        )
+                    }
+                } else Modifier
+                MarsImageFavoriteToggle(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1F),
-                    imageUrl = image.imageUrl,
+                        .align(Alignment.TopEnd)
+                        .then(sharedFavModifier)
+                        .padding(AppSpacing.xs)
+                        .background(Color.White.copy(alpha = 0.9f), CircleShape),
+                    checked = checked,
+                    onCheckedChange = { _ ->
+                        if (!checked) heartState.trigger()
+                        onFavoriteClick(image)
+                    },
                 )
             }
             if (showCameraName) {
@@ -690,6 +742,8 @@ private fun PhotosScreenPreview() {
             onGoToLatest = {},
             onClearCameraFilters = {},
             onNavigateToImages = { _, _ -> },
+            onFavoriteClick = {},
+            favoriteOverrides = mutableStateMapOf(),
             onBack = {},
             onOpenSolPicker = {},
             onOpenEarthDatePicker = {},
