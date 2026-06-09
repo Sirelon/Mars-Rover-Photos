@@ -13,7 +13,9 @@ import com.sirelon.marsroverphotos.data.paging.usesPageFeed
 import com.sirelon.marsroverphotos.domain.models.CURIOSITY_ID
 import com.sirelon.marsroverphotos.domain.models.EducationalFact
 import com.sirelon.marsroverphotos.domain.models.Rover
+import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.domain.repositories.FactsRepository
+import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
 import com.sirelon.marsroverphotos.domain.repositories.RoversRepository
 import com.sirelon.marsroverphotos.domain.settings.AppSettings
 import com.sirelon.marsroverphotos.presentation.models.GridItem
@@ -58,6 +60,7 @@ class PhotosViewModel(
     private val factsRepository: FactsRepository,
     private val appSettings: AppSettings,
     private val roverFeedPager: RoverFeedPager,
+    private val imagesRepository: ImagesRepository,
 ) : ViewModel() {
 
     private val roverIdEmitter = MutableStateFlow<Long?>(null)
@@ -239,6 +242,10 @@ class PhotosViewModel(
     }
 
     fun consumeLastViewedPhotoId(): String? = roverFeedPager.consumeLastViewedPhotoId()
+
+    fun toggleFavorite(image: MarsImage) {
+        viewModelScope.launch { imagesRepository.updateFavForImage(image) }
+    }
 
     fun randomize() {
         val roverId = roverIdEmitter.value ?: return

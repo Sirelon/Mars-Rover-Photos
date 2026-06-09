@@ -3,10 +3,12 @@ package com.sirelon.marsroverphotos.presentation.ui
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -22,9 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.layout.Box
 import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
@@ -61,6 +61,8 @@ fun MarsImageComposable(
             }).build()
     )
 
+    val heartState = rememberLikeHeartState()
+
     val state by painter.state.collectAsState()
     val showStats = state is AsyncImagePainter.State.Success
     AppCard(
@@ -70,18 +72,30 @@ fun MarsImageComposable(
             .clickable(onClick = onClick),
     ) {
         Column {
-            Image(
-                modifier = Modifier
-                    .defaultMinSize(minHeight = 100.dp)
-                    .fillMaxWidth(),
-                contentScale = ContentScale.FillWidth,
-                painter = painter,
-                alignment = Alignment.TopCenter,
-                contentDescription = imageUrl
-            )
+            Box(modifier = Modifier.fillMaxWidth()) {
+                Image(
+                    modifier = Modifier
+                        .defaultMinSize(minHeight = 100.dp)
+                        .fillMaxWidth(),
+                    contentScale = ContentScale.FillWidth,
+                    painter = painter,
+                    alignment = Alignment.TopCenter,
+                    contentDescription = imageUrl
+                )
+                LikeHeartOverlay(
+                    visible = heartState.visible,
+                    modifier = Modifier.align(Alignment.Center),
+                )
+            }
 
             if (showStats) {
-                PhotoStats(marsImage, onFavoriteClick)
+                PhotoStats(
+                    marsImage = marsImage,
+                    onFavoriteClick = {
+                        heartState.trigger()
+                        onFavoriteClick()
+                    },
+                )
             }
         }
     }
@@ -163,7 +177,8 @@ fun MarsImageFavoriteToggle(
         MaterialSymbolIcon(
             symbol = MaterialSymbol.Favorite,
             contentDescription = "Favorites",
-            filled = checked
+            filled = checked,
+            tint = if (checked) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }

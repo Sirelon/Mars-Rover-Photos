@@ -12,7 +12,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -67,7 +67,9 @@ import com.sirelon.marsroverphotos.data.network.nasaImageOrigUrl
 import com.sirelon.marsroverphotos.presentation.navigation.AppDestination
 import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
 import com.sirelon.marsroverphotos.presentation.ui.CenteredProgress
+import com.sirelon.marsroverphotos.presentation.ui.LikeHeartOverlay
 import com.sirelon.marsroverphotos.presentation.ui.MarsImageFavoriteToggle
+import com.sirelon.marsroverphotos.presentation.ui.rememberLikeHeartState
 import com.sirelon.marsroverphotos.presentation.ui.setStatusBarAppearance
 import com.sirelon.marsroverphotos.presentation.ui.MarsSnackbar
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
@@ -536,6 +538,8 @@ private fun ImagesPager(
                     }
                 } else Modifier
 
+                val heartState = rememberLikeHeartState()
+
                 NetworkImage(
                     modifier = Modifier
                         .fillMaxSize()
@@ -544,40 +548,41 @@ private fun ImagesPager(
                             zoomState = zoomState,
                             scrollGesturePropagation = ScrollGesturePropagation.NotZoomed,
                             enableOneFingerZoom = false,
-                        )
-                        .pointerInput(Unit) {
-                            detectTapGestures(onTap = { onTap() })
-                        },
+                            onTap = { onTap() },
+                            onDoubleTap = { _ ->
+                                val currentFavorite = favoriteOverrides[marsImage.id] ?: marsImage.favorite
+                                if (!currentFavorite) {
+                                    favoriteOverrides[marsImage.id] = true
+                                    onFavoriteClick(marsImage, true)
+                                }
+                                heartState.trigger()
+                            },
+                        ),
                     contentScale = ContentScale.Fit,
                     imageUrl = nasaImageOrigUrl(marsImage.imageUrl),
                     showPlaceholder = false,
                     placeholderMemoryCacheKey = marsImage.imageUrl,
                 )
 
-                // Controls layer — image fills full screen; controls stay above nav bar
-                Box(
+                LikeHeartOverlay(
+                    visible = heartState.visible,
+                    modifier = Modifier.align(Alignment.Center),
+                )
+
+                val checked = favoriteOverrides[marsImage.id] ?: marsImage.favorite
+                MarsImageFavoriteToggle(
                     modifier = Modifier
-                        .fillMaxSize()
+                        .align(Alignment.BottomEnd)
                         .navigationBarsPadding()
-                ) {
-                    AnimatedVisibility(
-                        visible = !hideUi,
-                        enter = fadeIn() + slideInVertically(initialOffsetY = { it }),
-                        exit = fadeOut() + slideOutVertically(targetOffsetY = { it }),
-                        modifier = Modifier.align(Alignment.BottomCenter),
-                    ) {
-                        val checked = favoriteOverrides[marsImage.id] ?: marsImage.favorite
-                        MarsImageFavoriteToggle(
-                            modifier = Modifier.size(64.dp),
-                            checked = checked,
-                            onCheckedChange = {
-                                val desired = !checked
-                                favoriteOverrides[marsImage.id] = desired
-                                onFavoriteClick(marsImage, desired)
-                            }
-                        )
-                    }
-                }
+                        .padding(bottom = AppSpacing.lg, end = AppSpacing.lg)
+                        .background(Color.White.copy(alpha = 0.9f), CircleShape),
+                    checked = checked,
+                    onCheckedChange = {
+                        val desired = !checked
+                        favoriteOverrides[marsImage.id] = desired
+                        onFavoriteClick(marsImage, desired)
+                    },
+                )
             }
         }
     }
