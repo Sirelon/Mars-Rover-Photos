@@ -590,6 +590,7 @@ private fun ImagesPager(
                     checked = checked,
                     onCheckedChange = {
                         val desired = !checked
+                        if (desired) heartState.trigger()
                         favoriteOverrides[marsImage.id] = desired
                         onFavoriteClick(marsImage, desired)
                     },
