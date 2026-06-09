@@ -20,7 +20,7 @@ internal class NasaApi(private val ktor: HttpClient) {
         to: String? = null,
         page: Int = 0,
     ): PhotosResponse {
-        return ktor.get("https://mars.nasa.gov/api/v1/raw_image_items/?order=sol+desc%2Cdate_taken+desc&per_page=100&condition_1=$mission:mission") {
+        return ktor.get("https://mars.nasa.gov/api/v1/raw_image_items/?order=sol+desc%2Cdate_taken+desc&per_page=100&page=0&condition_1=$mission:mission") {
             parameter("condition_2", from)
             parameter("condition_3", to)
             parameter("page", page)

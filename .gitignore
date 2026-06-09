@@ -130,3 +130,6 @@ iosApp/iosApp/GoogleService-Info.plist
 
 # Claude Code session artifacts
 .claude/tmp/
+
+# Claude Design handoff bundle (local only)
+.design-bundle/

@@ -8,6 +8,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.insertSeparators
 import androidx.paging.map as pagingMap
+import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.data.paging.FeedMode
 import com.sirelon.marsroverphotos.data.paging.RoverFeedPager
 import com.sirelon.marsroverphotos.data.paging.pageQuery
@@ -16,6 +17,7 @@ import com.sirelon.marsroverphotos.domain.models.CURIOSITY_ID
 import com.sirelon.marsroverphotos.domain.models.EducationalFact
 import com.sirelon.marsroverphotos.domain.models.Rover
 import com.sirelon.marsroverphotos.domain.repositories.FactsRepository
+import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
 import com.sirelon.marsroverphotos.domain.repositories.RoversRepository
 import com.sirelon.marsroverphotos.domain.settings.AppSettings
 import com.sirelon.marsroverphotos.presentation.models.GridItem
@@ -37,7 +39,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -60,6 +61,7 @@ class PhotosViewModel(
     private val factsRepository: FactsRepository,
     private val appSettings: AppSettings,
     private val roverFeedPager: RoverFeedPager,
+    private val imagesRepository: ImagesRepository,
 ) : ViewModel() {
 
     private val roverIdEmitter = MutableStateFlow<Long?>(null)
@@ -264,6 +266,14 @@ class PhotosViewModel(
 
     fun consumeLastViewedPhotoId(): String? = roverFeedPager.consumeLastViewedPhotoId()
 
+    val favoriteOverrides get() = roverFeedPager.favoriteOverrides
+
+    fun toggleFavorite(image: MarsImage) {
+        val desired = !(roverFeedPager.favoriteOverrides[image.id] ?: image.favorite)
+        roverFeedPager.favoriteOverrides[image.id] = desired
+        viewModelScope.launch { imagesRepository.setFavorite(image, desired) }
+    }
+
     fun randomize() {
         val roverId = roverIdEmitter.value ?: return
         if (roverId.usesPageFeed()) {
@@ -276,6 +286,7 @@ class PhotosViewModel(
         }
     }
 
+    /** No-op in page mode. */
     fun goToLatest() {
         if (roverIdEmitter.value?.usesPageFeed() == true) return
         viewModelScope.launch {

@@ -2,14 +2,17 @@ package com.sirelon.marsroverphotos.presentation.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,16 +25,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.layout.Box
-import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.CircularProgressIndicator
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
+import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
 import com.sirelon.marsroverphotos.shared.resources.Res
 import com.sirelon.marsroverphotos.shared.resources.img_placeholder
 import org.jetbrains.compose.resources.painterResource
@@ -73,7 +73,15 @@ fun MarsImageComposable(
             )
 
             if (showStats) {
-                PhotoStats(marsImage, onFavoriteClick)
+                PhotoStats(
+                    marsImage = marsImage,
+                    onFavoriteClick = {
+                        if (!marsImage.favorite) {
+                            // heartState would be triggered by caller if needed
+                        }
+                        onFavoriteClick()
+                    },
+                )
             }
         }
     }
@@ -155,7 +163,8 @@ fun MarsImageFavoriteToggle(
         MaterialSymbolIcon(
             symbol = MaterialSymbol.Favorite,
             contentDescription = "Favorites",
-            filled = checked
+            filled = true,
+            tint = if (checked) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }

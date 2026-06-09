@@ -1,10 +1,13 @@
 package com.sirelon.marsroverphotos.presentation.screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +26,8 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
@@ -34,13 +39,17 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -68,6 +77,9 @@ import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
 import com.sirelon.marsroverphotos.presentation.ui.CenteredProgress
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
+import com.sirelon.marsroverphotos.presentation.ui.LikeHeartOverlay
+import com.sirelon.marsroverphotos.presentation.ui.MarsImageFavoriteToggle
+import com.sirelon.marsroverphotos.presentation.ui.rememberLikeHeartState
 import com.sirelon.marsroverphotos.presentation.ui.NetworkImage
 import com.sirelon.marsroverphotos.presentation.viewmodels.PhotosUiState
 import com.sirelon.marsroverphotos.presentation.viewmodels.PhotosViewModel
@@ -77,6 +89,10 @@ import com.sirelon.marsroverphotos.shared.resources.educational_fact
 import com.sirelon.marsroverphotos.shared.resources.no_photos_title
 import com.sirelon.marsroverphotos.shared.resources.tap_to_retry
 import com.sirelon.marsroverphotos.utils.formatDisplayDate
+import coil3.SingletonImageLoader
+import coil3.compose.LocalPlatformContext
+import coil3.request.CachePolicy
+import coil3.request.ImageRequest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -84,6 +100,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
+import com.sirelon.marsroverphotos.presentation.navigation.LocalSharedTransitionScope
 import org.koin.compose.viewmodel.koinViewModel
 
 // ── State-holder composable ───────────────────────────────────────────────────
@@ -146,6 +164,34 @@ fun PhotosScreen(
             }
     }
 
+    // Prefetch images for items just beyond the visible grid window so they are
+    // already in Coil's cache by the time the user scrolls to them.
+    val context = LocalPlatformContext.current
+    LaunchedEffect(gridState) {
+        snapshotFlow { gridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0 }
+            .distinctUntilChanged()
+            .collect { lastVisible ->
+                val items = currentPagingItems.value
+                repeat(PREFETCH_ITEM_COUNT) { offset ->
+                    val index = lastVisible + 1 + offset
+                    if (index >= items.itemCount) return@repeat
+                    val item = items.peek(index) ?: return@repeat
+                    if (item is GridItem.PhotoItem) {
+                        SingletonImageLoader.get(context).enqueue(
+                            ImageRequest.Builder(context)
+                                .data(item.image.imageUrl)
+                                // Only warm the disk cache — do NOT write to memory cache.
+                                // Without a size constraint the cached bitmap would be at
+                                // original resolution, which evicts correctly-sized entries
+                                // that AsyncImage has loaded and causes the placeholder loop.
+                                .memoryCachePolicy(CachePolicy.DISABLED)
+                                .build()
+                        )
+                    }
+                }
+            }
+    }
+
     // On return from the fullscreen viewer, jump the grid to the photo the user was last viewing
     // there. The detail pager and this grid share the same RoverFeedPager pages, so that photo is
     // already in the loaded snapshot; we locate it by id (its grid index differs from the pager's
@@ -182,6 +228,8 @@ fun PhotosScreen(
             onClearCameraFilter()
         },
         onNavigateToImages = onNavigateToImages,
+        onFavoriteClick = viewModel::toggleFavorite,
+        favoriteOverrides = viewModel.favoriteOverrides,
         onBack = onBack,
         onOpenDateJumpPicker = onOpenDateJumpPicker,
         onOpenFilters = onOpenFilters,
@@ -204,6 +252,8 @@ private fun PhotosScreen(
     onGoToLatest: () -> Unit,
     onClearCameraFilters: () -> Unit,
     onNavigateToImages: (clickedId: String, cameras: Set<String>) -> Unit,
+    onFavoriteClick: (image: MarsImage) -> Unit,
+    favoriteOverrides: SnapshotStateMap<String, Boolean>,
     onBack: () -> Unit,
     onOpenDateJumpPicker: () -> Unit,
     onOpenFilters: () -> Unit,
@@ -277,8 +327,11 @@ private fun PhotosScreen(
                             gridState = gridState,
                             showCameraName = state.showCameraName,
                             onPhotoClick = { image -> onNavigateToImages(image.id, state.cameraFilters) },
+                            onFavoriteClick = onFavoriteClick,
+                            favoriteOverrides = favoriteOverrides,
                         )
 
+                        // Floating "sticky" date chip — mirrors the top-visible day (sol mode only).
                         if (state.showSolControls) {
                             FloatingDateChip(
                                 sol = state.sol,
@@ -332,6 +385,8 @@ private fun PhotosGrid(
     gridState: LazyGridState,
     showCameraName: Boolean,
     onPhotoClick: (image: MarsImage) -> Unit,
+    onFavoriteClick: (image: MarsImage) -> Unit,
+    favoriteOverrides: SnapshotStateMap<String, Boolean>,
 ) {
     LazyVerticalGrid(
         state = gridState,
@@ -360,11 +415,16 @@ private fun PhotosGrid(
             }
         ) { index ->
             when (val item = pagingItems[index]) {
-                is GridItem.PhotoItem -> PhotoCard(
-                    image = item.image,
-                    showCameraName = showCameraName,
-                    onPhotoClick = onPhotoClick,
-                )
+                is GridItem.PhotoItem -> {
+                    val checked = favoriteOverrides[item.image.id] ?: item.image.favorite
+                    PhotoCard(
+                        image = item.image,
+                        checked = checked,
+                        showCameraName = showCameraName,
+                        onPhotoClick = onPhotoClick,
+                        onFavoriteClick = onFavoriteClick,
+                    )
+                }
 
                 is GridItem.DateHeader -> DateHeaderRow(header = item)
 
@@ -443,24 +503,73 @@ private fun EdgeProgress(modifier: Modifier = Modifier) {
     )
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun PhotoCard(
     image: MarsImage,
+    checked: Boolean,
     showCameraName: Boolean,
     onPhotoClick: (image: MarsImage) -> Unit,
+    onFavoriteClick: (image: MarsImage) -> Unit,
 ) {
+    val heartState = rememberLikeHeartState()
+
+    val sharedScope = LocalSharedTransitionScope.current
     AppCard(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onPhotoClick(image) },
     ) {
         Column(verticalArrangement = Arrangement.SpaceBetween) {
-            NetworkImage(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1F),
-                imageUrl = image.imageUrl
-            )
+            Box(modifier = Modifier.fillMaxWidth()) {
+                if (sharedScope != null) {
+                    val animScope = LocalNavAnimatedContentScope.current
+                    with(sharedScope) {
+                        NetworkImage(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .aspectRatio(1F)
+                                .sharedElement(
+                                    sharedContentState = rememberSharedContentState(key = "photo_${image.id}"),
+                                    animatedVisibilityScope = animScope,
+                                ),
+                            imageUrl = image.imageUrl,
+                        )
+                    }
+                } else {
+                    NetworkImage(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(1F),
+                        imageUrl = image.imageUrl,
+                    )
+                }
+                LikeHeartOverlay(
+                    visible = heartState.visible,
+                    modifier = Modifier.align(Alignment.Center),
+                )
+                val sharedFavModifier: Modifier = if (sharedScope != null) {
+                    val animScope = LocalNavAnimatedContentScope.current
+                    with(sharedScope) {
+                        Modifier.sharedElement(
+                            sharedContentState = rememberSharedContentState(key = "photo_favorite_${image.id}"),
+                            animatedVisibilityScope = animScope,
+                        )
+                    }
+                } else Modifier
+                MarsImageFavoriteToggle(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .then(sharedFavModifier)
+                        .padding(AppSpacing.xs)
+                        .background(Color.White.copy(alpha = 0.9f), CircleShape),
+                    checked = checked,
+                    onCheckedChange = { _ ->
+                        if (!checked) heartState.trigger()
+                        onFavoriteClick(image)
+                    },
+                )
+            }
             if (showCameraName) {
                 Text(
                     text = shortCaption(image.name.orEmpty()),
@@ -555,6 +664,9 @@ private fun CameraFilterChip(cameras: Set<String>, onClear: () -> Unit) {
 // on restoring the grid scroll position (see the scroll-restore LaunchedEffect above).
 private const val SCROLL_RESTORE_TIMEOUT_MS = 3000L
 
+// 10 items = 5 rows ahead for a 2-column grid.
+private const val PREFETCH_ITEM_COUNT = 10
+
 private val GridItem.gridKey: String
     get() = when (this) {
         is GridItem.PhotoItem -> id
@@ -626,6 +738,8 @@ private fun PhotosScreenPreview() {
             onGoToLatest = {},
             onClearCameraFilters = {},
             onNavigateToImages = { _: String, _: Set<String> -> },
+            onFavoriteClick = {},
+            favoriteOverrides = mutableStateMapOf(),
             onBack = {},
             onOpenDateJumpPicker = {},
             onOpenFilters = {},

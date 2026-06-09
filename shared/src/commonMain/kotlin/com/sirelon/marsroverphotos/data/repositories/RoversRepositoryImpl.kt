@@ -97,6 +97,7 @@ class RoversRepositoryImpl(
                     }
                 }
 
+
             } catch (e: Exception) {
                 Logger.e("RoversRepository", e) { "Error initializing RoversRepository" }
             }

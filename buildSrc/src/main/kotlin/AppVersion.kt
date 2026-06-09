@@ -1,5 +1,6 @@
-// When bumping, also update MARKETING_VERSION and CURRENT_PROJECT_VERSION
-// in iosApp/iosApp.xcodeproj/project.pbxproj (Debug + Release entries)
+// Single source of truth for the app version across all platforms.
+// Android and Desktop read this directly. After bumping, run
+// `./gradlew syncIosVersion` to push the values into the Xcode project.
 object AppVersion {
     const val name = "3.0.0"
     const val code = 48

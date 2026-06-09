@@ -9,6 +9,7 @@ import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.data.network.RestApi
 import com.sirelon.marsroverphotos.data.network.toMarsImages
 import com.sirelon.marsroverphotos.domain.repositories.PhotosRepository
+import androidx.compose.runtime.mutableStateMapOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BufferOverflow
@@ -93,6 +94,12 @@ class RoverFeedPager(
      * tapped. Only the rover-feed source sets it (other sources don't share this list's grid).
      */
     private val lastViewedPhotoId = MutableStateFlow<String?>(null)
+
+    /**
+     * Optimistic favorite overrides — written by both the list and detail VMs so the UI stays
+     * consistent across screens without waiting for the paging source to re-fetch from Room.
+     */
+    val favoriteOverrides = mutableStateMapOf<String, Boolean>()
 
     fun setLastViewedPhotoId(id: String) {
         lastViewedPhotoId.value = id

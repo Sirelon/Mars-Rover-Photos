@@ -1,110 +1,81 @@
 # Deep Linking Support
 
-Mars Rover Photos supports deep links to navigate directly to specific rovers and photos.
+Mars Rover Photos currently supports direct navigation to rover feeds and photo detail screens.
 
-## Supported Deep Link Schemes
+## Supported public links
 
-### Custom Scheme: `marsrover://`
+### Custom scheme: `marsrover://`
 
-#### Open Specific Rover
-```
+Open a rover:
+
+```text
 marsrover://rover/{roverId}
 ```
 
-Examples:
-- `marsrover://rover/5` - Open Curiosity rover
-- `marsrover://rover/3` - Open Perseverance rover
-- `marsrover://rover/6` - Open Opportunity rover
-- `marsrover://rover/7` - Open Spirit rover
-- `marsrover://rover/4` - Open InSight lander
+Open a photo:
 
-#### Open Specific Photo
-```
+```text
 marsrover://photo/{photoId}
 ```
 
-Example:
-- `marsrover://photo/12345` - Open photo with ID 12345
+Examples:
 
-### Web Deep Links (Future)
+- `marsrover://rover/5` — open Curiosity photos
+- `marsrover://rover/3` — open Perseverance photos
+- `marsrover://photo/12345` — open photo `12345`
 
-When the web app is deployed, these HTTPS links will also work:
+### HTTPS app links
 
-```
+Android declares HTTPS intent filters for:
+
+```text
 https://marsroverphotos.app/rover/{roverId}
 https://marsroverphotos.app/photo/{photoId}
 ```
 
-## Rover IDs Reference
+The iOS shared parser also understands `marsroverphotos.app` URLs, but the checked-in iOS shell does
+not yet declare associated domains, so universal links are not currently wired on iOS.
 
-| Rover | ID | Status |
-|-------|-----|--------|
-| Perseverance | 3 | Active |
-| InSight | 4 | Inactive (2018-2022) |
-| Curiosity | 5 | Active |
-| Opportunity | 6 | Inactive (2004-2018) |
-| Spirit | 7 | Inactive (2004-2010) |
+## Rover IDs
 
-## Testing Deep Links
+| Rover | ID |
+| --- | --- |
+| Perseverance | 3 |
+| InSight | 4 |
+| Curiosity | 5 |
+| Opportunity | 6 |
+| Spirit | 7 |
 
-### Android (ADB)
+## Platform behavior
+
+- Android — custom scheme and HTTPS intent filters are declared in [`androidApp/src/main/AndroidManifest.xml`](/Users/sirelon/Projects/MarsRoverPhotos/androidApp/src/main/AndroidManifest.xml).
+- iOS — custom scheme `marsrover://` is registered in [`iosApp/iosApp/Info.plist`](/Users/sirelon/Projects/MarsRoverPhotos/iosApp/iosApp/Info.plist), and `MarsRoverApp.swift` forwards incoming URLs to Kotlin.
+- Desktop — no checked-in protocol-handler registration yet.
+- Web — no published deep-link contract yet; see [`WASM_WEB_SUPPORT.md`](/Users/sirelon/Projects/MarsRoverPhotos/WASM_WEB_SUPPORT.md).
+
+## Test locally
+
+### Android
+
 ```bash
-# Test rover deep link
 adb shell am start -W -a android.intent.action.VIEW \
   -d "marsrover://rover/5" \
   com.sirelon.marsroverphotos
 
-# Test photo deep link
 adb shell am start -W -a android.intent.action.VIEW \
   -d "marsrover://photo/12345" \
   com.sirelon.marsroverphotos
 ```
 
-### iOS (Simulator)
+### iOS simulator
+
 ```bash
 xcrun simctl openurl booted "marsrover://rover/5"
+xcrun simctl openurl booted "marsrover://photo/12345"
 ```
 
-### Web Browser
-Simply click on links in browser (when web app is deployed):
-- [Open Curiosity Rover](https://marsroverphotos.app/rover/5)
-- [Open Perseverance Rover](https://marsroverphotos.app/rover/3)
+## Implementation notes
 
-## Implementation Details
-
-### Android
-Deep link configuration is in `androidApp/src/main/AndroidManifest.xml`:
-- Custom scheme: `marsrover://`
-- Web scheme: `https://marsroverphotos.app`
-- Auto-verification enabled for HTTPS links
-
-### iOS
-Deep link configuration will be in `Info.plist` when iOS app is set up:
-- URL types for custom scheme
-- Associated domains for universal links
-
-### Desktop
-Desktop apps can register protocol handlers for the `marsrover://` scheme.
-
-## Usage in Marketing
-
-Deep links can be used in:
-- **Social Media Posts**: Share specific rover discoveries
-- **Email Campaigns**: Link to featured photos
-- **QR Codes**: Print on educational materials
-- **Push Notifications**: Navigate to relevant content
-
-## Future Enhancements
-
-Potential deep link additions:
-- `marsrover://sol/{roverId}/{sol}` - Specific sol for a rover
-- `marsrover://camera/{roverId}/{camera}` - Specific camera view
-- `marsrover://date/{roverId}/{date}` - Photos from specific Earth date
-- `marsrover://favorite` - User's favorite photos
-- `marsrover://popular` - Popular photos feed
-
----
-
-**Version**: 3.0.0
-**Last Updated**: 2025-12-31
-**Platform Support**: Android ✅ | iOS ⏳ | Desktop ⏳ | Web ⏳
+- The shared deep-link model lives in [`shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/DeepLink.kt`](/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/DeepLink.kt).
+- iOS URL parsing and dispatch live in [`shared/src/iosMain/kotlin/Main.ios.kt`](/Users/sirelon/Projects/MarsRoverPhotos/shared/src/iosMain/kotlin/Main.ios.kt).
+- The home-screen widget can navigate internally to a specific image via `DeepLink.Image`, but that is not a documented public URI format yet.

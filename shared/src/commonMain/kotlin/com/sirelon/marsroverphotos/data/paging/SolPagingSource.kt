@@ -16,12 +16,16 @@ import kotlin.math.abs
  *
  * The key type is [Long] = sol number: APPEND walks sol+1, sol+2, …; PREPEND walks sol-1, sol-2, …
  *
- * Empty sols (no photos) are skipped **inside a single [load]** — we never return an empty
- * `LoadResult.Page` mid-stream, because Paging does not reliably re-trigger the next load after an
- * empty page (that is the classic "scrolling sometimes stalls" bug). A load therefore returns
- * either a non-empty page, a continuation page (a scan budget was hit before any photos, see below),
- * or a terminal page (`prevKey`/`nextKey` = null) once the rover's [minSol]/[maxSol] bound is
- * actually reached.
+ * Each page is one non-empty sol's photos:
+ *  - APPEND  walks forward  (sol + 1, sol + 2, …) — scroll down / swipe to next days
+ *  - PREPEND walks backward (sol - 1, sol - 2, …) — scroll up / swipe to earlier days
+ *
+ * Empty sols are skipped **inside a single [load]** by scanning to the next non-empty sol — we
+ * never return an empty `LoadResult.Page` mid-stream, because Paging does not reliably re-trigger
+ * the next load after an empty page (that is the classic "scrolling sometimes stalls" bug). A load
+ * therefore returns either a non-empty page, a continuation page (a scan budget was hit before any
+ * photos, see below), or a terminal page (`prevKey`/`nextKey` = null) once the rover's
+ * [minSol]/[maxSol] bound is actually reached.
  *
  * To bound per-load latency every scan is capped at a finite budget ([scanBudget]) so a single load
  * can never fire an unbounded run of network probes across a long gap (rover safe-mode/solar-

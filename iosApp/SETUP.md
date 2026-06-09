@@ -1,81 +1,84 @@
 # iOS App Setup Guide
 
-## Current Status
+## Current status
 
-✅ Xcode project checked in (`iosApp.xcodeproj`)
+✅ Xcode project checked in
 ✅ Swift source files in place (`MarsRoverApp.swift`, `ContentView.swift`)
-✅ Shared KMP framework linked and build script wired
-✅ Firebase iOS SDK declared via SPM (auto-resolved by Xcode)
-✅ iOS platform Koin modules set up
+✅ Shared debug XCFramework build script wired into Xcode
+✅ Firebase iOS SDK declared via SPM
+✅ iOS platform Koin startup wired via `IosApp.shared.start()`
 ✅ `GoogleService-Info.plist` gitignored; template checked in
 
-## Quick Start (fresh clone)
+## Quick start
 
 ```bash
-# 1. Build the shared KMP framework
-./gradlew :shared:linkDebugFrameworkIosSimulatorArm64
+# 1. Build the debug XCFramework consumed by Xcode
+./gradlew :shared:assembleSharedDebugXCFramework
 
-# 2. Open the project — Xcode resolves Firebase via SPM automatically
+# 2. Open the project
 open iosApp/iosApp.xcodeproj
 
-# 3. Add your GoogleService-Info.plist (see Firebase section below)
+# 3. Add iosApp/iosApp/GoogleService-Info.plist if you need Firebase
 
-# 4. Run (⌘R)
+# 4. Run (Cmd+R)
 ```
 
-## Firebase Setup
+## Firebase setup
 
-Firebase packages (FirebaseCore, FirebaseAnalytics, FirebaseCrashlytics, FirebaseFirestore)
-are declared as Swift Package Manager dependencies in `iosApp.xcodeproj`. Xcode resolves
-them automatically when you open the project — no manual steps needed.
+Firebase packages are resolved automatically by Xcode through Swift Package Manager.
 
-You must supply `iosApp/iosApp/GoogleService-Info.plist` (gitignored):
+You must provide `iosApp/iosApp/GoogleService-Info.plist`:
 
-1. Go to Firebase Console → Project Settings → iOS apps.
-2. Download `GoogleService-Info.plist` for bundle ID `com.sirelon.marsroverphotos`.
+1. Open Firebase Console → Project Settings → iOS apps.
+2. Download the plist for bundle ID `com.sirelon.marsroverphotos`.
 3. Place it at `iosApp/iosApp/GoogleService-Info.plist`.
 
-A `GoogleService-Info.template.plist` is checked in as a shape reference.
+`GoogleService-Info.template.plist` is checked in only as a shape reference.
 
-## Build for Different Configurations
+## Build artifacts
 
-For **device builds**, update the framework search path in Build Settings:
-- Simulator Debug: `$(SRCROOT)/../shared/build/bin/iosSimulatorArm64/debugFramework`
-- Device Release: `$(SRCROOT)/../shared/build/bin/iosArm64/releaseFramework`
+The Xcode project's "Build KMP Framework" script runs:
+
+```bash
+./gradlew :shared:assembleSharedDebugXCFramework
+```
+
+and expects the shared framework at:
+
+```text
+shared/build/XCFrameworks/debug/shared.xcframework
+```
 
 ## Troubleshooting
 
-### Framework Not Found
+### Shared framework not found
 
-Build the framework manually first:
+Build the XCFramework manually first:
+
 ```bash
-./gradlew :shared:linkDebugFrameworkIosSimulatorArm64
+./gradlew :shared:assembleSharedDebugXCFramework
 ```
 
-### SPM Packages Not Resolving
+### SPM packages do not resolve
 
-In Xcode: **File → Packages → Resolve Package Versions**
+In Xcode, run `File -> Packages -> Resolve Package Versions`.
 
-### Swift Linker Errors
+### `GoogleService-Info.plist` missing
 
-Ensure `shared.framework` is set to **Embed & Sign** in  
-Target → General → Frameworks, Libraries, and Embedded Content.
+Firebase startup will fail until the real plist is present at `iosApp/iosApp/GoogleService-Info.plist`.
+
+## Deep links
+
+- `marsrover://` is registered in `Info.plist`.
+- `MarsRoverApp.swift` forwards URLs into Kotlin with `Main_iosKt.pushDeepLink(urlString:)`.
+- TODO: universal links still need associated-domain entitlements before `https://marsroverphotos.app/...` opens the iOS app directly.
 
 ## Architecture
 
-```
+```text
 MarsRoverApp.swift  →  FirebaseApp.configure()
-                    →  initKoinIos()
+                    →  IosApp.shared.start()
 ContentView.swift   →  Main_iosKt.MainViewController()
-                    →  shared.framework (Compose Multiplatform)
+                    →  shared.xcframework
                     →  App.kt (commonMain)
 ```
-
-## Framework Locations
-
-| Config | Path |
-|---|---|
-| Simulator Debug | `shared/build/bin/iosSimulatorArm64/debugFramework/shared.framework` |
-| Simulator Release | `shared/build/bin/iosSimulatorArm64/releaseFramework/shared.framework` |
-| Device Debug | `shared/build/bin/iosArm64/debugFramework/shared.framework` |
-| Device Release | `shared/build/bin/iosArm64/releaseFramework/shared.framework` |

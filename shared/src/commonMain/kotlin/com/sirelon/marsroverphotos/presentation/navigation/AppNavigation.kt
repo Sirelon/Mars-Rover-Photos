@@ -1,6 +1,8 @@
 package com.sirelon.marsroverphotos.presentation.navigation
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.runtime.movableContentOf
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -47,7 +49,7 @@ private const val ANIM_DURATION_2 = ANIM_DURATION / 2
 /**
  * Main Navigation 3 display for the app.
  */
-@OptIn(KoinExperimentalAPI::class)
+@OptIn(KoinExperimentalAPI::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun AppNavigation(
     modifier: Modifier = Modifier,
@@ -169,29 +171,33 @@ fun AppNavigation(
     // Without this, SaveableStateHolder registers the same key twice during applyLateChanges.
     val navDisplay = remember {
       movableContentOf {
-        NavDisplay(
-            backStack = backStack,
-            onBack = { navigator.goBack() },
-            entryDecorators = entryDecorators,
-            sceneStrategies = listOf(dialogOverlaySceneStrategy),
-            entryProvider = entryProvider,
-            // Forward navigation: new screen slides in from the right
-            transitionSpec = {
-                (slideInHorizontally(tween(ANIM_DURATION)) { it } + fadeIn(tween(ANIM_DURATION))) togetherWith
-                    (slideOutHorizontally(tween(ANIM_DURATION)) { -it / 5 } + fadeOut(tween(ANIM_DURATION_2)))
-            },
-            // Standard back: previous screen revealed from the left
-            popTransitionSpec = {
-                (slideInHorizontally(tween(ANIM_DURATION)) { -it / 5 } + fadeIn(tween(ANIM_DURATION))) togetherWith
-                    (slideOutHorizontally(tween(ANIM_DURATION)) { it } + fadeOut(tween(ANIM_DURATION_2)))
-            },
-            // Predictive back: same curve — NavDisplay drives this interactively
-            // with the system's back gesture progress on Android 14+
-            predictivePopTransitionSpec = {
-                (slideInHorizontally(tween(ANIM_DURATION)) { -it / 5 } + fadeIn(tween(ANIM_DURATION))) togetherWith
-                    (slideOutHorizontally(tween(ANIM_DURATION)) { it } + fadeOut(tween(ANIM_DURATION_2)))
-            },
-        )
+        SharedTransitionLayout {
+          CompositionLocalProvider(LocalSharedTransitionScope provides this) {
+            NavDisplay(
+                backStack = backStack,
+                onBack = { navigator.goBack() },
+                entryDecorators = entryDecorators,
+                sceneStrategies = listOf(dialogOverlaySceneStrategy),
+                entryProvider = entryProvider,
+                // Forward navigation: new screen slides in from the right
+                transitionSpec = {
+                    (slideInHorizontally(tween(ANIM_DURATION)) { it } + fadeIn(tween(ANIM_DURATION))) togetherWith
+                        (slideOutHorizontally(tween(ANIM_DURATION)) { -it / 5 } + fadeOut(tween(ANIM_DURATION_2)))
+                },
+                // Standard back: previous screen revealed from the left
+                popTransitionSpec = {
+                    (slideInHorizontally(tween(ANIM_DURATION)) { -it / 5 } + fadeIn(tween(ANIM_DURATION))) togetherWith
+                        (slideOutHorizontally(tween(ANIM_DURATION)) { it } + fadeOut(tween(ANIM_DURATION_2)))
+                },
+                // Predictive back: same curve — NavDisplay drives this interactively
+                // with the system's back gesture progress on Android 14+
+                predictivePopTransitionSpec = {
+                    (slideInHorizontally(tween(ANIM_DURATION)) { -it / 5 } + fadeIn(tween(ANIM_DURATION))) togetherWith
+                        (slideOutHorizontally(tween(ANIM_DURATION)) { it } + fadeOut(tween(ANIM_DURATION_2)))
+                },
+            )
+          }
+        }
       }
     }
 
