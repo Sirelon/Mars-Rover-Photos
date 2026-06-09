@@ -68,6 +68,11 @@ class RoverFeedPager(
     /** Current feed params, or null until [setFeed] is first called. */
     val currentParams: Params? get() = latestParams
 
+    private val _totalPagePhotos = MutableStateFlow(0)
+
+    /** Total photos loaded for page-mode rovers (Spirit/Opportunity). 0 until the first fetch completes. */
+    val totalPagePhotosFlow: StateFlow<Int> = _totalPagePhotos.asStateFlow()
+
     private val _currentRoverId = MutableStateFlow<Long?>(null)
 
     /**
@@ -125,11 +130,16 @@ class RoverFeedPager(
                     pagingSourceFactory = {
                         val query = mode.query
                         val shuffleSeed = mode.shuffleSeed
+                        val cachedImages = pageCache[query]
+                        _totalPagePhotos.value = cachedImages?.size ?: 0
                         ImagesSearchPagingSource(
                             imagesDao = imagesDao,
                             shuffleSeed = shuffleSeed,
-                            cachedImages = pageCache[query],
-                            onAllImagesFetched = { images -> pageCache[query] = images },
+                            cachedImages = cachedImages,
+                            onAllImagesFetched = { images ->
+                                pageCache[query] = images
+                                _totalPagePhotos.value = images.size
+                            },
                             fetchPage = { page ->
                                 val response = restApi.searchImages(query, page)
                                 val startIndex = (page - 1) * 100

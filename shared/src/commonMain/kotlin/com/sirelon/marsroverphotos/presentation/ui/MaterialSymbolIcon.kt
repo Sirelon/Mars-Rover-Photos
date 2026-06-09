@@ -54,7 +54,9 @@ enum class MaterialSymbol(val iconName: String) {
     Delete("delete"),
     Public("public"),
     ChevronRight("chevron_right"),
-    Reviews("reviews")
+    Reviews("reviews"),
+    Schedule("schedule"),
+    CalendarMonth("calendar_month")
 }
 
 /**

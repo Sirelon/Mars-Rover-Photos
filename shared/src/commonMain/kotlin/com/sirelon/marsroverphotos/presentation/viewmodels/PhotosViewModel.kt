@@ -79,6 +79,13 @@ class PhotosViewModel(
     )
     val scrollToTopEvents: SharedFlow<Unit> = _scrollToTopEvents.asSharedFlow()
 
+    private val _scrollToItemEmitter = MutableSharedFlow<Int>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+    )
+    /** Emitted by [loadByPage] for page-mode rovers; the grid scrolls to the given item index. */
+    val scrollToItemEvents: SharedFlow<Int> = _scrollToItemEmitter.asSharedFlow()
+
     private var dateUtil: RoverDateUtil? = null
 
     private val factPoolFlow = MutableStateFlow<List<EducationalFact>>(emptyList())
@@ -153,9 +160,14 @@ class PhotosViewModel(
         visibleSolEmitter.map { it ?: 0L },
         cameraFilterEmitter,
         appSettings.showCameraNameFlow,
-    ) { rover, sol, cameraFilters, showCameraName ->
+        roverFeedPager.totalPagePhotosFlow,
+    ) { rover, sol, cameraFilters, showCameraName, totalPagePhotos ->
         if (rover.id.usesPageFeed()) {
-            PhotosUiState(roverName = rover.name, showSolControls = false)
+            PhotosUiState(
+                roverName = rover.name,
+                showSolControls = false,
+                totalPagePhotos = totalPagePhotos,
+            )
         } else {
             PhotosUiState(
                 roverName = rover.name,
@@ -283,6 +295,19 @@ class PhotosViewModel(
         }
     }
 
+    /** Scrolls the grid to the start of the given page (1-based). No-op in sol mode. */
+    fun loadByPage(page: Int) {
+        val index = (page - 1).coerceAtLeast(0) * PAGE_SIZE
+        _scrollToItemEmitter.tryEmit(index)
+    }
+
+    /** Converts an Earth date (epoch millis) to the nearest sol. Returns 0 if dateUtil is not ready. */
+    fun solFromDate(timeMillis: Long): Long =
+        dateUtil?.solFromDate(timeMillis) ?: run {
+            Logger.w("PhotosViewModel") { "DateUtil not initialized, returning sol 0" }
+            0L
+        }
+
     /** No-op in page mode. */
     fun setEarthTime(time: Long) {
         if (roverIdEmitter.value?.usesPageFeed() == true) return
@@ -374,6 +399,7 @@ class PhotosViewModel(
     private companion object {
         private const val FACT_POOL_SIZE = 15
         private const val FACT_EVERY_N_DAYS = 3L
+        private const val PAGE_SIZE = 100
 
         /**
          * Emitted by [gridItemsFlow] while the shared pager still points at the previous rover, so
@@ -406,4 +432,6 @@ data class PhotosUiState(
     val showCameraName: Boolean = true,
     /** False for page-mode rovers (Spirit/Opportunity) — hides sol nav, date picker, camera filter. */
     val showSolControls: Boolean = true,
+    /** Total photos loaded for page-mode rovers. 0 until the first fetch completes. */
+    val totalPagePhotos: Int = 0,
 )

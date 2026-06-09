@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -17,6 +18,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,8 +46,7 @@ fun PhotosFiltersScreen(
     viewModel: PhotosViewModel,
     roverId: Long,
     onDismiss: () -> Unit,
-    onOpenSolPicker: () -> Unit,
-    onOpenEarthDatePicker: () -> Unit,
+    onOpenDateJumpPicker: () -> Unit,
     appSettings: AppSettings = koinInject(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -54,7 +55,10 @@ fun PhotosFiltersScreen(
     // Pending camera selection — committed only when Apply is tapped.
     var pendingCameras by remember(uiState.cameraFilters) { mutableStateOf(uiState.cameraFilters) }
 
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -109,13 +113,11 @@ fun PhotosFiltersScreen(
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OutlinedButton(onClick = onOpenSolPicker) {
-                    Text("Pick by Sol")
-                }
-                OutlinedButton(onClick = onOpenEarthDatePicker) {
-                    Text("Pick by Earth date")
-                }
+            OutlinedButton(
+                onClick = onOpenDateJumpPicker,
+                modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
+            ) {
+                Text("Jump to date")
             }
 
             HorizontalDivider()
@@ -146,7 +148,7 @@ fun PhotosFiltersScreen(
             // ── Apply ────────────────────────────────────────────────────────────
             Spacer(modifier = Modifier.height(4.dp))
             Button(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
                 onClick = {
                     viewModel.setCameraFilters(pendingCameras)
                     onDismiss()

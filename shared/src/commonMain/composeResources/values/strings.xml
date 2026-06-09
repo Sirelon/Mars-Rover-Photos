@@ -38,6 +38,17 @@
     <string name="images_empty_title">No photos available.</string>
     <string name="images_empty_btn">Go back</string>
 
+    <!-- Date/sol jump picker -->
+    <string name="jump_to_date_title">Jump to a date</string>
+    <string name="jump_to_date_subtitle">A sol is a Martian day (24h 39m). Drag the slider or pick an Earth date — both stay in sync.</string>
+    <string name="sol_martian_day">Martian day</string>
+    <string name="earth_date_nearest_match">nearest match</string>
+    <string name="or_pick_earth_date">OR PICK AN EARTH DATE</string>
+    <string name="go_to_sol_fmt">Go to Sol %1$d</string>
+    <string name="jump_to_page_title">Jump to a page</string>
+    <string name="page_of_fmt">Page %1$d of %2$d</string>
+    <string name="go_to_page_fmt">Go to page %1$d</string>
+
     <!-- Navigation labels -->
     <string name="nav_rovers">Rovers</string>
     <string name="nav_favorite">Favorites</string>

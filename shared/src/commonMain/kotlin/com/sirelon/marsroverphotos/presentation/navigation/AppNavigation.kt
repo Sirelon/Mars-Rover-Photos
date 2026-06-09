@@ -32,10 +32,9 @@ import com.sirelon.marsroverphotos.presentation.ui.UkraineBanner
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import androidx.navigation3.runtime.NavEntry
-import com.sirelon.marsroverphotos.presentation.screens.EarthDatePickerScreen
+import com.sirelon.marsroverphotos.presentation.screens.DateJumpPickerScreen
 import com.sirelon.marsroverphotos.presentation.screens.PhotosFiltersScreen
 import com.sirelon.marsroverphotos.presentation.screens.PhotosScreen
-import com.sirelon.marsroverphotos.presentation.screens.SolPickerScreen
 import org.koin.compose.koinInject
 import org.koin.compose.navigation3.koinEntryProvider
 import org.koin.compose.viewmodel.koinViewModel
@@ -100,11 +99,8 @@ fun AppNavigation(
                         navigator.replaceTop(AppDestination.Photos(key.roverId, camera = null))
                     },
                     onBack = { navigator.goBack() },
-                    onOpenSolPicker = {
-                        navigator.navigate(AppDestination.PhotosSolPicker(key.roverId))
-                    },
-                    onOpenEarthDatePicker = {
-                        navigator.navigate(AppDestination.PhotosEarthDatePicker(key.roverId))
+                    onOpenDateJumpPicker = {
+                        navigator.navigate(AppDestination.PhotosDateJumpPicker(key.roverId))
                     },
                     onOpenFilters = {
                         navigator.navigate(AppDestination.PhotosFilters(key.roverId))
@@ -112,25 +108,13 @@ fun AppNavigation(
                 )
             }
 
-            is AppDestination.PhotosSolPicker -> NavEntry<NavKey>(
+            is AppDestination.PhotosDateJumpPicker -> NavEntry<NavKey>(
                 key = key,
-                contentKey = "${photosContentKey(key.roverId)}/sol",
+                contentKey = "${photosContentKey(key.roverId)}/date-jump",
                 metadata = SharedViewModelStoreNavEntryDecorator.parent(photosContentKey(key.roverId)) +
                     DialogOverlaySceneStrategy.dialogOverlay(),
             ) {
-                SolPickerScreen(
-                    viewModel = koinViewModel(viewModelStoreOwner = LocalSharedViewModelStoreOwner.current),
-                    onDismiss = { navigator.goBack() },
-                )
-            }
-
-            is AppDestination.PhotosEarthDatePicker -> NavEntry<NavKey>(
-                key = key,
-                contentKey = "${photosContentKey(key.roverId)}/earth",
-                metadata = SharedViewModelStoreNavEntryDecorator.parent(photosContentKey(key.roverId)) +
-                    DialogOverlaySceneStrategy.dialogOverlay(),
-            ) {
-                EarthDatePickerScreen(
+                DateJumpPickerScreen(
                     viewModel = koinViewModel(viewModelStoreOwner = LocalSharedViewModelStoreOwner.current),
                     onDismiss = { navigator.goBack() },
                 )
@@ -146,11 +130,8 @@ fun AppNavigation(
                     viewModel = koinViewModel(viewModelStoreOwner = LocalSharedViewModelStoreOwner.current),
                     roverId = key.roverId,
                     onDismiss = { navigator.goBack() },
-                    onOpenSolPicker = {
-                        navigator.replaceTop(AppDestination.PhotosSolPicker(key.roverId))
-                    },
-                    onOpenEarthDatePicker = {
-                        navigator.replaceTop(AppDestination.PhotosEarthDatePicker(key.roverId))
+                    onOpenDateJumpPicker = {
+                        navigator.replaceTop(AppDestination.PhotosDateJumpPicker(key.roverId))
                     },
                 )
             }
@@ -271,8 +252,7 @@ private fun AppDestination.topLevelDestination(): AppDestination {
         is AppDestination.Images,
         is AppDestination.Mission,
         AppDestination.Ukraine,
-        is AppDestination.PhotosSolPicker,
-        is AppDestination.PhotosEarthDatePicker,
+        is AppDestination.PhotosDateJumpPicker,
         is AppDestination.PhotosFilters -> AppDestination.Rovers
 
         AppDestination.Favorite -> AppDestination.Favorite
@@ -303,8 +283,7 @@ private val navBackStackConfiguration = SavedStateConfiguration {
             subclass(AppDestination.Mission::class, AppDestination.Mission.serializer())
             subclass(AppDestination.About::class, AppDestination.About.serializer())
             subclass(AppDestination.Ukraine::class, AppDestination.Ukraine.serializer())
-            subclass(AppDestination.PhotosSolPicker::class, AppDestination.PhotosSolPicker.serializer())
-            subclass(AppDestination.PhotosEarthDatePicker::class, AppDestination.PhotosEarthDatePicker.serializer())
+            subclass(AppDestination.PhotosDateJumpPicker::class, AppDestination.PhotosDateJumpPicker.serializer())
             subclass(AppDestination.PhotosFilters::class, AppDestination.PhotosFilters.serializer())
         }
     }
