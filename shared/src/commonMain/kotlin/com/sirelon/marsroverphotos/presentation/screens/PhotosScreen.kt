@@ -39,8 +39,10 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
@@ -215,6 +217,7 @@ fun PhotosScreen(
         },
         onNavigateToImages = onNavigateToImages,
         onFavoriteClick = viewModel::toggleFavorite,
+        favoriteOverrides = viewModel.favoriteOverrides,
         onBack = onBack,
         onOpenSolPicker = onOpenSolPicker,
         onOpenEarthDatePicker = onOpenEarthDatePicker,
@@ -239,6 +242,7 @@ private fun PhotosScreen(
     onClearCameraFilters: () -> Unit,
     onNavigateToImages: (clickedId: String, cameras: Set<String>) -> Unit,
     onFavoriteClick: (image: MarsImage) -> Unit,
+    favoriteOverrides: SnapshotStateMap<String, Boolean>,
     onBack: () -> Unit,
     onOpenSolPicker: () -> Unit,
     onOpenEarthDatePicker: () -> Unit,
@@ -314,6 +318,7 @@ private fun PhotosScreen(
                             showCameraName = state.showCameraName,
                             onPhotoClick = { image -> onNavigateToImages(image.id, state.cameraFilters) },
                             onFavoriteClick = onFavoriteClick,
+                            favoriteOverrides = favoriteOverrides,
                         )
 
                         // Floating "sticky" date chip — mirrors the top-visible day (sol mode only).
@@ -369,6 +374,7 @@ private fun PhotosGrid(
     showCameraName: Boolean,
     onPhotoClick: (image: MarsImage) -> Unit,
     onFavoriteClick: (image: MarsImage) -> Unit,
+    favoriteOverrides: SnapshotStateMap<String, Boolean>,
 ) {
     LazyVerticalGrid(
         state = gridState,
@@ -397,12 +403,16 @@ private fun PhotosGrid(
             }
         ) { index ->
             when (val item = pagingItems[index]) {
-                is GridItem.PhotoItem -> PhotoCard(
-                    image = item.image,
-                    showCameraName = showCameraName,
-                    onPhotoClick = onPhotoClick,
-                    onFavoriteClick = onFavoriteClick,
-                )
+                is GridItem.PhotoItem -> {
+                    val checked = favoriteOverrides[item.image.id] ?: item.image.favorite
+                    PhotoCard(
+                        image = item.image,
+                        checked = checked,
+                        showCameraName = showCameraName,
+                        onPhotoClick = onPhotoClick,
+                        onFavoriteClick = onFavoriteClick,
+                    )
+                }
 
                 is GridItem.DateHeader -> DateHeaderRow(header = item)
 
@@ -505,6 +515,7 @@ private fun EdgeProgress(modifier: Modifier = Modifier) {
 @Composable
 private fun PhotoCard(
     image: MarsImage,
+    checked: Boolean,
     showCameraName: Boolean,
     onPhotoClick: (image: MarsImage) -> Unit,
     onFavoriteClick: (image: MarsImage) -> Unit,
@@ -550,7 +561,7 @@ private fun PhotoCard(
                         .align(Alignment.TopEnd)
                         .padding(AppSpacing.xs)
                         .background(Color.White.copy(alpha = 0.9f), CircleShape),
-                    checked = image.favorite,
+                    checked = checked,
                     onCheckedChange = { _ ->
                         heartState.trigger()
                         onFavoriteClick(image)
@@ -722,6 +733,7 @@ private fun PhotosScreenPreview() {
             onClearCameraFilters = {},
             onNavigateToImages = { _, _ -> },
             onFavoriteClick = {},
+            favoriteOverrides = mutableStateMapOf(),
             onBack = {},
             onOpenSolPicker = {},
             onOpenEarthDatePicker = {},

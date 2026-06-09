@@ -13,6 +13,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -188,6 +189,7 @@ fun ImagesScreen(
                 pagingItems = pagingItems,
                 pagerState = pagerState,
                 hideUi = hideUi,
+                favoriteOverrides = viewModel.favoriteOverrides,
                 onBack = onBack,
                 onShown = viewModel::onShown,
                 onTap = viewModel::onTap,
@@ -234,6 +236,7 @@ private fun ImagesPagerContent(
     pagingItems: LazyPagingItems<MarsImage>,
     pagerState: PagerState,
     hideUi: Boolean,
+    favoriteOverrides: SnapshotStateMap<String, Boolean>,
     onBack: () -> Unit,
     onShown: (MarsImage, Int) -> Unit,
     onTap: () -> Unit,
@@ -326,6 +329,7 @@ private fun ImagesPagerContent(
             pagerState = pagerState,
             pagingItems = pagingItems,
             hideUi = hideUi,
+            favoriteOverrides = favoriteOverrides,
             onTap = onTap,
             onFavoriteClick = onFavoriteClick,
             onScaleChange = { page, scale -> pageScales[page] = scale },
@@ -491,15 +495,12 @@ private fun ImagesPager(
     pagerState: PagerState,
     pagingItems: LazyPagingItems<MarsImage>,
     hideUi: Boolean,
+    favoriteOverrides: SnapshotStateMap<String, Boolean>,
     onTap: () -> Unit,
     onFavoriteClick: (MarsImage, Boolean) -> Unit,
     onScaleChange: (page: Int, scale: Float) -> Unit,
     selectedId: String? = null,
 ) {
-    // Immediate visual feedback for the heart: the paged item's favorite flag is correct on load
-    // (merged from Room by the write-through cache) but can't be mutated in place after a tap,
-    // so the override holds the desired state until the page is re-fetched.
-    val favoriteOverrides = remember { mutableStateMapOf<String, Boolean>() }
 
     NoScrollEffect {
         HorizontalPager(

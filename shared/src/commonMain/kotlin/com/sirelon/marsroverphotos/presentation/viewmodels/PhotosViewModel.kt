@@ -243,7 +243,11 @@ class PhotosViewModel(
 
     fun consumeLastViewedPhotoId(): String? = roverFeedPager.consumeLastViewedPhotoId()
 
+    val favoriteOverrides get() = roverFeedPager.favoriteOverrides
+
     fun toggleFavorite(image: MarsImage) {
+        val current = roverFeedPager.favoriteOverrides[image.id] ?: image.favorite
+        roverFeedPager.favoriteOverrides[image.id] = !current
         viewModelScope.launch { imagesRepository.updateFavForImage(image) }
     }
 
