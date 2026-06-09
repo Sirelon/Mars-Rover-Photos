@@ -556,14 +556,24 @@ private fun PhotoCard(
                     visible = heartState.visible,
                     modifier = Modifier.align(Alignment.Center),
                 )
+                val sharedFavModifier: Modifier = if (sharedScope != null) {
+                    val animScope = LocalNavAnimatedContentScope.current
+                    with(sharedScope) {
+                        Modifier.sharedElement(
+                            sharedContentState = rememberSharedContentState(key = "photo_favorite_${image.id}"),
+                            animatedVisibilityScope = animScope,
+                        )
+                    }
+                } else Modifier
                 MarsImageFavoriteToggle(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
+                        .then(sharedFavModifier)
                         .padding(AppSpacing.xs)
                         .background(Color.White.copy(alpha = 0.9f), CircleShape),
                     checked = checked,
                     onCheckedChange = { _ ->
-                        heartState.trigger()
+                        if (!checked) heartState.trigger()
                         onFavoriteClick(image)
                     },
                 )

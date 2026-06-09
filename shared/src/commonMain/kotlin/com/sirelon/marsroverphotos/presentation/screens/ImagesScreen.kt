@@ -538,6 +538,15 @@ private fun ImagesPager(
                         )
                     }
                 } else Modifier
+                val sharedFavModifier = if (sharedScope != null && marsImage.id == selectedId) {
+                    val animScope = LocalNavAnimatedContentScope.current
+                    with(sharedScope) {
+                        Modifier.sharedElement(
+                            sharedContentState = rememberSharedContentState(key = "photo_favorite_${marsImage.id}"),
+                            animatedVisibilityScope = animScope,
+                        )
+                    }
+                } else Modifier
 
                 val heartState = rememberLikeHeartState()
 
@@ -555,8 +564,8 @@ private fun ImagesPager(
                                 if (!currentFavorite) {
                                     favoriteOverrides[marsImage.id] = true
                                     onFavoriteClick(marsImage, true)
+                                    heartState.trigger()
                                 }
-                                heartState.trigger()
                             },
                         ),
                     contentScale = ContentScale.Fit,
@@ -574,6 +583,7 @@ private fun ImagesPager(
                 MarsImageFavoriteToggle(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
+                        .then(sharedFavModifier)
                         .navigationBarsPadding()
                         .padding(bottom = AppSpacing.lg, end = AppSpacing.lg)
                         .background(Color.White.copy(alpha = 0.9f), CircleShape),

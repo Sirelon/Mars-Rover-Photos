@@ -92,7 +92,7 @@ fun MarsImageComposable(
                 PhotoStats(
                     marsImage = marsImage,
                     onFavoriteClick = {
-                        heartState.trigger()
+                        if (!marsImage.favorite) heartState.trigger()
                         onFavoriteClick()
                     },
                 )
@@ -177,7 +177,7 @@ fun MarsImageFavoriteToggle(
         MaterialSymbolIcon(
             symbol = MaterialSymbol.Favorite,
             contentDescription = "Favorites",
-            filled = checked,
+            filled = true,
             tint = if (checked) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
