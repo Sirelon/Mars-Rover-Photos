@@ -14,7 +14,10 @@ import kotlinx.serialization.json.JsonNames
 @Serializable
 data class PhotosResponse(
     @JsonNames("photos", "items")
-    val list: List<MarsPhoto>
+    val list: List<MarsPhoto>,
+    /** Total photo count returned by the Insight raw-images API (null for other APIs). */
+    @SerialName("total")
+    val total: Long? = null,
 )
 
 @Serializable

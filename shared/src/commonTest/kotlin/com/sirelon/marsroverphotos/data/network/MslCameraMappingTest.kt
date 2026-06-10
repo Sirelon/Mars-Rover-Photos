@@ -1,5 +1,7 @@
 package com.sirelon.marsroverphotos.data.network
 
+import com.sirelon.marsroverphotos.data.network.models.PhotosResponse
+import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -69,6 +71,28 @@ class MslCameraMappingTest {
 
         assertEquals(true, cam.name.equals("MAST", ignoreCase = true))
         assertEquals(false, cam.name.equals("NAVCAM", ignoreCase = true))
+    }
+
+    @Test
+    fun rawFeed_numericId_decodesAsString() {
+        val json = Json { ignoreUnknownKeys = true }
+        val response = json.decodeFromString<PhotosResponse>(
+            """
+            {
+              "items": [{
+                "id": 1598100,
+                "sol": 4917,
+                "title": "Sol 4917: Rear Hazard Avoidance Camera",
+                "url": "https://mars.nasa.gov/msl-raw-images/example.JPG",
+                "created_at": "2026-06-06T17:40:15.792Z",
+                "instrument": "RHAZ_RIGHT_B"
+              }],
+              "total": 1
+            }
+            """.trimIndent()
+        )
+
+        assertEquals("1598100", response.list.single().id)
     }
 }
 

@@ -28,6 +28,9 @@ class RestApi {
     private val _perseveranceTotalImages = MutableStateFlow<Long?>(null)
     val perseveranceTotalImages = _perseveranceTotalImages.filterNotNull().distinctUntilChanged()
 
+    private val _insightTotalImages = MutableStateFlow<Long?>(null)
+    val insightTotalImages = _insightTotalImages.filterNotNull().distinctUntilChanged()
+
     @OptIn(ExperimentalSerializationApi::class)
     private val json = Json {
         isLenient = true
@@ -77,7 +80,9 @@ class RestApi {
             }
 
             INSIGHT_ID -> {
-                nasaApi.getRawImages("insight", from = "$sol:sol", to = "$sol:sol").list.mapToUi()
+                val response = nasaApi.getRawImages("insight", from = "$sol:sol", to = "$sol:sol")
+                response.total?.let { _insightTotalImages.value = it }
+                response.list.mapToUi()
             }
 
             CURIOSITY_ID -> {
@@ -90,12 +95,8 @@ class RestApi {
     }
 
     private suspend fun loadPerseverance(query: PhotosQueryRequest): List<MarsImage> {
-        val response = nasaApi.getPerseveranceRawImages(
-            sol = "${query.sol}:sol:in"
-        )
-
+        val response = nasaApi.getPerseveranceRawImages(sol = "${query.sol}:sol:in")
         _perseveranceTotalImages.value = response.totalImages
-
         return response.photos.preveranceToUI()
     }
 

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
+import com.sirelon.marsroverphotos.data.network.nasaImageOrigUrl
 import com.sirelon.marsroverphotos.data.paging.FeedMode
 import com.sirelon.marsroverphotos.data.paging.RoverFeedPager
 import com.sirelon.marsroverphotos.data.paging.pageQuery
@@ -159,8 +160,9 @@ class ImageViewModel(
 
     /** Save an image to device storage. */
     fun saveImage(photo: MarsImage) {
+        val fullResPhoto = photo.copy(imageUrl = nasaImageOrigUrl(photo.imageUrl))
         viewModelScope.launch {
-            when (val result = imageOperations.saveImage(photo)) {
+            when (val result = imageOperations.saveImage(fullResPhoto)) {
                 is ImageOperationResult.Success -> {
                     Logger.d("ImageViewModel") { "Image saved: ${result.message}" }
                     uiEventEmitter.send(UiEvent.PhotoSaved(result.message))
@@ -175,8 +177,9 @@ class ImageViewModel(
 
     /** Share an image via platform share mechanisms. */
     fun shareMarsImage(marsImage: MarsImage) {
+        val fullResImage = marsImage.copy(imageUrl = nasaImageOrigUrl(marsImage.imageUrl))
         viewModelScope.launch {
-            when (val result = imageOperations.shareImage(marsImage)) {
+            when (val result = imageOperations.shareImage(fullResImage)) {
                 is ImageOperationResult.Success ->
                     Logger.d("ImageViewModel") { "Image shared successfully" }
                 is ImageOperationResult.Error -> {

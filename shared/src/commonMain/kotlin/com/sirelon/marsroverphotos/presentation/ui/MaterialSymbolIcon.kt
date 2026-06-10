@@ -57,6 +57,7 @@ enum class MaterialSymbol(val iconName: String) {
     Reviews("reviews"),
     Collections("collections"),
     Schedule("schedule"),
+    CalendarMonth("calendar_month"),
     Event("event"),
     Search("search")
 }

@@ -26,9 +26,9 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -94,6 +94,7 @@ import coil3.compose.LocalPlatformContext
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -118,8 +119,7 @@ fun PhotosScreen(
     roverId: Long,
     onNavigateToImages: (clickedId: String, cameras: Set<String>) -> Unit,
     onBack: () -> Unit,
-    onOpenSolPicker: () -> Unit,
-    onOpenEarthDatePicker: () -> Unit,
+    onOpenDateJumpPicker: () -> Unit,
     onOpenFilters: () -> Unit,
     modifier: Modifier = Modifier,
     cameraFilter: String? = null,
@@ -145,6 +145,13 @@ fun PhotosScreen(
     LaunchedEffect(viewModel) {
         viewModel.scrollToTopEvents.collect {
             gridState.scrollToItem(0)
+        }
+    }
+
+    // Scroll to a specific item index for page-mode rovers (Spirit/Opportunity page jump).
+    LaunchedEffect(viewModel) {
+        viewModel.scrollToItemEvents.collect { index ->
+            gridState.scrollToItem(index)
         }
     }
 
@@ -192,12 +199,17 @@ fun PhotosScreen(
     // id is cleared on read so later manual scrolls aren't overridden.
     LaunchedEffect(Unit) {
         val targetId = viewModel.consumeLastViewedPhotoId() ?: return@LaunchedEffect
-        val index = snapshotFlow {
-            pagingItems.itemSnapshotList.indexOfFirst {
-                (it as? GridItem.PhotoItem)?.image?.id == targetId
-            }
-        }.first { it >= 0 }
-        gridState.scrollToItem(index)
+        // Bound the wait: if the photo never lands in the loaded snapshot (e.g. the feed was
+        // re-anchored or the camera filter changed while the viewer was open) the index would
+        // stay -1 forever, so cap it instead of suspending this effect indefinitely.
+        val index = withTimeoutOrNull(SCROLL_RESTORE_TIMEOUT_MS) {
+            snapshotFlow {
+                pagingItems.itemSnapshotList.indexOfFirst {
+                    (it as? GridItem.PhotoItem)?.image?.id == targetId
+                }
+            }.first { it >= 0 }
+        }
+        if (index != null) gridState.scrollToItem(index)
     }
 
     PhotosScreen(
@@ -219,8 +231,7 @@ fun PhotosScreen(
         onFavoriteClick = viewModel::toggleFavorite,
         favoriteOverrides = viewModel.favoriteOverrides,
         onBack = onBack,
-        onOpenSolPicker = onOpenSolPicker,
-        onOpenEarthDatePicker = onOpenEarthDatePicker,
+        onOpenDateJumpPicker = onOpenDateJumpPicker,
         onOpenFilters = onOpenFilters,
         modifier = modifier,
     )
@@ -244,8 +255,7 @@ private fun PhotosScreen(
     onFavoriteClick: (image: MarsImage) -> Unit,
     favoriteOverrides: SnapshotStateMap<String, Boolean>,
     onBack: () -> Unit,
-    onOpenSolPicker: () -> Unit,
-    onOpenEarthDatePicker: () -> Unit,
+    onOpenDateJumpPicker: () -> Unit,
     onOpenFilters: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -326,16 +336,18 @@ private fun PhotosScreen(
                             FloatingDateChip(
                                 sol = state.sol,
                                 earthDate = state.earthDate,
-                                onOpenSolPicker = onOpenSolPicker,
-                                onOpenEarthDatePicker = onOpenEarthDatePicker,
+                                onOpenDateJumpPicker = onOpenDateJumpPicker,
                                 modifier = Modifier
                                     .align(Alignment.TopCenter)
                                     .padding(top = AppSpacing.sm)
                             )
                         }
 
-                        // Prepend (scroll-up) progress at the top, append (scroll-down) at the bottom.
-                        if (pagingItems.loadState.prepend is LoadState.Loading) {
+                        // Refresh progress (e.g. after randomize) shown at the top when old items
+                        // are still visible. Prepend and append progress shown at edges while scrolling.
+                        if (refresh is LoadState.Loading && pagingItems.itemCount > 0) {
+                            EdgeProgress(modifier = Modifier.align(Alignment.TopCenter))
+                        } else if (pagingItems.loadState.prepend is LoadState.Loading) {
                             EdgeProgress(modifier = Modifier.align(Alignment.TopCenter))
                         }
                         if (pagingItems.loadState.append is LoadState.Loading) {
@@ -453,52 +465,32 @@ private fun DateHeaderRow(
 private fun FloatingDateChip(
     sol: Long,
     earthDate: String,
-    onOpenSolPicker: () -> Unit,
-    onOpenEarthDatePicker: () -> Unit,
+    onOpenDateJumpPicker: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var expanded by remember { mutableStateOf(false) }
-    Box(modifier = modifier) {
-        Surface(
-            modifier = Modifier.clickable { expanded = true },
-            shape = MaterialTheme.shapes.large,
-            color = MaterialTheme.colorScheme.secondaryContainer,
-            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-            tonalElevation = 3.dp,
-            shadowElevation = 4.dp,
+    Surface(
+        modifier = modifier.clickable(onClick = onOpenDateJumpPicker),
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.secondaryContainer,
+        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        tonalElevation = 3.dp,
+        shadowElevation = 4.dp,
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            Row(
-                modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                Text(
-                    text = if (earthDate.isNotBlank()) "Sol $sol · $earthDate" else "Sol $sol",
-                    style = MaterialTheme.typography.labelLarge,
-                    maxLines = 1,
-                )
-                MaterialSymbolIcon(
-                    symbol = MaterialSymbol.ExpandMore,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp),
-                    size = 18.dp
-                )
-            }
-        }
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            DropdownMenuItem(
-                text = { Text("Pick by Sol") },
-                onClick = {
-                    expanded = false
-                    onOpenSolPicker()
-                }
+            Text(
+                text = if (earthDate.isNotBlank()) "Sol $sol · $earthDate" else "Sol $sol",
+                style = MaterialTheme.typography.labelLarge,
+                maxLines = 1,
             )
-            DropdownMenuItem(
-                text = { Text("Pick by Earth date") },
-                onClick = {
-                    expanded = false
-                    onOpenEarthDatePicker()
-                }
+            MaterialSymbolIcon(
+                symbol = MaterialSymbol.ExpandMore,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp),
+                size = 18.dp
             )
         }
     }
@@ -668,6 +660,10 @@ private fun CameraFilterChip(cameras: Set<String>, onClear: () -> Unit) {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
+// Max time to wait for the last-viewed photo to appear in the loaded snapshot before giving up
+// on restoring the grid scroll position (see the scroll-restore LaunchedEffect above).
+private const val SCROLL_RESTORE_TIMEOUT_MS = 3000L
+
 // 10 items = 5 rows ahead for a 2-column grid.
 private const val PREFETCH_ITEM_COUNT = 10
 
@@ -741,12 +737,11 @@ private fun PhotosScreenPreview() {
             onRandomize = {},
             onGoToLatest = {},
             onClearCameraFilters = {},
-            onNavigateToImages = { _, _ -> },
+            onNavigateToImages = { _: String, _: Set<String> -> },
             onFavoriteClick = {},
             favoriteOverrides = mutableStateMapOf(),
             onBack = {},
-            onOpenSolPicker = {},
-            onOpenEarthDatePicker = {},
+            onOpenDateJumpPicker = {},
             onOpenFilters = {},
         )
     }

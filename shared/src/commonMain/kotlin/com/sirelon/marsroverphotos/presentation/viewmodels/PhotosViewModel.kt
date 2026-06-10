@@ -2,10 +2,13 @@ package com.sirelon.marsroverphotos.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.LoadState
+import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.insertSeparators
 import androidx.paging.map as pagingMap
+import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.data.paging.FeedMode
 import com.sirelon.marsroverphotos.data.paging.RoverFeedPager
 import com.sirelon.marsroverphotos.data.paging.pageQuery
@@ -13,7 +16,6 @@ import com.sirelon.marsroverphotos.data.paging.usesPageFeed
 import com.sirelon.marsroverphotos.domain.models.CURIOSITY_ID
 import com.sirelon.marsroverphotos.domain.models.EducationalFact
 import com.sirelon.marsroverphotos.domain.models.Rover
-import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.domain.repositories.FactsRepository
 import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
 import com.sirelon.marsroverphotos.domain.repositories.RoversRepository
@@ -37,7 +39,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -80,13 +81,24 @@ class PhotosViewModel(
     )
     val scrollToTopEvents: SharedFlow<Unit> = _scrollToTopEvents.asSharedFlow()
 
+    private val _scrollToItemEmitter = MutableSharedFlow<Int>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+    )
+    /** Emitted by [loadByPage] for page-mode rovers; the grid scrolls to the given item index. */
+    val scrollToItemEvents: SharedFlow<Int> = _scrollToItemEmitter.asSharedFlow()
+
     private var dateUtil: RoverDateUtil? = null
 
     private val factPoolFlow = MutableStateFlow<List<EducationalFact>>(emptyList())
 
-    private val roverStateFlow: StateFlow<Rover?> = roverIdEmitter
+    private val roverStateFlow: StateFlow<Rover?> = combine(
+        roverIdEmitter.filterNotNull(),
+        roversRepository.getRovers(),
+    ) { roverId, rovers ->
+        rovers.firstOrNull { it.id == roverId }
+    }
         .filterNotNull()
-        .mapNotNull { roversRepository.loadRoverById(it) }
         .onEach { dateUtil = RoverDateUtil(it) }
         .catch { e -> Logger.e("PhotosViewModel", e) { "Error loading rover" } }
         .stateIn(
@@ -103,11 +115,17 @@ class PhotosViewModel(
      */
     val gridItemsFlow: Flow<PagingData<GridItem>> = combine(
         roverFeedPager.pagedFlow,
-        roverIdEmitter.filterNotNull().map { it.usesPageFeed() },
+        roverFeedPager.currentRoverId,
+        roverIdEmitter.filterNotNull(),
         appSettings.showFactsFlow,
         factPoolFlow,
-    ) { pagingData, isPageMode, factsEnabled, factPool ->
-        if (isPageMode) {
+    ) { pagingData, pagerRoverId, roverId, factsEnabled, factPool ->
+        if (pagerRoverId != roverId) {
+            // The app-singleton pager still holds the previous rover's feed (its cachedIn replay)
+            // because this rover's feed hasn't been applied yet (sol rovers anchor asynchronously
+            // in init). Show a loading placeholder instead of the previous rover's photos.
+            LOADING_PLACEHOLDER
+        } else if (roverId.usesPageFeed()) {
             pagingData.pagingMap { photo -> GridItem.PhotoItem(photo) as GridItem }
         } else {
             pagingData
@@ -141,21 +159,25 @@ class PhotosViewModel(
      */
     val uiState: StateFlow<PhotosUiState> = combine(
         roverStateFlow.filterNotNull(),
-        visibleSolEmitter,
+        visibleSolEmitter.map { it ?: 0L },
         cameraFilterEmitter,
         appSettings.showCameraNameFlow,
-    ) { rover, sol, cameraFilters, showCameraName ->
+        roverFeedPager.totalPagePhotosFlow,
+    ) { rover, sol, cameraFilters, showCameraName, totalPagePhotos ->
         if (rover.id.usesPageFeed()) {
-            PhotosUiState(roverName = rover.name, showSolControls = false)
-        } else {
-            val solValue = sol ?: 0L
             PhotosUiState(
                 roverName = rover.name,
-                sol = solValue,
-                earthDate = earthDateStr(solValue),
+                showSolControls = false,
+                totalPagePhotos = totalPagePhotos,
+            )
+        } else {
+            PhotosUiState(
+                roverName = rover.name,
+                sol = sol,
+                earthDate = earthDateStr(sol),
                 maxSol = rover.maxSol.coerceAtLeast(1L),
                 cameraFilters = cameraFilters,
-                datePickerSelectedMillis = earthTime(solValue),
+                datePickerSelectedMillis = earthTime(sol),
                 datePickerMinMillis = minDate(),
                 datePickerMaxMillis = maxDate(),
                 showCameraName = showCameraName,
@@ -185,26 +207,28 @@ class PhotosViewModel(
         viewModelScope.launch {
             val rover = roverFlow.first()
             if (dateUtil == null) dateUtil = RoverDateUtil(rover)
-            val existing = roverFeedPager.currentParams
-            if (existing?.roverId == rover.id) {
-                // Returning from detail viewer — keep the existing pager state.
-                if (!rover.id.usesPageFeed()) {
-                    if (visibleSolEmitter.value == null) visibleSolEmitter.value = existing.solMode?.anchorSol
-                }
-            } else {
-                if (rover.id.usesPageFeed()) {
-                    applyPageFeed(rover)
-                } else if (rover.id == CURIOSITY_ID) {
-                    goToLatest()
+            if (!rover.id.usesPageFeed()) {
+                if (rover.id == CURIOSITY_ID) {
+                    val initialLatestSol = (rover.maxSol - 1).coerceAtLeast(0L)
+                    applyAnchor(rover, initialLatestSol)
+                    followCuriosityLatestRefresh(initialLatestSol)
                 } else {
                     randomize()
                 }
             }
+            // Page-feed rovers (Spirit/Opportunity) are handled synchronously in setRoverId so
+            // the fresh shuffle is set before any compose frame renders, making the stale
+            // cachedIn(appScope) replay invisible.
         }
     }
 
     fun setRoverId(roverId: Long) {
         roverIdEmitter.tryEmit(roverId)
+        if (roverId.usesPageFeed()) {
+            // Apply immediately — before the compose frame renders — so the cached (stale)
+            // PagingData from the previous session is replaced before the UI sees it.
+            applyPageFeed(roverId)
+        }
     }
 
     fun setCameraFilters(cameras: Set<String>) {
@@ -214,8 +238,7 @@ class PhotosViewModel(
         val params = roverFeedPager.currentParams
         val solMode = params?.solMode
         if (params != null && solMode != null) {
-            val anchor = (visibleSolEmitter.value ?: solMode.anchorSol)
-                .coerceIn(solMode.minSol, solMode.maxSol)
+            val anchor = (visibleSolEmitter.value ?: solMode.anchorSol).coerceIn(solMode.minSol, solMode.maxSol)
             roverFeedPager.setFeed(
                 roverId = params.roverId,
                 mode = FeedMode.Sol(
@@ -254,16 +277,12 @@ class PhotosViewModel(
     fun randomize() {
         val roverId = roverIdEmitter.value ?: return
         if (roverId.usesPageFeed()) {
-            roverFeedPager.setFeed(
-                roverId = roverId,
-                mode = FeedMode.Page(roverId.pageQuery(), shuffleSeed = Random.nextLong()),
-            )
+            applyPageFeed(roverId)
             return
         }
         viewModelScope.launch {
             val rover = roverFlow.first()
-            val sol = Random.nextLong(0L, rover.maxSol.coerceAtLeast(1L))
-            applyAnchor(rover, sol)
+            applyAnchor(rover, Random.nextLong(0L, rover.maxSol.coerceAtLeast(1L)))
         }
     }
 
@@ -273,11 +292,8 @@ class PhotosViewModel(
         viewModelScope.launch {
             val rover = roverFlow.first()
             val target = (rover.maxSol - 1).coerceAtLeast(0L)
-            if (roverFeedPager.currentParams?.solMode?.anchorSol == target) {
-                randomize()
-            } else {
-                applyAnchor(rover, target)
-            }
+            if (roverFeedPager.currentParams?.solMode?.anchorSol == target) randomize()
+            else applyAnchor(rover, target)
         }
     }
 
@@ -289,6 +305,19 @@ class PhotosViewModel(
             applyAnchor(rover, sol)
         }
     }
+
+    /** Scrolls the grid to the start of the given page (1-based). No-op in sol mode. */
+    fun loadByPage(page: Int) {
+        val index = (page - 1).coerceAtLeast(0) * PAGE_SIZE
+        _scrollToItemEmitter.tryEmit(index)
+    }
+
+    /** Converts an Earth date (epoch millis) to the nearest sol. Returns 0 if dateUtil is not ready. */
+    fun solFromDate(timeMillis: Long): Long =
+        dateUtil?.solFromDate(timeMillis) ?: run {
+            Logger.w("PhotosViewModel") { "DateUtil not initialized, returning sol 0" }
+            0L
+        }
 
     /** No-op in page mode. */
     fun setEarthTime(time: Long) {
@@ -331,11 +360,26 @@ class PhotosViewModel(
         Clock.System.now().toEpochMilliseconds()
     }
 
-    private fun applyPageFeed(rover: Rover) {
+    private fun applyPageFeed(roverId: Long) {
         roverFeedPager.setFeed(
-            roverId = rover.id,
-            mode = FeedMode.Page(rover.id.pageQuery()),
+            roverId = roverId,
+            mode = FeedMode.Page(roverId.pageQuery(), shuffleSeed = Random.nextLong()),
         )
+        _scrollToTopEvents.tryEmit(Unit)
+    }
+
+    private fun followCuriosityLatestRefresh(initialLatestSol: Long) {
+        viewModelScope.launch {
+            roverFlow.collect { rover ->
+                if (rover.id != CURIOSITY_ID) return@collect
+                val refreshedLatestSol = (rover.maxSol - 1).coerceAtLeast(0L)
+                if (refreshedLatestSol <= initialLatestSol) return@collect
+                val currentAnchor = roverFeedPager.currentParams?.solMode?.anchorSol
+                if (currentAnchor == initialLatestSol) {
+                    applyAnchor(rover, refreshedLatestSol)
+                }
+            }
+        }
     }
 
     private fun applyAnchor(rover: Rover, sol: Long) {
@@ -366,6 +410,19 @@ class PhotosViewModel(
     private companion object {
         private const val FACT_POOL_SIZE = 15
         private const val FACT_EVERY_N_DAYS = 3L
+        private const val PAGE_SIZE = 100
+
+        /**
+         * Emitted by [gridItemsFlow] while the shared pager still points at the previous rover, so
+         * the grid shows a spinner (refresh = Loading) rather than the previous rover's photos.
+         */
+        private val LOADING_PLACEHOLDER: PagingData<GridItem> = PagingData.empty(
+            sourceLoadStates = LoadStates(
+                refresh = LoadState.Loading,
+                prepend = LoadState.NotLoading(endOfPaginationReached = false),
+                append = LoadState.NotLoading(endOfPaginationReached = false),
+            ),
+        )
     }
 }
 
@@ -386,4 +443,6 @@ data class PhotosUiState(
     val showCameraName: Boolean = true,
     /** False for page-mode rovers (Spirit/Opportunity) — hides sol nav, date picker, camera filter. */
     val showSolControls: Boolean = true,
+    /** Total photos loaded for page-mode rovers. 0 until the first fetch completes. */
+    val totalPagePhotos: Int = 0,
 )
