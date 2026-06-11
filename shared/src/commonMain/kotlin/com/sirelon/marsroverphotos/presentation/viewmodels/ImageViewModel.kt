@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
-import com.sirelon.marsroverphotos.data.network.nasaImageOrigUrl
 import com.sirelon.marsroverphotos.data.paging.FeedMode
 import com.sirelon.marsroverphotos.data.paging.RoverFeedPager
 import com.sirelon.marsroverphotos.data.paging.pageQuery
@@ -15,6 +14,7 @@ import com.sirelon.marsroverphotos.platform.ImageOperationResult
 import com.sirelon.marsroverphotos.platform.ImageOperations
 import com.sirelon.marsroverphotos.presentation.navigation.AppDestination
 import com.sirelon.marsroverphotos.utils.Logger
+import com.sirelon.marsroverphotos.utils.nasaImageOrigUrl
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
