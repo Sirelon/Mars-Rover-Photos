@@ -39,7 +39,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -149,16 +148,21 @@ fun PhotosScreen(
     }
 
     // Keep the floating chip + pickers in sync with the top-visible day (sol mode) or
-    // top-visible API page (page mode) as the user scrolls.
+    // top-visible API page (page mode). The sol/page is computed INSIDE snapshotFlow so the
+    // flow also re-emits when the underlying page data changes — after a page jump the grid
+    // stays pinned at index 0 while new data replaces old, so an index-only flow would never
+    // fire and the chip would keep the pre-jump value.
     val currentPagingItems = rememberUpdatedState(pagingItems)
-    var visiblePage by remember { mutableIntStateOf(1) }
+    val visiblePage by viewModel.visiblePage.collectAsStateWithLifecycle()
     LaunchedEffect(gridState) {
-        snapshotFlow { gridState.firstVisibleItemIndex }
-            .collect { index ->
-                val items = currentPagingItems.value
-                solAtIndex(items, index)?.let(viewModel::onVisibleSolChanged)
-                pageAtIndex(items, index)?.let { visiblePage = it }
-            }
+        snapshotFlow {
+            val items = currentPagingItems.value
+            val index = gridState.firstVisibleItemIndex
+            solAtIndex(items, index) to pageAtIndex(items, index)
+        }.collect { (sol, page) ->
+            sol?.let(viewModel::onVisibleSolChanged)
+            page?.let(viewModel::onVisiblePageChanged)
+        }
     }
 
     // Prefetch images for items just beyond the visible grid window so they are

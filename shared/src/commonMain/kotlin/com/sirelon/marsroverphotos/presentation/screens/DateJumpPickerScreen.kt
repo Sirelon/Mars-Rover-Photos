@@ -80,6 +80,7 @@ fun DateJumpPickerScreen(
             PageContent(
                 totalPagePhotos = uiState.totalPagePhotos,
                 maxPage = uiState.totalPages,
+                currentPage = viewModel.visiblePage.collectAsStateWithLifecycle().value,
                 onDismiss = onDismiss,
                 onConfirm = { page ->
                     viewModel.loadByPage(page)
@@ -230,10 +231,12 @@ private fun EarthDateRow(
 private fun PageContent(
     totalPagePhotos: Int,
     maxPage: Int,
+    currentPage: Int,
     onDismiss: () -> Unit,
     onConfirm: (page: Int) -> Unit,
 ) {
-    var selectedPage by remember { mutableIntStateOf(1) }
+    // Pre-select the page currently on screen (clamped — totalHits may still be loading).
+    var selectedPage by remember { mutableIntStateOf(currentPage.coerceIn(1, maxPage)) }
 
     Column(
         modifier = Modifier

@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
@@ -70,6 +71,11 @@ class PhotosViewModel(
 
     /** Top-visible sol — drives the floating header chip and the Sol/Earth pickers (sol mode only). */
     private val visibleSolEmitter = MutableStateFlow<Long?>(null)
+
+    private val visiblePageEmitter = MutableStateFlow(1)
+
+    /** Top-visible API page — drives the floating chip and the page picker (page mode only). */
+    val visiblePage: StateFlow<Int> = visiblePageEmitter.asStateFlow()
 
     /**
      * Fires every time the feed is re-anchored (date/sol picker, randomize, go-to-latest, camera
@@ -268,6 +274,12 @@ class PhotosViewModel(
         visibleSolEmitter.value = sol
     }
 
+    /** No-op in sol mode (sol-feed `order` is a per-sol index, not a page position). */
+    fun onVisiblePageChanged(page: Int) {
+        if (roverIdEmitter.value?.usesPageFeed() != true) return
+        visiblePageEmitter.value = page
+    }
+
     fun consumeLastViewedPhotoId(): String? = roverFeedPager.consumeLastViewedPhotoId()
 
     val favoriteOverrides get() = roverFeedPager.favoriteOverrides
@@ -367,6 +379,9 @@ class PhotosViewModel(
 
     /** [anchorPage] = explicit 1-based page to open at; null lets the source pick a random one. */
     private fun applyPageFeed(roverId: Long, anchorPage: Int? = null) {
+        // Eager chip update for explicit jumps; a random anchor stays unknown until the page
+        // loads, at which point the grid reports it back via [onVisiblePageChanged].
+        anchorPage?.let { visiblePageEmitter.value = it }
         roverFeedPager.setFeed(
             roverId = roverId,
             mode = FeedMode.Page(roverId.pageQuery(), anchorPage = anchorPage),
