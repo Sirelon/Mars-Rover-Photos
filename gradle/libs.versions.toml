@@ -150,6 +150,7 @@ lifecycle-runtime-compose-multiplatform = { module = "org.jetbrains.androidx.lif
 # Paging Multiplatform
 paging-common = { module = "androidx.paging:paging-common", version.ref = "paging" }
 paging-compose = { module = "androidx.paging:paging-compose", version.ref = "paging" }
+paging-testing = { module = "androidx.paging:paging-testing", version.ref = "paging" }
 
 navigation3-runtime = { group = "androidx.navigation3", name = "navigation3-runtime", version.ref = "navigation3" }
 navigation3-ui = { group = "org.jetbrains.androidx.navigation3", name = "navigation3-ui", version.ref = "navigation3" }

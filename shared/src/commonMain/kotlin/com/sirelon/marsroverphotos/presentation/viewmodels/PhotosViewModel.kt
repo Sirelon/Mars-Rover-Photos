@@ -10,6 +10,7 @@ import androidx.paging.insertSeparators
 import androidx.paging.map as pagingMap
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.data.paging.FeedMode
+import com.sirelon.marsroverphotos.data.paging.ImagesSearchPagingSource
 import com.sirelon.marsroverphotos.data.paging.RoverFeedPager
 import com.sirelon.marsroverphotos.data.paging.pageQuery
 import com.sirelon.marsroverphotos.data.paging.usesPageFeed
@@ -308,7 +309,7 @@ class PhotosViewModel(
 
     /** Scrolls the grid to the start of the given page (1-based). No-op in sol mode. */
     fun loadByPage(page: Int) {
-        val index = (page - 1).coerceAtLeast(0) * PAGE_SIZE
+        val index = (page - 1).coerceAtLeast(0) * ImagesSearchPagingSource.PAGE_SIZE
         _scrollToItemEmitter.tryEmit(index)
     }
 
@@ -410,7 +411,6 @@ class PhotosViewModel(
     private companion object {
         private const val FACT_POOL_SIZE = 15
         private const val FACT_EVERY_N_DAYS = 3L
-        private const val PAGE_SIZE = 100
 
         /**
          * Emitted by [gridItemsFlow] while the shared pager still points at the previous rover, so

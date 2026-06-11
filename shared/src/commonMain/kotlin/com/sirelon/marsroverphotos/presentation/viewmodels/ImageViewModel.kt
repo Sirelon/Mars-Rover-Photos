@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 /**
  * ViewModel for the fullscreen image viewer.
@@ -115,7 +116,11 @@ class ImageViewModel(
 
         if (roverId.usesPageFeed()) {
             if (current?.roverId == roverId && current.mode is FeedMode.Page) return
-            roverFeedPager.setFeed(roverId = roverId, mode = FeedMode.Page(roverId.pageQuery()))
+            // The original shuffle seed isn't persisted, so a fresh shuffle matches the list's default behavior.
+            roverFeedPager.setFeed(
+                roverId = roverId,
+                mode = FeedMode.Page(roverId.pageQuery(), shuffleSeed = Random.nextLong()),
+            )
             return
         }
 

@@ -149,7 +149,7 @@ class RoverFeedPager(
                             },
                             fetchPage = { page ->
                                 val response = restApi.searchImages(query, page)
-                                val startIndex = (page - 1) * 100
+                                val startIndex = (page - 1) * ImagesSearchPagingSource.PAGE_SIZE
                                 ImagesSearchPagingSource.PageResult(
                                     images = response.toMarsImages(startIndex),
                                     totalHits = response.collection.metadata?.totalHits ?: 0,
@@ -166,6 +166,10 @@ class RoverFeedPager(
         .cachedIn(appScope)
 
     fun setFeed(roverId: Long, mode: FeedMode) {
+        // A rebuilt feed creates a new PagingSource that re-merges favorite state from Room, so
+        // any optimistic overrides are stale/redundant — clear them to keep the map from growing.
+        // setFeed is only called from main-thread ViewModel code, so this mutation is safe.
+        favoriteOverrides.clear()
         val params = Params(roverId = roverId, mode = mode)
         latestParams = params
         paramsFlow.tryEmit(params)
@@ -179,9 +183,9 @@ class RoverFeedPager(
             enablePlaceholders = false,
         )
         private val pageSearchConfig = PagingConfig(
-            pageSize = 100,
+            pageSize = ImagesSearchPagingSource.PAGE_SIZE,
             prefetchDistance = 20,
-            initialLoadSize = 100,
+            initialLoadSize = ImagesSearchPagingSource.PAGE_SIZE,
             enablePlaceholders = false,
         )
     }

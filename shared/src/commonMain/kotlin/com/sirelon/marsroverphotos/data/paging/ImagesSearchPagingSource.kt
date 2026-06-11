@@ -103,8 +103,10 @@ class ImagesSearchPagingSource(
         }
     }
 
-    private companion object {
-        private const val PAGE_SIZE = 100
+    companion object {
+        /** Single source of truth for the images.nasa.gov page size — also used by
+         *  [RoverFeedPager]'s paging config / startIndex math and PhotosViewModel's page jump. */
+        internal const val PAGE_SIZE = 100
         private const val CACHE_KEEP_LIMIT = 2000
         private const val MAX_PAGES = 50
     }

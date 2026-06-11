@@ -55,6 +55,15 @@ class SolPagingSource(
     /** Inserts since the last cache eviction; eviction runs only every [EVICT_EVERY_N_LOADS]. */
     private var loadsSinceEviction = 0
 
+    /**
+     * Sols already probed and found empty, so re-scans over the same gap (e.g. a PREPEND walking
+     * back through sols a Refresh already probed) skip them without re-firing a network request.
+     * Safe per-instance only: [cameras] is fixed for the lifetime of a PagingSource (a filter
+     * change builds a new source), so "empty" here means "no photos matching THIS camera set" —
+     * a sol that is empty for one filter may have photos for another, but never for this instance.
+     */
+    private val knownEmptySols = HashSet<Long>()
+
     /** Refresh re-centers on the sol of the item closest to the current scroll anchor. */
     override fun getRefreshKey(state: PagingState<Long, MarsImage>): Long? {
         val anchor = state.anchorPosition ?: return null
@@ -144,12 +153,19 @@ class SolPagingSource(
 
     /**
      * Walks [step] sols from [startSol] toward the rover bound, returning the first sol that has
-     * (camera-filtered) photos. Capped at [budget] network probes per call.
+     * (camera-filtered) photos. Capped at [budget] network probes per call; sols memoized in
+     * [knownEmptySols] are skipped for free.
      */
     private suspend fun findDay(startSol: Long, step: Int, budget: Int = scanBudget): FindResult {
         var sol = startSol
         var probes = 0
         while (sol in minSol..maxSol) {
+            // Memoized empty sols are skipped without a network probe and without spending budget;
+            // the loop stays bounded because the sol range minSol..maxSol is finite.
+            if (sol in knownEmptySols) {
+                sol += step
+                continue
+            }
             if (probes >= budget) return FindResult.Exhausted(sol)
             // Fetch the whole sol (camera = null) and filter in-memory, so the empty-sol skip is
             // camera-aware for every rover — Perseverance/Insight raw APIs ignore the camera param.
@@ -160,6 +176,7 @@ class SolPagingSource(
             if (photos.isNotEmpty()) {
                 return FindResult.Found(Day(sol, cacheAndMerge(photos)))
             }
+            knownEmptySols += sol
             sol += step
         }
         return FindResult.End
