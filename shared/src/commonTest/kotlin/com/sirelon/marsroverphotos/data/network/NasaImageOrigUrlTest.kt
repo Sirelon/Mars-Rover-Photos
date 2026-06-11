@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos.data.network
 
+import com.sirelon.marsroverphotos.utils.nasaImageOrigUrl
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

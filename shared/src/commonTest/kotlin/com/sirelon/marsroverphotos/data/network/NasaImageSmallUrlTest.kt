@@ -5,6 +5,8 @@ import com.sirelon.marsroverphotos.data.network.models.NasaImagesItem
 import com.sirelon.marsroverphotos.data.network.models.NasaImagesItemData
 import com.sirelon.marsroverphotos.data.network.models.NasaImagesItemLink
 import com.sirelon.marsroverphotos.data.network.models.NasaImagesSearchResponse
+import com.sirelon.marsroverphotos.utils.nasaImageOrigUrl
+import com.sirelon.marsroverphotos.utils.nasaImageSmallUrl
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

@@ -7,6 +7,7 @@ import com.sirelon.marsroverphotos.data.network.models.PerseveranceCameraRespons
 import com.sirelon.marsroverphotos.data.network.models.PerseverancePhotoItemResponse
 import com.sirelon.marsroverphotos.domain.models.MarsPhoto
 import com.sirelon.marsroverphotos.domain.models.RoverCamera
+import com.sirelon.marsroverphotos.utils.nasaImageSmallUrl
 import kotlin.math.abs
 
 /**
@@ -92,51 +93,6 @@ fun PerseveranceCameraResponse.toUI(): RoverCamera {
 }
 
 /**
- * Maps MSL raw-feed photos to [MarsImage], deriving [RoverCamera] from the flat [MarsPhoto.instrument]
- * string. The camera [name][RoverCamera.name] is the leading token (e.g. "MAST_RIGHT" → "MAST"),
- * which matches Curiosity's CameraSpec.name values so the existing filterByCameras logic works
- * unchanged. The camera [fullName][RoverCamera.fullName] retains the full instrument string.
- */
-/**
- * Derives the full-resolution URL from a NASA Image Library preview href.
- *
- * Search result links end in a size token: `~thumb`, `~small`, `~medium`, or `~large` followed
- * by the file extension. The `~orig` asset (same path, same extension) is the full-res version.
- * If no known size token is found the href is returned as-is (no blind replacement).
- *
- * Examples:
- *   `…/PIA05040~small.jpg`  → `…/PIA05040~orig.jpg`
- *   `…/PIA05040~thumb.jpg`  → `…/PIA05040~orig.jpg`
- *   `…/PIA05040~large.jpg`  → `…/PIA05040~orig.jpg`
- *   `…/PIA05040.jpg`        → `…/PIA05040.jpg` (unchanged)
- */
-internal fun nasaImageOrigUrl(href: String): String {
-    val match = SIZE_TOKEN_REGEX.find(href) ?: return href
-    val ext = match.groupValues[2]
-    return href.substring(0, match.range.first) + "~orig.$ext"
-}
-
-/**
- * Derives the lightweight `~small` URL from a NASA Image Library preview href.
- *
- * Any known size token (`~thumb`, `~small`, `~medium`, `~large`) is replaced with `~small`.
- * If no known size token is found the href is returned as-is.
- *
- * Storing `~small` in [MarsImage.imageUrl] keeps the grid fast; call [nasaImageOrigUrl]
- * on the stored value to recover the full-res URL for the detail viewer.
- */
-internal fun nasaImageSmallUrl(href: String): String {
-    val match = SIZE_TOKEN_REGEX.find(href) ?: return href
-    val ext = match.groupValues[2]
-    return href.substring(0, match.range.first) + "~small.$ext"
-}
-
-private val SIZE_TOKEN_REGEX = Regex(
-    "~(thumb|small|medium|large)\\.(jpg|jpeg|png)$",
-    RegexOption.IGNORE_CASE,
-)
-
-/**
  * Maps a NASA Image Library search response to [MarsImage] entities for Spirit/Opportunity.
  *
  * Full-res URL is derived from the preview thumbnail: `~thumb.jpg` suffix → `~orig.jpg`.
@@ -167,6 +123,12 @@ fun NasaImagesSearchResponse.toMarsImages(startIndex: Int = 0): List<MarsImage> 
         )
     }
 
+/**
+ * Maps MSL raw-feed photos to [MarsImage], deriving [RoverCamera] from the flat [MarsPhoto.instrument]
+ * string. The camera [name][RoverCamera.name] is the leading token (e.g. "MAST_RIGHT" → "MAST"),
+ * which matches Curiosity's CameraSpec.name values so the existing filterByCameras logic works
+ * unchanged. The camera [fullName][RoverCamera.fullName] retains the full instrument string.
+ */
 fun List<MarsPhoto>.mapToUiMsl(): List<MarsImage> {
     return mapIndexed { index, marsPhoto ->
         MarsImage(

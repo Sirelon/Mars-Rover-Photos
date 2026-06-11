@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
@@ -28,6 +29,7 @@ import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -107,6 +109,7 @@ public class MarsPhotoWidgetConfigActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun WidgetConfigScreen(
     appWidgetId: Int,
@@ -122,7 +125,7 @@ private fun WidgetConfigScreen(
             RoverOption(INSIGHT_ID, "Insight")
         )
     }
-    var selectedId by remember { mutableStateOf(DefaultRoverId) }
+    var selectedId by remember { mutableLongStateOf(DefaultRoverId) }
 
     LaunchedEffect(appWidgetId) {
         val manager = GlanceAppWidgetManager(context)
