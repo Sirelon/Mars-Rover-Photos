@@ -143,7 +143,6 @@ dependencies {
 
     // Koin Android
     implementation(libs.koin.android)
-    implementation(libs.koin.androidx.compose)
 
     // Compose UI (Material3 + foundation needed by widget config activity)
     implementation(libs.compose.material3)
@@ -168,7 +167,6 @@ dependencies {
     implementation(libs.user.messaging.platform)
 
     // Testing
-    testImplementation(libs.kotlin.stdlib)
     testImplementation(libs.kotlin.test.junit)
 }
 

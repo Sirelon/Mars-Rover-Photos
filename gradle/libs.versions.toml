@@ -12,12 +12,9 @@ compose-multiplatform = "1.12.0-alpha01"
 activityCompose = "1.13.0"
 # https://developer.android.com/jetpack/androidx/releases/appcompat
 appcompat = "1.7.1"
-# https://developer.android.com/jetpack/androidx/releases/annotation
-annotation = "1.10.0"
 ktx = "1.19.0"
 # https://developer.android.com/jetpack/androidx/releases/lifecycle
 lifecycle = "2.10.0"
-lifecycle-androidx = "2.10.0"
 # https://developer.android.com/jetpack/androidx/releases/compose
 compose = "1.11.2"
 # https://developer.android.com/jetpack/androidx/releases/compose-material3
@@ -26,7 +23,6 @@ compose-material3 = "1.5.0-alpha21"
 glance = "1.2.0-rc01"
 # https://developer.android.com/jetpack/androidx/releases/paging
 paging = "3.5.0"
-paging-kmp = "3.5.0"
 # https://developer.android.com/jetpack/androidx/releases/room3
 room = "3.0.0-alpha06"
 # https://developer.android.com/jetpack/androidx/releases/work
@@ -65,10 +61,8 @@ firebaseBom = "34.14.1"
 firebaseAnalyticsVersion = "23.2.0"
 firebaseCrashlyticsVersion = "20.0.6"
 firebaseFirestoreVersion = "26.3.0"
-firebaseMessagingVersion = "25.0.2"
 
 # Testing
-mockito = "1.6.0"
 
 # Android-only libraries
 playServicesAds = "25.3.0"
@@ -85,7 +79,6 @@ lifecycle-navigation3 = "2.11.0-rc01"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
-androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "annotation" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 androidx-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "ktx" }
 androidx-glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glance" }
@@ -94,8 +87,6 @@ androidx-room-runtime = { group = "androidx.room3", name = "room3-runtime", vers
 androidx-room-compiler = { group = "androidx.room3", name = "room3-compiler", version.ref = "room" }
 androidx-room-paging = { group = "androidx.room3", name = "room3-paging", version.ref = "room" }
 androidx-sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version = "2.7.0-alpha05" }
-androidx-paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging" }
-androidx-paging-runtime-ktx = { group = "androidx.paging", name = "paging-runtime-ktx", version.ref = "paging" }
 
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "core-splashscreen" }
@@ -111,10 +102,7 @@ compose-mp-components-ui-tooling-preview = { module = "org.jetbrains.compose.com
 
 coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
-firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
-firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
-firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
 firebase-perf = { module = "com.google.firebase:firebase-perf" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 # GitLive Firebase KMP libraries
@@ -125,25 +113,20 @@ gitlive-firebase-firestore = { module = "dev.gitlive:firebase-firestore", versio
 firebase-analytics-versioned = { module = "com.google.firebase:firebase-analytics", version.ref = "firebaseAnalyticsVersion" }
 firebase-crashlytics-versioned = { module = "com.google.firebase:firebase-crashlytics", version.ref = "firebaseCrashlyticsVersion" }
 firebase-firestore-versioned = { module = "com.google.firebase:firebase-firestore", version.ref = "firebaseFirestoreVersion" }
-firebase-messaging-versioned = { module = "com.google.firebase:firebase-messaging", version.ref = "firebaseMessagingVersion" }
-kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 kotlin-test-annotations-common = { module = "org.jetbrains.kotlin:kotlin-test-annotations-common", version.ref = "kotlin" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlin-collections-immutable" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
-kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlin-serialization" }
-ksp = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "ksp" }
 
 # Koin Multiplatform
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin-compose" }
 koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin-compose" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
-koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
 koin-compose-navigation3 = { module = "io.insert-koin:koin-compose-navigation3", version.ref = "koin" }
 
 # Ktor Multiplatform
@@ -159,21 +142,18 @@ ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serializatio
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 
 # Navigation Compose Multiplatform
-navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
 
 # Lifecycle Multiplatform
 lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel", version.ref = "lifecycle" }
 lifecycle-runtime-compose-multiplatform = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
 
 # Paging Multiplatform
-paging-common = { module = "androidx.paging:paging-common", version.ref = "paging-kmp" }
-paging-compose-common = { module = "androidx.paging:paging-compose-common", version.ref = "paging-kmp" }
+paging-common = { module = "androidx.paging:paging-common", version.ref = "paging" }
+paging-compose = { module = "androidx.paging:paging-compose", version.ref = "paging" }
 
-androidx-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle-androidx" }
 navigation3-runtime = { group = "androidx.navigation3", name = "navigation3-runtime", version.ref = "navigation3" }
 navigation3-ui = { group = "org.jetbrains.androidx.navigation3", name = "navigation3-ui", version.ref = "navigation3" }
 lifecycle-viewmodel-navigation3 = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-navigation3", version.ref = "lifecycle-navigation3" }
-mockito-kotlin = { module = "com.nhaarman:mockito-kotlin", version.ref = "mockito" }
 
 # Android-only Compose (used by androidApp widget/glance code)
 compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "compose" }
@@ -200,12 +180,3 @@ google-services = { id = "com.google.gms.google-services", version = "4.4.4" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 room = { id = "androidx.room3", version.ref = "room" }
 
-[bundles]
-firebase = [
-    "firebase-bom",
-    "firebase-analytics",
-    "firebase-crashlytics",
-    "firebase-firestore",
-    "firebase-messaging",
-    "firebase-perf",
-]
