@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos.presentation.screens
 
+import com.sirelon.marsroverphotos.data.paging.ImagesSearchPagingSource
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -232,7 +233,8 @@ private fun PageContent(
     onConfirm: (page: Int) -> Unit,
 ) {
     val maxPage = remember(totalPagePhotos) {
-        if (totalPagePhotos > 0) (totalPagePhotos + 99) / 100 else 1
+        val pageSize = ImagesSearchPagingSource.PAGE_SIZE
+        if (totalPagePhotos > 0) (totalPagePhotos + pageSize - 1) / pageSize else 1
     }
     var selectedPage by remember { mutableIntStateOf(1) }
 

@@ -14,7 +14,12 @@ sealed interface FeedMode {
         val cameras: Set<String>,
     ) : FeedMode
 
-    data class Page(val query: String, val shuffleSeed: Long? = null) : FeedMode
+    /**
+     * Page-keyed feed (Spirit/Opportunity). [anchorPage] is the 1-based API page to open at;
+     * null lets the paging source pick a random page — the page-feed counterpart of the sol
+     * feed's random-sol anchor.
+     */
+    data class Page(val query: String, val anchorPage: Int? = null) : FeedMode
 }
 
 /** Returns true when this rover id should use a page-keyed feed instead of the sol-keyed feed. */

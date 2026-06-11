@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.data.paging.FeedMode
+import com.sirelon.marsroverphotos.data.paging.ImagesSearchPagingSource
 import com.sirelon.marsroverphotos.data.paging.RoverFeedPager
 import com.sirelon.marsroverphotos.data.paging.pageQuery
 import com.sirelon.marsroverphotos.data.paging.usesPageFeed
@@ -27,7 +28,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import kotlin.random.Random
 
 /**
  * ViewModel for the fullscreen image viewer.
@@ -116,11 +116,18 @@ class ImageViewModel(
 
         if (roverId.usesPageFeed()) {
             if (current?.roverId == roverId && current.mode is FeedMode.Page) return
-            // The original shuffle seed isn't persisted, so a fresh shuffle matches the list's default behavior.
-            roverFeedPager.setFeed(
-                roverId = roverId,
-                mode = FeedMode.Page(roverId.pageQuery(), shuffleSeed = Random.nextLong()),
-            )
+            viewModelScope.launch {
+                // Anchor at the page containing the photo being viewed (MarsImage.order encodes
+                // its global API index); if it isn't cached, fall back to a random page like the
+                // list's default behavior.
+                val anchorPage = selectedId
+                    ?.let { imagesRepository.loadImages(listOf(it)).first().firstOrNull()?.order }
+                    ?.let { it / ImagesSearchPagingSource.PAGE_SIZE + 1 }
+                roverFeedPager.setFeed(
+                    roverId = roverId,
+                    mode = FeedMode.Page(roverId.pageQuery(), anchorPage = anchorPage),
+                )
+            }
             return
         }
 

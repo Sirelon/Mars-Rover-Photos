@@ -1,8 +1,11 @@
 package com.sirelon.marsroverphotos.data.paging
 
+import androidx.paging.PagingConfig
 import androidx.paging.PagingSource
+import androidx.paging.PagingState
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import kotlinx.coroutines.test.runTest
+import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -11,265 +14,204 @@ import kotlin.test.assertTrue
 
 class ImagesSearchPagingSourceTest {
 
+    /** 450 hits at pageSize 100 → 5 pages; page N carries items "pN_1".."pN_100" (page 5: 50). */
+    private val totalHits = 450
+
+    private fun pageResult(page: Int, totalHits: Int = this.totalHits): ImagesSearchPagingSource.PageResult {
+        val count = (totalHits - (page - 1) * 100).coerceIn(0, 100)
+        return ImagesSearchPagingSource.PageResult(
+            images = (1..count).map { marsImage("p${page}_$it", 0L).copy(order = (page - 1) * 100 + it - 1) },
+            totalHits = totalHits,
+        )
+    }
+
+    /** Source over the 5-page dataset; [fetchedPages] records every network page request. */
     private fun source(
-        pages: Map<Int, ImagesSearchPagingSource.PageResult>,
+        anchorPage: Int? = null,
+        totalHitsHint: Int? = null,
+        random: Random = Random(0),
         dao: FakeImagesDao = FakeImagesDao(),
-        shuffleSeed: Long? = null,
+        onTotalHits: ((Int) -> Unit)? = null,
+        fetchedPages: MutableList<Int> = mutableListOf(),
+        fetch: suspend (page: Int) -> ImagesSearchPagingSource.PageResult = { pageResult(it) },
     ): ImagesSearchPagingSource = ImagesSearchPagingSource(
-        pageSize = 100,
         imagesDao = dao,
-        shuffleSeed = shuffleSeed,
-        fetchPage = { page -> pages[page] ?: ImagesSearchPagingSource.PageResult(emptyList(), 0) },
+        anchorPage = anchorPage,
+        totalHitsHint = totalHitsHint,
+        onTotalHits = onTotalHits,
+        random = random,
+        fetchPage = { page ->
+            fetchedPages += page
+            fetch(page)
+        },
     )
 
     private fun page(result: PagingSource.LoadResult<Int, MarsImage>) =
         assertIs<PagingSource.LoadResult.Page<Int, MarsImage>>(result)
 
-    private fun imageWithDate(id: String, date: String): MarsImage =
-        marsImage(id, 0L).copy(earthDate = date)
+    private fun refresh(key: Int? = null) = PagingSource.LoadParams.Refresh(key, 100, false)
 
-    // 1. Fetch-all: a two-page dataset is loaded in a single load() call.
+    // 1. Refresh with an explicit anchor fetches exactly that page, with real directional keys.
     @Test
-    fun fetchAll_loadsAllPages() = runTest {
-        val src = source(
-            mapOf(
-                1 to ImagesSearchPagingSource.PageResult(
-                    images = (1..100).map { marsImage("p1_img$it", 0L) },
-                    totalHits = 150,
-                ),
-                2 to ImagesSearchPagingSource.PageResult(
-                    images = (1..50).map { marsImage("p2_img$it", 0L) },
-                    totalHits = 150,
-                ),
-            )
-        )
+    fun refresh_explicitAnchorFetchesThatPage() = runTest {
+        val fetched = mutableListOf<Int>()
+        val p = page(source(anchorPage = 2, fetchedPages = fetched).load(refresh()))
 
-        val p = page(src.load(PagingSource.LoadParams.Refresh(null, 100, false)))
-        assertEquals(150, p.data.size)
+        assertEquals(listOf(2), fetched)
+        assertEquals(100, p.data.size)
+        assertEquals("p2_1", p.data.first().id)
+        assertEquals(1, p.prevKey)
+        assertEquals(3, p.nextKey)
     }
 
-    // 2. nextKey is always null — single-page result, no incremental paging.
+    // 2. A refresh key (Paging re-centering after invalidation) takes priority over the anchor.
     @Test
-    fun load_nextKeyIsAlwaysNull() = runTest {
-        val src = source(
-            mapOf(1 to ImagesSearchPagingSource.PageResult(
-                images = (1..100).map { marsImage("img$it", 0L) },
-                totalHits = 200,
-            ))
-        )
-        val p = page(src.load(PagingSource.LoadParams.Refresh(null, 100, false)))
-        assertNull(p.nextKey)
+    fun refresh_keyTakesPriorityOverAnchor() = runTest {
+        val fetched = mutableListOf<Int>()
+        page(source(anchorPage = 2, fetchedPages = fetched).load(refresh(key = 4)))
+        assertEquals(listOf(4), fetched)
     }
 
-    // 3. prevKey is always null.
+    // 3. Random anchor with a cached totalHits hint: a single fetch, straight to the picked page.
     @Test
-    fun load_prevKeyIsAlwaysNull() = runTest {
-        val src = source(mapOf(1 to ImagesSearchPagingSource.PageResult(listOf(marsImage("x", 0L)), 1)))
-        val p = page(src.load(PagingSource.LoadParams.Refresh(null, 100, false)))
-        assertNull(p.prevKey)
-    }
-
-    // 4. Default sort: newest-first by earthDate (ISO-8601 lexicographic descending, blank last).
-    @Test
-    fun fetchAll_defaultSortIsNewestFirst() = runTest {
-        val pages = mapOf(1 to ImagesSearchPagingSource.PageResult(
-            images = listOf(
-                imageWithDate("old", "2010-01-01T00:00:00Z"),
-                imageWithDate("new", "2020-06-15T00:00:00Z"),
-                imageWithDate("mid", "2015-03-10T00:00:00Z"),
-                imageWithDate("blank", ""),
-            ),
-            totalHits = 4,
-        ))
-        val p = page(source(pages).load(PagingSource.LoadParams.Refresh(null, 100, false)))
-        assertEquals(listOf("new", "mid", "old", "blank"), p.data.map { it.id })
-    }
-
-    // 5. Shuffle: same seed → same order (deterministic).
-    @Test
-    fun fetchAll_shuffleWithSeedIsDeterministic() = runTest {
-        val images = (1..20).map { marsImage("img$it", 0L) }
-        val pages = mapOf(1 to ImagesSearchPagingSource.PageResult(images, totalHits = 20))
+    fun refresh_randomAnchorWithHint_singleFetch() = runTest {
         val seed = 42L
+        val expectedPage = Random(seed).nextInt(1, 6) // same draw the source will make over 5 pages
+        val fetched = mutableListOf<Int>()
 
-        val p1 = page(source(pages, shuffleSeed = seed).load(PagingSource.LoadParams.Refresh(null, 100, false)))
-        val p2 = page(source(pages, shuffleSeed = seed).load(PagingSource.LoadParams.Refresh(null, 100, false)))
-
-        assertEquals(p1.data.map { it.id }, p2.data.map { it.id })
-    }
-
-    // 6. Shuffle: different seeds produce different orders (with overwhelming probability for 20 items).
-    @Test
-    fun fetchAll_differentSeedsProduceDifferentOrders() = runTest {
-        val images = (1..20).map { marsImage("img$it", 0L) }
-        val pages = mapOf(1 to ImagesSearchPagingSource.PageResult(images, totalHits = 20))
-
-        val p1 = page(source(pages, shuffleSeed = 1L).load(PagingSource.LoadParams.Refresh(null, 100, false)))
-        val p2 = page(source(pages, shuffleSeed = 999L).load(PagingSource.LoadParams.Refresh(null, 100, false)))
-
-        assertTrue(p1.data.map { it.id } != p2.data.map { it.id })
-    }
-
-    // 7. Shuffle does not change total item count.
-    @Test
-    fun fetchAll_shufflePreservesItemCount() = runTest {
-        val images = (1..50).map { marsImage("img$it", 0L) }
-        val pages = mapOf(1 to ImagesSearchPagingSource.PageResult(images, totalHits = 50))
-        val p = page(source(pages, shuffleSeed = 7L).load(PagingSource.LoadParams.Refresh(null, 100, false)))
-        assertEquals(50, p.data.size)
-    }
-
-    // 8. Short last page ends the fetch-all loop before totalHits is reached.
-    @Test
-    fun fetchAll_shortLastPageStopsLooping() = runTest {
-        val src = source(
-            mapOf(
-                1 to ImagesSearchPagingSource.PageResult(
-                    images = (1..100).map { marsImage("p1_$it", 0L) },
-                    totalHits = 130,
-                ),
-                2 to ImagesSearchPagingSource.PageResult(
-                    images = (1..30).map { marsImage("p2_$it", 0L) },
-                    totalHits = 130,
-                ),
-            )
+        val p = page(
+            source(totalHitsHint = totalHits, random = Random(seed), fetchedPages = fetched)
+                .load(refresh())
         )
-        val p = page(src.load(PagingSource.LoadParams.Refresh(null, 100, false)))
-        assertEquals(130, p.data.size)
-        assertNull(p.nextKey)
+
+        assertEquals(listOf(expectedPage), fetched)
+        assertEquals("p${expectedPage}_1", p.data.first().id)
     }
 
-    // 9. Empty first page → empty result with no keys.
+    // 4. Random anchor without a hint bootstraps page 1 to learn totalHits, then fetches the target.
     @Test
-    fun fetchAll_emptyResultReturnsEmptyPage() = runTest {
-        val src = source(mapOf(1 to ImagesSearchPagingSource.PageResult(emptyList(), 0)))
-        val p = page(src.load(PagingSource.LoadParams.Refresh(null, 100, false)))
-        assertTrue(p.data.isEmpty())
-        assertNull(p.nextKey)
-        assertNull(p.prevKey)
+    fun refresh_randomAnchorWithoutHint_bootstrapsPage1() = runTest {
+        // Pick a seed whose draw over 5 pages lands beyond page 1, so the bootstrap isn't reused.
+        val seed = (1L..100L).first { Random(it).nextInt(1, 6) > 1 }
+        val expectedPage = Random(seed).nextInt(1, 6)
+        val fetched = mutableListOf<Int>()
+
+        val p = page(source(random = Random(seed), fetchedPages = fetched).load(refresh()))
+
+        assertEquals(listOf(1, expectedPage), fetched)
+        assertEquals("p${expectedPage}_1", p.data.first().id)
     }
 
-    // 10. Write-through: insertImages called and persisted favorite merged back.
+    // 5. Single-page dataset: the bootstrap result is reused — exactly one fetch.
+    @Test
+    fun refresh_singlePageDataset_reusesBootstrap() = runTest {
+        val fetched = mutableListOf<Int>()
+        val p = page(
+            source(fetchedPages = fetched, fetch = { pageResult(it, totalHits = 80) })
+                .load(refresh())
+        )
+
+        assertEquals(listOf(1), fetched)
+        assertEquals(80, p.data.size)
+        assertNull(p.prevKey)
+        assertNull(p.nextKey)
+    }
+
+    // 6. Append fetches the requested page with both directional keys.
+    @Test
+    fun append_fetchesPageWithKeys() = runTest {
+        val p = page(source().load(PagingSource.LoadParams.Append(3, 100, false)))
+        assertEquals("p3_1", p.data.first().id)
+        assertEquals(2, p.prevKey)
+        assertEquals(4, p.nextKey)
+    }
+
+    // 7. Last page: nextKey is null, prepend stays open.
+    @Test
+    fun lastPage_nextKeyNull() = runTest {
+        val p = page(source().load(PagingSource.LoadParams.Append(5, 100, false)))
+        assertEquals(50, p.data.size)
+        assertEquals(4, p.prevKey)
+        assertNull(p.nextKey)
+    }
+
+    // 8. First page: prevKey is null, append stays open.
+    @Test
+    fun firstPage_prevKeyNull() = runTest {
+        val p = page(source().load(PagingSource.LoadParams.Prepend(1, 100, false)))
+        assertNull(p.prevKey)
+        assertEquals(2, p.nextKey)
+    }
+
+    // 9. An empty fetch ends pagination in both directions — never an empty page with a live key.
+    @Test
+    fun emptyFetch_returnsTerminalPage() = runTest {
+        val p = page(
+            source(anchorPage = 7, fetch = { ImagesSearchPagingSource.PageResult(emptyList(), 0) })
+                .load(refresh())
+        )
+        assertTrue(p.data.isEmpty())
+        assertNull(p.prevKey)
+        assertNull(p.nextKey)
+    }
+
+    // 10. An explicit anchor beyond the dataset is clamped against the totalHits hint.
+    @Test
+    fun refresh_anchorClampedToHintRange() = runTest {
+        val fetched = mutableListOf<Int>()
+        page(
+            source(anchorPage = 99, totalHitsHint = totalHits, fetchedPages = fetched)
+                .load(refresh())
+        )
+        assertEquals(listOf(5), fetched)
+    }
+
+    // 11. Write-through: insertImages called and persisted favorite merged back.
     @Test
     fun load_writesThroughAndMergesPersistedFavorite() = runTest {
         val network = marsImage("favImg", 0L, favorite = 0)
         val persisted = marsImage("favImg", 0L, favorite = 1)
         val dao = FakeImagesDao(persistedById = mapOf("favImg" to persisted))
-        val src = ImagesSearchPagingSource(
-            pageSize = 100,
-            imagesDao = dao,
-            fetchPage = { ImagesSearchPagingSource.PageResult(listOf(network), totalHits = 1) },
+        val src = source(
+            anchorPage = 1,
+            dao = dao,
+            fetch = { ImagesSearchPagingSource.PageResult(listOf(network), totalHits = 1) },
         )
 
-        val p = page(src.load(PagingSource.LoadParams.Refresh(null, 100, false)))
-        assertEquals(1, p.data.size)
+        val p = page(src.load(refresh()))
         assertEquals(1L, p.data.first().stats.favorite)
         assertTrue(dao.insertedIds.contains("favImg"))
     }
 
-    // 11. Network error propagates as LoadResult.Error.
+    // 12. Network error propagates as LoadResult.Error.
     @Test
     fun load_networkErrorProducesErrorResult() = runTest {
-        val src = ImagesSearchPagingSource(
-            pageSize = 100,
-            imagesDao = FakeImagesDao(),
-            fetchPage = { throw RuntimeException("network failure") },
-        )
-        val result = src.load(PagingSource.LoadParams.Refresh(null, 100, false))
+        val src = source(anchorPage = 1, fetch = { throw RuntimeException("network failure") })
+        val result = src.load(refresh())
         assertIs<PagingSource.LoadResult.Error<Int, MarsImage>>(result)
     }
 
-    // 12. Safety cap: loop stops after 50 pages when the API never signals end-of-data.
-    //     Uses pageSize=2 for efficiency: 50 pages × 2 items = 100 items total.
+    // 13. onTotalHits reports the dataset size after every fetch.
     @Test
-    fun fetchAll_stopsAtMaxPagesCap() = runTest {
-        val src = ImagesSearchPagingSource(
-            pageSize = 2,
-            imagesDao = FakeImagesDao(),
-            fetchPage = { page ->
-                ImagesSearchPagingSource.PageResult(
-                    images = listOf(marsImage("pg${page}_a", 0L), marsImage("pg${page}_b", 0L)),
-                    totalHits = 99999,
-                )
-            },
-        )
-        val p = page(src.load(PagingSource.LoadParams.Refresh(null, 2, false)))
-        assertEquals(100, p.data.size)   // 50 pages × 2 items/page
-        assertNull(p.nextKey)
+    fun load_reportsTotalHits() = runTest {
+        var reported = -1
+        page(source(anchorPage = 2, onTotalHits = { reported = it }).load(refresh()))
+        assertEquals(totalHits, reported)
     }
 
-    // 13. Cache hit: when cachedImages is provided, fetchPage is never called.
+    // 14. getRefreshKey maps the anchor item's global order back to its API page.
     @Test
-    fun load_cacheHit_skipsNetwork() = runTest {
-        var fetchCallCount = 0
-        val cached = (1..5).map { marsImage("cached$it", 0L) }
-        val src = ImagesSearchPagingSource(
-            pageSize = 100,
-            imagesDao = FakeImagesDao(),
-            cachedImages = cached,
-            fetchPage = { _ ->
-                fetchCallCount++
-                ImagesSearchPagingSource.PageResult(emptyList(), 0)
-            },
+    fun getRefreshKey_mapsAnchorItemOrderToPage() = runTest {
+        val src = source()
+        val item = marsImage("x", 0L).copy(order = 250) // global index 250 → page 3
+        val state = PagingState(
+            pages = listOf(
+                PagingSource.LoadResult.Page(data = listOf(item), prevKey = 2, nextKey = 4)
+            ),
+            anchorPosition = 0,
+            config = PagingConfig(pageSize = 100),
+            leadingPlaceholderCount = 0,
         )
-        val p = page(src.load(PagingSource.LoadParams.Refresh(null, 100, false)))
-        assertEquals(0, fetchCallCount)
-        assertEquals(cached.size, p.data.size)
-    }
-
-    // 14. onAllImagesFetched is invoked with merged images after a network fetch.
-    @Test
-    fun load_networkFetch_callsOnAllImagesFetched() = runTest {
-        val images = (1..3).map { marsImage("n$it", 0L) }
-        var captured: List<MarsImage>? = null
-        val src = ImagesSearchPagingSource(
-            pageSize = 100,
-            imagesDao = FakeImagesDao(),
-            onAllImagesFetched = { captured = it },
-            fetchPage = { ImagesSearchPagingSource.PageResult(images, totalHits = 3) },
-        )
-        src.load(PagingSource.LoadParams.Refresh(null, 100, false))
-        assertEquals(3, captured?.size)
-    }
-
-    // 15. Cache hit: onAllImagesFetched is NOT called (no network fetch happened).
-    @Test
-    fun load_cacheHit_doesNotCallOnAllImagesFetched() = runTest {
-        var callCount = 0
-        val cached = listOf(marsImage("c1", 0L))
-        val src = ImagesSearchPagingSource(
-            pageSize = 100,
-            imagesDao = FakeImagesDao(),
-            cachedImages = cached,
-            onAllImagesFetched = { callCount++ },
-            fetchPage = { ImagesSearchPagingSource.PageResult(emptyList(), 0) },
-        )
-        src.load(PagingSource.LoadParams.Refresh(null, 100, false))
-        assertEquals(0, callCount)
-    }
-
-    // 16. Cache + shuffle: different seeds applied to the same cached list produce different orders.
-    @Test
-    fun load_cacheHit_differentSeedsDifferentOrders() = runTest {
-        val cached = (1..20).map { marsImage("c$it", 0L) }
-        val p1 = page(
-            ImagesSearchPagingSource(
-                pageSize = 100,
-                imagesDao = FakeImagesDao(),
-                cachedImages = cached,
-                shuffleSeed = 1L,
-                fetchPage = { ImagesSearchPagingSource.PageResult(emptyList(), 0) },
-            ).load(PagingSource.LoadParams.Refresh(null, 100, false))
-        )
-        val p2 = page(
-            ImagesSearchPagingSource(
-                pageSize = 100,
-                imagesDao = FakeImagesDao(),
-                cachedImages = cached,
-                shuffleSeed = 999L,
-                fetchPage = { ImagesSearchPagingSource.PageResult(emptyList(), 0) },
-            ).load(PagingSource.LoadParams.Refresh(null, 100, false))
-        )
-        assertTrue(p1.data.map { it.id } != p2.data.map { it.id })
+        assertEquals(3, src.getRefreshKey(state))
     }
 }

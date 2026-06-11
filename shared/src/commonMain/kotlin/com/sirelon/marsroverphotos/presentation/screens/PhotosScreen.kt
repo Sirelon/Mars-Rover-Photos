@@ -43,7 +43,6 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateMap
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -93,7 +92,6 @@ import coil3.SingletonImageLoader
 import coil3.compose.LocalPlatformContext
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
@@ -137,7 +135,6 @@ fun PhotosScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val pagingItems = viewModel.gridItemsFlow.collectAsLazyPagingItems()
     val gridState = rememberLazyGridState()
-    val scope = rememberCoroutineScope()
 
     // Scroll to top whenever the feed is re-anchored (sol/date pick, randomize, go-to-latest,
     // camera filter change). Without this the grid keeps its previous scroll offset and the
@@ -145,13 +142,6 @@ fun PhotosScreen(
     LaunchedEffect(viewModel) {
         viewModel.scrollToTopEvents.collect {
             gridState.scrollToItem(0)
-        }
-    }
-
-    // Scroll to a specific item index for page-mode rovers (Spirit/Opportunity page jump).
-    LaunchedEffect(viewModel) {
-        viewModel.scrollToItemEvents.collect { index ->
-            gridState.scrollToItem(index)
         }
     }
 
@@ -216,12 +206,8 @@ fun PhotosScreen(
         state = state,
         pagingItems = pagingItems,
         gridState = gridState,
-        onRandomize = {
-            viewModel.randomize()
-            // Scroll to top so the reshuffled order is immediately visible. Only for page-mode
-            // rovers (Spirit/Opportunity) where showSolControls is false; sol rovers are unchanged.
-            if (!state.showSolControls) scope.launch { gridState.scrollToItem(0) }
-        },
+        // Re-anchoring (random sol or random page) emits scrollToTopEvents, collected above.
+        onRandomize = viewModel::randomize,
         onGoToLatest = viewModel::goToLatest,
         onClearCameraFilters = {
             viewModel.setCameraFilters(emptySet())
