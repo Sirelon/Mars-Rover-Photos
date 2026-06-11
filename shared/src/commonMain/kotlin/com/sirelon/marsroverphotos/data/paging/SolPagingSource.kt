@@ -229,7 +229,12 @@ class SolPagingSource(
             val persisted = imagesDao
                 .loadImagesByIds(networkPhotos.map { it.id })
                 .associateBy { it.id }
-            networkPhotos.map { persisted[it.id] ?: it }
+            // Merge ONLY user state (favorite + stats) from Room — the rest of the row may be
+            // stale (the insert is IGNORE, so e.g. `order` keeps its first-cached value).
+            networkPhotos.map { network ->
+                val row = persisted[network.id] ?: return@map network
+                network.copy(favorite = row.favorite, stats = row.stats)
+            }
         } catch (e: Exception) {
             Logger.e("SolPagingSource", e) { "Write-through cache failed; serving network photos" }
             networkPhotos

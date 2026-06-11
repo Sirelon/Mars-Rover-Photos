@@ -171,20 +171,25 @@ class ImagesSearchPagingSourceTest {
         assertEquals(listOf(5), fetched)
     }
 
-    // 11. Write-through: insertImages called and persisted favorite merged back.
+    // 11. Write-through: insertImages called; ONLY user state (favorite/stats) is merged from
+    //     the persisted row — `order` must stay network-fresh, because the IGNORE insert leaves
+    //     rows with whatever order they were first cached under (older page size or query),
+    //     which would corrupt the order-derived page math (chip, getRefreshKey, viewer restore).
     @Test
-    fun load_writesThroughAndMergesPersistedFavorite() = runTest {
-        val network = marsImage("favImg", 0L, favorite = 0)
-        val persisted = marsImage("favImg", 0L, favorite = 1)
-        val dao = FakeImagesDao(persistedById = mapOf("favImg" to persisted))
+    fun load_mergesOnlyUserStateFromPersistedRow() = runTest {
+        val network = marsImage("favImg", 0L, favorite = 0).copy(order = 430, favorite = false)
+        val stale = marsImage("favImg", 0L, favorite = 1).copy(order = 245, favorite = true)
+        val dao = FakeImagesDao(persistedById = mapOf("favImg" to stale))
         val src = source(
             anchorPage = 1,
             dao = dao,
             fetch = { ImagesSearchPagingSource.PageResult(listOf(network), totalHits = 1) },
         )
 
-        val p = page(src.load(refresh()))
-        assertEquals(1L, p.data.first().stats.favorite)
+        val merged = page(src.load(refresh())).data.first()
+        assertEquals(1L, merged.stats.favorite)   // user state: from Room
+        assertTrue(merged.favorite)               // user state: from Room
+        assertEquals(430, merged.order)           // network-fresh, NOT the stale 245
         assertTrue(dao.insertedIds.contains("favImg"))
     }
 

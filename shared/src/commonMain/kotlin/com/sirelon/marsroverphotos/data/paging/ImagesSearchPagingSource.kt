@@ -120,7 +120,14 @@ class ImagesSearchPagingSource(
             val persisted = imagesDao
                 .loadImagesByIds(networkPhotos.map { it.id })
                 .associateBy { it.id }
-            networkPhotos.map { persisted[it.id] ?: it }
+            // Merge ONLY user state (favorite + stats) from Room onto the network photo. The
+            // insert is IGNORE, so persisted rows keep whatever `order` they were first cached
+            // with (possibly an older page size or query) — serving them whole would corrupt
+            // the order-derived page math (chip, getRefreshKey, viewer restore).
+            networkPhotos.map { network ->
+                val row = persisted[network.id] ?: return@map network
+                network.copy(favorite = row.favorite, stats = row.stats)
+            }
         } catch (e: Exception) {
             Logger.e("ImagesSearchPagingSource", e) { "Write-through cache failed; serving network" }
             networkPhotos
