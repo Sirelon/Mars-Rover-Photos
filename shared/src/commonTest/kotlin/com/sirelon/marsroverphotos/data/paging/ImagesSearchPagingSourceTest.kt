@@ -25,7 +25,11 @@ class ImagesSearchPagingSourceTest {
         )
     }
 
-    /** Source over the 5-page dataset; [fetchedPages] records every network page request. */
+    /**
+     * Source over the 5-page dataset; [fetchedPages] records every network page request.
+     * pageSize is pinned to 100 — the fixtures encode 100-per-page math, and the paging logic
+     * under test is independent of the production PAGE_SIZE value.
+     */
     private fun source(
         anchorPage: Int? = null,
         totalHitsHint: Int? = null,
@@ -40,6 +44,7 @@ class ImagesSearchPagingSourceTest {
         totalHitsHint = totalHitsHint,
         onTotalHits = onTotalHits,
         random = random,
+        pageSize = 100,
         fetchPage = { page ->
             fetchedPages += page
             fetch(page)

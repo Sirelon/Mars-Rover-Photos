@@ -128,9 +128,13 @@ class ImagesSearchPagingSource(
     }
 
     companion object {
-        /** Single source of truth for the images.nasa.gov page size — also used by
-         *  [RoverFeedPager]'s paging config / startIndex math and the viewer's page restore. */
-        internal const val PAGE_SIZE = 100
+        /**
+         * Page size requested from images.nasa.gov (the API allows up to 100). Small pages make
+         * the page picker and random anchor meaningful on these curated datasets (~434/565
+         * photos → ~44/57 pages). Single source of truth — also used by [RoverFeedPager]'s
+         * paging config / startIndex math and the viewer's page restore.
+         */
+        internal const val PAGE_SIZE = 10
         private const val CACHE_KEEP_LIMIT = 2000
     }
 }

@@ -146,7 +146,12 @@ class RoverFeedPager(
                                 _totalPagePhotos.value = hits
                             },
                             fetchPage = { page ->
-                                val response = restApi.searchImages(query, page, keywords = MER_KEYWORDS)
+                                val response = restApi.searchImages(
+                                    query = query,
+                                    page = page,
+                                    pageSize = ImagesSearchPagingSource.PAGE_SIZE,
+                                    keywords = MER_KEYWORDS,
+                                )
                                 val startIndex = (page - 1) * ImagesSearchPagingSource.PAGE_SIZE
                                 ImagesSearchPagingSource.PageResult(
                                     images = response.toMarsImages(startIndex),
