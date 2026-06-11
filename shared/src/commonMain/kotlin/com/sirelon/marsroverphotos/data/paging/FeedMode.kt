@@ -26,11 +26,19 @@ sealed interface FeedMode {
 fun Long.usesPageFeed(): Boolean = this == SPIRIT_ID || this == OPPORTUNITY_ID
 
 /**
- * Returns the images.nasa.gov search query for this page-feed rover.
+ * Returns the images.nasa.gov search query for this page-feed rover. Combined with
+ * [MER_KEYWORDS] for precision, the bare rover name yields the largest relevant gallery
+ * (Spirit: 434 vs 267 hits for "Spirit rover", verified 2026-06-12).
  * Only valid for rover IDs where [usesPageFeed] is true.
  */
 fun Long.pageQuery(): String = when (this) {
-    SPIRIT_ID -> "Spirit rover"
-    OPPORTUNITY_ID -> "Opportunity rover"
+    SPIRIT_ID -> "Spirit"
+    OPPORTUNITY_ID -> "Opportunity"
     else -> error("pageQuery() called for non-page-feed rover id=$this")
 }
+
+/**
+ * images.nasa.gov `keywords` filter sent with every page-feed search. Keeps the broad
+ * [pageQuery] precise — "Spirit"/"Opportunity" alone match unrelated media.
+ */
+const val MER_KEYWORDS = "Mars Exploration Rover"
