@@ -39,6 +39,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,6 +65,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
+import com.sirelon.marsroverphotos.data.paging.ImagesSearchPagingSource
 import com.sirelon.marsroverphotos.domain.models.EducationalFact
 import com.sirelon.marsroverphotos.presentation.models.GridItem
 import com.sirelon.marsroverphotos.presentation.ui.AppCard
@@ -86,6 +88,7 @@ import com.sirelon.marsroverphotos.shared.resources.Res
 import com.sirelon.marsroverphotos.shared.resources.did_you_know
 import com.sirelon.marsroverphotos.shared.resources.educational_fact
 import com.sirelon.marsroverphotos.shared.resources.no_photos_title
+import com.sirelon.marsroverphotos.shared.resources.page_of_fmt
 import com.sirelon.marsroverphotos.shared.resources.tap_to_retry
 import com.sirelon.marsroverphotos.utils.formatDisplayDate
 import coil3.SingletonImageLoader
@@ -145,12 +148,16 @@ fun PhotosScreen(
         }
     }
 
-    // Keep the floating chip + pickers in sync with the top-visible day as the user scrolls.
+    // Keep the floating chip + pickers in sync with the top-visible day (sol mode) or
+    // top-visible API page (page mode) as the user scrolls.
     val currentPagingItems = rememberUpdatedState(pagingItems)
+    var visiblePage by remember { mutableIntStateOf(1) }
     LaunchedEffect(gridState) {
         snapshotFlow { gridState.firstVisibleItemIndex }
             .collect { index ->
-                solAtIndex(currentPagingItems.value, index)?.let(viewModel::onVisibleSolChanged)
+                val items = currentPagingItems.value
+                solAtIndex(items, index)?.let(viewModel::onVisibleSolChanged)
+                pageAtIndex(items, index)?.let { visiblePage = it }
             }
     }
 
@@ -206,6 +213,7 @@ fun PhotosScreen(
         state = state,
         pagingItems = pagingItems,
         gridState = gridState,
+        currentPage = visiblePage,
         // Re-anchoring (random sol or random page) emits scrollToTopEvents, collected above.
         onRandomize = viewModel::randomize,
         onGoToLatest = viewModel::goToLatest,
@@ -234,6 +242,7 @@ private fun PhotosScreen(
     state: PhotosUiState,
     pagingItems: LazyPagingItems<GridItem>,
     gridState: LazyGridState,
+    currentPage: Int,
     onRandomize: () -> Unit,
     onGoToLatest: () -> Unit,
     onClearCameraFilters: () -> Unit,
@@ -317,17 +326,20 @@ private fun PhotosScreen(
                             favoriteOverrides = favoriteOverrides,
                         )
 
-                        // Floating "sticky" date chip — mirrors the top-visible day (sol mode only).
-                        if (state.showSolControls) {
-                            FloatingDateChip(
-                                sol = state.sol,
-                                earthDate = state.earthDate,
-                                onOpenDateJumpPicker = onOpenDateJumpPicker,
-                                modifier = Modifier
-                                    .align(Alignment.TopCenter)
-                                    .padding(top = AppSpacing.sm)
-                            )
-                        }
+                        // Floating "sticky" chip — mirrors the top-visible day (sol mode) or
+                        // API page (page mode); both open the jump picker.
+                        FloatingJumpChip(
+                            text = if (state.showSolControls) {
+                                if (state.earthDate.isNotBlank()) "Sol ${state.sol} · ${state.earthDate}"
+                                else "Sol ${state.sol}"
+                            } else {
+                                stringResource(Res.string.page_of_fmt, currentPage, state.totalPages)
+                            },
+                            onOpenDateJumpPicker = onOpenDateJumpPicker,
+                            modifier = Modifier
+                                .align(Alignment.TopCenter)
+                                .padding(top = AppSpacing.sm)
+                        )
 
                         // Refresh progress (e.g. after randomize) shown at the top when old items
                         // are still visible. Prepend and append progress shown at edges while scrolling.
@@ -448,9 +460,8 @@ private fun DateHeaderRow(
 }
 
 @Composable
-private fun FloatingDateChip(
-    sol: Long,
-    earthDate: String,
+private fun FloatingJumpChip(
+    text: String,
     onOpenDateJumpPicker: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -468,7 +479,7 @@ private fun FloatingDateChip(
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             Text(
-                text = if (earthDate.isNotBlank()) "Sol $sol · $earthDate" else "Sol $sol",
+                text = text,
                 style = MaterialTheme.typography.labelLarge,
                 maxLines = 1,
             )
@@ -671,6 +682,15 @@ private val GridItem.contentType: String
  * Sol of the day at (or just above) [index] — used to drive the floating header. For a
  * [GridItem.FactItem] (no sol of its own) it scans backward to the nearest photo/header.
  */
+/** Maps the top-visible photo back to its 1-based API page ([MarsImage.order] encodes the
+ *  global index). Only meaningful in page mode — sol-mode `order` is a per-sol index. */
+private fun pageAtIndex(pagingItems: LazyPagingItems<GridItem>, index: Int): Int? {
+    if (pagingItems.itemCount == 0) return null
+    val item = pagingItems.peek(index.coerceIn(0, pagingItems.itemCount - 1))
+    val photo = item as? GridItem.PhotoItem ?: return null
+    return photo.image.order / ImagesSearchPagingSource.PAGE_SIZE + 1
+}
+
 private fun solAtIndex(pagingItems: LazyPagingItems<GridItem>, index: Int): Long? {
     if (pagingItems.itemCount == 0) return null
     var i = index.coerceIn(0, pagingItems.itemCount - 1)
@@ -720,6 +740,7 @@ private fun PhotosScreenPreview() {
             ),
             pagingItems = pagingItems,
             gridState = rememberLazyGridState(),
+            currentPage = 1,
             onRandomize = {},
             onGoToLatest = {},
             onClearCameraFilters = {},

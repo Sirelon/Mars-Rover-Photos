@@ -1,6 +1,5 @@
 package com.sirelon.marsroverphotos.presentation.screens
 
-import com.sirelon.marsroverphotos.data.paging.ImagesSearchPagingSource
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -80,6 +79,7 @@ fun DateJumpPickerScreen(
         } else {
             PageContent(
                 totalPagePhotos = uiState.totalPagePhotos,
+                maxPage = uiState.totalPages,
                 onDismiss = onDismiss,
                 onConfirm = { page ->
                     viewModel.loadByPage(page)
@@ -229,13 +229,10 @@ private fun EarthDateRow(
 @Composable
 private fun PageContent(
     totalPagePhotos: Int,
+    maxPage: Int,
     onDismiss: () -> Unit,
     onConfirm: (page: Int) -> Unit,
 ) {
-    val maxPage = remember(totalPagePhotos) {
-        val pageSize = ImagesSearchPagingSource.PAGE_SIZE
-        if (totalPagePhotos > 0) (totalPagePhotos + pageSize - 1) / pageSize else 1
-    }
     var selectedPage by remember { mutableIntStateOf(1) }
 
     Column(

@@ -10,6 +10,7 @@ import androidx.paging.insertSeparators
 import androidx.paging.map as pagingMap
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.data.paging.FeedMode
+import com.sirelon.marsroverphotos.data.paging.ImagesSearchPagingSource
 import com.sirelon.marsroverphotos.data.paging.RoverFeedPager
 import com.sirelon.marsroverphotos.data.paging.pageQuery
 import com.sirelon.marsroverphotos.data.paging.usesPageFeed
@@ -215,9 +216,19 @@ class PhotosViewModel(
         }
     }
 
+    /**
+     * Rover id this instance has already anchored the page feed for. The screen's
+     * `LaunchedEffect(roverId)` re-fires [setRoverId] every time it re-enters composition
+     * (back from the fullscreen viewer or a picker), and re-anchoring there would jump the
+     * feed to a new random page under the user. Only a fresh ViewModel — a genuine screen
+     * open — applies the random anchor.
+     */
+    private var pageFeedAppliedFor: Long? = null
+
     fun setRoverId(roverId: Long) {
         roverIdEmitter.tryEmit(roverId)
-        if (roverId.usesPageFeed()) {
+        if (roverId.usesPageFeed() && pageFeedAppliedFor != roverId) {
+            pageFeedAppliedFor = roverId
             // Apply immediately — before the compose frame renders — so the cached (stale)
             // PagingData from the previous session is replaced before the UI sees it.
             applyPageFeed(roverId)
@@ -437,6 +448,13 @@ data class PhotosUiState(
     val showCameraName: Boolean = true,
     /** False for page-mode rovers (Spirit/Opportunity) — hides sol nav, date picker, camera filter. */
     val showSolControls: Boolean = true,
-    /** Total photos loaded for page-mode rovers. 0 until the first fetch completes. */
+    /** Dataset size (API totalHits) for page-mode rovers. 0 until the first fetch completes. */
     val totalPagePhotos: Int = 0,
-)
+) {
+    /** Total API pages for page-mode rovers (≥ 1), derived from [totalPagePhotos]. */
+    val totalPages: Int
+        get() {
+            val pageSize = ImagesSearchPagingSource.PAGE_SIZE
+            return if (totalPagePhotos > 0) (totalPagePhotos + pageSize - 1) / pageSize else 1
+        }
+}
