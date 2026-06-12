@@ -21,6 +21,7 @@ import coil3.toBitmap
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.data.network.RestApi
 import com.sirelon.marsroverphotos.data.network.toMarsImages
+import com.sirelon.marsroverphotos.data.paging.MER_KEYWORDS
 import com.sirelon.marsroverphotos.data.paging.pageQuery
 import com.sirelon.marsroverphotos.domain.models.CURIOSITY_ID
 import com.sirelon.marsroverphotos.domain.models.INSIGHT_ID
@@ -113,7 +114,9 @@ public class MarsPhotoWidgetWorker(
             INSIGHT_ID -> api.getInsightLatestPhotos().firstOrNull()
             PERSEVERANCE_ID -> api.getPerseveranceLatestPhotos().firstOrNull()
             CURIOSITY_ID -> api.getCuriosityLatestPhotos().firstOrNull()
-            SPIRIT_ID, OPPORTUNITY_ID -> api.searchImages(roverId.pageQuery(), 1, 1).toMarsImages().firstOrNull()
+            SPIRIT_ID, OPPORTUNITY_ID ->
+                api.searchImages(roverId.pageQuery(), 1, 1, keywords = MER_KEYWORDS)
+                    .toMarsImages().firstOrNull()
             else -> api.getCuriosityLatestPhotos().firstOrNull()
         }
     }

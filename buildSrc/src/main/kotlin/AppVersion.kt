@@ -2,6 +2,6 @@
 // Android and Desktop read this directly. After bumping, run
 // `./gradlew syncIosVersion` to push the values into the Xcode project.
 object AppVersion {
-    const val name = "3.0.0"
-    const val code = 48
+    const val name = "4.0.0"
+    const val code = 50
 }
