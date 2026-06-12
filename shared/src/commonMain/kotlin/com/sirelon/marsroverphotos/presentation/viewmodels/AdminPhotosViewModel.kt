@@ -122,10 +122,13 @@ class AdminPhotosViewModel(
         updatePhotoStatus(id, PhotoCheckStatus.Checking)
         val status = try {
             val response = httpClient.head(url)
+            val contentType = response.headers["Content-Type"]
+            val isImage = contentType?.startsWith("image/") == true
             when {
-                response.status.isSuccess() -> PhotoCheckStatus.Ok
                 response.status.value == 404 -> PhotoCheckStatus.Stale
-                else -> PhotoCheckStatus.Error
+                !response.status.isSuccess() -> PhotoCheckStatus.Error
+                !isImage -> PhotoCheckStatus.Stale
+                else -> PhotoCheckStatus.Ok
             }
         } catch (e: Exception) {
             PhotoCheckStatus.Error
