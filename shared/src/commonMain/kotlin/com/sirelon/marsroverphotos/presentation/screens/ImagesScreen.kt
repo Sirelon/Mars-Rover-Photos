@@ -88,6 +88,9 @@ import com.sirelon.marsroverphotos.shared.resources.images_empty_title
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
+import androidx.navigationevent.DirectNavigationEventInput
+import androidx.navigationevent.NavigationEvent
+import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import com.sirelon.marsroverphotos.presentation.navigation.LocalSharedTransitionScope
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -281,25 +284,33 @@ private fun ImagesPagerContent(
 
     val currentImage = pagingItems.peek(pagerState.currentPage)
 
-    // Black backdrop stays put so the window background never shows through during dismiss
-    Box(modifier = Modifier.fillMaxSize().background(Color.Black))
+    // Drag-to-dismiss drives NavDisplay's predictive-back machinery through a synthetic
+    // input, so the previous screen is composed and revealed beneath the gesture — the
+    // same behavior as the system back swipe.
+    val navEventDispatcher = LocalNavigationEventDispatcherOwner.current?.navigationEventDispatcher
+    val backInput = remember { DirectNavigationEventInput() }
+    DisposableEffect(navEventDispatcher) {
+        navEventDispatcher?.addInput(backInput)
+        onDispose { navEventDispatcher?.removeInput(backInput) }
+    }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .graphicsLayer {
+                // The photo follows the finger; entry alpha is driven by the
+                // predictive pop transition seek, not here.
                 translationY = dismissOffsetY.value
-                // Gently fade the screen as the user drags it down
-                alpha = (1f - dismissOffsetY.value / (dismissThresholdPx * 2.5f))
-                    .coerceIn(0f, 1f)
             }
             .pointerInput(isCurrentPageZoomed) {
                 if (isCurrentPageZoomed) return@pointerInput
+                var backDispatched = false
                 detectVerticalDragGestures(
                     onDragEnd = {
                         if (dismissOffsetY.value > dismissThresholdPx) {
-                            onBack()
+                            if (backDispatched) backInput.backCompleted() else onBack()
                         } else {
+                            if (backDispatched) backInput.backCancelled()
                             scope.launch {
                                 dismissOffsetY.animateTo(
                                     targetValue = 0f,
@@ -307,19 +318,33 @@ private fun ImagesPagerContent(
                                 )
                             }
                         }
+                        backDispatched = false
                     },
                     onDragCancel = {
+                        if (backDispatched) backInput.backCancelled()
+                        backDispatched = false
                         scope.launch { dismissOffsetY.animateTo(0f) }
                     },
                     onVerticalDrag = { change, dragAmount ->
                         // Only respond to downward drags (or releasing back up once started)
                         if (dragAmount > 0f || dismissOffsetY.value > 0f) {
                             change.consume()
-                            scope.launch {
-                                dismissOffsetY.snapTo(
-                                    (dismissOffsetY.value + dragAmount).coerceAtLeast(0f)
-                                )
+                            val newOffset = (dismissOffsetY.value + dragAmount).coerceAtLeast(0f)
+                            if (navEventDispatcher != null) {
+                                if (!backDispatched && newOffset > 0f) {
+                                    backDispatched = true
+                                    backInput.backStarted(NavigationEvent())
+                                }
+                                if (backDispatched) {
+                                    backInput.backProgressed(
+                                        NavigationEvent(
+                                            progress = (newOffset / (dismissThresholdPx * 2f))
+                                                .coerceIn(0f, 1f),
+                                        )
+                                    )
+                                }
                             }
+                            scope.launch { dismissOffsetY.snapTo(newOffset) }
                         }
                     }
                 )
