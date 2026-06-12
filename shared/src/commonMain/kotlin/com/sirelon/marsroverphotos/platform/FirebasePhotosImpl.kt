@@ -117,6 +117,10 @@ class FirebasePhotosImpl : IFirebasePhotos {
         return if (doc.exists) doc.toFirebasePhoto() else image.toFirebasePhoto()
     }
 
+    override suspend fun deletePhoto(photoId: String) {
+        photosCollection().document(photoId).delete()
+    }
+
     private suspend fun updatePhoto(photo: FirebasePhoto) {
         val data = mapOf(
             "id" to photo.id,

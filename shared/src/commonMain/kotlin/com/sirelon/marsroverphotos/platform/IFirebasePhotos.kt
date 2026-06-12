@@ -75,4 +75,10 @@ interface IFirebasePhotos {
      * @return List of educational facts
      */
     suspend fun loadEducationalFacts(): List<EducationalFact>
+
+    /**
+     * Delete a photo document from the popular photos collection.
+     * @param photoId The document ID to delete
+     */
+    suspend fun deletePhoto(photoId: String)
 }

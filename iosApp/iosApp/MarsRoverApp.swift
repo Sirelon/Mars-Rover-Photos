@@ -11,7 +11,11 @@ struct MarsRoverApp: App {
         // Initialize Firebase before anything else (required for Analytics, Crashlytics, Firestore)
         FirebaseApp.configure()
         // Initialize Koin dependency injection from shared module
-        IosApp.shared.start()
+        #if DEBUG
+        IosApp.shared.start(isDebug: true)
+        #else
+        IosApp.shared.start(isDebug: false)
+        #endif
 
         // Keep screen on during testing
         UIApplication.shared.isIdleTimerDisabled = true

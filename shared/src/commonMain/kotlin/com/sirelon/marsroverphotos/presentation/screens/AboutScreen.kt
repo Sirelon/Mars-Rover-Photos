@@ -41,7 +41,10 @@ import coil3.SingletonImageLoader
 import coil3.compose.LocalPlatformContext
 import com.sirelon.marsroverphotos.domain.settings.Theme
 import com.sirelon.marsroverphotos.platform.AppReview
+import com.sirelon.marsroverphotos.platform.BuildInfo
+import com.sirelon.marsroverphotos.presentation.navigation.AppDestination
 import com.sirelon.marsroverphotos.presentation.navigation.LocalAboutCallbacks
+import com.sirelon.marsroverphotos.presentation.navigation.LocalAppNavigator
 import com.sirelon.marsroverphotos.presentation.theme.AppSize
 import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
 import com.sirelon.marsroverphotos.presentation.theme.activeStatusColor
@@ -76,6 +79,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun AboutScreen() {
     val viewModel: AboutViewModel = koinViewModel()
     val callbacks = LocalAboutCallbacks.current
+    val navigator = LocalAppNavigator.current
     val coilContext = LocalPlatformContext.current
     val currentTheme by viewModel.themeFlow.collectAsStateWithLifecycle()
     val showFacts by viewModel.showFactsFlow.collectAsStateWithLifecycle()
@@ -91,7 +95,10 @@ fun AboutScreen() {
         },
         onRateApp = callbacks.onRateApp,
         appVersion = callbacks.appVersion,
-        rateAppUrl = callbacks.rateAppUrl
+        rateAppUrl = callbacks.rateAppUrl,
+        onNavigateToAdmin = if (BuildInfo.isDebug) {
+            { navigator.navigate(AppDestination.AdminPhotos) }
+        } else null
     )
 }
 
@@ -104,7 +111,8 @@ private fun AboutContent(
     onClearCache: () -> Unit,
     onRateApp: () -> Unit,
     appVersion: String,
-    rateAppUrl: String
+    rateAppUrl: String,
+    onNavigateToAdmin: (() -> Unit)?
 ) {
     val uriHandler = rememberPlatformUriHandler()
     val appReview: AppReview = koinInject()
@@ -210,6 +218,19 @@ private fun AboutContent(
                         sub = "Report a bug or suggest a feature",
                         onClick = { uriHandler.openUri("mailto:sasha.sirelon@gmail.com") }
                     )
+                }
+
+                if (onNavigateToAdmin != null) {
+                    SettingsSection(label = "Developer") {
+                        SettingsRow(
+                            icon = MaterialSymbol.BugReport,
+                            iconContainer = colors.errorContainer,
+                            iconTint = colors.onErrorContainer,
+                            label = "Admin: Popular Photos",
+                            sub = "Check and remove stale Firebase photos",
+                            onClick = onNavigateToAdmin
+                        )
+                    }
                 }
 
                 Footer()
