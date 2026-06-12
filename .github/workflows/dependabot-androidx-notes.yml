@@ -1,0 +1,76 @@
+name: Dependabot AndroidX Release Notes
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  androidx-notes:
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Fetch Dependabot metadata
+        id: meta
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check for androidx dependency
+        id: check
+        run: |
+          DEP="${{ steps.meta.outputs.dependency-names }}"
+          echo "dependency=$DEP" >> "$GITHUB_OUTPUT"
+          if echo "$DEP" | grep -q '^androidx\.'; then
+            echo "is_androidx=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_androidx=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Generate AndroidX release notes with Claude
+        if: steps.check.outputs.is_androidx == 'true'
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            You are reviewing a Dependabot pull request that bumps an AndroidX dependency.
+
+            **Dependency:** ${{ steps.check.outputs.dependency }}
+            **Previous version:** ${{ steps.meta.outputs.previous-version }}
+            **New version:** ${{ steps.meta.outputs.new-version }}
+
+            **App context:** This is a Kotlin Multiplatform (KMP) project targeting
+            Android, iOS, Desktop, and Web. The AndroidX libraries are used on the
+            Android target. `androidx.glance` is used for Android home-screen widgets.
+
+            **Your task:**
+            1. Derive the AndroidX releases page slug from the dependency group.
+               The slug is the second segment of the group ID — for example:
+               - `androidx.sqlite` → `sqlite`
+               - `androidx.glance` → `glance`
+               - `androidx.room` → `room`
+            2. Fetch `https://developer.android.com/jetpack/androidx/releases/<slug>`
+            3. Find the section for the **new version** (${{ steps.meta.outputs.new-version }}).
+               If the exact version isn't present, look for the nearest alpha/beta/rc
+               section that covers it.
+            4. Post a PR comment in this format (use GitHub-flavored Markdown):
+
+            ---
+            ## AndroidX Release Notes — `${{ steps.check.outputs.dependency }}` ${{ steps.meta.outputs.new-version }}
+
+            **What changed:** <1–3 bullet points summarising the changes in this release>
+
+            **Breaking changes / migration needed:** <"None" if there are none, otherwise describe them>
+
+            **Affects this app:** <Brief assessment of whether the changes are relevant to this
+            KMP project — note if it touches Glance (widgets), SQLite, Room, or other
+            components actually used here>
+
+            > Source: [AndroidX releases page](https://developer.android.com/jetpack/androidx/releases/<slug>)
+            ---
+
+            If the releases page is unreachable or the version section is not found,
+            say so explicitly rather than guessing.
