@@ -52,6 +52,9 @@ private const val ANIM_DURATION = 600
 
 private const val ANIM_DURATION_2 = ANIM_DURATION / 2
 
+/** Fade for leaving the fullscreen Images entry — slower so the gesture-driven finish stays gentle. */
+private const val IMAGES_POP_FADE = 450
+
 /**
  * Main Navigation 3 display for the app.
  */
@@ -150,17 +153,20 @@ fun AppNavigation(
     val dialogOverlaySceneStrategy = remember { DialogOverlaySceneStrategy<NavKey>() }
     val tracker: Tracker = koinInject()
     val rawIsImages = chromeDestination is AppDestination.Images
-    // Keep the full-screen Box wrapper alive for ANIM_DURATION_2 after leaving Images so the
-    // fadeOut plays inside the same layout context — avoids a black flash from the layout switch.
-    var isImages by remember { mutableStateOf(rawIsImages) }
+    // Opening must switch layouts in the same frame the transition starts, or the shared
+    // element retargets mid-flight when movableContentOf relocates NavDisplay (seen as a
+    // doubled animation). Closing keeps the full-screen wrapper for ANIM_DURATION_2 so the
+    // fadeOut plays in the same layout context — avoids a black flash from the layout switch.
+    var imagesLayoutHold by remember { mutableStateOf(rawIsImages) }
     LaunchedEffect(rawIsImages) {
         if (rawIsImages) {
-            isImages = true
+            imagesLayoutHold = true
         } else {
-            delay(ANIM_DURATION_2.toLong())
-            isImages = false
+            delay(IMAGES_POP_FADE.toLong())
+            imagesLayoutHold = false
         }
     }
+    val isImages = rawIsImages || imagesLayoutHold
 
     LaunchedEffect(deepLink) {
         val target = deepLink ?: return@LaunchedEffect
@@ -205,7 +211,7 @@ fun AppNavigation(
                 // When leaving Images, suppress the slide — shared elements handle the visual.
                 popTransitionSpec = {
                     if (initialState.metadata[IMAGES_DESTINATION_KEY] == true) {
-                        EnterTransition.None togetherWith fadeOut(tween(ANIM_DURATION_2))
+                        EnterTransition.None togetherWith fadeOut(tween(IMAGES_POP_FADE))
                     } else {
                         (slideInHorizontally(tween(ANIM_DURATION)) { -it / 5 } + fadeIn(tween(ANIM_DURATION))) togetherWith
                             (slideOutHorizontally(tween(ANIM_DURATION)) { it } + fadeOut(tween(ANIM_DURATION_2)))
@@ -215,7 +221,7 @@ fun AppNavigation(
                 // with the system's back gesture progress on Android 14+
                 predictivePopTransitionSpec = {
                     if (initialState.metadata[IMAGES_DESTINATION_KEY] == true) {
-                        EnterTransition.None togetherWith fadeOut(tween(ANIM_DURATION_2))
+                        EnterTransition.None togetherWith fadeOut(tween(IMAGES_POP_FADE))
                     } else {
                         (slideInHorizontally(tween(ANIM_DURATION)) { -it / 5 } + fadeIn(tween(ANIM_DURATION))) togetherWith
                             (slideOutHorizontally(tween(ANIM_DURATION)) { it } + fadeOut(tween(ANIM_DURATION_2)))
