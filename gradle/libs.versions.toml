@@ -2,7 +2,7 @@
 # Core
 kotlin = "2.4.0"
 androidGradlePlugin = "9.2.1"
-ksp = "2.3.7"
+ksp = "2.3.9"
 
 # Compose Multiplatform
 compose-multiplatform = "1.12.0-alpha01"
