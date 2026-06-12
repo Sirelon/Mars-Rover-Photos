@@ -542,7 +542,10 @@ private fun ImagesPager(
 
             Box(modifier = Modifier.fillMaxSize()) {
                 val sharedScope = LocalSharedTransitionScope.current
-                val sharedModifier = if (sharedScope != null && marsImage.id == selectedId) {
+                // Only the settled page carries the shared elements, so back animates to
+                // whichever photo the user swiped to — not just the originally tapped one.
+                val isSharedPage = page == pagerState.settledPage
+                val sharedModifier = if (sharedScope != null && isSharedPage) {
                     val animScope = LocalNavAnimatedContentScope.current
                     with(sharedScope) {
                         Modifier.sharedElement(
@@ -551,7 +554,7 @@ private fun ImagesPager(
                         )
                     }
                 } else Modifier
-                val sharedFavModifier = if (sharedScope != null && marsImage.id == selectedId) {
+                val sharedFavModifier = if (sharedScope != null && isSharedPage) {
                     val animScope = LocalNavAnimatedContentScope.current
                     with(sharedScope) {
                         Modifier.sharedElement(
