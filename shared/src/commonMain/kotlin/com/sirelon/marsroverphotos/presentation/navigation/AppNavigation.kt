@@ -1,9 +1,11 @@
 package com.sirelon.marsroverphotos.presentation.navigation
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.runtime.movableContentOf
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -13,17 +15,22 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
@@ -34,6 +41,7 @@ import com.sirelon.marsroverphotos.presentation.ui.UkraineBanner
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import androidx.navigation3.runtime.NavEntry
+import com.sirelon.marsroverphotos.di.IMAGES_DESTINATION_KEY
 import com.sirelon.marsroverphotos.presentation.screens.DateJumpPickerScreen
 import com.sirelon.marsroverphotos.presentation.screens.PhotosFiltersScreen
 import com.sirelon.marsroverphotos.presentation.screens.PhotosScreen
@@ -45,6 +53,9 @@ import org.koin.core.annotation.KoinExperimentalAPI
 private const val ANIM_DURATION = 600
 
 private const val ANIM_DURATION_2 = ANIM_DURATION / 2
+
+/** Fade for leaving the fullscreen Images entry — slower so the gesture-driven finish stays gentle. */
+private const val IMAGES_POP_FADE = 450
 
 /**
  * Main Navigation 3 display for the app.
@@ -184,16 +195,25 @@ fun AppNavigation(
                     (slideInHorizontally(tween(ANIM_DURATION)) { it } + fadeIn(tween(ANIM_DURATION))) togetherWith
                         (slideOutHorizontally(tween(ANIM_DURATION)) { -it / 5 } + fadeOut(tween(ANIM_DURATION_2)))
                 },
-                // Standard back: previous screen revealed from the left
+                // Standard back: previous screen revealed from the left.
+                // When leaving Images, suppress the slide — shared elements handle the visual.
                 popTransitionSpec = {
-                    (slideInHorizontally(tween(ANIM_DURATION)) { -it / 5 } + fadeIn(tween(ANIM_DURATION))) togetherWith
-                        (slideOutHorizontally(tween(ANIM_DURATION)) { it } + fadeOut(tween(ANIM_DURATION_2)))
+                    if (initialState.metadata[IMAGES_DESTINATION_KEY] == true) {
+                        EnterTransition.None togetherWith fadeOut(tween(IMAGES_POP_FADE))
+                    } else {
+                        (slideInHorizontally(tween(ANIM_DURATION)) { -it / 5 } + fadeIn(tween(ANIM_DURATION))) togetherWith
+                            (slideOutHorizontally(tween(ANIM_DURATION)) { it } + fadeOut(tween(ANIM_DURATION_2)))
+                    }
                 },
                 // Predictive back: same curve — NavDisplay drives this interactively
                 // with the system's back gesture progress on Android 14+
                 predictivePopTransitionSpec = {
-                    (slideInHorizontally(tween(ANIM_DURATION)) { -it / 5 } + fadeIn(tween(ANIM_DURATION))) togetherWith
-                        (slideOutHorizontally(tween(ANIM_DURATION)) { it } + fadeOut(tween(ANIM_DURATION_2)))
+                    if (initialState.metadata[IMAGES_DESTINATION_KEY] == true) {
+                        EnterTransition.None togetherWith fadeOut(tween(IMAGES_POP_FADE))
+                    } else {
+                        (slideInHorizontally(tween(ANIM_DURATION)) { -it / 5 } + fadeIn(tween(ANIM_DURATION))) togetherWith
+                            (slideOutHorizontally(tween(ANIM_DURATION)) { it } + fadeOut(tween(ANIM_DURATION_2)))
+                    }
                 },
             )
           }
@@ -201,29 +221,39 @@ fun AppNavigation(
       }
     }
 
+    // One persistent layout: the Images screen doesn't swap containers (that made the chrome
+    // pop in after the close animation). Instead the chrome — nav bar/rail, ad slot, banner,
+    // status-bar inset — animates out when Images opens and back in alongside the pop fade,
+    // so the NavDisplay container resizes smoothly in both directions.
     CompositionLocalProvider(LocalAppNavigator provides navigator) {
-        if (isImages) {
-            // Images screen goes fully edge-to-edge: no status-bar inset, no navigation chrome.
-            Box(modifier = modifier.background(MaterialTheme.colorScheme.background)) {
-                navDisplay()
-            }
-        } else {
+        Box(modifier = modifier.background(MaterialTheme.colorScheme.background)) {
             MarsNavigationSuite(
-                modifier = modifier,
+                modifier = Modifier.fillMaxSize(),
                 selectedDestination = chromeDestination.topLevelDestination(),
                 onDestinationClick = { destination ->
                     tracker.trackClick("nav_${destination.analyticsTag}")
                     navigator.selectTopLevel(destination)
                 },
                 resetScrollKey = chromeDestination,
+                chromeVisible = !isImages,
                 bottomChrome = { AdSlot(modifier = Modifier.fillMaxWidth()) },
             ) {
+                val statusBarTop = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+                val topPadding by animateDpAsState(
+                    targetValue = if (isImages) 0.dp else statusBarTop,
+                    animationSpec = tween(if (isImages) CHROME_HIDE_MS else CHROME_SHOW_MS),
+                    label = "statusBarPadding",
+                )
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .windowInsetsPadding(WindowInsets.statusBars),
+                        .padding(top = topPadding)
+                        // Consume exactly the inset that was applied: screens that add their own
+                        // statusBarsPadding (e.g. fullscreen Images) see only the remainder, so
+                        // there's no double inset after the chrome animates back in.
+                        .consumeWindowInsets(PaddingValues(top = topPadding)),
                 ) {
-                    AnimatedVisibility(chromeDestination !is AppDestination.Ukraine) {
+                    AnimatedVisibility(chromeDestination !is AppDestination.Ukraine && !isImages) {
                         UkraineBanner(
                             modifier = Modifier.fillMaxWidth(),
                             onClick = {

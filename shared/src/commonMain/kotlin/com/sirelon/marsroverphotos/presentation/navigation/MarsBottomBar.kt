@@ -1,5 +1,13 @@
 package com.sirelon.marsroverphotos.presentation.navigation
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -44,6 +52,10 @@ import org.jetbrains.compose.resources.stringResource
  *
  * [bottomChrome] — content placed between the main area and the NavigationBar
  * (e.g. an ad slot), or at the bottom of the content column for the rail layout.
+ *
+ * [chromeVisible] — animates the navigation chrome (bar/rail + [bottomChrome]) in and
+ * out. The content area resizes smoothly with it, so a fullscreen destination can
+ * collapse the chrome on entry and expand it in step with the pop transition on exit.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,6 +64,7 @@ fun MarsNavigationSuite(
     onDestinationClick: (AppDestination) -> Unit,
     modifier: Modifier = Modifier,
     resetScrollKey: Any? = null,
+    chromeVisible: Boolean = true,
     bottomChrome: @Composable () -> Unit = {},
     content: @Composable () -> Unit,
 ) {
@@ -76,22 +89,30 @@ fun MarsNavigationSuite(
                 ) {
                     content()
                 }
-                bottomChrome()
-                BottomAppBar(
-                    scrollBehavior = scrollBehavior,
-                    contentPadding = PaddingValues(horizontal = 0.dp, vertical = 0.dp),
+                AnimatedVisibility(
+                    visible = chromeVisible,
+                    enter = expandVertically(tween(CHROME_SHOW_MS)) + fadeIn(tween(CHROME_SHOW_MS)),
+                    exit = shrinkVertically(tween(CHROME_HIDE_MS)) + fadeOut(tween(CHROME_HIDE_MS)),
                 ) {
-                    marsNavigationItems.forEach { item ->
-                        val selected = item.destination == selectedDestination
-                        NavigationBarItem(
-                            selected = selected,
-                            onClick = { onDestinationClick(item.destination) },
-                            icon = {
-                                val label = stringResource(item.label)
-                                MarsNavigationIcon(item.icon, selected, label)
-                            },
-                            label = { Text(stringResource(item.label)) },
-                        )
+                    Column {
+                        bottomChrome()
+                        BottomAppBar(
+                            scrollBehavior = scrollBehavior,
+                            contentPadding = PaddingValues(horizontal = 0.dp, vertical = 0.dp),
+                        ) {
+                            marsNavigationItems.forEach { item ->
+                                val selected = item.destination == selectedDestination
+                                NavigationBarItem(
+                                    selected = selected,
+                                    onClick = { onDestinationClick(item.destination) },
+                                    icon = {
+                                        val label = stringResource(item.label)
+                                        MarsNavigationIcon(item.icon, selected, label)
+                                    },
+                                    label = { Text(stringResource(item.label)) },
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -99,30 +120,46 @@ fun MarsNavigationSuite(
 
         else -> {
             Row(modifier) {
-                NavigationRail {
-                    marsNavigationItems.forEach { item ->
-                        val selected = item.destination == selectedDestination
-                        NavigationRailItem(
-                            selected = selected,
-                            onClick = { onDestinationClick(item.destination) },
-                            icon = {
-                                val label = stringResource(item.label)
-                                MarsNavigationIcon(item.icon, selected, label)
-                            },
-                            label = { Text(stringResource(item.label)) },
-                        )
+                AnimatedVisibility(
+                    visible = chromeVisible,
+                    enter = expandHorizontally(tween(CHROME_SHOW_MS)) + fadeIn(tween(CHROME_SHOW_MS)),
+                    exit = shrinkHorizontally(tween(CHROME_HIDE_MS)) + fadeOut(tween(CHROME_HIDE_MS)),
+                ) {
+                    NavigationRail {
+                        marsNavigationItems.forEach { item ->
+                            val selected = item.destination == selectedDestination
+                            NavigationRailItem(
+                                selected = selected,
+                                onClick = { onDestinationClick(item.destination) },
+                                icon = {
+                                    val label = stringResource(item.label)
+                                    MarsNavigationIcon(item.icon, selected, label)
+                                },
+                                label = { Text(stringResource(item.label)) },
+                            )
+                        }
                     }
                 }
                 Column(Modifier.weight(1f)) {
                     Box(Modifier.weight(1f)) {
                         content()
                     }
-                    bottomChrome()
+                    AnimatedVisibility(
+                        visible = chromeVisible,
+                        enter = expandVertically(tween(CHROME_SHOW_MS)) + fadeIn(tween(CHROME_SHOW_MS)),
+                        exit = shrinkVertically(tween(CHROME_HIDE_MS)) + fadeOut(tween(CHROME_HIDE_MS)),
+                    ) {
+                        bottomChrome()
+                    }
                 }
             }
         }
     }
 }
+
+/** Chrome show matches the 450ms Images pop fade; hide is quicker so the open transition leads. */
+internal const val CHROME_SHOW_MS = 450
+internal const val CHROME_HIDE_MS = 250
 
 @Composable
 private fun MarsNavigationIcon(

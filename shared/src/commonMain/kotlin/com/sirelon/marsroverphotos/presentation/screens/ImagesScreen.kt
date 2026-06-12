@@ -3,9 +3,6 @@ package com.sirelon.marsroverphotos.presentation.screens
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -43,17 +40,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextOverflow
@@ -88,6 +82,9 @@ import com.sirelon.marsroverphotos.shared.resources.images_empty_title
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
+import androidx.navigationevent.DirectNavigationEventInput
+import androidx.navigationevent.NavigationEvent
+import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import com.sirelon.marsroverphotos.presentation.navigation.LocalSharedTransitionScope
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -169,6 +166,18 @@ fun ImagesScreen(
         }
     }
 
+    // The photo that carries the shared element. Starts as the tapped photo and follows the
+    // settled page only after the initial scroll, so the async jump from page 0 to the selected
+    // photo (and PREPEND index shifts) never re-keys the element mid-flight — re-keying restarts
+    // the open animation, which reads as the transition playing twice.
+    var sharedPhotoId by remember(source, selectedId) { mutableStateOf(selectedId) }
+    LaunchedEffect(pagerState, didInitialScroll) {
+        if (!didInitialScroll) return@LaunchedEffect
+        snapshotFlow { pagerState.settledPage }.collect { page ->
+            pagingItems.peek(page)?.id?.let { sharedPhotoId = it }
+        }
+    }
+
     val refresh = pagingItems.loadState.refresh
     Crossfade(targetState = pagingItems.itemCount == 0, label = "Images") { isEmpty ->
         if (isEmpty) {
@@ -196,7 +205,7 @@ fun ImagesScreen(
                 onFavoriteClick = viewModel::setFavorite,
                 onSaveClick = viewModel::saveImage,
                 onShareClick = viewModel::shareMarsImage,
-                selectedId = selectedId,
+                sharedPhotoId = sharedPhotoId,
             )
         }
     }
@@ -243,7 +252,7 @@ private fun ImagesPagerContent(
     onFavoriteClick: (MarsImage, Boolean) -> Unit,
     onSaveClick: (MarsImage) -> Unit,
     onShareClick: (MarsImage) -> Unit,
-    selectedId: String? = null,
+    sharedPhotoId: String? = null,
 ) {
     var titleState by remember { mutableStateOf("Mars Rover Photos") }
     var showInfoSheet by remember { mutableStateOf(false) }
@@ -251,11 +260,6 @@ private fun ImagesPagerContent(
     // Per-page zoom scale — used to gate the dismiss gesture when an image is zoomed in
     val pageScales = remember { mutableStateMapOf<Int, Float>() }
     val isCurrentPageZoomed = (pageScales[pagerState.currentPage] ?: 1f) > 1f
-
-    // Dismiss-by-drag state
-    val dismissOffsetY = remember { Animatable(0f) }
-    val scope = rememberCoroutineScope()
-    val dismissThresholdPx = with(LocalDensity.current) { 150.dp.toPx() }
 
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
@@ -281,44 +285,63 @@ private fun ImagesPagerContent(
 
     val currentImage = pagingItems.peek(pagerState.currentPage)
 
-    // Black backdrop stays put so the window background never shows through during dismiss
-    Box(modifier = Modifier.fillMaxSize().background(Color.Black))
+    // Drag-to-dismiss drives NavDisplay's predictive-back machinery through a synthetic
+    // input, so the previous screen is composed and revealed beneath the gesture — the
+    // same behavior as the system back swipe.
+    val navEventDispatcher = LocalNavigationEventDispatcherOwner.current?.navigationEventDispatcher
+    val backInput = remember { DirectNavigationEventInput() }
+    DisposableEffect(navEventDispatcher) {
+        navEventDispatcher?.addInput(backInput)
+        onDispose { navEventDispatcher?.removeInput(backInput) }
+    }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .graphicsLayer {
-                translationY = dismissOffsetY.value
-                // Gently fade the screen as the user drags it down
-                alpha = (1f - dismissOffsetY.value / (dismissThresholdPx * 2.5f))
-                    .coerceIn(0f, 1f)
-            }
             .pointerInput(isCurrentPageZoomed) {
                 if (isCurrentPageZoomed) return@pointerInput
+                // The gesture only scrubs the predictive pop transition — no content
+                // translation, so the shared element flies from its true bounds on release
+                // (translating the content made it jump at the start of the fly-out).
+                // Deliberate thresholds keep a quick flick from slamming the transition.
+                val dismissThresholdPx = size.height * 0.18f
+                val fullProgressPx = size.height * 0.4f
+                var dragOffset = 0f
+                var backDispatched = false
                 detectVerticalDragGestures(
+                    onDragStart = { dragOffset = 0f },
                     onDragEnd = {
-                        if (dismissOffsetY.value > dismissThresholdPx) {
-                            onBack()
-                        } else {
-                            scope.launch {
-                                dismissOffsetY.animateTo(
-                                    targetValue = 0f,
-                                    animationSpec = spring(stiffness = Spring.StiffnessMedium)
-                                )
-                            }
+                        if (dragOffset > dismissThresholdPx) {
+                            if (backDispatched) backInput.backCompleted() else onBack()
+                        } else if (backDispatched) {
+                            backInput.backCancelled()
                         }
+                        backDispatched = false
+                        dragOffset = 0f
                     },
                     onDragCancel = {
-                        scope.launch { dismissOffsetY.animateTo(0f) }
+                        if (backDispatched) backInput.backCancelled()
+                        backDispatched = false
+                        dragOffset = 0f
                     },
                     onVerticalDrag = { change, dragAmount ->
                         // Only respond to downward drags (or releasing back up once started)
-                        if (dragAmount > 0f || dismissOffsetY.value > 0f) {
+                        if (dragAmount > 0f || dragOffset > 0f) {
                             change.consume()
-                            scope.launch {
-                                dismissOffsetY.snapTo(
-                                    (dismissOffsetY.value + dragAmount).coerceAtLeast(0f)
-                                )
+                            dragOffset = (dragOffset + dragAmount).coerceAtLeast(0f)
+                            if (navEventDispatcher != null) {
+                                if (!backDispatched && dragOffset > 0f) {
+                                    backDispatched = true
+                                    backInput.backStarted(NavigationEvent())
+                                }
+                                if (backDispatched) {
+                                    backInput.backProgressed(
+                                        NavigationEvent(
+                                            progress = (dragOffset / fullProgressPx)
+                                                .coerceIn(0f, 1f),
+                                        )
+                                    )
+                                }
                             }
                         }
                     }
@@ -333,7 +356,7 @@ private fun ImagesPagerContent(
             onTap = onTap,
             onFavoriteClick = onFavoriteClick,
             onScaleChange = { page, scale -> pageScales[page] = scale },
-            selectedId = selectedId,
+            sharedPhotoId = sharedPhotoId,
         )
 
         OnEvent(uiEvent = uiEvent)
@@ -363,10 +386,23 @@ private fun ImagesPagerContent(
                         if (currentImage != null) {
                             SaveIcon(onClick = { onSaveClick(currentImage) })
                             ShareIcon(onClick = { onShareClick(currentImage) })
-                            InfoIcon(onClick = { showInfoSheet = true })
                         }
                     },
                 )
+            }
+        }
+
+        // Bottom-left info icon overlay.
+        if (currentImage != null) {
+            AnimatedVisibility(
+                visible = !hideUi,
+                enter = fadeIn() + slideInVertically(initialOffsetY = { it }),
+                exit = fadeOut() + slideOutVertically(targetOffsetY = { it }),
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .navigationBarsPadding(),
+            ) {
+                InfoIcon(onClick = { showInfoSheet = true })
             }
         }
     }
@@ -499,7 +535,7 @@ private fun ImagesPager(
     onTap: () -> Unit,
     onFavoriteClick: (MarsImage, Boolean) -> Unit,
     onScaleChange: (page: Int, scale: Float) -> Unit,
-    selectedId: String? = null,
+    sharedPhotoId: String? = null,
 ) {
 
     NoScrollEffect {
@@ -529,7 +565,11 @@ private fun ImagesPager(
 
             Box(modifier = Modifier.fillMaxSize()) {
                 val sharedScope = LocalSharedTransitionScope.current
-                val sharedModifier = if (sharedScope != null && marsImage.id == selectedId) {
+                // Only the page holding sharedPhotoId carries the shared elements: id-based
+                // gating follows the user's swipes (back animates to the current photo) without
+                // re-keying during the initial scroll-to-selected jump or PREPEND index shifts.
+                val isSharedPage = marsImage.id == sharedPhotoId
+                val sharedModifier = if (sharedScope != null && isSharedPage) {
                     val animScope = LocalNavAnimatedContentScope.current
                     with(sharedScope) {
                         Modifier.sharedElement(
@@ -538,7 +578,7 @@ private fun ImagesPager(
                         )
                     }
                 } else Modifier
-                val sharedFavModifier = if (sharedScope != null && marsImage.id == selectedId) {
+                val sharedFavModifier = if (sharedScope != null && isSharedPage) {
                     val animScope = LocalNavAnimatedContentScope.current
                     with(sharedScope) {
                         Modifier.sharedElement(
