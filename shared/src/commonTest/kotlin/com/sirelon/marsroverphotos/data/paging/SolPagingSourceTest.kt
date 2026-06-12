@@ -178,6 +178,34 @@ class SolPagingSourceTest {
         assertEquals(listOf("f"), dao.insertedIds)
     }
 
+    // 8. Memoized empty sols: a Prepend over the gap a Refresh already scanned must not re-probe
+    // the same sols (one network request per known-empty sol would be wasted otherwise).
+    @Test
+    fun prepend_skipsSolsAlreadyProbedEmpty() = runTest {
+        // Refresh anchored at sol 5 scans sols 5..14 empty, then finds photos at sol 15.
+        val photos = mapOf(15L to listOf(marsImage("g", 15)))
+        val repo = FakePhotosRepository(photos)
+        val src = source(photos, initialSol = 5, minSol = 0, maxSol = 100, repo = repo)
+
+        val refreshed = page(src.load(PagingSource.LoadParams.Refresh(null, 5, false)))
+        assertEquals(listOf("g"), refreshed.data.map { it.id })
+        assertEquals((5L..15L).toList(), repo.probedSols.toList())
+        val probesAfterRefresh = repo.probedSols.size
+
+        // Prepend walks back from sol 14 through the very gap the refresh just probed.
+        val prepended = page(src.load(PagingSource.LoadParams.Prepend(14L, 5, false)))
+
+        // Sols 5..14 are memoized empty: only the not-yet-probed sols 4..0 cost a request.
+        val prependProbes = repo.probedSols.drop(probesAfterRefresh)
+        assertEquals(listOf(4L, 3L, 2L, 1L, 0L), prependProbes)
+        // No sol is ever probed twice across the lifetime of the source.
+        assertEquals(repo.probedSols.size, repo.probedSols.distinct().size)
+        // The walk reached minSol without photos -> terminal page.
+        assertTrue(prepended.data.isEmpty())
+        assertNull(prepended.prevKey)
+        assertNull(prepended.nextKey)
+    }
+
     // Optional: filtered feed using a real Curiosity camera name.
     @Test
     fun append_filteredFeedReturnsOnlyMatchingCamera() = runTest {

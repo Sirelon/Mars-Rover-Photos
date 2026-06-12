@@ -10,6 +10,7 @@ import androidx.navigation3.ui.NavDisplay
 import com.sirelon.marsroverphotos.presentation.navigation.AppDestination
 import com.sirelon.marsroverphotos.presentation.navigation.LocalAppNavigator
 import com.sirelon.marsroverphotos.presentation.screens.AboutScreen
+import com.sirelon.marsroverphotos.presentation.screens.AdminPhotosScreen
 import com.sirelon.marsroverphotos.presentation.screens.FavoriteScreen
 import com.sirelon.marsroverphotos.presentation.screens.ImagesScreen
 import com.sirelon.marsroverphotos.presentation.screens.PopularScreen
@@ -108,5 +109,10 @@ val navigationModule = module {
     navigation<AppDestination.Ukraine> {
         val navigator = LocalAppNavigator.current
         UkraineScreen(onBack = { navigator.goBack() })
+    }
+
+    navigation<AppDestination.AdminPhotos> {
+        val navigator = LocalAppNavigator.current
+        AdminPhotosScreen(onBack = { navigator.goBack() })
     }
 }

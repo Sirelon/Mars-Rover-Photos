@@ -12,6 +12,9 @@ Feature screens and view models live in `shared/src/commonMain/kotlin/com/sirelo
 
 The KMP migration is complete. The legacy `app/` module has been deleted.
 
+## Photo Feed & Data Sources
+The heart of the app is the shared rover photo feed in `shared/.../data/paging/`: an app-singleton `RoverFeedPager` exposes one cached `PagingData` stream collected by both the list grid and the fullscreen viewer, with a per-rover `FeedMode` seam — sol-keyed (`SolPagingSource`: Curiosity, Perseverance, InSight) vs page-keyed with a random anchor (`ImagesSearchPagingSource`: Spirit, Opportunity). The class KDocs there document the non-obvious invariants (continuation pages, anchor resolution, write-through cache merge rules) — read them before touching paging. Data-source constraints: the classic `api.nasa.gov/mars-photos` API is permanently dead; Spirit/Opportunity only exist in the curated images.nasa.gov library (no raw archive API); each rover's source is mapped in the repository/network layer.
+
 ## Dependency Versions
 Beta, alpha, and RC dependency versions are acceptable in this project. Prefer the version that unlocks a needed multiplatform capability over waiting for a stable release (e.g., `lifecycle-viewmodel-navigation3` requires `2.11.0+` for the iOS/Desktop/Web ViewModelStore Nav3 APIs; `2.10.0` was Android-only). When pinning a pre-release, record why it is required so the choice stays revisitable, but do not reject a pre-release on stability grounds alone.
 
@@ -21,7 +24,11 @@ Beta, alpha, and RC dependency versions are acceptable in this project. Prefer t
 - `./gradlew :shared:desktopTest` — run the shared KMP/common tests on the desktop JVM target.
 - `./gradlew connectedDebugAndroidTest` — launch instrumentation tests on an attached emulator or device.
 - `./gradlew detekt` — lint and autocorrect according to `config/detekt/detekt.yml`.
+- `./gradlew :shared:compileAndroidMain` — quick Android-target compile check of shared code (AGP 9 KMP task naming; there is no `compileDebugKotlinAndroid` on `:shared`).
 Run commands from the repository root so the Gradle wrapper can supply the pinned toolchain.
+
+### iOS dev builds
+The Xcode project consumes a prebuilt framework from `shared/build/XCFrameworks/debug/shared.xcframework` — in a fresh clone/worktree (or after any shared-code change) run `./gradlew :shared:assembleSharedDebugXCFramework` before building the iOS app, or Xcode fails with "There is no XCFramework found". `iosApp/iosApp/GoogleService-Info.plist` is gitignored; copy it from an existing checkout or Firebase console, otherwise the build fails on a missing input file.
 
 ## Versioning
 The app version lives in **one place**: `buildSrc/src/main/kotlin/AppVersion.kt` (`name` = marketing version, `code` = build number). Android (`androidApp/build.gradle.kts`) and Desktop (`desktopApp/build.gradle.kts`) read it directly at build time. iOS can't read Kotlin, so it's kept in sync via Gradle tasks (group `versioning`, defined in `gradle/versioning.gradle.kts`):
@@ -45,7 +52,7 @@ Reuse the `App*` components in `presentation/ui/` before adding new ones; prefer
 updated**: when you add a reusable component, a token, or learn a UI gotcha, record it there.
 
 ## Testing Guidelines
-Place unit specs in `shared/src/commonTest` (or `androidTest` for Android-instrumented tests), mirroring the source package and ending class names with `*Test`. Use JUnit4 and Mockito-Kotlin for Android tests. Compose UI or Room integration checks belong in `androidApp/src/androidTest` and should describe the scenario in the test name. Cover paging boundaries, offline caching, and error flows whenever you touch those areas.
+Place unit specs in `shared/src/commonTest` (or `androidTest` for Android-instrumented tests), mirroring the source package and ending class names with `*Test`. Common tests use `kotlin.test` + `kotlinx-coroutines-test` with hand-rolled fakes (see `data/paging/Fakes.kt`) — no mocking library in commonTest; JUnit4 and Mockito-Kotlin apply to Android-instrumented tests only. Paging behavior should be verified at two levels: `PagingSource.load()` unit tests, plus `TestPager` (androidx.paging:paging-testing, KMP) for Pager-level invariants like continuation pages and end-of-pagination. Compose UI or Room integration checks belong in `androidApp/src/androidTest` and should describe the scenario in the test name. Cover paging boundaries, offline caching, and error flows whenever you touch those areas.
 
 ## Commit & Pull Request Guidelines
 Follow the existing history with concise imperative subject lines under ~70 characters (e.g., `Fix release build`). Keep functional changes grouped per commit. Pull requests need a short summary, call out UI or API changes, link issues, and attach emulator screenshots or recordings when visuals move. Confirm `assembleDebug`, `testDebugUnitTest`, `:shared:desktopTest`, and `detekt` succeed before requesting review.

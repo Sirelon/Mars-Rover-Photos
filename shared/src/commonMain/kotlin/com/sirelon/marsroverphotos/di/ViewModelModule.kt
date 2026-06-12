@@ -1,6 +1,7 @@
 package com.sirelon.marsroverphotos.di
 
 import com.sirelon.marsroverphotos.presentation.viewmodels.AboutViewModel
+import com.sirelon.marsroverphotos.presentation.viewmodels.AdminPhotosViewModel
 import com.sirelon.marsroverphotos.presentation.viewmodels.FavoriteImagesViewModel
 import com.sirelon.marsroverphotos.presentation.viewmodels.ImageViewModel
 import com.sirelon.marsroverphotos.presentation.viewmodels.PhotosViewModel
@@ -17,6 +18,7 @@ import org.koin.dsl.module
 val viewModelModule = module {
     // ViewModels - using Koin viewModelOf for automatic lifecycle management
     viewModelOf(::AboutViewModel)
+    viewModelOf(::AdminPhotosViewModel)
     viewModelOf(::FavoriteImagesViewModel)
     viewModelOf(::ImageViewModel)
     viewModelOf(::PhotosViewModel)

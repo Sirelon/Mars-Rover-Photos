@@ -8,7 +8,7 @@ import androidx.room3.Query
 import androidx.room3.Transaction
 import androidx.room3.Update
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
-import com.sirelon.marsroverphotos.data.database.entities.StatsUpdate
+import com.sirelon.marsroverphotos.data.database.entities.PopularUpdate
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -21,7 +21,10 @@ interface ImagesDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertImages(images: List<MarsImage>): List<Long>
 
-    @Query("SELECT * FROM images WHERE id IN (:ids) ORDER BY `order` ASC")
+    // `order` is not unique (it restarts per sol / per popular batch), so every ordered query
+    // adds `id` as a tiebreaker — offset-based paging over a non-deterministic tie order can
+    // duplicate or skip items across page boundaries.
+    @Query("SELECT * FROM images WHERE id IN (:ids) ORDER BY `order` ASC, id ASC")
     fun getImagesByIds(ids: List<String>): Flow<List<MarsImage>>
 
     @Query("SELECT * FROM images")
@@ -34,26 +37,31 @@ interface ImagesDao {
     suspend fun updateFavorite(id: String, favorite: Boolean, counter: Long)
 
     @Update(entity = MarsImage::class)
-    suspend fun updateStats(stats: StatsUpdate)
+    suspend fun updatePopular(update: PopularUpdate)
 
     @Query("SELECT * FROM images WHERE id IN (:ids)")
     suspend fun loadImagesByIds(ids: List<String>): List<MarsImage>
 
-    @Query("SELECT * FROM images WHERE favorite = 1 ORDER BY `order` ASC")
+    @Query("SELECT * FROM images WHERE favorite = 1 ORDER BY `order` ASC, id ASC")
     fun loadFavoriteImages(): Flow<List<MarsImage>>
 
-    @Query("SELECT * FROM images WHERE popular = 1 ORDER BY `order` ASC")
+    @Query("SELECT * FROM images WHERE popular = 1 ORDER BY `order` ASC, id ASC")
     fun loadPopularImages(): Flow<List<MarsImage>>
 
     // room-paging supports all KMP targets since room3 3.0.0-alpha05 (b/339934824)
-    @Query("SELECT * FROM images WHERE favorite = 1 ORDER BY `order` ASC")
+    @Query("SELECT * FROM images WHERE favorite = 1 ORDER BY `order` ASC, id ASC")
     fun loadFavoritePagedSource(): PagingSource<Int, MarsImage>
 
-    @Query("SELECT * FROM images WHERE popular = 1 ORDER BY `order` ASC")
+    @Query("SELECT * FROM images WHERE popular = 1 ORDER BY `order` ASC, id ASC")
     fun loadPopularPagedSource(): PagingSource<Int, MarsImage>
 
-    @Query("DELETE FROM images WHERE popular = 1")
-    suspend fun deleteAllPopular()
+    /**
+     * Resets the popular flag on a REFRESH instead of deleting rows: deleting would drop
+     * favorited photos and rows cached by the sol feed. Flag-reset preserves them;
+     * [deleteNonUserImagesBeyondCount] handles cleanup of no-longer-referenced rows.
+     */
+    @Query("UPDATE images SET popular = 0 WHERE popular = 1")
+    suspend fun clearPopularFlags()
 
     /**
      * Evicts cached (non-favorite, non-popular) images, keeping the [keepCount] most-recently

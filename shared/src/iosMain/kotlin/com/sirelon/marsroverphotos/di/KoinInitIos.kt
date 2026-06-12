@@ -6,11 +6,11 @@ import org.koin.core.context.startKoin
 import platform.Foundation.NSBundle
 
 object IosApp {
-    fun start() {
+    fun start(isDebug: Boolean) {
         BuildInfo.init(
             versionName = NSBundle.mainBundle.infoDictionary
                 ?.get("CFBundleShortVersionString") as? String ?: "unknown",
-            isDebug = false,
+            isDebug = isDebug,
             packageName = NSBundle.mainBundle.bundleIdentifier ?: "com.sirelon.marsroverphotos"
         )
 

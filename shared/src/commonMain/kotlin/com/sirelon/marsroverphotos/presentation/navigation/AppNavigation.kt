@@ -284,6 +284,7 @@ private fun AppDestination.topLevelDestination(): AppDestination {
         is AppDestination.Images,
         is AppDestination.Mission,
         AppDestination.Ukraine,
+        AppDestination.AdminPhotos,
         is AppDestination.PhotosDateJumpPicker,
         is AppDestination.PhotosFilters -> AppDestination.Rovers
 
@@ -317,6 +318,7 @@ private val navBackStackConfiguration = SavedStateConfiguration {
             subclass(AppDestination.Ukraine::class, AppDestination.Ukraine.serializer())
             subclass(AppDestination.PhotosDateJumpPicker::class, AppDestination.PhotosDateJumpPicker.serializer())
             subclass(AppDestination.PhotosFilters::class, AppDestination.PhotosFilters.serializer())
+            subclass(AppDestination.AdminPhotos::class, AppDestination.AdminPhotos.serializer())
         }
     }
 }

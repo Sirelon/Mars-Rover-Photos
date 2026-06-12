@@ -54,6 +54,9 @@ sealed interface AppDestination : NavKey {
     @Serializable
     data object Ukraine : AppDestination
 
+    @Serializable
+    data object AdminPhotos : AppDestination
+
     /** Dialog destination: combined sol+earth date or page jump picker. Shares PhotosViewModel with [Photos]. */
     @Serializable
     data class PhotosDateJumpPicker(val roverId: Long) : DialogDestination

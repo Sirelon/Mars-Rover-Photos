@@ -3,7 +3,7 @@ package com.sirelon.marsroverphotos.data.paging
 import androidx.paging.PagingSource
 import com.sirelon.marsroverphotos.data.database.dao.ImagesDao
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
-import com.sirelon.marsroverphotos.data.database.entities.StatsUpdate
+import com.sirelon.marsroverphotos.data.database.entities.PopularUpdate
 import com.sirelon.marsroverphotos.domain.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.domain.repositories.PhotosRepository
 import kotlinx.coroutines.flow.Flow
@@ -54,12 +54,12 @@ class FakeImagesDao(
     override fun getAllImages(): Flow<List<MarsImage>> = emptyFlow()
     override suspend fun update(item: MarsImage) = Unit
     override suspend fun updateFavorite(id: String, favorite: Boolean, counter: Long) = Unit
-    override suspend fun updateStats(stats: StatsUpdate) = Unit
+    override suspend fun updatePopular(update: PopularUpdate) = Unit
     override fun loadFavoriteImages(): Flow<List<MarsImage>> = emptyFlow()
     override fun loadPopularImages(): Flow<List<MarsImage>> = emptyFlow()
     override fun loadFavoritePagedSource(): PagingSource<Int, MarsImage> = TODO("unused")
     override fun loadPopularPagedSource(): PagingSource<Int, MarsImage> = TODO("unused")
-    override suspend fun deleteAllPopular() = Unit
+    override suspend fun clearPopularFlags() = Unit
 }
 
 /** Builds a [MarsImage] for a sol with the given id and optional camera. */

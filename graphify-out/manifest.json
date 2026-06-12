@@ -1,0 +1,1002 @@
+{
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/build.gradle.kts": {
+    "mtime": 1780414532.60705,
+    "ast_hash": "ab09b6f9b078509263775f4cff762d88",
+    "semantic_hash": "ab09b6f9b078509263775f4cff762d88"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/schemas/com.sirelon.marsroverphotos.data.database.AppDataBase/9.json": {
+    "mtime": 1777843400.6623309,
+    "ast_hash": "2e76b3d888bc85c178fa956b1763e3e5",
+    "semantic_hash": "2e76b3d888bc85c178fa956b1763e3e5"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/androidMain/kotlin/com/sirelon/marsroverphotos/di/PlatformModule.android.kt": {
+    "mtime": 1779459719.5275621,
+    "ast_hash": "75beedb61f4efde8e836db295064b5a2",
+    "semantic_hash": "75beedb61f4efde8e836db295064b5a2"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/androidMain/kotlin/com/sirelon/marsroverphotos/platform/ActivityProvider.android.kt": {
+    "mtime": 1779397729.3570814,
+    "ast_hash": "7218abecf12e10dda1e706ec0499b423",
+    "semantic_hash": "7218abecf12e10dda1e706ec0499b423"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/androidMain/kotlin/com/sirelon/marsroverphotos/platform/AndroidAdConsent.kt": {
+    "mtime": 1779459719.4511762,
+    "ast_hash": "7ff18877e162064881275523a8fc6fbb",
+    "semantic_hash": "7ff18877e162064881275523a8fc6fbb"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/androidMain/kotlin/com/sirelon/marsroverphotos/platform/AppReview.android.kt": {
+    "mtime": 1780600150.7951558,
+    "ast_hash": "3000fd711757c48d8e0226aa4a5157a6",
+    "semantic_hash": "3000fd711757c48d8e0226aa4a5157a6"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/androidMain/kotlin/com/sirelon/marsroverphotos/platform/DatabaseBuilder.android.kt": {
+    "mtime": 1779267086.2802436,
+    "ast_hash": "6eda7f30fdfec09b947fed0c91e4dcab",
+    "semantic_hash": "6eda7f30fdfec09b947fed0c91e4dcab"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/androidMain/kotlin/com/sirelon/marsroverphotos/platform/FirebaseAnalytics.android.kt": {
+    "mtime": 1779263547.9631083,
+    "ast_hash": "d61110ea684a95511ff347a241e41f18",
+    "semantic_hash": "d61110ea684a95511ff347a241e41f18"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/androidMain/kotlin/com/sirelon/marsroverphotos/platform/HttpClientEngine.android.kt": {
+    "mtime": 1777843400.6638248,
+    "ast_hash": "67050bd8fb239f20c11bd31424d0041e",
+    "semantic_hash": "67050bd8fb239f20c11bd31424d0041e"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/androidMain/kotlin/com/sirelon/marsroverphotos/platform/ImageOperations.android.kt": {
+    "mtime": 1779263547.9636316,
+    "ast_hash": "ca7dc78b7f6ca0c5219f841dbab1761b",
+    "semantic_hash": "ca7dc78b7f6ca0c5219f841dbab1761b"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/androidMain/kotlin/com/sirelon/marsroverphotos/platform/PlatformPreferences.android.kt": {
+    "mtime": 1777843400.6641676,
+    "ast_hash": "b25315df3b2abd62c841498bad0fa570",
+    "semantic_hash": "b25315df3b2abd62c841498bad0fa570"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/androidMain/kotlin/com/sirelon/marsroverphotos/platform/RecordException.android.kt": {
+    "mtime": 1779263547.963774,
+    "ast_hash": "b99cd2bd05f2cf27cc554d32c4e396cf",
+    "semantic_hash": "b99cd2bd05f2cf27cc554d32c4e396cf"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/androidMain/kotlin/com/sirelon/marsroverphotos/presentation/theme/Theme.android.kt": {
+    "mtime": 1779832873.8252156,
+    "ast_hash": "0168311ba02deede98bbaee51dca538c",
+    "semantic_hash": "0168311ba02deede98bbaee51dca538c"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/androidMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AdSlot.android.kt": {
+    "mtime": 1779459719.4516976,
+    "ast_hash": "492eadd78de92c00344bbf3163f2d577",
+    "semantic_hash": "492eadd78de92c00344bbf3163f2d577"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/androidMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/PlatformUriHandler.android.kt": {
+    "mtime": 1777843400.6648128,
+    "ast_hash": "4c79628ea88f825165b3853e413fb845",
+    "semantic_hash": "4c79628ea88f825165b3853e413fb845"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/androidMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/StatusBarAppearance.android.kt": {
+    "mtime": 1779813146.7467387,
+    "ast_hash": "2c055f7954267308a5435d6616b86fc6",
+    "semantic_hash": "2c055f7954267308a5435d6616b86fc6"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/database/AppDataBase.kt": {
+    "mtime": 1779459719.453385,
+    "ast_hash": "c46b9e1b909984df9dddee3b4ece498b",
+    "semantic_hash": "c46b9e1b909984df9dddee3b4ece498b"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/database/dao/FactDisplayDao.kt": {
+    "mtime": 1779267086.2814062,
+    "ast_hash": "61411ef4740a6e7494846df5ee327f29",
+    "semantic_hash": "61411ef4740a6e7494846df5ee327f29"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/database/dao/ImagesDao.kt": {
+    "mtime": 1780325529.2001565,
+    "ast_hash": "708073211466b78b58ea27fac9d7d33c",
+    "semantic_hash": "708073211466b78b58ea27fac9d7d33c"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/database/dao/RoverDao.kt": {
+    "mtime": 1780501878.1634903,
+    "ast_hash": "b108a3d11cc8004b2bbb6414aaddbd7b",
+    "semantic_hash": "b108a3d11cc8004b2bbb6414aaddbd7b"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/database/entities/FactDisplay.kt": {
+    "mtime": 1779267086.2824955,
+    "ast_hash": "ba85935dd063ffbf9dffb29ad276f8bc",
+    "semantic_hash": "ba85935dd063ffbf9dffb29ad276f8bc"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/database/entities/MarsImage.kt": {
+    "mtime": 1779267086.282732,
+    "ast_hash": "c3d47261a81575fb1c0f270336979cbd",
+    "semantic_hash": "c3d47261a81575fb1c0f270336979cbd"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/network/Mappers.kt": {
+    "mtime": 1780501878.1644177,
+    "ast_hash": "aaae94af94e53a2ce9b0aa828147dc55",
+    "semantic_hash": "aaae94af94e53a2ce9b0aa828147dc55"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/network/NasaApi.kt": {
+    "mtime": 1780779643.309831,
+    "ast_hash": "f3e34a96b0245d343d993ce9e21830a8",
+    "semantic_hash": "f3e34a96b0245d343d993ce9e21830a8"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/network/RestApi.kt": {
+    "mtime": 1780779643.3101153,
+    "ast_hash": "a3dd77e3e6bf5d5bd274741efdaafcd8",
+    "semantic_hash": "a3dd77e3e6bf5d5bd274741efdaafcd8"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/network/models/NasaImagesModels.kt": {
+    "mtime": 1780501878.1658852,
+    "ast_hash": "fda6d049d89e6fa24dd528d6610c4376",
+    "semantic_hash": "fda6d049d89e6fa24dd528d6610c4376"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/network/models/PhotosResponse.kt": {
+    "mtime": 1780779643.3104563,
+    "ast_hash": "019100bd4350be974c2ec782f13c4096",
+    "semantic_hash": "019100bd4350be974c2ec782f13c4096"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/paging/FeedMode.kt": {
+    "mtime": 1780501878.1661968,
+    "ast_hash": "f45edfd1dcd5e8004ddd6e64f32a2681",
+    "semantic_hash": "f45edfd1dcd5e8004ddd6e64f32a2681"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/paging/ImagesSearchPagingSource.kt": {
+    "mtime": 1780779643.310971,
+    "ast_hash": "5880394f02b01071ef55dab7b4c2b770",
+    "semantic_hash": "5880394f02b01071ef55dab7b4c2b770"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/paging/PopularRemoteMediator.kt": {
+    "mtime": 1777843400.6960163,
+    "ast_hash": "ddccea05e87c01de6dd538b3f297b1ef",
+    "semantic_hash": "ddccea05e87c01de6dd538b3f297b1ef"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/paging/RoverFeedPager.kt": {
+    "mtime": 1780779643.3112721,
+    "ast_hash": "b0ab5db5fe6b8138fe47ced02ba1e351",
+    "semantic_hash": "b0ab5db5fe6b8138fe47ced02ba1e351"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/paging/SolPagingSource.kt": {
+    "mtime": 1780779643.3115523,
+    "ast_hash": "2b1c14cf9b5bd9fe98bd6b22504638ca",
+    "semantic_hash": "2b1c14cf9b5bd9fe98bd6b22504638ca"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/repositories/FactsRepositoryImpl.kt": {
+    "mtime": 1777843400.6962118,
+    "ast_hash": "cb320f28a972f13446e7a238ef9f33be",
+    "semantic_hash": "cb320f28a972f13446e7a238ef9f33be"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/repositories/ImagesRepositoryImpl.kt": {
+    "mtime": 1780414303.2621777,
+    "ast_hash": "5985cf1287c3620a6a5c7ff57279a4a9",
+    "semantic_hash": "5985cf1287c3620a6a5c7ff57279a4a9"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/repositories/MissionRepositoryImpl.kt": {
+    "mtime": 1779263547.9655726,
+    "ast_hash": "211ddb0128d588c0e71b922cea0a7114",
+    "semantic_hash": "211ddb0128d588c0e71b922cea0a7114"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/repositories/PhotosRepositoryImpl.kt": {
+    "mtime": 1777843400.6964798,
+    "ast_hash": "1143e8e242bf4485f000411faffeced0",
+    "semantic_hash": "1143e8e242bf4485f000411faffeced0"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/repositories/RoversRepositoryImpl.kt": {
+    "mtime": 1780779643.3118503,
+    "ast_hash": "6ce7c757b4ab7e9bdfb8b5de6ede0ef3",
+    "semantic_hash": "6ce7c757b4ab7e9bdfb8b5de6ede0ef3"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/di/DatabaseModule.kt": {
+    "mtime": 1777843400.6968086,
+    "ast_hash": "347b94418efdf79c3209cb93d8308db0",
+    "semantic_hash": "347b94418efdf79c3209cb93d8308db0"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/di/KoinInit.kt": {
+    "mtime": 1777845138.9242022,
+    "ast_hash": "0744e01071af1d29b379ade6b6957b1f",
+    "semantic_hash": "0744e01071af1d29b379ade6b6957b1f"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/di/NavigationModule.kt": {
+    "mtime": 1780347122.1312892,
+    "ast_hash": "de789527c6f58e9a19637caeb2c9a7d3",
+    "semantic_hash": "de789527c6f58e9a19637caeb2c9a7d3"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/di/NetworkModule.kt": {
+    "mtime": 1777843400.6970968,
+    "ast_hash": "72a127a5019205518af6de6e45f2698c",
+    "semantic_hash": "72a127a5019205518af6de6e45f2698c"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/di/RepositoryModule.kt": {
+    "mtime": 1780501878.1679435,
+    "ast_hash": "748ac7662c560665b295715428db293b",
+    "semantic_hash": "748ac7662c560665b295715428db293b"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/di/ViewModelModule.kt": {
+    "mtime": 1779267086.284567,
+    "ast_hash": "80c5938d6da900cad5fb4c26de8b1519",
+    "semantic_hash": "80c5938d6da900cad5fb4c26de8b1519"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/models/EducationalFact.kt": {
+    "mtime": 1777843400.6975782,
+    "ast_hash": "9a35b29024a4a3d4cafed82a81ad32cc",
+    "semantic_hash": "9a35b29024a4a3d4cafed82a81ad32cc"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/models/FirebasePhoto.kt": {
+    "mtime": 1777843400.6977267,
+    "ast_hash": "58e206cabe37f6e451173c44942e5773",
+    "semantic_hash": "58e206cabe37f6e451173c44942e5773"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/models/MarsPhoto.kt": {
+    "mtime": 1780779643.312073,
+    "ast_hash": "b4803c588486f5d85ef9ddebbea39f68",
+    "semantic_hash": "b4803c588486f5d85ef9ddebbea39f68"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/models/PhotosQueryRequest.kt": {
+    "mtime": 1777843400.6980114,
+    "ast_hash": "88246590d6f1bb8130ea52f38a2b6cfc",
+    "semantic_hash": "88246590d6f1bb8130ea52f38a2b6cfc"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/models/Rover.kt": {
+    "mtime": 1779394745.7970986,
+    "ast_hash": "f54711a914a9bafd7040a6c6ef0d18ad",
+    "semantic_hash": "f54711a914a9bafd7040a6c6ef0d18ad"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/models/RoverCamera.kt": {
+    "mtime": 1777843400.698302,
+    "ast_hash": "952fc7d753c06de384b5a392b921e320",
+    "semantic_hash": "952fc7d753c06de384b5a392b921e320"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/models/RoverConstants.kt": {
+    "mtime": 1777843400.6984484,
+    "ast_hash": "334f1632a706ac67d92375ea4f9d9815",
+    "semantic_hash": "334f1632a706ac67d92375ea4f9d9815"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/models/mission/CameraSpec.kt": {
+    "mtime": 1777843400.6986449,
+    "ast_hash": "53ef73fdca756518f539eef425a0c028",
+    "semantic_hash": "53ef73fdca756518f539eef425a0c028"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/models/mission/RoverMissionData.kt": {
+    "mtime": 1780347122.1317234,
+    "ast_hash": "0480a05ede4d7a443a17e262f810fc5f",
+    "semantic_hash": "0480a05ede4d7a443a17e262f810fc5f"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/models/mission/RoverMissionFacts.kt": {
+    "mtime": 1777843400.698962,
+    "ast_hash": "cc551babb850d0372529b5c7c5d7c723",
+    "semantic_hash": "cc551babb850d0372529b5c7c5d7c723"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/repositories/FactsRepository.kt": {
+    "mtime": 1777843400.6991532,
+    "ast_hash": "d3a1739f924c349a0fb60dc7f81f96be",
+    "semantic_hash": "d3a1739f924c349a0fb60dc7f81f96be"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/repositories/ImagesRepository.kt": {
+    "mtime": 1780325529.202392,
+    "ast_hash": "f3263a7ad4fc849b7b74d2f17795a1d8",
+    "semantic_hash": "f3263a7ad4fc849b7b74d2f17795a1d8"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/repositories/MissionRepository.kt": {
+    "mtime": 1777843400.699431,
+    "ast_hash": "3339574614f7a698e9e94303982068af",
+    "semantic_hash": "3339574614f7a698e9e94303982068af"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/repositories/PhotosRepository.kt": {
+    "mtime": 1777843400.6995769,
+    "ast_hash": "afb9989bbfdf86ccaaed65f5011133b0",
+    "semantic_hash": "afb9989bbfdf86ccaaed65f5011133b0"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/repositories/RoversRepository.kt": {
+    "mtime": 1777843400.6997,
+    "ast_hash": "af4091e861f6c89bd652bb67cc26faf1",
+    "semantic_hash": "af4091e861f6c89bd652bb67cc26faf1"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/settings/AppSettings.kt": {
+    "mtime": 1780347122.1326675,
+    "ast_hash": "d09d92d00668bb282a220a9b54afa6ca",
+    "semantic_hash": "d09d92d00668bb282a220a9b54afa6ca"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/platform/AppReview.kt": {
+    "mtime": 1779397721.36941,
+    "ast_hash": "8280a34a71e63ebff494e3fcf1511c5b",
+    "semantic_hash": "8280a34a71e63ebff494e3fcf1511c5b"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/platform/BuildInfo.kt": {
+    "mtime": 1779263547.9661348,
+    "ast_hash": "9286317675d78d0390447793b31aff41",
+    "semantic_hash": "9286317675d78d0390447793b31aff41"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/platform/DatabaseBuilder.kt": {
+    "mtime": 1779267086.2854443,
+    "ast_hash": "1c4d87673d506c44e362815981fb6c13",
+    "semantic_hash": "1c4d87673d506c44e362815981fb6c13"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/platform/FirebaseAnalytics.kt": {
+    "mtime": 1777843400.7002041,
+    "ast_hash": "b4a525ce63a33917f120eb23d494da02",
+    "semantic_hash": "b4a525ce63a33917f120eb23d494da02"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/platform/FirebasePhotosImpl.kt": {
+    "mtime": 1779263547.966373,
+    "ast_hash": "23eba1d4bdba387f9fb2fc9ab865bc75",
+    "semantic_hash": "23eba1d4bdba387f9fb2fc9ab865bc75"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/platform/FirebaseTracker.kt": {
+    "mtime": 1779385467.2782812,
+    "ast_hash": "fd5321c8cf100a7e735ef66c75041976",
+    "semantic_hash": "fd5321c8cf100a7e735ef66c75041976"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/platform/HttpClientEngine.kt": {
+    "mtime": 1777843400.7003324,
+    "ast_hash": "72dc54faa7ecd9d62bcb8f1b9266d4cc",
+    "semantic_hash": "72dc54faa7ecd9d62bcb8f1b9266d4cc"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/platform/IFirebasePhotos.kt": {
+    "mtime": 1777843400.7004578,
+    "ast_hash": "6b4e884611b61e96eb6558be89e7a2b7",
+    "semantic_hash": "6b4e884611b61e96eb6558be89e7a2b7"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/platform/ImageOperations.kt": {
+    "mtime": 1777843400.7006075,
+    "ast_hash": "99692b70bdfc49054aadc681414062ec",
+    "semantic_hash": "99692b70bdfc49054aadc681414062ec"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/platform/PlatformPreferences.kt": {
+    "mtime": 1777843400.700734,
+    "ast_hash": "819d9877c050b64747f0bd8d96bcedfb",
+    "semantic_hash": "819d9877c050b64747f0bd8d96bcedfb"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/platform/RecordException.kt": {
+    "mtime": 1779263547.9665048,
+    "ast_hash": "18f6cfcff207180abb40ef45f7f450c4",
+    "semantic_hash": "18f6cfcff207180abb40ef45f7f450c4"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/platform/Tracker.kt": {
+    "mtime": 1779263547.9666536,
+    "ast_hash": "d9fc488f29bc2a361c86c82bd97d5a86",
+    "semantic_hash": "d9fc488f29bc2a361c86c82bd97d5a86"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/App.kt": {
+    "mtime": 1779832873.8265216,
+    "ast_hash": "c87e3f2af99b97d151371ac872ee6d72",
+    "semantic_hash": "c87e3f2af99b97d151371ac872ee6d72"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/di/AppModule.kt": {
+    "mtime": 1777843400.7010791,
+    "ast_hash": "683423156f68c031468cb7c468a70ca4",
+    "semantic_hash": "683423156f68c031468cb7c468a70ca4"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/models/GridItem.kt": {
+    "mtime": 1780325529.2028482,
+    "ast_hash": "8bf9d4c2552e8a04591264edc5ffdf4d",
+    "semantic_hash": "8bf9d4c2552e8a04591264edc5ffdf4d"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppDestinations.kt": {
+    "mtime": 1780347122.133033,
+    "ast_hash": "3fcc5937d3ba274b38d7da141f082be2",
+    "semantic_hash": "3fcc5937d3ba274b38d7da141f082be2"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppNavEntryDecorators.kt": {
+    "mtime": 1780325529.2035341,
+    "ast_hash": "1646c24910389087121d919080b007a3",
+    "semantic_hash": "1646c24910389087121d919080b007a3"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppNavigation.kt": {
+    "mtime": 1780822425.487668,
+    "ast_hash": "a38eee50a9a895eca09aad9938f04a88",
+    "semantic_hash": "a38eee50a9a895eca09aad9938f04a88"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppNavigator.kt": {
+    "mtime": 1780822425.488024,
+    "ast_hash": "8324ce163980ab0091d2c73a84e821d7",
+    "semantic_hash": "8324ce163980ab0091d2c73a84e821d7"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/DeepLink.kt": {
+    "mtime": 1779385467.2791972,
+    "ast_hash": "0491a4381437fbd324ce490096757db8",
+    "semantic_hash": "0491a4381437fbd324ce490096757db8"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/DialogOverlaySceneStrategy.kt": {
+    "mtime": 1780325529.2042916,
+    "ast_hash": "1768d915912007bf9f3e016e1501c1ae",
+    "semantic_hash": "1768d915912007bf9f3e016e1501c1ae"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/LocalAboutCallbacks.kt": {
+    "mtime": 1779263547.9672446,
+    "ast_hash": "343834d5112a43260a66892ad157759d",
+    "semantic_hash": "343834d5112a43260a66892ad157759d"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/MarsBottomBar.kt": {
+    "mtime": 1780411993.6131704,
+    "ast_hash": "697d46518594e31d4278cf5bbb9ef892",
+    "semantic_hash": "697d46518594e31d4278cf5bbb9ef892"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/SharedViewModelStoreNavEntryDecorator.kt": {
+    "mtime": 1780325529.2044587,
+    "ast_hash": "2bb3271db541be16d9f0df476b928b0a",
+    "semantic_hash": "2bb3271db541be16d9f0df476b928b0a"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/AboutScreen.kt": {
+    "mtime": 1780905231.497647,
+    "ast_hash": "c31d1ec9438297a4b27c0c69a5410ef5",
+    "semantic_hash": "c31d1ec9438297a4b27c0c69a5410ef5"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/EarthDatePickerScreen.kt": {
+    "mtime": 1780325529.205164,
+    "ast_hash": "5dfb50519744dc32d1131eeffe529e79",
+    "semantic_hash": "5dfb50519744dc32d1131eeffe529e79"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/FavoriteScreen.kt": {
+    "mtime": 1780345709.50617,
+    "ast_hash": "3de42da359b0178107f9b8fc67c871c6",
+    "semantic_hash": "3de42da359b0178107f9b8fc67c871c6"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/ImagesScreen.kt": {
+    "mtime": 1780822425.4886847,
+    "ast_hash": "1ad6a939088a1379c2204b5d183161ae",
+    "semantic_hash": "1ad6a939088a1379c2204b5d183161ae"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/PhotoInfoBottomSheet.kt": {
+    "mtime": 1780501878.1702056,
+    "ast_hash": "96f8d28379814271759112c8a102b1a2",
+    "semantic_hash": "96f8d28379814271759112c8a102b1a2"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/PhotosFiltersScreen.kt": {
+    "mtime": 1780347122.1341865,
+    "ast_hash": "13a5760e7f4e8d7436e185c54d1fe6ca",
+    "semantic_hash": "13a5760e7f4e8d7436e185c54d1fe6ca"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/PhotosScreen.kt": {
+    "mtime": 1780822425.48915,
+    "ast_hash": "1539924990ed59b9a33c90b84501433d",
+    "semantic_hash": "1539924990ed59b9a33c90b84501433d"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/PopularScreen.kt": {
+    "mtime": 1780345709.5072985,
+    "ast_hash": "37664410c13ab99570c4f8e9c0d57766",
+    "semantic_hash": "37664410c13ab99570c4f8e9c0d57766"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/RoverMissionInfoScreen.kt": {
+    "mtime": 1780345709.5077138,
+    "ast_hash": "e5f91b45503d6d347fe99a64b4d20c5f",
+    "semantic_hash": "e5f91b45503d6d347fe99a64b4d20c5f"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/RoversScreen.kt": {
+    "mtime": 1780905231.498028,
+    "ast_hash": "1b6359b0456747275ff17ff8c6aff6df",
+    "semantic_hash": "1b6359b0456747275ff17ff8c6aff6df"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/SolPickerScreen.kt": {
+    "mtime": 1780325529.208156,
+    "ast_hash": "570c25245a24f68c063def6235bc3582",
+    "semantic_hash": "570c25245a24f68c063def6235bc3582"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/UkraineScreen.kt": {
+    "mtime": 1780345709.5088434,
+    "ast_hash": "15ff9df0820175f032ca4f682ab228cd",
+    "semantic_hash": "15ff9df0820175f032ca4f682ab228cd"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/theme/AppColors.kt": {
+    "mtime": 1780905231.498274,
+    "ast_hash": "7ba6764e3a8717e57475b2be515cd562",
+    "semantic_hash": "7ba6764e3a8717e57475b2be515cd562"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/theme/AppSize.kt": {
+    "mtime": 1780905231.4986148,
+    "ast_hash": "eba05b7773bc1bd270784faadeb89a66",
+    "semantic_hash": "eba05b7773bc1bd270784faadeb89a66"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/theme/AppSpacing.kt": {
+    "mtime": 1780345709.509099,
+    "ast_hash": "18c3876aa79c4318a12587da7e402937",
+    "semantic_hash": "18c3876aa79c4318a12587da7e402937"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/theme/AppTypography.kt": {
+    "mtime": 1780345709.5093744,
+    "ast_hash": "76db7271513fdcf1a81c5f9a337bd060",
+    "semantic_hash": "76db7271513fdcf1a81c5f9a337bd060"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/theme/Theme.kt": {
+    "mtime": 1780779643.3411503,
+    "ast_hash": "30f57973bfea9866e42b8b63f6f8c37d",
+    "semantic_hash": "30f57973bfea9866e42b8b63f6f8c37d"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AdSlot.kt": {
+    "mtime": 1779263547.9681551,
+    "ast_hash": "a5878f6f46a2914742f74f0293a86f09",
+    "semantic_hash": "a5878f6f46a2914742f74f0293a86f09"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppButton.kt": {
+    "mtime": 1780325529.209124,
+    "ast_hash": "02335d5d0d1c6aaac6674172b7fc95f0",
+    "semantic_hash": "02335d5d0d1c6aaac6674172b7fc95f0"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppCard.kt": {
+    "mtime": 1780905231.499068,
+    "ast_hash": "faa9cc20f231cd2622a5e08ac78bc97d",
+    "semantic_hash": "faa9cc20f231cd2622a5e08ac78bc97d"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppChip.kt": {
+    "mtime": 1780345709.509871,
+    "ast_hash": "94b68915d41d49ed17d6c710970ace0f",
+    "semantic_hash": "94b68915d41d49ed17d6c710970ace0f"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppEmptyState.kt": {
+    "mtime": 1780345709.5102081,
+    "ast_hash": "c921c714451444c1c308ec7298f417d0",
+    "semantic_hash": "c921c714451444c1c308ec7298f417d0"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppFloatingActionButton.kt": {
+    "mtime": 1780325529.2094533,
+    "ast_hash": "67653a304a67a9da9838ea1a3963463f",
+    "semantic_hash": "67653a304a67a9da9838ea1a3963463f"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppIconBox.kt": {
+    "mtime": 1780600150.7970698,
+    "ast_hash": "21de8b76aa435c58d16c922f9049425b",
+    "semantic_hash": "21de8b76aa435c58d16c922f9049425b"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppMetricItem.kt": {
+    "mtime": 1780905231.499293,
+    "ast_hash": "f2dacb3ca6e426e660d1e622c3e8dbb5",
+    "semantic_hash": "f2dacb3ca6e426e660d1e622c3e8dbb5"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppOutlinedCard.kt": {
+    "mtime": 1780600150.7975678,
+    "ast_hash": "879498867d2d75ac8e45adf9dd35beec",
+    "semantic_hash": "879498867d2d75ac8e45adf9dd35beec"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppTopBar.kt": {
+    "mtime": 1780328983.46657,
+    "ast_hash": "c18d5fadf561fde224992db175135038",
+    "semantic_hash": "c18d5fadf561fde224992db175135038"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/Badges.kt": {
+    "mtime": 1780600150.7979379,
+    "ast_hash": "07a0025b876f912527bbfe5a9fd4d625",
+    "semantic_hash": "07a0025b876f912527bbfe5a9fd4d625"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/CenteredComponents.kt": {
+    "mtime": 1777843400.7025416,
+    "ast_hash": "05040802b2f153617429893af0bdcb38",
+    "semantic_hash": "05040802b2f153617429893af0bdcb38"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/MarsImage.kt": {
+    "mtime": 1780779643.3126738,
+    "ast_hash": "b1fbaa7479f4404be0869a5f0f0e9de1",
+    "semantic_hash": "b1fbaa7479f4404be0869a5f0f0e9de1"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/MaterialSymbolIcon.kt": {
+    "mtime": 1780905231.4996445,
+    "ast_hash": "5056fdf68ce6684701c0e2325659334f",
+    "semantic_hash": "5056fdf68ce6684701c0e2325659334f"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/PlatformDatePicker.kt": {
+    "mtime": 1779816004.0929554,
+    "ast_hash": "4179b03b826c92ad5c6c4625587e744c",
+    "semantic_hash": "4179b03b826c92ad5c6c4625587e744c"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/PlatformUriHandler.kt": {
+    "mtime": 1777843400.7032542,
+    "ast_hash": "dfda62cb5be6da5533dc3e6bc53ac2a1",
+    "semantic_hash": "dfda62cb5be6da5533dc3e6bc53ac2a1"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/RoverBlurb.kt": {
+    "mtime": 1780905231.4999256,
+    "ast_hash": "10c272199d1b2bfdacd2ed626fef31b5",
+    "semantic_hash": "10c272199d1b2bfdacd2ed626fef31b5"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/RoverPainter.kt": {
+    "mtime": 1779267086.2881513,
+    "ast_hash": "413e4e91958e2a17d3e3be140d9db4c6",
+    "semantic_hash": "413e4e91958e2a17d3e3be140d9db4c6"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/SegmentedControl.kt": {
+    "mtime": 1780602845.1826882,
+    "ast_hash": "4cde88baf3936ae169fe276aaa97cd49",
+    "semantic_hash": "4cde88baf3936ae169fe276aaa97cd49"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/SettingsComponents.kt": {
+    "mtime": 1780600150.7996526,
+    "ast_hash": "28c270e03b7caff543a7866deae4bb40",
+    "semantic_hash": "28c270e03b7caff543a7866deae4bb40"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/StatusBarAppearance.kt": {
+    "mtime": 1779813126.5949287,
+    "ast_hash": "31b449c334e9b1dc117393111b254edf",
+    "semantic_hash": "31b449c334e9b1dc117393111b254edf"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/UkraineBanner.kt": {
+    "mtime": 1779468899.5357645,
+    "ast_hash": "bbcb955dfc6a213203eb27669412b613",
+    "semantic_hash": "bbcb955dfc6a213203eb27669412b613"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/widgets.kt": {
+    "mtime": 1780345709.5112839,
+    "ast_hash": "e379a8ebd30841c977408f2950ff9c55",
+    "semantic_hash": "e379a8ebd30841c977408f2950ff9c55"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/AboutViewModel.kt": {
+    "mtime": 1779263547.9687393,
+    "ast_hash": "75865cdd61f5b77f7b16e8fe6349ad3a",
+    "semantic_hash": "75865cdd61f5b77f7b16e8fe6349ad3a"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/FavoriteImagesViewModel.kt": {
+    "mtime": 1779469858.6127121,
+    "ast_hash": "3b61a6a4cae58371094684c2a90c665a",
+    "semantic_hash": "3b61a6a4cae58371094684c2a90c665a"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/ImageViewModel.kt": {
+    "mtime": 1780501878.172062,
+    "ast_hash": "6df19aadf61ebf00454cfa86b266ecb5",
+    "semantic_hash": "6df19aadf61ebf00454cfa86b266ecb5"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/PhotosViewModel.kt": {
+    "mtime": 1780779643.3129432,
+    "ast_hash": "2c5c410b53b3dc0457ee762699e876b6",
+    "semantic_hash": "2c5c410b53b3dc0457ee762699e876b6"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/PopularPhotosViewModel.kt": {
+    "mtime": 1779459719.459928,
+    "ast_hash": "aff351c91b5ad7aaf8f2083ff6e5ab5b",
+    "semantic_hash": "aff351c91b5ad7aaf8f2083ff6e5ab5b"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/RoverMissionInfoViewModel.kt": {
+    "mtime": 1779832873.840928,
+    "ast_hash": "376d14b92512da279ede5b70c39b5862",
+    "semantic_hash": "376d14b92512da279ede5b70c39b5862"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/RoversViewModel.kt": {
+    "mtime": 1780905231.5002246,
+    "ast_hash": "ae0432e75ff690a6e011dd1090bed414",
+    "semantic_hash": "ae0432e75ff690a6e011dd1090bed414"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/utils/DateFormatUtils.kt": {
+    "mtime": 1779811636.7136712,
+    "ast_hash": "685f867b46453541dac010c0e59ee8c7",
+    "semantic_hash": "685f867b46453541dac010c0e59ee8c7"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/utils/Logger.kt": {
+    "mtime": 1777843400.7045207,
+    "ast_hash": "b6c1931fcf07d6af47707362707c1bd3",
+    "semantic_hash": "b6c1931fcf07d6af47707362707c1bd3"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/utils/MissionInfoUtils.kt": {
+    "mtime": 1779813021.4088042,
+    "ast_hash": "ff311bf28321a5b58755c8003a68cbca",
+    "semantic_hash": "ff311bf28321a5b58755c8003a68cbca"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/utils/NumberFormat.kt": {
+    "mtime": 1780905231.500545,
+    "ast_hash": "7ba4f28b410cbe19d32c131bb74e0914",
+    "semantic_hash": "7ba4f28b410cbe19d32c131bb74e0914"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/utils/RandomGenerator.kt": {
+    "mtime": 1777843400.704779,
+    "ast_hash": "e6bf419ce3914b65e700081b88a17ce2",
+    "semantic_hash": "e6bf419ce3914b65e700081b88a17ce2"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/utils/RoverDateUtil.kt": {
+    "mtime": 1779267086.2888699,
+    "ast_hash": "90084c4607c9bbdc345fde158811723c",
+    "semantic_hash": "90084c4607c9bbdc345fde158811723c"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/data/network/MslCameraMappingTest.kt": {
+    "mtime": 1780779643.313404,
+    "ast_hash": "6701c5c19a8a9a17d089ae25f46ed078",
+    "semantic_hash": "6701c5c19a8a9a17d089ae25f46ed078"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/data/network/NasaImageOrigUrlTest.kt": {
+    "mtime": 1780501878.1734836,
+    "ast_hash": "534691b3a364f85a7c6a17befcb5f25b",
+    "semantic_hash": "534691b3a364f85a7c6a17befcb5f25b"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/data/network/NasaImageSmallUrlTest.kt": {
+    "mtime": 1780501878.173855,
+    "ast_hash": "65993bfad7ba918a721e95700ad7c2ca",
+    "semantic_hash": "65993bfad7ba918a721e95700ad7c2ca"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/data/paging/Fakes.kt": {
+    "mtime": 1780414558.3309913,
+    "ast_hash": "50f90efc6ca8ae9bae32e6cc577d3eea",
+    "semantic_hash": "50f90efc6ca8ae9bae32e6cc577d3eea"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/data/paging/ImagesSearchPagingSourceTest.kt": {
+    "mtime": 1780501878.1742764,
+    "ast_hash": "ba3160af7e320a419bd91fb28ee51e10",
+    "semantic_hash": "ba3160af7e320a419bd91fb28ee51e10"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/data/paging/RoverFeedModeTest.kt": {
+    "mtime": 1780501878.1746373,
+    "ast_hash": "a366cc8f16f28df87021285417ee8703",
+    "semantic_hash": "a366cc8f16f28df87021285417ee8703"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/data/paging/SolPagingSourceTest.kt": {
+    "mtime": 1780415139.9379938,
+    "ast_hash": "ab591297ea9bdc2d798caabe222e6d8c",
+    "semantic_hash": "ab591297ea9bdc2d798caabe222e6d8c"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/RoversFilterTest.kt": {
+    "mtime": 1780905231.5009475,
+    "ast_hash": "c35f6c4652d34b9f738875b292ae8abb",
+    "semantic_hash": "c35f6c4652d34b9f738875b292ae8abb"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/utils/MissionInfoUtilsTest.kt": {
+    "mtime": 1780414602.3627546,
+    "ast_hash": "68d90be5629a8f46f54aa68217ef86b7",
+    "semantic_hash": "68d90be5629a8f46f54aa68217ef86b7"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/utils/NumberFormatTest.kt": {
+    "mtime": 1780905231.5012343,
+    "ast_hash": "8289cc9feb4eed635ba45e93c9861b51",
+    "semantic_hash": "8289cc9feb4eed635ba45e93c9861b51"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/utils/RoverDateUtilTest.kt": {
+    "mtime": 1780501878.1749344,
+    "ast_hash": "a50d31e9fc64df0eacf8e0cb9eea62cc",
+    "semantic_hash": "a50d31e9fc64df0eacf8e0cb9eea62cc"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/desktopMain/kotlin/com/sirelon/marsroverphotos/di/KoinInit.desktop.kt": {
+    "mtime": 1779267086.2893124,
+    "ast_hash": "d60856f96e716d15ca13904841d02cd7",
+    "semantic_hash": "d60856f96e716d15ca13904841d02cd7"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/desktopMain/kotlin/com/sirelon/marsroverphotos/di/PlatformModule.desktop.kt": {
+    "mtime": 1779459719.530332,
+    "ast_hash": "494131c0479d169f812d495bee785eae",
+    "semantic_hash": "494131c0479d169f812d495bee785eae"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/desktopMain/kotlin/com/sirelon/marsroverphotos/platform/DatabaseBuilder.desktop.kt": {
+    "mtime": 1780411993.613571,
+    "ast_hash": "3d0a7745ee6e64f3b9138026ce5e286c",
+    "semantic_hash": "3d0a7745ee6e64f3b9138026ce5e286c"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/desktopMain/kotlin/com/sirelon/marsroverphotos/platform/DesktopTracker.kt": {
+    "mtime": 1779263547.9692962,
+    "ast_hash": "c0a1dc08302accd741cd7ac463a4c61b",
+    "semantic_hash": "c0a1dc08302accd741cd7ac463a4c61b"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/desktopMain/kotlin/com/sirelon/marsroverphotos/platform/FirebaseAnalytics.desktop.kt": {
+    "mtime": 1777843400.7062874,
+    "ast_hash": "de255c9990cc0bb80d05a06c954a7359",
+    "semantic_hash": "de255c9990cc0bb80d05a06c954a7359"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/desktopMain/kotlin/com/sirelon/marsroverphotos/platform/HttpClientEngine.desktop.kt": {
+    "mtime": 1777843400.7065659,
+    "ast_hash": "95642af330712920a2cdd7b633fa55c8",
+    "semantic_hash": "95642af330712920a2cdd7b633fa55c8"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/desktopMain/kotlin/com/sirelon/marsroverphotos/platform/ImageOperations.desktop.kt": {
+    "mtime": 1777843400.7067099,
+    "ast_hash": "8ef2cb26f4f4d18364d02317bc6b5045",
+    "semantic_hash": "8ef2cb26f4f4d18364d02317bc6b5045"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/desktopMain/kotlin/com/sirelon/marsroverphotos/platform/PlatformPreferences.desktop.kt": {
+    "mtime": 1777843400.7068596,
+    "ast_hash": "f5cf00aeed7b735e6030c44a84cd0dfe",
+    "semantic_hash": "f5cf00aeed7b735e6030c44a84cd0dfe"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/desktopMain/kotlin/com/sirelon/marsroverphotos/platform/RecordException.desktop.kt": {
+    "mtime": 1779263547.9694376,
+    "ast_hash": "1b9a5ba0b130ce3605f14867e18d2eaa",
+    "semantic_hash": "1b9a5ba0b130ce3605f14867e18d2eaa"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/desktopMain/kotlin/com/sirelon/marsroverphotos/presentation/theme/Theme.desktop.kt": {
+    "mtime": 1779832873.8413131,
+    "ast_hash": "84e4149bb84082411f920a90f6115533",
+    "semantic_hash": "84e4149bb84082411f920a90f6115533"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/desktopMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AdSlot.desktop.kt": {
+    "mtime": 1779263547.9696012,
+    "ast_hash": "5e2ab4c642b02c0746e84781434a275e",
+    "semantic_hash": "5e2ab4c642b02c0746e84781434a275e"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/desktopMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/PlatformUriHandler.desktop.kt": {
+    "mtime": 1777843400.7075684,
+    "ast_hash": "35c3b58c13907d0452899a5c06afbb08",
+    "semantic_hash": "35c3b58c13907d0452899a5c06afbb08"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/desktopMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/StatusBarAppearance.desktop.kt": {
+    "mtime": 1779813150.577867,
+    "ast_hash": "0500c7059aabef81a37378664a750d69",
+    "semantic_hash": "0500c7059aabef81a37378664a750d69"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/iosMain/kotlin/Main.ios.kt": {
+    "mtime": 1779389399.9519725,
+    "ast_hash": "cdb8c1cdd3dcc1f44c518f35f96b3c4e",
+    "semantic_hash": "cdb8c1cdd3dcc1f44c518f35f96b3c4e"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/iosMain/kotlin/com/sirelon/marsroverphotos/di/KoinInitIos.kt": {
+    "mtime": 1779454331.4214242,
+    "ast_hash": "47f897cf426c21d1af9fb35ec7ee2072",
+    "semantic_hash": "47f897cf426c21d1af9fb35ec7ee2072"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/iosMain/kotlin/com/sirelon/marsroverphotos/di/PlatformModule.ios.kt": {
+    "mtime": 1779696032.8374832,
+    "ast_hash": "3f8715583c851a03a1e9cb01ba91ed18",
+    "semantic_hash": "3f8715583c851a03a1e9cb01ba91ed18"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/iosMain/kotlin/com/sirelon/marsroverphotos/platform/AppReview.ios.kt": {
+    "mtime": 1779696032.8378158,
+    "ast_hash": "79792187e416b5c400e86e1599232d7e",
+    "semantic_hash": "79792187e416b5c400e86e1599232d7e"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/iosMain/kotlin/com/sirelon/marsroverphotos/platform/DatabaseBuilder.ios.kt": {
+    "mtime": 1779459719.5307121,
+    "ast_hash": "1acc7bbbfca0e40549e71c9c17e3f569",
+    "semantic_hash": "1acc7bbbfca0e40549e71c9c17e3f569"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/iosMain/kotlin/com/sirelon/marsroverphotos/platform/FirebaseAnalytics.ios.kt": {
+    "mtime": 1779263547.9705465,
+    "ast_hash": "afc2f8944667f2f02e05b7c4989c9428",
+    "semantic_hash": "afc2f8944667f2f02e05b7c4989c9428"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/iosMain/kotlin/com/sirelon/marsroverphotos/platform/HttpClientEngine.ios.kt": {
+    "mtime": 1777843400.709763,
+    "ast_hash": "dae4021ac35ae96b960ee62df7abbb20",
+    "semantic_hash": "dae4021ac35ae96b960ee62df7abbb20"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/iosMain/kotlin/com/sirelon/marsroverphotos/platform/ImageOperations.ios.kt": {
+    "mtime": 1779390273.3483825,
+    "ast_hash": "908507d67e236e40d83d88399d171614",
+    "semantic_hash": "908507d67e236e40d83d88399d171614"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/iosMain/kotlin/com/sirelon/marsroverphotos/platform/IosAdSlot.kt": {
+    "mtime": 1779459719.460238,
+    "ast_hash": "bc0e86a5f1ee5219aa4d81307ee0eaa4",
+    "semantic_hash": "bc0e86a5f1ee5219aa4d81307ee0eaa4"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/iosMain/kotlin/com/sirelon/marsroverphotos/platform/PlatformPreferences.ios.kt": {
+    "mtime": 1777843400.7100444,
+    "ast_hash": "30eaa0c0b6c968e93398a9eba8b7017c",
+    "semantic_hash": "30eaa0c0b6c968e93398a9eba8b7017c"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/iosMain/kotlin/com/sirelon/marsroverphotos/platform/RecordException.ios.kt": {
+    "mtime": 1779263547.9707868,
+    "ast_hash": "b99cd2bd05f2cf27cc554d32c4e396cf",
+    "semantic_hash": "b99cd2bd05f2cf27cc554d32c4e396cf"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/iosMain/kotlin/com/sirelon/marsroverphotos/presentation/theme/Theme.ios.kt": {
+    "mtime": 1779832873.8417025,
+    "ast_hash": "3e3609d945a7743ba8c972b3541e91b7",
+    "semantic_hash": "3e3609d945a7743ba8c972b3541e91b7"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/iosMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AdSlot.ios.kt": {
+    "mtime": 1779820060.639871,
+    "ast_hash": "8ca14e8458a8918d1ba791c24e0dccd1",
+    "semantic_hash": "8ca14e8458a8918d1ba791c24e0dccd1"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/iosMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/PlatformUriHandler.ios.kt": {
+    "mtime": 1779809800.7072227,
+    "ast_hash": "f6235591d4d0e57c1a8e80fe3ea2588a",
+    "semantic_hash": "f6235591d4d0e57c1a8e80fe3ea2588a"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/src/iosMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/StatusBarAppearance.ios.kt": {
+    "mtime": 1779813134.3890586,
+    "ast_hash": "a693fdf73f700b05f28ba9fe7cb9cf85",
+    "semantic_hash": "a693fdf73f700b05f28ba9fe7cb9cf85"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/androidApp/build.gradle.kts": {
+    "mtime": 1780605621.4408135,
+    "ast_hash": "0bc58fa30c9ad32ee5a28f61875ddbe9",
+    "semantic_hash": "0bc58fa30c9ad32ee5a28f61875ddbe9"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/androidApp/google-services.json": {
+    "mtime": 1779284163.560329,
+    "ast_hash": "c45f1c6ff19a8eab5e97da65462971fc",
+    "semantic_hash": "c45f1c6ff19a8eab5e97da65462971fc"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/androidApp/src/main/kotlin/com/sirelon/marsroverphotos/MainActivity.kt": {
+    "mtime": 1780600150.794079,
+    "ast_hash": "f412781f05c695da058bfdd86a9107fb",
+    "semantic_hash": "f412781f05c695da058bfdd86a9107fb"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/androidApp/src/main/kotlin/com/sirelon/marsroverphotos/MarsRoverApplication.kt": {
+    "mtime": 1780326302.9940772,
+    "ast_hash": "8deed4177a4e626fa731807c5e7d8a4e",
+    "semantic_hash": "8deed4177a4e626fa731807c5e7d8a4e"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/androidApp/src/main/kotlin/com/sirelon/marsroverphotos/gdpr/GdprHelper.kt": {
+    "mtime": 1779459719.448571,
+    "ast_hash": "4e69e9d9d75e32934eac888faefa42c0",
+    "semantic_hash": "4e69e9d9d75e32934eac888faefa42c0"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/androidApp/src/main/kotlin/com/sirelon/marsroverphotos/widget/MarsPhotoWidget.kt": {
+    "mtime": 1779385467.273756,
+    "ast_hash": "480303ea3a4585c0f0fd2b62340e30b0",
+    "semantic_hash": "480303ea3a4585c0f0fd2b62340e30b0"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/androidApp/src/main/kotlin/com/sirelon/marsroverphotos/widget/MarsPhotoWidgetConfigActivity.kt": {
+    "mtime": 1779830041.7436903,
+    "ast_hash": "2cf87050664b37ff666dd505c28f487d",
+    "semantic_hash": "2cf87050664b37ff666dd505c28f487d"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/androidApp/src/main/kotlin/com/sirelon/marsroverphotos/widget/MarsPhotoWidgetReceiver.kt": {
+    "mtime": 1779385467.2744603,
+    "ast_hash": "32f058cf6806dbb3509179f75ce52562",
+    "semantic_hash": "32f058cf6806dbb3509179f75ce52562"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/androidApp/src/main/kotlin/com/sirelon/marsroverphotos/widget/MarsPhotoWidgetWorker.kt": {
+    "mtime": 1780501878.162287,
+    "ast_hash": "a47409f48d499b4d99c176b992538f49",
+    "semantic_hash": "a47409f48d499b4d99c176b992538f49"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/iosApp/iosApp/Assets.xcassets/AccentColor.colorset/Contents.json": {
+    "mtime": 1779397387.6294026,
+    "ast_hash": "00fb402cee946d8fb8e3a0786ff9d18d",
+    "semantic_hash": "00fb402cee946d8fb8e3a0786ff9d18d"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/iosApp/iosApp/Assets.xcassets/AppIcon.appiconset/Contents.json": {
+    "mtime": 1779397105.311328,
+    "ast_hash": "a45bc9b51d220b4e8e78a5cb9d96f08b",
+    "semantic_hash": "a45bc9b51d220b4e8e78a5cb9d96f08b"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/iosApp/iosApp/Assets.xcassets/Contents.json": {
+    "mtime": 1779397159.8900678,
+    "ast_hash": "ee613c71a35a7100f8a141a67180f5a7",
+    "semantic_hash": "ee613c71a35a7100f8a141a67180f5a7"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/iosApp/iosApp/Assets.xcassets/SplashBackground.colorset/Contents.json": {
+    "mtime": 1779397664.8852272,
+    "ast_hash": "1b618a315070ec9d87bccba2d624d927",
+    "semantic_hash": "1b618a315070ec9d87bccba2d624d927"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/iosApp/iosApp/Assets.xcassets/SplashIcon.imageset/Contents.json": {
+    "mtime": 1779397664.9833863,
+    "ast_hash": "648a7fad3fa339289714ea10be7d8f43",
+    "semantic_hash": "648a7fad3fa339289714ea10be7d8f43"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/iosApp/iosApp/BannerAdFactory.swift": {
+    "mtime": 1779813021.4059286,
+    "ast_hash": "e64a7748653645b95b9e95607ac4d003",
+    "semantic_hash": "e64a7748653645b95b9e95607ac4d003"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/iosApp/iosApp/ContentView.swift": {
+    "mtime": 1779809800.705604,
+    "ast_hash": "41d6154d79aa67d3df79e9594f6918f0",
+    "semantic_hash": "41d6154d79aa67d3df79e9594f6918f0"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/iosApp/iosApp/MarsRoverApp.swift": {
+    "mtime": 1779813021.4062536,
+    "ast_hash": "dc73fcccff4983157e32a5189a120ae9",
+    "semantic_hash": "dc73fcccff4983157e32a5189a120ae9"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/webApp/build.gradle.kts": {
+    "mtime": 1780411993.613853,
+    "ast_hash": "265ffc769427bb9a9c915af511245f72",
+    "semantic_hash": "265ffc769427bb9a9c915af511245f72"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/webApp/src/wasmJsMain/kotlin/com/sirelon/marsroverphotos/web/Main.kt": {
+    "mtime": 1780411993.61421,
+    "ast_hash": "c0b83eecfbf13bcd6374a5e52ff1ef92",
+    "semantic_hash": "c0b83eecfbf13bcd6374a5e52ff1ef92"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/desktopApp/build.gradle.kts": {
+    "mtime": 1780605621.7623258,
+    "ast_hash": "5f29f6e0c2cd7c46d113711354f52842",
+    "semantic_hash": "5f29f6e0c2cd7c46d113711354f52842"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/desktopApp/src/jvmMain/kotlin/com/sirelon/marsroverphotos/desktop/Main.kt": {
+    "mtime": 1779397681.9707732,
+    "ast_hash": "7776b95308b302e60a48c0e1b4a83cb5",
+    "semantic_hash": "7776b95308b302e60a48c0e1b4a83cb5"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/shared/compose-stability-config.txt": {
+    "mtime": 1777843400.6620498,
+    "ast_hash": "e6241a6b654e7c51e50581946370452d",
+    "semantic_hash": "e6241a6b654e7c51e50581946370452d"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/iosApp/README.md": {
+    "mtime": 1780905231.524152,
+    "ast_hash": "1209b29e3ac9bad95b82ddc8f84e1c5b",
+    "semantic_hash": "1209b29e3ac9bad95b82ddc8f84e1c5b"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/iosApp/SETUP.md": {
+    "mtime": 1780905231.5243204,
+    "ast_hash": "bec00b4f60d5bdfbe6d9167af7c09412",
+    "semantic_hash": "bec00b4f60d5bdfbe6d9167af7c09412"
+  },
+  "/Users/sirelon/Projects/MarsRoverPhotos/webApp/src/wasmJsMain/resources/index.html": {
+    "mtime": 1780411993.614616,
+    "ast_hash": "eea92479a911d3112269779c8750623e",
+    "semantic_hash": "eea92479a911d3112269779c8750623e"
+  }
+}
