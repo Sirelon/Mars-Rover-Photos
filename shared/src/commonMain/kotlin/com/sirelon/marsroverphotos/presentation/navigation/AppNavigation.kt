@@ -1,6 +1,7 @@
 package com.sirelon.marsroverphotos.presentation.navigation
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.runtime.movableContentOf
@@ -22,8 +23,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import kotlinx.coroutines.delay
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
@@ -34,6 +39,7 @@ import com.sirelon.marsroverphotos.presentation.ui.UkraineBanner
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import androidx.navigation3.runtime.NavEntry
+import com.sirelon.marsroverphotos.di.IMAGES_DESTINATION_KEY
 import com.sirelon.marsroverphotos.presentation.screens.DateJumpPickerScreen
 import com.sirelon.marsroverphotos.presentation.screens.PhotosFiltersScreen
 import com.sirelon.marsroverphotos.presentation.screens.PhotosScreen
@@ -143,7 +149,18 @@ fun AppNavigation(
     }
     val dialogOverlaySceneStrategy = remember { DialogOverlaySceneStrategy<NavKey>() }
     val tracker: Tracker = koinInject()
-    val isImages = chromeDestination is AppDestination.Images
+    val rawIsImages = chromeDestination is AppDestination.Images
+    // Keep the full-screen Box wrapper alive for ANIM_DURATION_2 after leaving Images so the
+    // fadeOut plays inside the same layout context — avoids a black flash from the layout switch.
+    var isImages by remember { mutableStateOf(rawIsImages) }
+    LaunchedEffect(rawIsImages) {
+        if (rawIsImages) {
+            isImages = true
+        } else {
+            delay(ANIM_DURATION_2.toLong())
+            isImages = false
+        }
+    }
 
     LaunchedEffect(deepLink) {
         val target = deepLink ?: return@LaunchedEffect
@@ -184,16 +201,25 @@ fun AppNavigation(
                     (slideInHorizontally(tween(ANIM_DURATION)) { it } + fadeIn(tween(ANIM_DURATION))) togetherWith
                         (slideOutHorizontally(tween(ANIM_DURATION)) { -it / 5 } + fadeOut(tween(ANIM_DURATION_2)))
                 },
-                // Standard back: previous screen revealed from the left
+                // Standard back: previous screen revealed from the left.
+                // When leaving Images, suppress the slide — shared elements handle the visual.
                 popTransitionSpec = {
-                    (slideInHorizontally(tween(ANIM_DURATION)) { -it / 5 } + fadeIn(tween(ANIM_DURATION))) togetherWith
-                        (slideOutHorizontally(tween(ANIM_DURATION)) { it } + fadeOut(tween(ANIM_DURATION_2)))
+                    if (initialState.metadata[IMAGES_DESTINATION_KEY] == true) {
+                        EnterTransition.None togetherWith fadeOut(tween(ANIM_DURATION_2))
+                    } else {
+                        (slideInHorizontally(tween(ANIM_DURATION)) { -it / 5 } + fadeIn(tween(ANIM_DURATION))) togetherWith
+                            (slideOutHorizontally(tween(ANIM_DURATION)) { it } + fadeOut(tween(ANIM_DURATION_2)))
+                    }
                 },
                 // Predictive back: same curve — NavDisplay drives this interactively
                 // with the system's back gesture progress on Android 14+
                 predictivePopTransitionSpec = {
-                    (slideInHorizontally(tween(ANIM_DURATION)) { -it / 5 } + fadeIn(tween(ANIM_DURATION))) togetherWith
-                        (slideOutHorizontally(tween(ANIM_DURATION)) { it } + fadeOut(tween(ANIM_DURATION_2)))
+                    if (initialState.metadata[IMAGES_DESTINATION_KEY] == true) {
+                        EnterTransition.None togetherWith fadeOut(tween(ANIM_DURATION_2))
+                    } else {
+                        (slideInHorizontally(tween(ANIM_DURATION)) { -it / 5 } + fadeIn(tween(ANIM_DURATION))) togetherWith
+                            (slideOutHorizontally(tween(ANIM_DURATION)) { it } + fadeOut(tween(ANIM_DURATION_2)))
+                    }
                 },
             )
           }
@@ -202,14 +228,13 @@ fun AppNavigation(
     }
 
     CompositionLocalProvider(LocalAppNavigator provides navigator) {
+        Box(modifier = modifier.background(MaterialTheme.colorScheme.background)) {
         if (isImages) {
             // Images screen goes fully edge-to-edge: no status-bar inset, no navigation chrome.
-            Box(modifier = modifier.background(MaterialTheme.colorScheme.background)) {
-                navDisplay()
-            }
+            navDisplay()
         } else {
             MarsNavigationSuite(
-                modifier = modifier,
+                modifier = Modifier.fillMaxSize(),
                 selectedDestination = chromeDestination.topLevelDestination(),
                 onDestinationClick = { destination ->
                     tracker.trackClick("nav_${destination.analyticsTag}")
@@ -242,6 +267,7 @@ fun AppNavigation(
                 }
             }
         }
+        } // outer Box
     }
 }
 

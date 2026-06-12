@@ -2,6 +2,11 @@
 
 package com.sirelon.marsroverphotos.di
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
+import androidx.navigation3.ui.NavDisplay
 import com.sirelon.marsroverphotos.presentation.navigation.AppDestination
 import com.sirelon.marsroverphotos.presentation.navigation.LocalAppNavigator
 import com.sirelon.marsroverphotos.presentation.screens.AboutScreen
@@ -14,6 +19,8 @@ import com.sirelon.marsroverphotos.presentation.screens.UkraineScreen
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.dsl.module
 import org.koin.dsl.navigation3.navigation
+
+internal const val IMAGES_DESTINATION_KEY = "isImagesDestination"
 
 val navigationModule = module {
     navigation<AppDestination.Rovers> {
@@ -33,7 +40,10 @@ val navigationModule = module {
     // the shared PhotosViewModel survives camera-filter changes, and the dialogs name the Photos
     // entry as their ViewModelStore parent (see SharedViewModelStoreNavEntryDecorator).
 
-    navigation<AppDestination.Images> { destination ->
+    navigation<AppDestination.Images>(
+        metadata = mapOf(IMAGES_DESTINATION_KEY to true) +
+            NavDisplay.transitionSpec { EnterTransition.None togetherWith fadeOut(tween(300)) },
+    ) { destination ->
         val navigator = LocalAppNavigator.current
         ImagesScreen(
             photoIds = destination.photoIds,

@@ -363,10 +363,23 @@ private fun ImagesPagerContent(
                         if (currentImage != null) {
                             SaveIcon(onClick = { onSaveClick(currentImage) })
                             ShareIcon(onClick = { onShareClick(currentImage) })
-                            InfoIcon(onClick = { showInfoSheet = true })
                         }
                     },
                 )
+            }
+        }
+
+        // Bottom-left info icon overlay.
+        if (currentImage != null) {
+            AnimatedVisibility(
+                visible = !hideUi,
+                enter = fadeIn() + slideInVertically(initialOffsetY = { it }),
+                exit = fadeOut() + slideOutVertically(targetOffsetY = { it }),
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .navigationBarsPadding(),
+            ) {
+                InfoIcon(onClick = { showInfoSheet = true })
             }
         }
     }
