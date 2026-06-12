@@ -176,6 +176,8 @@ kotlin {
             @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
             implementation(libs.kotlin.test.annotations.common)
             implementation(libs.kotlinx.coroutines.test)
+            // TestPager for pager-level integration tests (KMP since paging 3.3.0)
+            implementation(libs.paging.testing)
         }
     }
 }

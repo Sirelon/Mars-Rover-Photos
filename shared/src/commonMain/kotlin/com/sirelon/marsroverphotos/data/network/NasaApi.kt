@@ -31,12 +31,15 @@ internal class NasaApi(private val ktor: HttpClient) {
         q: String,
         page: Int,
         pageSize: Int = 100,
+        keywords: String? = null,
     ): NasaImagesSearchResponse {
         return ktor.get("https://images-api.nasa.gov/search") {
             parameter("q", q)
             parameter("media_type", "image")
             parameter("page", page)
             parameter("page_size", pageSize)
+            // Ktor drops null parameters, so keywords is only sent when provided.
+            parameter("keywords", keywords)
         }.body()
     }
 

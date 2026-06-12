@@ -118,7 +118,8 @@ class RestApi {
         query: String,
         page: Int,
         pageSize: Int = 100,
-    ): NasaImagesSearchResponse = nasaApi.searchImages(query, page, pageSize)
+        keywords: String? = null,
+    ): NasaImagesSearchResponse = nasaApi.searchImages(query, page, pageSize, keywords)
 
     suspend fun getPerseveranceLatestPhotos(count: Int = 1): List<MarsImage> {
         val response = nasaApi.getPerseveranceRawImages(count = count)

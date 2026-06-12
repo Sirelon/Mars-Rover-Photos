@@ -40,11 +40,14 @@ data class MarsImage(
 }
 
 /**
- * Helper class for updating stats only
+ * Helper class for marking an existing row as popular: updates the popular flag,
+ * the ranking order and stats without touching the rest of the row.
  */
-class StatsUpdate(
+class PopularUpdate(
     @PrimaryKey
     val id: String,
+    val popular: Boolean,
+    val order: Int,
     @Embedded(prefix = "counter_")
     val stats: MarsImage.Stats
 )

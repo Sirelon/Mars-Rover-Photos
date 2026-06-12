@@ -61,17 +61,16 @@ class RoverFeedPager(
     /** Latest params, for synchronous reads by callers. Mutated only from [setFeed] (main thread). */
     private var latestParams: Params? = null
 
-    // In-memory cache of the full result list from images.nasa.gov, keyed by query string.
-    // Populated after the first network fetch for a query; subsequent reshuffles (same query,
-    // new seed) reorder this list instantly without any network round-trip.
-    private val pageCache = mutableMapOf<String, List<MarsImage>>()
+    // Last-seen totalHits per images.nasa.gov query. Lets a rebuilt page feed pick a random
+    // anchor page (and clamp explicit ones) without a bootstrap request to learn the dataset size.
+    private val totalHitsCache = mutableMapOf<String, Int>()
 
     /** Current feed params, or null until [setFeed] is first called. */
     val currentParams: Params? get() = latestParams
 
     private val _totalPagePhotos = MutableStateFlow(0)
 
-    /** Total photos loaded for page-mode rovers (Spirit/Opportunity). 0 until the first fetch completes. */
+    /** Dataset size (API totalHits) for page-mode rovers (Spirit/Opportunity). 0 until the first fetch. */
     val totalPagePhotosFlow: StateFlow<Int> = _totalPagePhotos.asStateFlow()
 
     private val _currentRoverId = MutableStateFlow<Long?>(null)
@@ -133,23 +132,27 @@ class RoverFeedPager(
                 ).flow
                 is FeedMode.Page -> Pager(
                     config = pageSearchConfig,
-                    initialKey = 1,
+                    // initialKey stays null — the source resolves the anchor itself
+                    // (explicit mode.anchorPage, else a random page).
                     pagingSourceFactory = {
                         val query = mode.query
-                        val shuffleSeed = mode.shuffleSeed
-                        val cachedImages = pageCache[query]
-                        _totalPagePhotos.value = cachedImages?.size ?: 0
+                        _totalPagePhotos.value = totalHitsCache[query] ?: 0
                         ImagesSearchPagingSource(
                             imagesDao = imagesDao,
-                            shuffleSeed = shuffleSeed,
-                            cachedImages = cachedImages,
-                            onAllImagesFetched = { images ->
-                                pageCache[query] = images
-                                _totalPagePhotos.value = images.size
+                            anchorPage = mode.anchorPage,
+                            totalHitsHint = totalHitsCache[query],
+                            onTotalHits = { hits ->
+                                totalHitsCache[query] = hits
+                                _totalPagePhotos.value = hits
                             },
                             fetchPage = { page ->
-                                val response = restApi.searchImages(query, page)
-                                val startIndex = (page - 1) * 100
+                                val response = restApi.searchImages(
+                                    query = query,
+                                    page = page,
+                                    pageSize = ImagesSearchPagingSource.PAGE_SIZE,
+                                    keywords = MER_KEYWORDS,
+                                )
+                                val startIndex = (page - 1) * ImagesSearchPagingSource.PAGE_SIZE
                                 ImagesSearchPagingSource.PageResult(
                                     images = response.toMarsImages(startIndex),
                                     totalHits = response.collection.metadata?.totalHits ?: 0,
@@ -166,6 +169,10 @@ class RoverFeedPager(
         .cachedIn(appScope)
 
     fun setFeed(roverId: Long, mode: FeedMode) {
+        // A rebuilt feed creates a new PagingSource that re-merges favorite state from Room, so
+        // any optimistic overrides are stale/redundant — clear them to keep the map from growing.
+        // setFeed is only called from main-thread ViewModel code, so this mutation is safe.
+        favoriteOverrides.clear()
         val params = Params(roverId = roverId, mode = mode)
         latestParams = params
         paramsFlow.tryEmit(params)
@@ -179,9 +186,9 @@ class RoverFeedPager(
             enablePlaceholders = false,
         )
         private val pageSearchConfig = PagingConfig(
-            pageSize = 100,
+            pageSize = ImagesSearchPagingSource.PAGE_SIZE,
             prefetchDistance = 20,
-            initialLoadSize = 100,
+            initialLoadSize = ImagesSearchPagingSource.PAGE_SIZE,
             enablePlaceholders = false,
         )
     }
