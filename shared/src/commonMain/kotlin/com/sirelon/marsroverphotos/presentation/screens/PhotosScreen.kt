@@ -2,6 +2,7 @@ package com.sirelon.marsroverphotos.presentation.screens
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
@@ -50,6 +51,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -530,9 +532,16 @@ private fun PhotoCard(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .aspectRatio(1F)
-                                .sharedElement(
+                                // sharedBounds (not sharedElement): the fullscreen end renders the
+                                // same photo letterboxed with ContentScale.Fit, so the contents are
+                                // visually different — sharedBounds crossfades them instead of
+                                // stretching one into the other's frame.
+                                .sharedBounds(
                                     sharedContentState = rememberSharedContentState(key = "photo_${image.id}"),
                                     animatedVisibilityScope = animScope,
+                                    resizeMode = SharedTransitionScope.ResizeMode.scaleToBounds(
+                                        contentScale = ContentScale.Fit,
+                                    ),
                                 ),
                             imageUrl = image.imageUrl,
                         )

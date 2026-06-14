@@ -3,6 +3,7 @@ package com.sirelon.marsroverphotos.presentation.screens
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -572,9 +573,15 @@ private fun ImagesPager(
                 val sharedModifier = if (sharedScope != null && isSharedPage) {
                     val animScope = LocalNavAnimatedContentScope.current
                     with(sharedScope) {
-                        Modifier.sharedElement(
+                        // sharedBounds matches PhotoCard's end of this key: the grid renders a
+                        // cropped square while this end is letterboxed, so the contents must
+                        // crossfade rather than scale into each other.
+                        Modifier.sharedBounds(
                             sharedContentState = rememberSharedContentState(key = "photo_${marsImage.id}"),
                             animatedVisibilityScope = animScope,
+                            resizeMode = SharedTransitionScope.ResizeMode.scaleToBounds(
+                                contentScale = ContentScale.Fit,
+                            ),
                         )
                     }
                 } else Modifier
