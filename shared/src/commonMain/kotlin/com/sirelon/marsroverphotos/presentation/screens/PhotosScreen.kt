@@ -101,9 +101,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.sirelon.marsroverphotos.presentation.navigation.LocalSharedTransitionScope
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 // ── State-holder composable ───────────────────────────────────────────────────

@@ -185,6 +185,7 @@ fun NetworkImage(
                 crossfade(true)
                 if (placeholderMemoryCacheKey != null) {
                     placeholderMemoryCacheKey(MemoryCache.Key(placeholderMemoryCacheKey))
+                    memoryCacheKey(placeholderMemoryCacheKey)
                 }
             }
             .build()

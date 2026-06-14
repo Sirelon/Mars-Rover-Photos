@@ -1,7 +1,6 @@
 package com.sirelon.marsroverphotos.presentation.screens
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.tween
@@ -10,8 +9,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -22,13 +19,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import com.sirelon.marsroverphotos.presentation.ui.AppButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
@@ -43,6 +39,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -53,40 +50,41 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
+import androidx.navigationevent.DirectNavigationEventInput
+import androidx.navigationevent.NavigationEvent
+import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
-import com.sirelon.marsroverphotos.utils.nasaImageOrigUrl
 import com.sirelon.marsroverphotos.presentation.navigation.AppDestination
+import com.sirelon.marsroverphotos.presentation.navigation.LocalSharedTransitionScope
+import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
+import com.sirelon.marsroverphotos.presentation.ui.AppButton
 import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
 import com.sirelon.marsroverphotos.presentation.ui.CenteredProgress
 import com.sirelon.marsroverphotos.presentation.ui.LikeHeartOverlay
 import com.sirelon.marsroverphotos.presentation.ui.MarsImageFavoriteToggle
-import com.sirelon.marsroverphotos.presentation.ui.rememberLikeHeartState
-import com.sirelon.marsroverphotos.presentation.ui.setStatusBarAppearance
 import com.sirelon.marsroverphotos.presentation.ui.MarsSnackbar
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.presentation.ui.NetworkImage
 import com.sirelon.marsroverphotos.presentation.ui.NoScrollEffect
-import net.engawapg.lib.zoomable.ScrollGesturePropagation
-import net.engawapg.lib.zoomable.rememberZoomState
-import net.engawapg.lib.zoomable.zoomable
+import com.sirelon.marsroverphotos.presentation.ui.rememberLikeHeartState
+import com.sirelon.marsroverphotos.presentation.ui.setStatusBarAppearance
 import com.sirelon.marsroverphotos.presentation.viewmodels.ImageViewModel
 import com.sirelon.marsroverphotos.presentation.viewmodels.UiEvent
 import com.sirelon.marsroverphotos.shared.resources.Res
 import com.sirelon.marsroverphotos.shared.resources.images_empty_btn
 import com.sirelon.marsroverphotos.shared.resources.images_empty_title
+import com.sirelon.marsroverphotos.utils.nasaImageOrigUrl
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import androidx.navigation3.ui.LocalNavAnimatedContentScope
-import androidx.navigationevent.DirectNavigationEventInput
-import androidx.navigationevent.NavigationEvent
-import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
-import com.sirelon.marsroverphotos.presentation.navigation.LocalSharedTransitionScope
+import net.engawapg.lib.zoomable.ScrollGesturePropagation
+import net.engawapg.lib.zoomable.rememberZoomState
+import net.engawapg.lib.zoomable.zoomable
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -151,64 +149,42 @@ fun ImagesScreen(
         pageCount = { pagingItems.itemCount },
     )
 
-    // Land on the selected photo once it is present in the loaded snapshot.
-    var didInitialScroll by remember(source, selectedId) { mutableStateOf(false) }
     LaunchedEffect(pagingItems.itemCount, selectedId) {
-        if (didInitialScroll) return@LaunchedEffect
-        if (selectedId == null) {
-            didInitialScroll = true
-            return@LaunchedEffect
-        }
         if (pagingItems.itemCount == 0) return@LaunchedEffect
         val index = pagingItems.itemSnapshotList.indexOfFirst { it?.id == selectedId }
         if (index >= 0) {
             if (pagerState.currentPage != index) pagerState.scrollToPage(index)
-            didInitialScroll = true
-        }
-    }
-
-    // The photo that carries the shared element. Starts as the tapped photo and follows the
-    // settled page only after the initial scroll, so the async jump from page 0 to the selected
-    // photo (and PREPEND index shifts) never re-keys the element mid-flight — re-keying restarts
-    // the open animation, which reads as the transition playing twice.
-    var sharedPhotoId by remember(source, selectedId) { mutableStateOf(selectedId) }
-    LaunchedEffect(pagerState, didInitialScroll) {
-        if (!didInitialScroll) return@LaunchedEffect
-        snapshotFlow { pagerState.settledPage }.collect { page ->
-            pagingItems.peek(page)?.id?.let { sharedPhotoId = it }
         }
     }
 
     val refresh = pagingItems.loadState.refresh
-    Crossfade(targetState = pagingItems.itemCount == 0, label = "Images") { isEmpty ->
-        if (isEmpty) {
-            // Only treat the feed as genuinely empty once a load has settled: a
-            // refresh that finished with no results (endOfPaginationReached) or one
-            // that errored. While the first refresh is still pending or in-flight,
-            // show progress instead of flashing the back-prompting empty state.
-            val settledEmpty = (refresh is LoadState.NotLoading && refresh.endOfPaginationReached) ||
+
+    if (pagingItems.itemCount == 0) {
+        // Only treat the feed as genuinely empty once a load has settled: a
+        // refresh that finished with no results (endOfPaginationReached) or one
+        // that errored. While the first refresh is still pending or in-flight,
+        // show progress instead of flashing the back-prompting empty state.
+        val settledEmpty = (refresh is LoadState.NotLoading && refresh.endOfPaginationReached) ||
                 refresh is LoadState.Error
-            if (settledEmpty) {
-                ImagesEmptyState(onBack = onBack)
-            } else {
-                CenteredProgress()
-            }
+        if (settledEmpty) {
+            ImagesEmptyState(onBack = onBack)
         } else {
-            ImagesPagerContent(
-                uiEvent = uiEvent,
-                pagingItems = pagingItems,
-                pagerState = pagerState,
-                hideUi = hideUi,
-                favoriteOverrides = viewModel.favoriteOverrides,
-                onBack = onBack,
-                onShown = viewModel::onShown,
-                onTap = viewModel::onTap,
-                onFavoriteClick = viewModel::setFavorite,
-                onSaveClick = viewModel::saveImage,
-                onShareClick = viewModel::shareMarsImage,
-                sharedPhotoId = sharedPhotoId,
-            )
+            CenteredProgress()
         }
+    } else {
+        ImagesPagerContent(
+            uiEvent = uiEvent,
+            pagingItems = pagingItems,
+            pagerState = pagerState,
+            hideUi = hideUi,
+            favoriteOverrides = viewModel.favoriteOverrides,
+            onBack = onBack,
+            onShown = viewModel::onShown,
+            onTap = viewModel::onTap,
+            onFavoriteClick = viewModel::setFavorite,
+            onSaveClick = viewModel::saveImage,
+            onShareClick = viewModel::shareMarsImage,
+        )
     }
 }
 
@@ -253,7 +229,6 @@ private fun ImagesPagerContent(
     onFavoriteClick: (MarsImage, Boolean) -> Unit,
     onSaveClick: (MarsImage) -> Unit,
     onShareClick: (MarsImage) -> Unit,
-    sharedPhotoId: String? = null,
 ) {
     var titleState by remember { mutableStateOf("Mars Rover Photos") }
     var showInfoSheet by remember { mutableStateOf(false) }
@@ -357,7 +332,6 @@ private fun ImagesPagerContent(
             onTap = onTap,
             onFavoriteClick = onFavoriteClick,
             onScaleChange = { page, scale -> pageScales[page] = scale },
-            sharedPhotoId = sharedPhotoId,
         )
 
         OnEvent(uiEvent = uiEvent)
@@ -382,7 +356,7 @@ private fun ImagesPagerContent(
                             overflow = TextOverflow.Ellipsis,
                         )
                     },
-                    onBack  = onBack,
+                    onBack = onBack,
                     actions = {
                         if (currentImage != null) {
                             SaveIcon(onClick = { onSaveClick(currentImage) })
@@ -461,7 +435,8 @@ private fun BoxScope.OnEvent(uiEvent: UiEvent?) {
             }
         }
 
-        null -> { /* idle */ }
+        null -> { /* idle */
+        }
     }
 
     SaveSuccessOverlay(visible = showCheckmark)
@@ -536,9 +511,7 @@ private fun ImagesPager(
     onTap: () -> Unit,
     onFavoriteClick: (MarsImage, Boolean) -> Unit,
     onScaleChange: (page: Int, scale: Float) -> Unit,
-    sharedPhotoId: String? = null,
 ) {
-
     NoScrollEffect {
         HorizontalPager(
             state = pagerState,
@@ -564,20 +537,15 @@ private fun ImagesPager(
                     .collect { scale -> onScaleChange(page, scale) }
             }
 
+            val key = "photo_${marsImage.id}"
             Box(modifier = Modifier.fillMaxSize()) {
                 val sharedScope = LocalSharedTransitionScope.current
-                // Only the page holding sharedPhotoId carries the shared elements: id-based
-                // gating follows the user's swipes (back animates to the current photo) without
-                // re-keying during the initial scroll-to-selected jump or PREPEND index shifts.
-                val isSharedPage = marsImage.id == sharedPhotoId
-                val sharedModifier = if (sharedScope != null && isSharedPage) {
+                val isSharedPage = pagerState.settledPage == page
+                val sharedModifier = if (isSharedPage) {
                     val animScope = LocalNavAnimatedContentScope.current
                     with(sharedScope) {
-                        // sharedBounds matches PhotoCard's end of this key: the grid renders a
-                        // cropped square while this end is letterboxed, so the contents must
-                        // crossfade rather than scale into each other.
                         Modifier.sharedBounds(
-                            sharedContentState = rememberSharedContentState(key = "photo_${marsImage.id}"),
+                            sharedContentState = rememberSharedContentState(key = key),
                             animatedVisibilityScope = animScope,
                             resizeMode = SharedTransitionScope.ResizeMode.scaleToBounds(
                                 contentScale = ContentScale.Fit,
@@ -585,7 +553,7 @@ private fun ImagesPager(
                         )
                     }
                 } else Modifier
-                val sharedFavModifier = if (sharedScope != null && isSharedPage) {
+                val sharedFavModifier = if (isSharedPage) {
                     val animScope = LocalNavAnimatedContentScope.current
                     with(sharedScope) {
                         Modifier.sharedElement(
@@ -607,7 +575,8 @@ private fun ImagesPager(
                             enableOneFingerZoom = false,
                             onTap = { onTap() },
                             onDoubleTap = { _ ->
-                                val currentFavorite = favoriteOverrides[marsImage.id] ?: marsImage.favorite
+                                val currentFavorite =
+                                    favoriteOverrides[marsImage.id] ?: marsImage.favorite
                                 if (!currentFavorite) {
                                     favoriteOverrides[marsImage.id] = true
                                     onFavoriteClick(marsImage, true)
@@ -618,7 +587,7 @@ private fun ImagesPager(
                     contentScale = ContentScale.Fit,
                     imageUrl = nasaImageOrigUrl(marsImage.imageUrl),
                     showPlaceholder = false,
-                    placeholderMemoryCacheKey = marsImage.imageUrl,
+                    placeholderMemoryCacheKey = key,
                 )
 
                 LikeHeartOverlay(

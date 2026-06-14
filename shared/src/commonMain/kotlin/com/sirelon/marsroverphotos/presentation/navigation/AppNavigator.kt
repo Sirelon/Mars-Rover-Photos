@@ -47,4 +47,4 @@ val LocalAppNavigator = staticCompositionLocalOf<AppNavigator> {
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-val LocalSharedTransitionScope = compositionLocalOf<SharedTransitionScope?> { null }
+val LocalSharedTransitionScope = compositionLocalOf<SharedTransitionScope> { error("Provide it") }
