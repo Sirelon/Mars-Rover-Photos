@@ -31,6 +31,9 @@ coral **accent/secondary** (`#FC6C4B`, "the Mars accent"). Light theme is white-
 - **Color** → always `MaterialTheme.colorScheme.*`. **No hardcoded theme colors.** The only allowed
   exceptions are documented per-theme helpers that fill a missing M3 slot (see Insights). Apply text
   color at the call site so light/dark both work.
+- **Motion (durations / easing / shared-element specs)** → `AppMotion` (`theme/AppMotion.kt`). No raw
+  `tween(600)`/`spring()` in screens or nav specs — route through `AppMotion` so the cross-screen fade
+  and the shared-element bounds share one timing curve. See **Motion** below.
 
 ### Components
 - Reuse the `App*` family in `presentation/ui/` before writing new UI. If you need a variant, prefer a
@@ -59,6 +62,36 @@ coral **accent/secondary** (`#FC6C4B`, "the Mars accent"). Light theme is white-
 - Run `./gradlew detekt` before review; `./gradlew testDebugUnitTest` (JVM) and
   `:shared:desktopTest` run the shared logic tests. There is **no Compose UI-test infra** in `shared`
   yet — styling-only changes are verified by compile + visual smoke test, not unit tests.
+
+### Motion & shared-element transitions
+- **Tokens:** `AppMotion` (`theme/AppMotion.kt`) — `ScreenEnterMs`/`ScreenExitFadeMs` (standard slide
+  nav), `SharedContainerMs` (photo grid/list ↔ fullscreen viewer), `Emphasized` easing, and
+  `PhotoBoundsTransform`/`FavoriteBoundsTransform`. The container fade and the shared-bounds morph
+  **must share one duration** (`SharedContainerMs`) or they desync.
+- **Photo ↔ viewer container transform:** apply `Modifier.sharedPhoto(id)` (grid/list item) and
+  `Modifier.sharedFavorite(id)` (corner heart) from `ui/SharedPhotoTransition.kt` — the single source of
+  truth for keys (`photo_<id>` / `photo_favorite_<id>`), resize mode (`scaleToBounds(Fit)` — the two ends
+  are different crops, so it crossfades rather than morphs), bounds spec, and overlay clip. They no-op
+  outside a `SharedTransitionLayout`+`NavDisplay`, so previews don't crash.
+  - The pager applies them only to the **settled page** (`enabled = pagerState.settledPage == page`).
+  - The heart flies only where a source exists (the rover Photos grid). Elsewhere
+    (Favorite/Popular/deep-link) use `Modifier.navFadeEnter()` so it fades instead of popping under the
+    viewer's `EnterTransition.None`.
+- **Instant placeholder (no blank flash):** the source screen **writes** its thumbnail under a shared
+  Coil key via `NetworkImage(cacheKey = "photo_<id>")`; the viewer **reads** it via `placeholderCacheKey`.
+  Writer and reader are **separate params** (`cacheKey` vs `placeholderCacheKey`) — never the same key on
+  both ends, or the thumb/full-res entries ping-pong while both are composed during the transition.
+- **Progressive res:** the viewer loads `~large` first (`nasaImageLargeUrl`) and upgrades to `~orig`
+  (`nasaImageOrigUrl`) only on zoom; `~large` is cached under `photo_large_<id>` so the upgrade is
+  flash-free.
+- **Where the nav specs live:** the Photos→viewer **open** fade is on the `Images` nav entry
+  (`di/NavigationModule.kt`); the **close / predictive-pop** fade is on the `NavDisplay`
+  (`navigation/AppNavigation.kt`). Both use `AppMotion.SharedContainerMs`; standard slide nav uses
+  `ANIM_DURATION`/`ANIM_DURATION_2` (sourced from `AppMotion`).
+- **Caveats:** the placeholder only hits while the thumbnail is memory-resident (far-scrolled returns
+  may miss → drawable fallback). An explicit `memoryCacheKey` decouples the cache entry from size — watch
+  the **adaptive Favorite staggered grid** (variable width) for a re-decode loop. Compose shared
+  transitions don't honor system **reduced-motion** (out of scope, tracked separately).
 
 ---
 
@@ -114,6 +147,8 @@ Stable design-system pieces (path = `shared/src/commonMain/kotlin/com/sirelon/ma
 | `AppSpacing` | `theme/AppSpacing.kt` | 8dp-grid **spacing** tokens. |
 | `AppSize` | `theme/AppSize.kt` | Component **dimension/radius** tokens (icon/card/hero/content-width, etc.). |
 | `AppTypography` | `theme/AppTypography.kt` | Semantic type aliases. |
+| `AppMotion` | `theme/AppMotion.kt` | Motion **tokens**: durations (screen slide, shared container), `Emphasized` easing, `Photo`/`FavoriteBoundsTransform`. Route all transition timing through here. |
+| `sharedPhoto` / `sharedFavorite` / `navFadeEnter` | `ui/SharedPhotoTransition.kt` | `Modifier` extensions for the photo grid/list ↔ viewer shared-element transition (keys, resize mode, bounds, overlay clip). Null-safe (no-op in previews). See **Motion**. |
 | `MarsRoverPhotosTheme` + palettes | `theme/Theme.kt` | Color schemes, brand overrides, dynamic color. |
 | `activeStatusColor()` | `theme/AppColors.kt` | Theme-aware "active / live / connected" green (`@Composable @ReadOnlyComposable`). Luminance-based: `#5BBF86` dark / `#2E9E63` light. Fills the **no-green-slot** gap (see Insights); use instead of a literal. Generalized out of the old AboutScreen-local `liveColor`. |
 
@@ -231,3 +266,12 @@ tokens rather than re-introducing literals:
   hover-lift, blurb/search provenance) + the handoff token-mapping table. Generalized the
   adaptive-centering note into the columns-from-MEDIUM / cap-from-EXPANDED pattern. Recorded that
   `./gradlew detekt` does not lint `shared/commonMain`.
+- 2026-06-15 — **Shared-element photo transition refactor.** Added `AppMotion` motion tokens and the
+  `sharedPhoto`/`sharedFavorite`/`navFadeEnter` `Modifier` extensions (`ui/SharedPhotoTransition.kt`),
+  centralizing the grid/list ↔ fullscreen-viewer container transform (was duplicated inline in
+  `PhotosScreen`/`ImagesScreen`). Fixed the blank-flash root cause by splitting `NetworkImage` into a
+  writer `cacheKey` + reader `placeholderCacheKey`; made `LocalSharedTransitionScope` nullable/`static`
+  (kills the dead `else` branch + preview crash); coordinated the open (`NavigationModule`) and pop
+  (`AppNavigation`) fades with the bounds via `AppMotion.SharedContainerMs`; extended the effect to
+  Favorite/Popular (`MarsImageComposable`); added `~large`→`~orig` progressive loading
+  (`nasaImageLargeUrl`). Reviewed by a 2-member committee before implementation.

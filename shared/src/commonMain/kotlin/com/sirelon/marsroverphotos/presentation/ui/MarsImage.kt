@@ -61,11 +61,15 @@ fun MarsImageComposable(
                 model = ImageRequest.Builder(LocalPlatformContext.current)
                     .data(imageUrl)
                     .crossfade(true)
+                    // Writer: same shared key the fullscreen viewer reads as its instant placeholder.
+                    .memoryCacheKey("photo_${marsImage.id}")
                     .build(),
                 contentDescription = imageUrl,
                 modifier = Modifier
                     .defaultMinSize(minHeight = 100.dp)
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    // Shared-element source for Favorite/Popular → fullscreen viewer.
+                    .sharedPhoto(marsImage.id),
                 contentScale = ContentScale.FillWidth,
                 alignment = Alignment.TopCenter,
                 placeholder = painterResource(Res.drawable.img_placeholder),
@@ -175,18 +179,21 @@ fun NetworkImage(
     contentScale: ContentScale = ContentScale.Crop,
     showPlaceholder: Boolean = true,
     imageUrl: String,
-    placeholderMemoryCacheKey: String? = null,
+    // Writer: stores this load under a stable shared key (e.g. "photo_<id>") so a sibling screen
+    // can read it as an instant placeholder. Reader: shows the bitmap cached under this key while
+    // the (possibly higher-res, different-URL) image loads. Kept separate so the grid writes and the
+    // viewer reads without colliding on the same key — see docs/DESIGN_SYSTEM.md › Motion.
+    cacheKey: String? = null,
+    placeholderCacheKey: String? = null,
 ) {
     val context = LocalPlatformContext.current
-    val request = remember(imageUrl, placeholderMemoryCacheKey) {
+    val request = remember(imageUrl, cacheKey, placeholderCacheKey) {
         ImageRequest.Builder(context)
             .data(data = imageUrl)
             .apply {
                 crossfade(true)
-                if (placeholderMemoryCacheKey != null) {
-                    placeholderMemoryCacheKey(MemoryCache.Key(placeholderMemoryCacheKey))
-                    memoryCacheKey(placeholderMemoryCacheKey)
-                }
+                if (cacheKey != null) memoryCacheKey(cacheKey)
+                if (placeholderCacheKey != null) placeholderMemoryCacheKey(MemoryCache.Key(placeholderCacheKey))
             }
             .build()
     }
@@ -198,7 +205,7 @@ fun NetworkImage(
             contentScale = contentScale,
             placeholder = painterResource(Res.drawable.img_placeholder)
         )
-    } else if (placeholderMemoryCacheKey != null) {
+    } else if (placeholderCacheKey != null) {
         // Memory-cached placeholder (e.g. grid thumbnail) shows instantly; crossfades to full-res.
         // AsyncImage lets Coil handle the placeholder — SubcomposeAsyncImage's loading slot would
         // override it and show the spinner instead.

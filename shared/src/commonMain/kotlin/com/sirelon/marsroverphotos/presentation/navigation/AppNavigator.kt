@@ -2,7 +2,6 @@ package com.sirelon.marsroverphotos.presentation.navigation
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
@@ -46,5 +45,8 @@ val LocalAppNavigator = staticCompositionLocalOf<AppNavigator> {
     error("AppNavigator not provided")
 }
 
+// Nullable + static: the scope is provided once by SharedTransitionLayout and never changes, so
+// static avoids per-read invalidation; the null default lets previews/tests render screens that use
+// sharedPhoto/sharedFavorite without a SharedTransitionLayout (the modifiers no-op when it's null).
 @OptIn(ExperimentalSharedTransitionApi::class)
-val LocalSharedTransitionScope = compositionLocalOf<SharedTransitionScope> { error("Provide it") }
+val LocalSharedTransitionScope = staticCompositionLocalOf<SharedTransitionScope?> { null }

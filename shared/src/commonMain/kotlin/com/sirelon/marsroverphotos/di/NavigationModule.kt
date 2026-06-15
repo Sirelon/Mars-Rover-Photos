@@ -9,6 +9,7 @@ import androidx.compose.animation.togetherWith
 import androidx.navigation3.ui.NavDisplay
 import com.sirelon.marsroverphotos.presentation.navigation.AppDestination
 import com.sirelon.marsroverphotos.presentation.navigation.LocalAppNavigator
+import com.sirelon.marsroverphotos.presentation.theme.AppMotion
 import com.sirelon.marsroverphotos.presentation.screens.AboutScreen
 import com.sirelon.marsroverphotos.presentation.screens.AdminPhotosScreen
 import com.sirelon.marsroverphotos.presentation.screens.FavoriteScreen
@@ -43,7 +44,9 @@ val navigationModule = module {
 
     navigation<AppDestination.Images>(
         metadata = mapOf(IMAGES_DESTINATION_KEY to true) +
-            NavDisplay.transitionSpec { EnterTransition.None togetherWith fadeOut(tween(300)) },
+            // Open fade for Photos→viewer: matches the shared-element bounds duration so the photo
+            // morph and the outgoing screen fade move together (see AppMotion).
+            NavDisplay.transitionSpec { EnterTransition.None togetherWith fadeOut(tween(AppMotion.SharedContainerMs, easing = AppMotion.Emphasized)) },
     ) { destination ->
         val navigator = LocalAppNavigator.current
         ImagesScreen(

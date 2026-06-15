@@ -36,6 +36,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.sirelon.marsroverphotos.platform.Tracker
+import com.sirelon.marsroverphotos.presentation.theme.AppMotion
 import com.sirelon.marsroverphotos.presentation.ui.AdSlot
 import com.sirelon.marsroverphotos.presentation.ui.UkraineBanner
 import kotlinx.serialization.modules.SerializersModule
@@ -50,12 +51,16 @@ import org.koin.compose.navigation3.koinEntryProvider
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 
-private const val ANIM_DURATION = 600
+// Screen-slide nav durations (non-Images). Sourced from AppMotion so the whole app shares one timing
+// scale; the Images open/close fades use AppMotion.SharedContainerMs to stay locked to the
+// shared-element bounds (the open fade lives on the Images nav entry in NavigationModule). See
+// docs/DESIGN_SYSTEM.md › Motion.
+private const val ANIM_DURATION = AppMotion.ScreenEnterMs
 
-private const val ANIM_DURATION_2 = ANIM_DURATION / 2
+private const val ANIM_DURATION_2 = AppMotion.ScreenExitFadeMs
 
-/** Fade for leaving the fullscreen Images entry — slower so the gesture-driven finish stays gentle. */
-private const val IMAGES_POP_FADE = 450
+/** Fade for leaving the fullscreen Images entry — matches the shared-element bounds duration. */
+private const val IMAGES_POP_FADE = AppMotion.SharedContainerMs
 
 /**
  * Main Navigation 3 display for the app.
@@ -199,7 +204,7 @@ fun AppNavigation(
                 // When leaving Images, suppress the slide — shared elements handle the visual.
                 popTransitionSpec = {
                     if (initialState.metadata[IMAGES_DESTINATION_KEY] == true) {
-                        EnterTransition.None togetherWith fadeOut(tween(IMAGES_POP_FADE))
+                        EnterTransition.None togetherWith fadeOut(tween(IMAGES_POP_FADE, easing = AppMotion.Emphasized))
                     } else {
                         (slideInHorizontally(tween(ANIM_DURATION)) { -it / 5 } + fadeIn(tween(ANIM_DURATION))) togetherWith
                             (slideOutHorizontally(tween(ANIM_DURATION)) { it } + fadeOut(tween(ANIM_DURATION_2)))
@@ -209,7 +214,7 @@ fun AppNavigation(
                 // with the system's back gesture progress on Android 14+
                 predictivePopTransitionSpec = {
                     if (initialState.metadata[IMAGES_DESTINATION_KEY] == true) {
-                        EnterTransition.None togetherWith fadeOut(tween(IMAGES_POP_FADE))
+                        EnterTransition.None togetherWith fadeOut(tween(IMAGES_POP_FADE, easing = AppMotion.Emphasized))
                     } else {
                         (slideInHorizontally(tween(ANIM_DURATION)) { -it / 5 } + fadeIn(tween(ANIM_DURATION))) togetherWith
                             (slideOutHorizontally(tween(ANIM_DURATION)) { it } + fadeOut(tween(ANIM_DURATION_2)))

@@ -1,8 +1,6 @@
 package com.sirelon.marsroverphotos.presentation.screens
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
@@ -51,7 +49,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -101,8 +98,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import org.jetbrains.compose.resources.stringResource
-import androidx.navigation3.ui.LocalNavAnimatedContentScope
-import com.sirelon.marsroverphotos.presentation.navigation.LocalSharedTransitionScope
+import com.sirelon.marsroverphotos.presentation.ui.sharedFavorite
+import com.sirelon.marsroverphotos.presentation.ui.sharedPhoto
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -506,7 +503,6 @@ private fun EdgeProgress(modifier: Modifier = Modifier) {
     )
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun PhotoCard(
     image: MarsImage,
@@ -517,7 +513,6 @@ private fun PhotoCard(
 ) {
     val heartState = rememberLikeHeartState()
 
-    val sharedScope = LocalSharedTransitionScope.current
     AppCard(
         modifier = Modifier
             .fillMaxWidth()
@@ -525,52 +520,23 @@ private fun PhotoCard(
     ) {
         Column(verticalArrangement = Arrangement.SpaceBetween) {
             Box(modifier = Modifier.fillMaxWidth()) {
-                if (sharedScope != null) {
-                    val animScope = LocalNavAnimatedContentScope.current
-                    with(sharedScope) {
-                        NetworkImage(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .aspectRatio(1F)
-                                // sharedBounds (not sharedElement): the fullscreen end renders the
-                                // same photo letterboxed with ContentScale.Fit, so the contents are
-                                // visually different — sharedBounds crossfades them instead of
-                                // stretching one into the other's frame.
-                                .sharedBounds(
-                                    sharedContentState = rememberSharedContentState(key = "photo_${image.id}"),
-                                    animatedVisibilityScope = animScope,
-                                    resizeMode = SharedTransitionScope.ResizeMode.scaleToBounds(
-                                        contentScale = ContentScale.Fit,
-                                    ),
-                                ),
-                            imageUrl = image.imageUrl,
-                        )
-                    }
-                } else {
-                    NetworkImage(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .aspectRatio(1F),
-                        imageUrl = image.imageUrl,
-                    )
-                }
+                NetworkImage(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1F)
+                        .sharedPhoto(image.id),
+                    imageUrl = image.imageUrl,
+                    // Writer: cache the thumbnail under the shared key the viewer reads instantly.
+                    cacheKey = "photo_${image.id}",
+                )
                 LikeHeartOverlay(
                     visible = heartState.visible,
                     modifier = Modifier.align(Alignment.Center),
                 )
-                val sharedFavModifier: Modifier = if (sharedScope != null) {
-                    val animScope = LocalNavAnimatedContentScope.current
-                    with(sharedScope) {
-                        Modifier.sharedElement(
-                            sharedContentState = rememberSharedContentState(key = "photo_favorite_${image.id}"),
-                            animatedVisibilityScope = animScope,
-                        )
-                    }
-                } else Modifier
                 MarsImageFavoriteToggle(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .then(sharedFavModifier)
+                        .sharedFavorite(image.id)
                         .padding(AppSpacing.xs)
                         .background(Color.White.copy(alpha = 0.9f), CircleShape),
                     checked = checked,

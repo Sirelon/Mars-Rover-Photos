@@ -35,6 +35,21 @@ internal fun nasaImageSmallUrl(href: String): String {
     return href.substring(0, match.range.first) + "~small.$ext"
 }
 
+/**
+ * Derives the screen-sized `~large` URL from a NASA Image Library preview href.
+ *
+ * Any known size token (`~thumb`, `~small`, `~medium`, `~large`) is replaced with `~large`.
+ * If no known size token is found the href is returned as-is.
+ *
+ * The fullscreen viewer loads `~large` first — fast to decode and indistinguishable from `~orig`
+ * at fit-to-screen size — then upgrades to [nasaImageOrigUrl] only when the user zooms in.
+ */
+internal fun nasaImageLargeUrl(href: String): String {
+    val match = SIZE_TOKEN_REGEX.find(href) ?: return href
+    val ext = match.groupValues[2]
+    return href.substring(0, match.range.first) + "~large.$ext"
+}
+
 private val SIZE_TOKEN_REGEX = Regex(
     "~(thumb|small|medium|large)\\.(jpg|jpeg|png)$",
     RegexOption.IGNORE_CASE,
