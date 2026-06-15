@@ -1,16 +1,16 @@
-# Graph Report - MarsRoverPhotos  (2026-06-12)
+# Graph Report - MarsRoverPhotos  (2026-06-15)
 
 ## Corpus Check
-- 222 files · ~5,400,292 words
+- 224 files · ~5,401,570 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1819 nodes · 2690 edges · 148 communities (115 shown, 33 thin omitted)
-- Extraction: 93% EXTRACTED · 7% INFERRED · 0% AMBIGUOUS · INFERRED: 198 edges (avg confidence: 0.8)
+- 1830 nodes · 2705 edges · 156 communities (121 shown, 35 thin omitted)
+- Extraction: 93% EXTRACTED · 7% INFERRED · 0% AMBIGUOUS · INFERRED: 199 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `57af1256`
+- Built from commit: `d6732dea`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -76,14 +76,19 @@
 - [[_COMMUNITY_Community 58|Community 58]]
 - [[_COMMUNITY_Community 59|Community 59]]
 - [[_COMMUNITY_Community 60|Community 60]]
+- [[_COMMUNITY_Community 61|Community 61]]
 - [[_COMMUNITY_Community 62|Community 62]]
 - [[_COMMUNITY_Community 63|Community 63]]
 - [[_COMMUNITY_Community 64|Community 64]]
+- [[_COMMUNITY_Community 65|Community 65]]
 - [[_COMMUNITY_Community 66|Community 66]]
 - [[_COMMUNITY_Community 67|Community 67]]
 - [[_COMMUNITY_Community 68|Community 68]]
 - [[_COMMUNITY_Community 69|Community 69]]
+- [[_COMMUNITY_Community 70|Community 70]]
+- [[_COMMUNITY_Community 71|Community 71]]
 - [[_COMMUNITY_Community 72|Community 72]]
+- [[_COMMUNITY_Community 73|Community 73]]
 - [[_COMMUNITY_Community 74|Community 74]]
 - [[_COMMUNITY_Community 75|Community 75]]
 - [[_COMMUNITY_Community 76|Community 76]]
@@ -98,6 +103,9 @@
 - [[_COMMUNITY_Community 85|Community 85]]
 - [[_COMMUNITY_Community 86|Community 86]]
 - [[_COMMUNITY_Community 87|Community 87]]
+- [[_COMMUNITY_Community 88|Community 88]]
+- [[_COMMUNITY_Community 89|Community 89]]
+- [[_COMMUNITY_Community 90|Community 90]]
 - [[_COMMUNITY_Community 91|Community 91]]
 - [[_COMMUNITY_Community 92|Community 92]]
 - [[_COMMUNITY_Community 93|Community 93]]
@@ -159,7 +167,7 @@
 7. `AppNavigation()` - 17 edges
 8. `ImagesPagerContent()` - 17 edges
 9. `AboutContent()` - 16 edges
-10. `AppTopBar()` - 16 edges
+10. `ImagesPager()` - 16 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Deep Linking Support` --references--> `AppNavigation`  [INFERRED]
@@ -176,23 +184,23 @@
 ## Import Cycles
 - None detected.
 
-## Communities (148 total, 33 thin omitted)
+## Communities (156 total, 35 thin omitted)
 
 ### Community 0 - "Platform Preferences (native)"
 Cohesion: 0.06
 Nodes (21): AndroidPlatformPreferences, createPlatformPreferences(), initAndroidPreferences(), createPlatformPreferences(), DesktopPlatformPreferences, createPlatformPreferences(), IosPlatformPreferences, PlatformPreferences (+13 more)
 
 ### Community 1 - "Date Picker Screens"
-Cohesion: 0.05
-Nodes (57): BorderStroke, ButtonColors, ButtonElevation, PopularPhotosViewModel, ActionRow(), DateJumpPickerScreen(), EarthDateRow(), PageContent() (+49 more)
+Cohesion: 0.06
+Nodes (48): BorderStroke, ButtonColors, ButtonElevation, ActionRow(), DateJumpPickerScreen(), EarthDateRow(), PageContent(), SolDateContent() (+40 more)
 
 ### Community 2 - "Widget & Trackers"
 Cohesion: 0.06
 Nodes (27): Context, File, ImagesRepository, Long, MarsImage, String, Tracker, Bitmap (+19 more)
 
 ### Community 3 - "NASA Images Models & Mappers"
-Cohesion: 0.09
-Nodes (13): NasaImagesCollection, NasaImagesCollectionLink, NasaImagesItem, NasaImagesItemData, NasaImagesItemLink, NasaImagesMetadata, NasaImagesSearchResponse, NasaImageOrigUrlTest (+5 more)
+Cohesion: 0.07
+Nodes (27): NasaImagesCollection, NasaImagesCollectionLink, NasaImagesItem, NasaImagesItemData, NasaImagesItemLink, NasaImagesMetadata, NasaImagesSearchResponse, defaultStats() (+19 more)
 
 ### Community 4 - "ViewModels & UI State"
 Cohesion: 0.06
@@ -207,28 +215,28 @@ Cohesion: 0.09
 Nodes (18): RoverDateUtil, EducationalFact, Flow, GridItem, Int, List, Long, MarsImage (+10 more)
 
 ### Community 7 - "App Entry & Theme"
-Cohesion: 0.05
-Nodes (40): Bundle, DeepLink, Context, Long, String, Boolean, Bundle, Int (+32 more)
+Cohesion: 0.07
+Nodes (25): Bundle, DeepLink, Context, Long, String, Boolean, Bundle, Int (+17 more)
 
 ### Community 8 - "Image Save/Share Operations"
 Cohesion: 0.08
 Nodes (25): ByteArray, AndroidImageOperations, createImageOperations(), initAndroidImageOperations(), createImageOperations(), createImageOperations(), DesktopImageOperations, Error (+17 more)
 
 ### Community 9 - "Photos Grid Screen UI"
-Cohesion: 0.10
-Nodes (38): FloatingActionButtonElevation, LazyGridState, CameraFilterChip(), DateHeaderRow(), EdgeProgress(), EmptyPhotos(), FactCard(), FloatingJumpChip() (+30 more)
+Cohesion: 0.05
+Nodes (70): ContentScale, FloatingActionButtonElevation, FontFamily, LazyGridState, CameraFilterChip(), DateHeaderRow(), EdgeProgress(), EmptyPhotos() (+62 more)
 
 ### Community 10 - "Photos Repository & DAO"
 Cohesion: 0.08
 Nodes (22): ImagesDao, FakeImagesDao, FakePhotosRepository, marsImage(), PhotosRepository, PhotosRepositoryImpl, List, MarsImage (+14 more)
 
 ### Community 11 - "Rover Mission Info Screen"
-Cohesion: 0.08
-Nodes (41): CardColors, CardElevation, ImmutableList, RoverMissionInfoViewModel, CameraItem(), CamerasList(), CenteredProgress(), FunFacts() (+33 more)
+Cohesion: 0.11
+Nodes (33): CardColors, CardElevation, ImmutableList, RoverMissionInfoViewModel, CameraItem(), CamerasList(), CenteredProgress(), FunFacts() (+25 more)
 
 ### Community 12 - "Navigation & NavEntry Decorators"
-Cohesion: 0.10
-Nodes (28): About, AdminPhotos, AppDestination, DialogDestination, Favorite, Images, ImagesSource, Mission (+20 more)
+Cohesion: 0.09
+Nodes (29): About, AdminPhotos, AppDestination, DialogDestination, Favorite, Images, ImagesSource, Mission (+21 more)
 
 ### Community 13 - "Sol Paging Source"
 Cohesion: 0.19
@@ -299,8 +307,8 @@ Cohesion: 0.20
 Nodes (6): createPlatformPreferences(), PlatformPreferences, Boolean, Int, Long, String
 
 ### Community 30 - "MarsImage UI"
-Cohesion: 0.05
-Nodes (60): ContentScale, FontFamily, ImageViewModel, PagerState, ImagesEmptyState(), ImagesPager(), ImagesPagerContent(), ImagesScreen() (+52 more)
+Cohesion: 0.09
+Nodes (36): ImageViewModel, PagerState, ImagesEmptyState(), ImagesPager(), ImagesPagerContent(), ImagesScreen(), InfoIcon(), OnEvent() (+28 more)
 
 ### Community 31 - "Rover DAO"
 Cohesion: 0.21
@@ -339,8 +347,8 @@ Cohesion: 0.23
 Nodes (7): Job, RoversRepositoryImpl, RoversRepository, Flow, List, Long, Rover
 
 ### Community 40 - "Community 40"
-Cohesion: 0.31
-Nodes (13): defaultStats(), image(), mapToUi(), mapToUiMsl(), mslInstrumentToken(), preveranceToUI(), toMarsImages(), toUI() (+5 more)
+Cohesion: 0.21
+Nodes (15): AboutCallbacks, App(), AppContent(), DeepLink, String, Unit, Boolean, ColorScheme (+7 more)
 
 ### Community 41 - "Community 41"
 Cohesion: 0.24
@@ -363,12 +371,12 @@ Cohesion: 0.32
 Nodes (6): String, Throwable, logD(), logE(), Logger, recordException()
 
 ### Community 46 - "Community 46"
-Cohesion: 0.06
-Nodes (43): FavoriteImagesViewModel, FavoriteEmptyContent(), FavoritePhotosContent(), FavoriteScreen(), LoadingMoreItem(), MetricStrip(), RoverItem(), RoversContent() (+35 more)
+Cohesion: 0.31
+Nodes (10): FavoriteImagesViewModel, FavoriteEmptyContent(), FavoritePhotosContent(), FavoriteScreen(), LoadingMoreItem(), Boolean, LazyPagingItems, MarsImage (+2 more)
 
 ### Community 47 - "Community 47"
-Cohesion: 0.17
-Nodes (11): Adaptive layout & navigation, Component index, Components, Design System — Mars Rover Photos, Handoff design-token → app-token mapping, History, Insights / gotchas (the expensive-to-rediscover stuff), Process (+3 more)
+Cohesion: 0.15
+Nodes (12): Adaptive layout & navigation, Component index, Components, Design System — Mars Rover Photos, Handoff design-token → app-token mapping, History, Insights / gotchas (the expensive-to-rediscover stuff), Motion & shared-element transitions (+4 more)
 
 ### Community 48 - "Community 48"
 Cohesion: 0.24
@@ -418,17 +426,25 @@ Nodes (12): MarsNavigationItemIcon, Drawable, MarsNavigationIcon(), MarsNavigati
 Cohesion: 0.36
 Nodes (3): ConsentForm, FormError, GdprHelper
 
+### Community 61 - "Community 61"
+Cohesion: 0.27
+Nodes (8): Int, Long, String, decimal1(), formatCompact(), formatThousands(), roundDiv(), NumberFormatTest
+
 ### Community 62 - "Community 62"
 Cohesion: 0.28
 Nodes (6): ComposeView, ContentView, Context, UIViewController, UIViewControllerRepresentable, View
 
 ### Community 63 - "Community 63"
-Cohesion: 0.44
-Nodes (8): formatEarthDate(), formatStatValue(), InfoSection(), PhotoInfoBottomSheet(), StatItem(), Long, MarsImage, String
+Cohesion: 0.22
+Nodes (9): UkraineInfoContent(), UkraineScreen(), Composable, Modifier, Unit, TopAppBarColors, TopAppBarScrollBehavior, AppTopBar() (+1 more)
 
 ### Community 64 - "Community 64"
 Cohesion: 0.25
 Nodes (6): CopySharedComposeResources, String, DefaultTask, DirectoryProperty, FileSystemOperations, Property
+
+### Community 65 - "Community 65"
+Cohesion: 0.20
+Nodes (9): Boolean, Composable, Modifier, String, Unit, Modifier, AppEmptyState(), CenteredColumn() (+1 more)
 
 ### Community 66 - "Community 66"
 Cohesion: 0.29
@@ -439,16 +455,28 @@ Cohesion: 0.32
 Nodes (3): AppNavigator, AppDestination, Boolean
 
 ### Community 68 - "Community 68"
-Cohesion: 0.25
-Nodes (7): dialogOverlay(), DialogOverlayKey, NavMetadataKey, Any, Boolean, Map, String
+Cohesion: 0.29
+Nodes (6): dialogOverlay(), DialogOverlayKey, Any, Boolean, Map, String
 
 ### Community 69 - "Community 69"
 Cohesion: 0.32
 Nodes (7): FeedMode, Page, pageQuery(), Sol, usesPageFeed(), Boolean, String
 
+### Community 70 - "Community 70"
+Cohesion: 0.31
+Nodes (9): PopularPhotosViewModel, PopularEmptyContent(), PopularPhotosContent(), PopularScreen(), Boolean, LazyPagingItems, MarsImage, Modifier (+1 more)
+
+### Community 71 - "Community 71"
+Cohesion: 0.38
+Nodes (9): MetricStrip(), RoverItem(), RoversContent(), RoversScreen(), TitleLine(), List, Modifier, Rover (+1 more)
+
 ### Community 72 - "Community 72"
 Cohesion: 0.43
 Nodes (3): Long, String, RoverDateUtil
+
+### Community 73 - "Community 73"
+Cohesion: 0.48
+Nodes (6): Boolean, Modifier, String, navFadeEnter(), sharedFavorite(), sharedPhoto()
 
 ### Community 74 - "Community 74"
 Cohesion: 0.38
@@ -505,6 +533,10 @@ Nodes (4): FirebaseAnalytics, Any, Map, String
 ### Community 87 - "Community 87"
 Cohesion: 0.33
 Nodes (5): AppSettings, Theme, Boolean, StateFlow, Theme
+
+### Community 88 - "Community 88"
+Cohesion: 0.40
+Nodes (4): MaterialSymbol, Modifier, String, AppMetricItem()
 
 ### Community 91 - "Community 91"
 Cohesion: 0.40
@@ -579,19 +611,19 @@ Cohesion: 0.67
 Nodes (3): Room Database Entities (stable), Network Models (stable data classes), Compose Compiler Stability Configuration
 
 ## Knowledge Gaps
-- **479 isolated node(s):** `DirectoryProperty`, `Property`, `String`, `FileSystemOperations`, `DeepLink` (+474 more)
+- **481 isolated node(s):** `DirectoryProperty`, `Property`, `String`, `FileSystemOperations`, `DeepLink` (+476 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **33 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **35 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `AppTopBar()` connect `Community 46` to `Date Picker Screens`, `App Entry & Theme`, `Photos Grid Screen UI`, `Rover Mission Info Screen`, `MarsImage UI`?**
-  _High betweenness centrality (0.065) - this node is a cross-community bridge._
-- **Why does `MaterialSymbolIcon()` connect `MarsImage UI` to `Date Picker Screens`, `About/Settings Screen UI`, `Photos Grid Screen UI`, `Community 42`, `Rover Mission Info Screen`, `Community 46`, `Community 59`?**
+- **Why does `AppTopBar()` connect `Community 63` to `Community 70`, `Community 71`, `App Entry & Theme`, `Photos Grid Screen UI`, `Rover Mission Info Screen`, `Community 46`, `MarsImage UI`?**
+  _High betweenness centrality (0.071) - this node is a cross-community bridge._
+- **Why does `WidgetConfigScreen()` connect `App Entry & Theme` to `Community 63`?**
+  _High betweenness centrality (0.056) - this node is a cross-community bridge._
+- **Why does `MaterialSymbolIcon()` connect `Photos Grid Screen UI` to `Date Picker Screens`, `About/Settings Screen UI`, `Community 70`, `Community 71`, `Community 42`, `Rover Mission Info Screen`, `Community 46`, `Community 88`, `Community 59`, `MarsImage UI`, `Community 63`?**
   _High betweenness centrality (0.052) - this node is a cross-community bridge._
-- **Why does `WidgetConfigScreen()` connect `App Entry & Theme` to `Community 46`?**
-  _High betweenness centrality (0.049) - this node is a cross-community bridge._
 - **Are the 28 inferred relationships involving `MaterialSymbolIcon()` (e.g. with `MarsNavigationIcon()` and `Blurb()`) actually correct?**
   _`MaterialSymbolIcon()` has 28 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 5 inferred relationships involving `PhotosScreen()` (e.g. with `AppNavigation()` and `StringResource`) actually correct?**
@@ -599,4 +631,4 @@ _Questions this graph is uniquely positioned to answer:_
 - **Are the 18 inferred relationships involving `StringResource` (e.g. with `MarsNavigationSuite()` and `ActionRow()`) actually correct?**
   _`StringResource` has 18 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `DirectoryProperty`, `Property`, `String` to the rest of the system?**
-  _480 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _482 weakly-connected nodes found - possible documentation gaps or missing edges._
