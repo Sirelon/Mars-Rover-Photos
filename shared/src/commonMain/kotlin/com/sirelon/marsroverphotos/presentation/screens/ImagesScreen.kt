@@ -145,19 +145,6 @@ fun ImagesScreen(
     val hideUi by viewModel.hideUi.collectAsStateWithLifecycle()
     val uiEvent by viewModel.uiEvent.collectAsStateWithLifecycle(initialValue = null)
 
-    val pagerState = rememberPagerState(
-        initialPage = 0,
-        pageCount = { pagingItems.itemCount },
-    )
-
-    LaunchedEffect(pagingItems.itemCount, selectedId) {
-        if (pagingItems.itemCount == 0) return@LaunchedEffect
-        val index = pagingItems.itemSnapshotList.indexOfFirst { it?.id == selectedId }
-        if (index >= 0) {
-            if (pagerState.currentPage != index) pagerState.scrollToPage(index)
-        }
-    }
-
     val refresh = pagingItems.loadState.refresh
 
     if (pagingItems.itemCount == 0) {
@@ -173,22 +160,46 @@ fun ImagesScreen(
             CenteredProgress()
         }
     } else {
-        ImagesPagerContent(
-            uiEvent = uiEvent,
-            pagingItems = pagingItems,
-            pagerState = pagerState,
-            hideUi = hideUi,
-            favoriteOverrides = viewModel.favoriteOverrides,
-            // The favorite heart flies as a shared element only from the rover Photos grid (the
-            // only source screen with a matching corner heart); elsewhere it fades in/out.
-            favoriteFlies = source == AppDestination.ImagesSource.ROVER_FEED,
-            onBack = onBack,
-            onShown = viewModel::onShown,
-            onTap = viewModel::onTap,
-            onFavoriteClick = viewModel::setFavorite,
-            onSaveClick = viewModel::saveImage,
-            onShareClick = viewModel::shareMarsImage,
-        )
+        // Open the pager DIRECTLY on the selected photo: latch its index once it's in the loaded
+        // window (ROVER_FEED is anchored around it; finite sources contain the whole list) and seed
+        // it as the pager's initialPage. The previous approach created the pager at page 0 and
+        // scrolled after compose, which briefly showed the first photo and made the shared
+        // transition fire on the wrong page first (double-fly from the grid; first-photo flash on
+        // Favorite/Popular). Latching also stops a later prepend/eviction from disturbing it.
+        var initialPage by remember(selectedId) { mutableStateOf<Int?>(null) }
+        LaunchedEffect(pagingItems.itemCount, selectedId) {
+            if (initialPage != null) return@LaunchedEffect
+            initialPage = if (selectedId == null) {
+                0
+            } else {
+                pagingItems.itemSnapshotList.indexOfFirst { it?.id == selectedId }.takeIf { it >= 0 }
+            }
+        }
+        when (val page = initialPage) {
+            null -> CenteredProgress()
+            else -> {
+                val pagerState = rememberPagerState(
+                    initialPage = page,
+                    pageCount = { pagingItems.itemCount },
+                )
+                ImagesPagerContent(
+                    uiEvent = uiEvent,
+                    pagingItems = pagingItems,
+                    pagerState = pagerState,
+                    hideUi = hideUi,
+                    favoriteOverrides = viewModel.favoriteOverrides,
+                    // The favorite heart flies as a shared element only from the rover Photos grid
+                    // (the only source screen with a matching corner heart); elsewhere it fades.
+                    favoriteFlies = source == AppDestination.ImagesSource.ROVER_FEED,
+                    onBack = onBack,
+                    onShown = viewModel::onShown,
+                    onTap = viewModel::onTap,
+                    onFavoriteClick = viewModel::setFavorite,
+                    onSaveClick = viewModel::saveImage,
+                    onShareClick = viewModel::shareMarsImage,
+                )
+            }
+        }
     }
 }
 
