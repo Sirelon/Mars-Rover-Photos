@@ -12,3 +12,15 @@ import com.sirelon.marsroverphotos.data.database.AppDataBase
  * - Web: In-memory or IndexedDB-based builder
  */
 expect fun getDatabaseBuilder(): RoomDatabase.Builder<AppDataBase>
+
+/**
+ * Shared database configuration: migrations and fallback policy.
+ * Called by each platform's [getDatabaseBuilder] so migration registrations live in one place.
+ */
+fun RoomDatabase.Builder<AppDataBase>.configureCommon(): RoomDatabase.Builder<AppDataBase> = this
+    .fallbackToDestructiveMigration(false)
+    .addMigrations(
+        AppDataBase.migration7To8,
+        AppDataBase.migration8To9,
+        AppDataBase.migration9To10,
+    )

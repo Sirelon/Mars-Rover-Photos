@@ -132,7 +132,8 @@ class FirebasePhotosImpl : IFirebasePhotos {
             "scaleCounter" to photo.scaleCounter,
             "saveCounter" to photo.saveCounter,
             "shareCounter" to photo.shareCounter,
-            "favoriteCounter" to photo.favoriteCounter
+            "favoriteCounter" to photo.favoriteCounter,
+            "roverId" to photo.roverId
         )
         photosCollection().document(photo.id).set(data, merge = true)
     }
@@ -148,5 +149,6 @@ private fun DocumentSnapshot.toFirebasePhoto() = FirebasePhoto(
     scaleCounter = get<Long>("scaleCounter") ?: 0L,
     saveCounter = get<Long>("saveCounter") ?: 0L,
     shareCounter = get<Long>("shareCounter") ?: 0L,
-    favoriteCounter = get<Long>("favoriteCounter") ?: 0L
+    favoriteCounter = get<Long>("favoriteCounter") ?: 0L,
+    roverId = get<Long>("roverId") ?: 0L
 )

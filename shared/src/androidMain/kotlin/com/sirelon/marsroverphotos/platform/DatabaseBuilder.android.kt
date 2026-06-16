@@ -21,6 +21,5 @@ actual fun getDatabaseBuilder(): RoomDatabase.Builder<AppDataBase> {
 
     val dbPath = context.getDatabasePath("mars-rover-photos-database").absolutePath
     return Room.databaseBuilder<AppDataBase>(name = dbPath)
-        .fallbackToDestructiveMigration(false)
-        .addMigrations(AppDataBase.migration7To8, AppDataBase.migration8To9)
+        .configureCommon()
 }

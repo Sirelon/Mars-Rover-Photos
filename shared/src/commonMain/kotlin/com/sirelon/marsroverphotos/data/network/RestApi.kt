@@ -82,12 +82,12 @@ class RestApi {
             INSIGHT_ID -> {
                 val response = nasaApi.getRawImages("insight", from = "$sol:sol", to = "$sol:sol")
                 response.total?.let { _insightTotalImages.value = it }
-                response.list.mapToUi()
+                response.list.mapToUi(query.roverId)
             }
 
             CURIOSITY_ID -> {
                 nasaApi.getRawImages("msl", from = "$sol:sol", to = "$sol:sol")
-                    .list.mapToUiMsl()
+                    .list.mapToUiMsl(query.roverId)
             }
 
             else -> throw IllegalArgumentException("Unsupported rover id: ${query.roverId}")
@@ -97,15 +97,15 @@ class RestApi {
     private suspend fun loadPerseverance(query: PhotosQueryRequest): List<MarsImage> {
         val response = nasaApi.getPerseveranceRawImages(sol = "${query.sol}:sol:in")
         _perseveranceTotalImages.value = response.totalImages
-        return response.photos.preveranceToUI()
+        return response.photos.preveranceToUI(query.roverId)
     }
 
     suspend fun getInsightLatestPhotos(): List<MarsImage> {
-        return nasaApi.getRawImages("insight").list.mapToUi()
+        return nasaApi.getRawImages("insight").list.mapToUi(INSIGHT_ID)
     }
 
     suspend fun getCuriosityLatestPhotos(): List<MarsImage> {
-        return nasaApi.getRawImages("msl").list.mapToUiMsl()
+        return nasaApi.getRawImages("msl").list.mapToUiMsl(CURIOSITY_ID)
     }
 
     /** Returns the latest Curiosity sol from the MSL raw feed (feed is ordered newest-first). */
@@ -124,6 +124,6 @@ class RestApi {
     suspend fun getPerseveranceLatestPhotos(count: Int = 1): List<MarsImage> {
         val response = nasaApi.getPerseveranceRawImages(count = count)
         _perseveranceTotalImages.value = response.totalImages
-        return response.photos.preveranceToUI()
+        return response.photos.preveranceToUI(PERSEVERANCE_ID)
     }
 }

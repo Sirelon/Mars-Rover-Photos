@@ -26,7 +26,7 @@ expect object AppDataBaseConstructor : RoomDatabaseConstructor<AppDataBase>
  */
 @Database(
     entities = [Rover::class, MarsImage::class, FactDisplay::class],
-    version = 9,
+    version = 10,
     exportSchema = false
 )
 @ConstructedBy(AppDataBaseConstructor::class)
@@ -52,6 +52,12 @@ abstract class AppDataBase : RoomDatabase() {
                 connection.execSQL(
                     "CREATE TABLE IF NOT EXISTS `fact_displays` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `factId` TEXT NOT NULL, `displayTimestamp` INTEGER NOT NULL, `sessionId` TEXT NOT NULL)"
                 )
+            }
+        }
+
+        val migration9To10 = object : Migration(9, 10) {
+            override suspend fun migrate(connection: SQLiteConnection) {
+                connection.execSQL("ALTER TABLE images ADD COLUMN roverId INTEGER NOT NULL DEFAULT 0")
             }
         }
     }
