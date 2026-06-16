@@ -6,6 +6,7 @@ import androidx.paging.PagingData
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.data.paging.FeedMode
 import com.sirelon.marsroverphotos.data.paging.ImagesSearchPagingSource
+import com.sirelon.marsroverphotos.data.LastViewedPhotoStore
 import com.sirelon.marsroverphotos.data.paging.RoverFeedPager
 import com.sirelon.marsroverphotos.data.paging.pageQuery
 import com.sirelon.marsroverphotos.data.paging.usesPageFeed
@@ -45,6 +46,7 @@ class ImageViewModel(
     private val roversRepository: RoversRepository,
     private val imageOperations: ImageOperations,
     private val roverFeedPager: RoverFeedPager,
+    private val lastViewedPhotoStore: LastViewedPhotoStore,
 ) : ViewModel() {
 
     private val idsEmitter = MutableStateFlow<List<String>>(emptyList())
@@ -205,10 +207,13 @@ class ImageViewModel(
     /** Handle image being shown (for analytics). */
     fun onShown(marsPhoto: MarsImage, page: Int) {
         Logger.d("ImageViewModel") { "Photo shown: ${marsPhoto.id} at page $page" }
-        // Remember the photo currently on screen so the rover-feed list can restore its scroll
-        // position to it when the viewer is closed. Only meaningful for the shared feed.
+        // Remember the photo currently on screen so the originating list can restore its scroll
+        // position to it when the viewer closes (the photo the user swiped to, not the one tapped).
+        // The rover feed shares its pager; other sources (Favorites/Popular) use the shared store.
         if (sourceEmitter.value == AppDestination.ImagesSource.ROVER_FEED) {
             roverFeedPager.setLastViewedPhotoId(marsPhoto.id)
+        } else {
+            lastViewedPhotoStore.set(marsPhoto.id)
         }
         // Analytics tracking would go here if needed
     }

@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.CircularProgressIndicator
 import com.sirelon.marsroverphotos.presentation.ui.AppButton
 import com.sirelon.marsroverphotos.presentation.ui.AppEmptyState
@@ -18,7 +20,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,9 +44,14 @@ import com.sirelon.marsroverphotos.presentation.viewmodels.PopularPhotosViewMode
 import com.sirelon.marsroverphotos.shared.resources.Res
 import com.sirelon.marsroverphotos.shared.resources.popular_empty_title
 import com.sirelon.marsroverphotos.shared.resources.popular_title
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withTimeoutOrNull
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+
+/** Cap the wait for the last-viewed photo to land in the paged snapshot on return from the viewer. */
+private const val SCROLL_RESTORE_TIMEOUT_MS = 3000L
 
 /**
  * Popular photos screen.
@@ -61,12 +70,29 @@ fun PopularScreen(
     val appSettings: AppSettings = koinInject()
     val gridView by appSettings.gridViewFlow.collectAsStateWithLifecycle()
     val lazyPagingItems = viewModel.popularPagedFlow.collectAsLazyPagingItems()
+    val gridState = rememberLazyStaggeredGridState()
+
+    // On return from the viewer, scroll to the last-viewed photo unless it's already on screen
+    // (mirrors the rover Photos grid) — keeps position when popping back to a still-visible photo.
+    LaunchedEffect(Unit) {
+        val targetId = viewModel.consumeLastViewedPhotoId() ?: return@LaunchedEffect
+        val index = withTimeoutOrNull(SCROLL_RESTORE_TIMEOUT_MS) {
+            snapshotFlow { lazyPagingItems.itemSnapshotList.indexOfFirst { it?.id == targetId } }
+                .first { it >= 0 }
+        } ?: return@LaunchedEffect
+        val visibleKeys = withTimeoutOrNull(SCROLL_RESTORE_TIMEOUT_MS) {
+            snapshotFlow { gridState.layoutInfo.visibleItemsInfo.map { it.key } }
+                .first { it.isNotEmpty() }
+        }.orEmpty()
+        if (targetId !in visibleKeys) gridState.scrollToItem(index)
+    }
 
     PopularPhotosContent(
         modifier = modifier,
         title = stringResource(Res.string.popular_title),
         lazyPagingItems = lazyPagingItems,
         gridView = gridView,
+        gridState = gridState,
         onGridChange = { appSettings.gridView = !gridView },
         onFavoriteClick = { viewModel.updateFavorite(it) },
         onItemClick = onNavigateToImages,
@@ -80,6 +106,7 @@ private fun PopularPhotosContent(
     title: String,
     lazyPagingItems: LazyPagingItems<MarsImage>,
     gridView: Boolean,
+    gridState: LazyStaggeredGridState,
     onGridChange: () -> Unit,
     onItemClick: (image: MarsImage) -> Unit,
     onFavoriteClick: (image: MarsImage) -> Unit,
@@ -132,6 +159,7 @@ private fun PopularPhotosContent(
 
             else -> {
                 LazyVerticalStaggeredGrid(
+                    state = gridState,
                     modifier = Modifier
                         .weight(1f)
                         .nestedScroll(scrollBehavior.nestedScrollConnection),

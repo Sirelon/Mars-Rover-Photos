@@ -8,6 +8,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Modifier
+import coil3.ImageLoader
+import coil3.compose.setSingletonImageLoaderFactory
+import coil3.memory.MemoryCache
 import com.sirelon.marsroverphotos.domain.settings.AppSettings
 import com.sirelon.marsroverphotos.domain.settings.Theme
 import com.sirelon.marsroverphotos.presentation.navigation.AboutCallbacks
@@ -31,6 +34,21 @@ fun App(
     appVersion: String = "",
     rateAppUrl: String = ""
 ) {
+    // Keep the in-memory image cache large enough that the fullscreen viewer's big bitmaps don't
+    // evict the list/grid thumbnails. The list screens are disposed while the viewer is on top (a
+    // normal Nav3 push — needed for the shared-element morph), so on return they recompose and
+    // reload their images; with the thumbnails still cached this is instant (no placeholder flash).
+    // Coil's default is ~25% of app memory.
+    setSingletonImageLoaderFactory { context ->
+        ImageLoader.Builder(context)
+            .memoryCache {
+                MemoryCache.Builder()
+                    .maxSizePercent(context, 0.40)
+                    .build()
+            }
+            .build()
+    }
+
     val appSettings: AppSettings = koinInject()
     val theme by appSettings.themeFlow.collectAsStateWithLifecycle()
     val systemDarkTheme = isSystemInDarkTheme()

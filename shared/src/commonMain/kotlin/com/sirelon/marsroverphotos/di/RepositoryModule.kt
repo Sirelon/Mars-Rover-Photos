@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos.di
 
+import com.sirelon.marsroverphotos.data.LastViewedPhotoStore
 import com.sirelon.marsroverphotos.data.paging.RoverFeedPager
 import com.sirelon.marsroverphotos.data.repositories.FactsRepositoryImpl
 import com.sirelon.marsroverphotos.data.repositories.ImagesRepositoryImpl
@@ -38,6 +39,10 @@ val repositoryModule = module {
             appScope = get()
         )
     }
+
+    // Shared marker for the last photo viewed in the fullscreen viewer — lets the Favorites/Popular
+    // lists restore their scroll position on return (the rover feed uses RoverFeedPager's own).
+    single { LastViewedPhotoStore() }
 
     single<RoversRepository> {
         RoversRepositoryImpl(

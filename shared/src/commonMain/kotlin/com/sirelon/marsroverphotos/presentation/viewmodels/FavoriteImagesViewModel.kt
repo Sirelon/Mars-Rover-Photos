@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.sirelon.marsroverphotos.data.LastViewedPhotoStore
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
 import com.sirelon.marsroverphotos.domain.settings.AppSettings
@@ -24,6 +25,7 @@ class FavoriteImagesViewModel(
     private val imagesRepository: ImagesRepository,
     private val tracker: Tracker,
     private val appSettings: AppSettings,
+    private val lastViewedPhotoStore: LastViewedPhotoStore,
 ) : ViewModel() {
 
     val favoritePagedFlow: Flow<PagingData<MarsImage>> = imagesRepository
@@ -36,6 +38,9 @@ class FavoriteImagesViewModel(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = false
         )
+
+    /** Photo last shown in the viewer (read + cleared once) so the grid can restore its scroll. */
+    fun consumeLastViewedPhotoId(): String? = lastViewedPhotoStore.consume()
 
     /**
      * Track an analytics event.
