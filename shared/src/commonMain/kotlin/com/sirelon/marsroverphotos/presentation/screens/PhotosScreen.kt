@@ -209,7 +209,18 @@ fun PhotosScreen(
                 }
             }.first { it >= 0 }
         }
-        if (index != null) gridState.scrollToItem(index)
+        if (index != null) {
+            // Scroll only if the photo isn't already laid out on screen — popping back to a still-
+            // visible photo then keeps the user's scroll position instead of jumping. Match by item
+            // key (== image id) once the grid has settled into its restored position.
+            // KNOWN LIMITATION (to revisit): for cells the grid kept composed (not disposed), the
+            // shared-element return doesn't re-trigger cleanly; disposed cells animate fine.
+            val visibleKeys = withTimeoutOrNull(SCROLL_RESTORE_TIMEOUT_MS) {
+                snapshotFlow { gridState.layoutInfo.visibleItemsInfo.map { it.key } }
+                    .first { it.isNotEmpty() }
+            }.orEmpty()
+            if (targetId !in visibleKeys) gridState.scrollToItem(index)
+        }
     }
 
     PhotosScreen(
