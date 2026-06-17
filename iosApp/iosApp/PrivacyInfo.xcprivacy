@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- The app engages in tracking: it uses the IDFA for personalized AdMob ads. -->
+	<key>NSPrivacyTracking</key>
+	<true/>
+
+	<!--
+	  Domains the app contacts that are used for tracking. When ATT is NOT granted,
+	  the system BLOCKS connections to any domain listed here. The bundled SDK
+	  manifests (GoogleMobileAds / Firebase / UMP) already declare and manage their
+	  own connections, so this app-level list is intentionally empty. If you want the
+	  app target itself to declare tracking domains, populate them from the empirical
+	  list in Xcode → Product → Archive → Generate Privacy Report, NOT by guessing —
+	  a wrong entry will silently break ad/network delivery.
+	-->
+	<key>NSPrivacyTrackingDomains</key>
+	<array/>
+
+	<key>NSPrivacyCollectedDataTypes</key>
+	<array>
+		<!-- IDFA / advertising identifier, used for third-party (AdMob) advertising and tracking. -->
+		<dict>
+			<key>NSPrivacyCollectedDataType</key>
+			<string>NSPrivacyCollectedDataTypeDeviceID</string>
+			<key>NSPrivacyCollectedDataTypeLinked</key>
+			<true/>
+			<key>NSPrivacyCollectedDataTypeTracking</key>
+			<true/>
+			<key>NSPrivacyCollectedDataTypePurposes</key>
+			<array>
+				<string>NSPrivacyCollectedDataTypePurposeThirdPartyAdvertising</string>
+			</array>
+		</dict>
+	</array>
+
+	<key>NSPrivacyAccessedAPITypes</key>
+	<array>
+		<!-- The app's own code (shared/iosMain PlatformPreferences.ios.kt) uses NSUserDefaults
+		     to persist user settings. Reason CA92.1: access info from the app itself. -->
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>CA92.1</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>
