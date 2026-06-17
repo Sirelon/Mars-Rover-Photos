@@ -99,9 +99,10 @@ fun PerseveranceCameraResponse.toUI(): RoverCamera {
  *
  * Full-res URL is derived from the preview thumbnail: `~thumb.jpg` suffix → `~orig.jpg`.
  * If the item link does not end in `~thumb.jpg` the href is used as-is (no blind replacement).
+ * [roverId] identifies the MER rover that owns the curated library image.
  * [startIndex] offsets [MarsImage.order] so rows from different pages don't collide on `order`.
  */
-fun NasaImagesSearchResponse.toMarsImages(startIndex: Int = 0, roverId: Long = 0L): List<MarsImage> =
+fun NasaImagesSearchResponse.toMarsImages(roverId: Long, startIndex: Int = 0): List<MarsImage> =
     collection.items.mapIndexedNotNull { localIdx, item ->
         val data = item.data.firstOrNull() ?: return@mapIndexedNotNull null
         val thumbHref = item.links

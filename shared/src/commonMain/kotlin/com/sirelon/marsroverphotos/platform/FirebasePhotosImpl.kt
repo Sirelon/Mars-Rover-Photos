@@ -114,7 +114,11 @@ class FirebasePhotosImpl : IFirebasePhotos {
 
     private suspend fun getOrCreate(image: MarsImage): FirebasePhoto {
         val doc = photosCollection().document(image.id).get()
-        return if (doc.exists) doc.toFirebasePhoto() else image.toFirebasePhoto()
+        return if (doc.exists) {
+            doc.toFirebasePhoto().withBackfilledRoverId(image.roverId)
+        } else {
+            image.toFirebasePhoto()
+        }
     }
 
     override suspend fun deletePhoto(photoId: String) {
@@ -152,3 +156,7 @@ private fun DocumentSnapshot.toFirebasePhoto() = FirebasePhoto(
     favoriteCounter = get<Long>("favoriteCounter") ?: 0L,
     roverId = get<Long>("roverId") ?: 0L
 )
+
+private fun FirebasePhoto.withBackfilledRoverId(roverId: Long): FirebasePhoto {
+    return if (this.roverId == 0L && roverId != 0L) copy(roverId = roverId) else this
+}

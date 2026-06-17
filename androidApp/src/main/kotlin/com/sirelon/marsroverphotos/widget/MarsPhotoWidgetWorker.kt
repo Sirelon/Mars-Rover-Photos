@@ -116,7 +116,7 @@ public class MarsPhotoWidgetWorker(
             CURIOSITY_ID -> api.getCuriosityLatestPhotos().firstOrNull()
             SPIRIT_ID, OPPORTUNITY_ID ->
                 api.searchImages(roverId.pageQuery(), 1, 1, keywords = MER_KEYWORDS)
-                    .toMarsImages().firstOrNull()
+                    .toMarsImages(roverId = roverId).firstOrNull()
             else -> api.getCuriosityLatestPhotos().firstOrNull()
         }
     }
