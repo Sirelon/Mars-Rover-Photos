@@ -154,7 +154,7 @@ class RoverFeedPager(
                                 )
                                 val startIndex = (page - 1) * ImagesSearchPagingSource.PAGE_SIZE
                                 ImagesSearchPagingSource.PageResult(
-                                    images = response.toMarsImages(startIndex),
+                                    images = response.toMarsImages(roverId = p.roverId, startIndex = startIndex),
                                     totalHits = response.collection.metadata?.totalHits ?: 0,
                                 )
                             },

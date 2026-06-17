@@ -5,6 +5,7 @@ import com.sirelon.marsroverphotos.data.network.models.NasaImagesItem
 import com.sirelon.marsroverphotos.data.network.models.NasaImagesItemData
 import com.sirelon.marsroverphotos.data.network.models.NasaImagesItemLink
 import com.sirelon.marsroverphotos.data.network.models.NasaImagesSearchResponse
+import com.sirelon.marsroverphotos.domain.models.SPIRIT_ID
 import com.sirelon.marsroverphotos.utils.nasaImageOrigUrl
 import com.sirelon.marsroverphotos.utils.nasaImageSmallUrl
 import kotlin.test.Test
@@ -85,7 +86,7 @@ class NasaImageSmallUrlTest {
     fun toMarsImages_storesSmallUrl() {
         val thumbHref = "https://images-assets.nasa.gov/image/PIA05040/PIA05040~thumb.jpg"
         val response = fakeResponse(thumbHref)
-        val images = response.toMarsImages()
+        val images = response.toMarsImages(roverId = SPIRIT_ID)
         assertEquals(1, images.size)
         assertTrue(
             images[0].imageUrl.contains("~small."),
@@ -97,11 +98,18 @@ class NasaImageSmallUrlTest {
     fun toMarsImages_origUrlRecoverable() {
         val thumbHref = "https://images-assets.nasa.gov/image/PIA05040/PIA05040~thumb.jpg"
         val response = fakeResponse(thumbHref)
-        val imageUrl = response.toMarsImages()[0].imageUrl
+        val imageUrl = response.toMarsImages(roverId = SPIRIT_ID)[0].imageUrl
         assertEquals(
             "https://images-assets.nasa.gov/image/PIA05040/PIA05040~orig.jpg",
             nasaImageOrigUrl(imageUrl),
         )
+    }
+
+    @Test
+    fun toMarsImages_storesRoverId() {
+        val response = fakeResponse("https://images-assets.nasa.gov/image/PIA05040/PIA05040~thumb.jpg")
+        val image = response.toMarsImages(roverId = SPIRIT_ID).single()
+        assertEquals(SPIRIT_ID, image.roverId)
     }
 
     // ── helpers ────────────────────────────────────────────────────────────────

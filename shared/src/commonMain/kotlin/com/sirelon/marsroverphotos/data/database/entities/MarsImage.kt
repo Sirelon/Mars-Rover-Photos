@@ -18,6 +18,8 @@ data class MarsImage(
     val imageUrl: String,
     val earthDate: String,
 
+    val roverId: Long = 0L,
+
     @Embedded(prefix = "camera_")
     val camera: RoverCamera?,
 

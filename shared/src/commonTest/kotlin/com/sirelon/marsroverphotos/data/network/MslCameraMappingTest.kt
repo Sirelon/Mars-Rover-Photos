@@ -52,7 +52,7 @@ class MslCameraMappingTest {
             fakeMarsPhoto(id = "d", instrument = null),
         )
 
-        val images = photos.mapToUiMsl()
+        val images = photos.mapToUiMsl(roverId = 5L)
 
         assertEquals("MAST", images[0].camera?.name)
         assertEquals("MAST_RIGHT", images[0].camera?.fullName)
@@ -66,7 +66,7 @@ class MslCameraMappingTest {
     fun mapToUiMsl_cameraNameMatchesCuriosityFilter() {
         // Simulate the filterByCameras name-equality check: cam.name.equals(filter, ignoreCase = true)
         val photos = listOf(fakeMarsPhoto(id = "x", instrument = "MAST_RIGHT"))
-        val images = photos.mapToUiMsl()
+        val images = photos.mapToUiMsl(roverId = 5L)
         val cam = images.first().camera!!
 
         assertEquals(true, cam.name.equals("MAST", ignoreCase = true))

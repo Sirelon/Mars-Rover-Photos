@@ -114,7 +114,11 @@ class FirebasePhotosImpl : IFirebasePhotos {
 
     private suspend fun getOrCreate(image: MarsImage): FirebasePhoto {
         val doc = photosCollection().document(image.id).get()
-        return if (doc.exists) doc.toFirebasePhoto() else image.toFirebasePhoto()
+        return if (doc.exists) {
+            doc.toFirebasePhoto().withBackfilledRoverId(image.roverId)
+        } else {
+            image.toFirebasePhoto()
+        }
     }
 
     override suspend fun deletePhoto(photoId: String) {
@@ -132,7 +136,8 @@ class FirebasePhotosImpl : IFirebasePhotos {
             "scaleCounter" to photo.scaleCounter,
             "saveCounter" to photo.saveCounter,
             "shareCounter" to photo.shareCounter,
-            "favoriteCounter" to photo.favoriteCounter
+            "favoriteCounter" to photo.favoriteCounter,
+            "roverId" to photo.roverId
         )
         photosCollection().document(photo.id).set(data, merge = true)
     }
@@ -148,5 +153,10 @@ private fun DocumentSnapshot.toFirebasePhoto() = FirebasePhoto(
     scaleCounter = get<Long>("scaleCounter") ?: 0L,
     saveCounter = get<Long>("saveCounter") ?: 0L,
     shareCounter = get<Long>("shareCounter") ?: 0L,
-    favoriteCounter = get<Long>("favoriteCounter") ?: 0L
+    favoriteCounter = get<Long>("favoriteCounter") ?: 0L,
+    roverId = get<Long>("roverId") ?: 0L
 )
+
+private fun FirebasePhoto.withBackfilledRoverId(roverId: Long): FirebasePhoto {
+    return if (this.roverId == 0L && roverId != 0L) copy(roverId = roverId) else this
+}

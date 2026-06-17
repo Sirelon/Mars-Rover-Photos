@@ -17,7 +17,8 @@ data class FirebasePhoto(
     var scaleCounter: Long,
     var saveCounter: Long,
     var shareCounter: Long,
-    var favoriteCounter: Long
+    var favoriteCounter: Long,
+    val roverId: Long = 0L
 ) {
 
     constructor(photo: MarsImage) : this(
@@ -31,6 +32,7 @@ data class FirebasePhoto(
         saveCounter = 0,
         shareCounter = 0,
         favoriteCounter = 0,
+        roverId = photo.roverId,
     )
 
     /**
@@ -44,6 +46,7 @@ data class FirebasePhoto(
         name = name,
         imageUrl = imageUrl,
         earthDate = earthDate,
+        roverId = roverId,
         camera = null, // Camera info not stored in Firebase
         favorite = false, // Favorite status managed locally
         popular = true,

@@ -30,6 +30,5 @@ actual fun getDatabaseBuilder(): RoomDatabase.Builder<AppDataBase> {
         name = dbPath
     )
         .setDriver(NativeSQLiteDriver())
-        .fallbackToDestructiveMigration(false)
-        .addMigrations(AppDataBase.migration7To8, AppDataBase.migration8To9)
+        .configureCommon()
 }

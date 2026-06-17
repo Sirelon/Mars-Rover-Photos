@@ -16,6 +16,5 @@ actual fun getDatabaseBuilder(): RoomDatabase.Builder<AppDataBase> {
 
     return Room.databaseBuilder<AppDataBase>(name = dbPath)
         .setDriver(BundledSQLiteDriver())
-        .fallbackToDestructiveMigration(false)
-        .addMigrations(AppDataBase.migration7To8, AppDataBase.migration8To9)
+        .configureCommon()
 }

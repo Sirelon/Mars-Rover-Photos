@@ -36,7 +36,7 @@ private val MSL_INSTRUMENT_ALIASES = mapOf(
  * Mapper functions for converting network models to database entities.
  */
 
-fun List<MarsPhoto>.mapToUi(): List<MarsImage> {
+fun List<MarsPhoto>.mapToUi(roverId: Long): List<MarsImage> {
     return mapIndexed { index, marsPhoto ->
         // It's okay to use not correct data for favorite and popular with Stats,
         // 'cause if these images already in database, we'll ignore replacing them.
@@ -46,6 +46,7 @@ fun List<MarsPhoto>.mapToUi(): List<MarsImage> {
             name = marsPhoto.name,
             imageUrl = marsPhoto.imageUrl,
             earthDate = marsPhoto.earthDate,
+            roverId = roverId,
             camera = marsPhoto.camera,
             favorite = false,
             popular = false,
@@ -57,7 +58,7 @@ fun List<MarsPhoto>.mapToUi(): List<MarsImage> {
     }
 }
 
-fun List<PerseverancePhotoItemResponse>.preveranceToUI(): List<MarsImage> {
+fun List<PerseverancePhotoItemResponse>.preveranceToUI(roverId: Long): List<MarsImage> {
     return mapIndexed { index, response ->
         // It's okay to use not correct data for favorite and popular with Stats,
         // 'cause if these images already in database, we'll ignore replacing them.
@@ -67,6 +68,7 @@ fun List<PerseverancePhotoItemResponse>.preveranceToUI(): List<MarsImage> {
             name = response.name,
             imageUrl = response.imageSourceResponse?.image() ?: "",
             earthDate = response.earthDate ?: "",
+            roverId = roverId,
             camera = response.camera?.toUI(),
             favorite = false,
             popular = false,
@@ -97,9 +99,10 @@ fun PerseveranceCameraResponse.toUI(): RoverCamera {
  *
  * Full-res URL is derived from the preview thumbnail: `~thumb.jpg` suffix → `~orig.jpg`.
  * If the item link does not end in `~thumb.jpg` the href is used as-is (no blind replacement).
+ * [roverId] identifies the MER rover that owns the curated library image.
  * [startIndex] offsets [MarsImage.order] so rows from different pages don't collide on `order`.
  */
-fun NasaImagesSearchResponse.toMarsImages(startIndex: Int = 0): List<MarsImage> =
+fun NasaImagesSearchResponse.toMarsImages(roverId: Long, startIndex: Int = 0): List<MarsImage> =
     collection.items.mapIndexedNotNull { localIdx, item ->
         val data = item.data.firstOrNull() ?: return@mapIndexedNotNull null
         val thumbHref = item.links
@@ -113,6 +116,7 @@ fun NasaImagesSearchResponse.toMarsImages(startIndex: Int = 0): List<MarsImage> 
             name = data.title,
             imageUrl = smallUrl,
             earthDate = data.dateCreated.orEmpty(),
+            roverId = roverId,
             camera = null,
             favorite = false,
             popular = false,
@@ -129,7 +133,7 @@ fun NasaImagesSearchResponse.toMarsImages(startIndex: Int = 0): List<MarsImage> 
  * which matches Curiosity's CameraSpec.name values so the existing filterByCameras logic works
  * unchanged. The camera [fullName][RoverCamera.fullName] retains the full instrument string.
  */
-fun List<MarsPhoto>.mapToUiMsl(): List<MarsImage> {
+fun List<MarsPhoto>.mapToUiMsl(roverId: Long): List<MarsImage> {
     return mapIndexed { index, marsPhoto ->
         MarsImage(
             id = marsPhoto.id,
@@ -137,6 +141,7 @@ fun List<MarsPhoto>.mapToUiMsl(): List<MarsImage> {
             name = marsPhoto.name,
             imageUrl = marsPhoto.imageUrl,
             earthDate = marsPhoto.earthDate,
+            roverId = roverId,
             camera = marsPhoto.instrument?.let { instrument ->
                 val token = instrument.mslInstrumentToken()
                 val hash = instrument.hashCode()
