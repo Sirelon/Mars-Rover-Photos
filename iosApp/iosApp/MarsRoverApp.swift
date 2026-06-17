@@ -7,6 +7,9 @@ import UserMessagingPlatform
 
 @main
 struct MarsRoverApp: App {
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var didBootstrapAds = false
+
     init() {
         // Initialize Firebase before anything else (required for Analytics, Crashlytics, Firestore)
         FirebaseApp.configure()
@@ -19,14 +22,6 @@ struct MarsRoverApp: App {
 
         // Keep screen on during testing
         UIApplication.shared.isIdleTimerDisabled = true
-
-        // UMP must collect consent before MobileAds.start so the SDK can pick up the user's
-        // choice; ATT must run before any ad request so IDFA personalization is honored.
-        // The chain is deferred by 1s so the prompts appear after the app's first frame
-        // (Apple HIG requirement for ATT).
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            Self.bootstrapAds()
-        }
     }
 
     var body: some Scene {
@@ -37,6 +32,24 @@ struct MarsRoverApp: App {
                 .onOpenURL { url in
                     Main_iosKt.pushDeepLink(urlString: url.absoluteString)
                 }
+        }
+        // UMP must collect consent before MobileAds.start so the SDK can pick up the user's
+        // choice; ATT must run before any ad request so IDFA personalization is honored.
+        // We trigger this only once the scene is foreground-active: ATTrackingManager
+        // silently returns .denied (no prompt shown) if requested while the app is not
+        // active, and the UMP consent form has no view controller to present from.
+        .onChange(of: scenePhase) { newPhase in
+            guard newPhase == .active, !didBootstrapAds else { return }
+            didBootstrapAds = true
+            // Small delay so the prompts appear after the first frame (Apple HIG).
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                guard UIApplication.shared.applicationState == .active else {
+                    // App slipped to the background during the delay — retry on next .active.
+                    didBootstrapAds = false
+                    return
+                }
+                Self.bootstrapAds()
+            }
         }
     }
 

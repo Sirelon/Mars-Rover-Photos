@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!--
+	  This describes ONLY the app's own (first-party) code. That code does not itself
+	  perform tracking or connect to tracking domains: the IDFA is read and ad/analytics
+	  connections are made by the bundled GoogleMobileAds / Firebase / UMP SDKs, each of
+	  which ships its own privacy manifest declaring NSPrivacyTracking=true and the
+	  tracking domains it contacts. Apple merges every manifest into the final privacy
+	  report, so the app-wide tracking posture is still declared.
+
+	  We therefore set NSPrivacyTracking=false here and omit NSPrivacyTrackingDomains:
+	  - Per Apple TN3181, NSPrivacyTracking=true with an empty NSPrivacyTrackingDomains is
+	    an invalid manifest and fails upload with ITMS-91064.
+	  - Google advises against duplicating their ad domains in the app manifest — when ATT
+	    is denied the system blocks every listed domain at the network layer, which would
+	    break ad serving (incl. non-personalized ads). The SDK manifest manages this.
+	-->
+	<key>NSPrivacyTracking</key>
+	<false/>
+
+	<!-- First-party code collects no trackable data of its own; SDK manifests declare theirs. -->
+	<key>NSPrivacyCollectedDataTypes</key>
+	<array/>
+
+	<key>NSPrivacyAccessedAPITypes</key>
+	<array>
+		<!-- The app's own code (shared/iosMain PlatformPreferences.ios.kt) uses NSUserDefaults
+		     to persist user settings. Reason CA92.1: access info from the app itself. -->
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>CA92.1</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

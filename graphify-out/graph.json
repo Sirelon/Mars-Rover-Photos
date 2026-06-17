@@ -1197,7 +1197,7 @@
       "label": ".init()",
       "file_type": "code",
       "source_file": "iosApp/iosApp/MarsRoverApp.swift",
-      "source_location": "L10",
+      "source_location": "L13",
       "_origin": "ast",
       "id": "iosapp_marsroverapp_marsroverapp_init",
       "community": 21,
@@ -1207,7 +1207,7 @@
       "label": "Scene",
       "file_type": "code",
       "source_file": "iosApp/iosApp/MarsRoverApp.swift",
-      "source_location": "L32",
+      "source_location": "L27",
       "_origin": "ast",
       "id": "iosapp_iosapp_marsroverapp_swift_scene",
       "community": 21,
@@ -1217,7 +1217,7 @@
       "label": ".bootstrapAds()",
       "file_type": "code",
       "source_file": "iosApp/iosApp/MarsRoverApp.swift",
-      "source_location": "L43",
+      "source_location": "L56",
       "_origin": "ast",
       "id": "iosapp_marsroverapp_marsroverapp_bootstrapads",
       "community": 21,
@@ -6920,7 +6920,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "presentation_app",
-      "community": 7,
+      "community": 42,
       "norm_label": "app.kt"
     },
     {
@@ -6930,7 +6930,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "presentation_app_app",
-      "community": 7,
+      "community": 42,
       "norm_label": "app()"
     },
     {
@@ -6940,7 +6940,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_app_kt_deeplink",
-      "community": 7,
+      "community": 42,
       "norm_label": "deeplink"
     },
     {
@@ -6950,7 +6950,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_app_kt_unit",
-      "community": 7,
+      "community": 42,
       "norm_label": "unit"
     },
     {
@@ -6960,7 +6960,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_app_kt_string",
-      "community": 7,
+      "community": 42,
       "norm_label": "string"
     },
     {
@@ -6970,7 +6970,7 @@
       "source_location": "L87",
       "_origin": "ast",
       "id": "presentation_app_appcontent",
-      "community": 7,
+      "community": 42,
       "norm_label": "appcontent()"
     },
     {
@@ -7730,7 +7730,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "navigation_localaboutcallbacks",
-      "community": 7,
+      "community": 42,
       "norm_label": "localaboutcallbacks.kt"
     },
     {
@@ -7740,7 +7740,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "navigation_localaboutcallbacks_aboutcallbacks",
-      "community": 7,
+      "community": 42,
       "norm_label": "aboutcallbacks"
     },
     {
@@ -7750,7 +7750,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "navigation_marsbottombar",
-      "community": 59,
+      "community": 103,
       "norm_label": "marsbottombar.kt"
     },
     {
@@ -7840,7 +7840,7 @@
       "source_location": "L186",
       "_origin": "ast",
       "id": "navigation_marsbottombar_marsnavigationitem",
-      "community": 59,
+      "community": 103,
       "norm_label": "marsnavigationitem"
     },
     {
@@ -7850,7 +7850,7 @@
       "source_location": "L192",
       "_origin": "ast",
       "id": "navigation_marsbottombar_marsnavigationitemicon",
-      "community": 59,
+      "community": 103,
       "norm_label": "marsnavigationitemicon"
     },
     {
@@ -7860,7 +7860,7 @@
       "source_location": "L193",
       "_origin": "ast",
       "id": "navigation_marsbottombar_drawable",
-      "community": 59,
+      "community": 103,
       "norm_label": "drawable"
     },
     {
@@ -7870,7 +7870,7 @@
       "source_location": "L194",
       "_origin": "ast",
       "id": "navigation_marsbottombar_symbol",
-      "community": 59,
+      "community": 103,
       "norm_label": "symbol"
     },
     {
@@ -8130,7 +8130,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "screens_adminphotosscreen",
-      "community": 42,
+      "community": 40,
       "norm_label": "adminphotosscreen.kt"
     },
     {
@@ -8140,7 +8140,7 @@
       "source_location": "L57",
       "_origin": "ast",
       "id": "screens_adminphotosscreen_adminphotosscreen",
-      "community": 42,
+      "community": 40,
       "norm_label": "adminphotosscreen()"
     },
     {
@@ -8150,7 +8150,7 @@
       "source_location": "L125",
       "_origin": "ast",
       "id": "screens_adminphotosscreen_idlecontent",
-      "community": 42,
+      "community": 40,
       "norm_label": "idlecontent()"
     },
     {
@@ -8160,7 +8160,7 @@
       "source_location": "L125",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_adminphotosscreen_kt_modifier",
-      "community": 42,
+      "community": 40,
       "norm_label": "modifier"
     },
     {
@@ -8170,7 +8170,7 @@
       "source_location": "L134",
       "_origin": "ast",
       "id": "screens_adminphotosscreen_fetchingcontent",
-      "community": 42,
+      "community": 40,
       "norm_label": "fetchingcontent()"
     },
     {
@@ -8180,7 +8180,7 @@
       "source_location": "L145",
       "_origin": "ast",
       "id": "screens_adminphotosscreen_photolistcontent",
-      "community": 42,
+      "community": 40,
       "norm_label": "photolistcontent()"
     },
     {
@@ -8190,7 +8190,7 @@
       "source_location": "L145",
       "_origin": "ast",
       "id": "adminphotosstate",
-      "community": 42,
+      "community": 40,
       "norm_label": "adminphotosstate"
     },
     {
@@ -8200,7 +8200,7 @@
       "source_location": "L145",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_adminphotosscreen_kt_boolean",
-      "community": 42,
+      "community": 40,
       "norm_label": "boolean"
     },
     {
@@ -8210,7 +8210,7 @@
       "source_location": "L230",
       "_origin": "ast",
       "id": "screens_adminphotosscreen_adminphotorow",
-      "community": 42,
+      "community": 40,
       "norm_label": "adminphotorow()"
     },
     {
@@ -8220,7 +8220,7 @@
       "source_location": "L230",
       "_origin": "ast",
       "id": "adminphotoitem",
-      "community": 42,
+      "community": 40,
       "norm_label": "adminphotoitem"
     },
     {
@@ -8230,7 +8230,7 @@
       "source_location": "L283",
       "_origin": "ast",
       "id": "screens_adminphotosscreen_statuschip",
-      "community": 42,
+      "community": 40,
       "norm_label": "statuschip()"
     },
     {
@@ -8240,7 +8240,7 @@
       "source_location": "L283",
       "_origin": "ast",
       "id": "photocheckstatus",
-      "community": 42,
+      "community": 40,
       "norm_label": "photocheckstatus"
     },
     {
@@ -8650,7 +8650,7 @@
       "source_location": "L233",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_imagesscreen_kt_uievent",
-      "community": 94,
+      "community": 30,
       "norm_label": "uievent"
     },
     {
@@ -8710,7 +8710,7 @@
       "source_location": "L411",
       "_origin": "ast",
       "id": "screens_imagesscreen_onevent",
-      "community": 94,
+      "community": 30,
       "norm_label": "onevent()"
     },
     {
@@ -8720,7 +8720,7 @@
       "source_location": "L477",
       "_origin": "ast",
       "id": "screens_imagesscreen_savesuccessoverlay",
-      "community": 94,
+      "community": 30,
       "norm_label": "savesuccessoverlay()"
     },
     {
@@ -8770,7 +8770,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "screens_photoinfobottomsheet",
-      "community": 99,
+      "community": 30,
       "norm_label": "photoinfobottomsheet.kt"
     },
     {
@@ -8780,7 +8780,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "screens_photoinfobottomsheet_photoinfobottomsheet",
-      "community": 99,
+      "community": 30,
       "norm_label": "photoinfobottomsheet()"
     },
     {
@@ -8790,7 +8790,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_photoinfobottomsheet_kt_marsimage",
-      "community": 99,
+      "community": 30,
       "norm_label": "marsimage"
     },
     {
@@ -8800,7 +8800,7 @@
       "source_location": "L116",
       "_origin": "ast",
       "id": "screens_photoinfobottomsheet_infosection",
-      "community": 99,
+      "community": 30,
       "norm_label": "infosection()"
     },
     {
@@ -8810,7 +8810,7 @@
       "source_location": "L116",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_photoinfobottomsheet_kt_string",
-      "community": 99,
+      "community": 30,
       "norm_label": "string"
     },
     {
@@ -8820,7 +8820,7 @@
       "source_location": "L131",
       "_origin": "ast",
       "id": "screens_photoinfobottomsheet_statitem",
-      "community": 99,
+      "community": 30,
       "norm_label": "statitem()"
     },
     {
@@ -8830,7 +8830,7 @@
       "source_location": "L131",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_photoinfobottomsheet_kt_long",
-      "community": 99,
+      "community": 30,
       "norm_label": "long"
     },
     {
@@ -8840,7 +8840,7 @@
       "source_location": "L156",
       "_origin": "ast",
       "id": "screens_photoinfobottomsheet_formatstatvalue",
-      "community": 99,
+      "community": 30,
       "norm_label": "formatstatvalue()"
     },
     {
@@ -8850,7 +8850,7 @@
       "source_location": "L169",
       "_origin": "ast",
       "id": "screens_photoinfobottomsheet_formatearthdate",
-      "community": 99,
+      "community": 30,
       "norm_label": "formatearthdate()"
     },
     {
@@ -9200,7 +9200,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "screens_popularscreen",
-      "community": 70,
+      "community": 1,
       "norm_label": "popularscreen.kt"
     },
     {
@@ -9210,7 +9210,7 @@
       "source_location": "L64",
       "_origin": "ast",
       "id": "screens_popularscreen_popularscreen",
-      "community": 70,
+      "community": 1,
       "norm_label": "popularscreen()"
     },
     {
@@ -9220,7 +9220,7 @@
       "source_location": "L64",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_popularscreen_kt_modifier",
-      "community": 70,
+      "community": 1,
       "norm_label": "modifier"
     },
     {
@@ -9230,7 +9230,7 @@
       "source_location": "L64",
       "_origin": "ast",
       "id": "popularphotosviewmodel",
-      "community": 70,
+      "community": 1,
       "norm_label": "popularphotosviewmodel"
     },
     {
@@ -9240,7 +9240,7 @@
       "source_location": "L103",
       "_origin": "ast",
       "id": "screens_popularscreen_popularphotoscontent",
-      "community": 70,
+      "community": 1,
       "norm_label": "popularphotoscontent()"
     },
     {
@@ -9250,7 +9250,7 @@
       "source_location": "L103",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_popularscreen_kt_string",
-      "community": 70,
+      "community": 1,
       "norm_label": "string"
     },
     {
@@ -9260,7 +9260,7 @@
       "source_location": "L103",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_popularscreen_kt_lazypagingitems",
-      "community": 70,
+      "community": 1,
       "norm_label": "lazypagingitems"
     },
     {
@@ -9270,7 +9270,7 @@
       "source_location": "L103",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_popularscreen_kt_marsimage",
-      "community": 70,
+      "community": 1,
       "norm_label": "marsimage"
     },
     {
@@ -9280,7 +9280,7 @@
       "source_location": "L103",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_popularscreen_kt_boolean",
-      "community": 70,
+      "community": 1,
       "norm_label": "boolean"
     },
     {
@@ -9290,7 +9290,7 @@
       "source_location": "L103",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_popularscreen_kt_lazystaggeredgridstate",
-      "community": 70,
+      "community": 1,
       "norm_label": "lazystaggeredgridstate"
     },
     {
@@ -9300,7 +9300,7 @@
       "source_location": "L195",
       "_origin": "ast",
       "id": "screens_popularscreen_popularemptycontent",
-      "community": 70,
+      "community": 1,
       "norm_label": "popularemptycontent()"
     },
     {
@@ -9770,7 +9770,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "theme_appcolors",
-      "community": 89,
+      "community": 5,
       "norm_label": "appcolors.kt"
     },
     {
@@ -9780,7 +9780,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "theme_appcolors_activestatuscolor",
-      "community": 89,
+      "community": 5,
       "norm_label": "activestatuscolor()"
     },
     {
@@ -9790,7 +9790,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_theme_appcolors_kt_color",
-      "community": 89,
+      "community": 5,
       "norm_label": "color"
     },
     {
@@ -9910,7 +9910,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "theme_theme",
-      "community": 7,
+      "community": 42,
       "norm_label": "theme.kt"
     },
     {
@@ -9920,7 +9920,7 @@
       "source_location": "L82",
       "_origin": "ast",
       "id": "theme_theme_withbrandoverrides",
-      "community": 7,
+      "community": 42,
       "norm_label": "withbrandoverrides()"
     },
     {
@@ -9930,7 +9930,7 @@
       "source_location": "L82",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_theme_theme_kt_boolean",
-      "community": 7,
+      "community": 42,
       "norm_label": "boolean"
     },
     {
@@ -9940,7 +9940,7 @@
       "source_location": "L82",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_theme_theme_kt_colorscheme",
-      "community": 7,
+      "community": 42,
       "norm_label": "colorscheme"
     },
     {
@@ -9950,7 +9950,7 @@
       "source_location": "L114",
       "_origin": "ast",
       "id": "theme_theme_marsroverphotostheme",
-      "community": 7,
+      "community": 42,
       "norm_label": "marsroverphotostheme()"
     },
     {
@@ -9960,7 +9960,7 @@
       "source_location": "L130",
       "_origin": "ast",
       "id": "theme_theme_animatecolorscheme",
-      "community": 7,
+      "community": 42,
       "norm_label": "animatecolorscheme()"
     },
     {
@@ -9970,7 +9970,7 @@
       "source_location": "L216",
       "_origin": "ast",
       "id": "theme_theme_issystemindarktheme",
-      "community": 7,
+      "community": 42,
       "norm_label": "issystemindarktheme()"
     },
     {
@@ -9980,7 +9980,7 @@
       "source_location": "L224",
       "_origin": "ast",
       "id": "theme_theme_supportsdynamiccolor",
-      "community": 7,
+      "community": 42,
       "norm_label": "supportsdynamiccolor()"
     },
     {
@@ -9990,7 +9990,7 @@
       "source_location": "L232",
       "_origin": "ast",
       "id": "theme_theme_getdynamicdarkcolorscheme",
-      "community": 7,
+      "community": 42,
       "norm_label": "getdynamicdarkcolorscheme()"
     },
     {
@@ -10000,7 +10000,7 @@
       "source_location": "L240",
       "_origin": "ast",
       "id": "theme_theme_getdynamiclightcolorscheme",
-      "community": 7,
+      "community": 42,
       "norm_label": "getdynamiclightcolorscheme()"
     },
     {
@@ -10130,7 +10130,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "ui_appcard",
-      "community": 11,
+      "community": 89,
       "norm_label": "appcard.kt"
     },
     {
@@ -10140,7 +10140,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "ui_appcard_appcard",
-      "community": 11,
+      "community": 89,
       "norm_label": "appcard()"
     },
     {
@@ -10150,7 +10150,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_appcard_kt_modifier",
-      "community": 11,
+      "community": 89,
       "norm_label": "modifier"
     },
     {
@@ -10160,7 +10160,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_appcard_kt_shape",
-      "community": 11,
+      "community": 89,
       "norm_label": "shape"
     },
     {
@@ -10170,7 +10170,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "cardcolors",
-      "community": 11,
+      "community": 89,
       "norm_label": "cardcolors"
     },
     {
@@ -10180,7 +10180,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "cardelevation",
-      "community": 11,
+      "community": 89,
       "norm_label": "cardelevation"
     },
     {
@@ -10190,7 +10190,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_appcard_kt_unit",
-      "community": 11,
+      "community": 89,
       "norm_label": "unit"
     },
     {
@@ -10200,7 +10200,7 @@
       "source_location": "L77",
       "_origin": "ast",
       "id": "ui_appcard_appfactcard",
-      "community": 11,
+      "community": 89,
       "norm_label": "appfactcard()"
     },
     {
@@ -10450,7 +10450,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "ui_appmetricitem",
-      "community": 88,
+      "community": 61,
       "norm_label": "appmetricitem.kt"
     },
     {
@@ -10460,7 +10460,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "ui_appmetricitem_appmetricitem",
-      "community": 88,
+      "community": 61,
       "norm_label": "appmetricitem()"
     },
     {
@@ -10470,7 +10470,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_appmetricitem_kt_materialsymbol",
-      "community": 88,
+      "community": 61,
       "norm_label": "materialsymbol"
     },
     {
@@ -10480,7 +10480,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_appmetricitem_kt_string",
-      "community": 88,
+      "community": 61,
       "norm_label": "string"
     },
     {
@@ -10490,7 +10490,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_appmetricitem_kt_modifier",
-      "community": 88,
+      "community": 61,
       "norm_label": "modifier"
     },
     {
@@ -10790,7 +10790,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "ui_likeheart",
-      "community": 103,
+      "community": 30,
       "norm_label": "likeheart.kt"
     },
     {
@@ -10800,7 +10800,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "ui_likeheart_likeheartstate",
-      "community": 103,
+      "community": 30,
       "norm_label": "likeheartstate"
     },
     {
@@ -10810,7 +10810,7 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "ui_likeheart_likeheartstate_trigger",
-      "community": 103,
+      "community": 30,
       "norm_label": ".trigger()"
     },
     {
@@ -10820,7 +10820,7 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "ui_likeheart_rememberlikeheartstate",
-      "community": 103,
+      "community": 30,
       "norm_label": "rememberlikeheartstate()"
     },
     {
@@ -10830,7 +10830,7 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "ui_likeheart_likeheartoverlay",
-      "community": 103,
+      "community": 30,
       "norm_label": "likeheartoverlay()"
     },
     {
@@ -10840,7 +10840,7 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_likeheart_kt_boolean",
-      "community": 103,
+      "community": 30,
       "norm_label": "boolean"
     },
     {
@@ -10850,7 +10850,7 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_likeheart_kt_modifier",
-      "community": 103,
+      "community": 30,
       "norm_label": "modifier"
     },
     {
@@ -10860,7 +10860,7 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_likeheart_kt_dp",
-      "community": 103,
+      "community": 30,
       "norm_label": "dp"
     },
     {
@@ -11630,7 +11630,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "ui_ukrainebanner",
-      "community": 113,
+      "community": 63,
       "norm_label": "ukrainebanner.kt"
     },
     {
@@ -11640,7 +11640,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "ui_ukrainebanner_ukrainebanner",
-      "community": 113,
+      "community": 63,
       "norm_label": "ukrainebanner()"
     },
     {
@@ -11650,7 +11650,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_ukrainebanner_kt_modifier",
-      "community": 113,
+      "community": 63,
       "norm_label": "modifier"
     },
     {
@@ -11660,7 +11660,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_ukrainebanner_kt_string",
-      "community": 113,
+      "community": 63,
       "norm_label": "string"
     },
     {
@@ -11670,7 +11670,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "ui_widgets",
-      "community": 94,
+      "community": 30,
       "norm_label": "widgets.kt"
     },
     {
@@ -11680,7 +11680,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "ui_widgets_marssnackbar",
-      "community": 94,
+      "community": 30,
       "norm_label": "marssnackbar()"
     },
     {
@@ -11690,7 +11690,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_widgets_kt_modifier",
-      "community": 94,
+      "community": 30,
       "norm_label": "modifier"
     },
     {
@@ -11700,7 +11700,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "snackbarhoststate",
-      "community": 94,
+      "community": 30,
       "norm_label": "snackbarhoststate"
     },
     {
@@ -11710,7 +11710,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_widgets_kt_unit",
-      "community": 94,
+      "community": 30,
       "norm_label": "unit"
     },
     {
@@ -11720,7 +11720,7 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "ui_widgets_radiobuttontext",
-      "community": 94,
+      "community": 30,
       "norm_label": "radiobuttontext()"
     },
     {
@@ -11730,7 +11730,7 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_widgets_kt_boolean",
-      "community": 94,
+      "community": 30,
       "norm_label": "boolean"
     },
     {
@@ -11740,7 +11740,7 @@
       "source_location": "L93",
       "_origin": "ast",
       "id": "ui_widgets_noscrolleffect",
-      "community": 94,
+      "community": 30,
       "norm_label": "noscrolleffect()"
     },
     {
@@ -11820,7 +11820,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "viewmodels_adminphotosviewmodel",
-      "community": 25,
+      "community": 22,
       "norm_label": "adminphotosviewmodel.kt"
     },
     {
@@ -11830,7 +11830,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "viewmodels_adminphotosviewmodel_photocheckstatus",
-      "community": 25,
+      "community": 22,
       "norm_label": "photocheckstatus"
     },
     {
@@ -11840,7 +11840,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "viewmodels_adminphotosviewmodel_adminphotoitem",
-      "community": 25,
+      "community": 22,
       "norm_label": "adminphotoitem"
     },
     {
@@ -11850,7 +11850,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "viewmodels_adminphotosviewmodel_adminphotosstate",
-      "community": 25,
+      "community": 22,
       "norm_label": "adminphotosstate"
     },
     {
@@ -11860,7 +11860,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "viewmodels_adminphotosviewmodel_phase",
-      "community": 25,
+      "community": 22,
       "norm_label": "phase"
     },
     {
@@ -11870,7 +11870,7 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_adminphotosviewmodel_kt_int",
-      "community": 25,
+      "community": 22,
       "norm_label": "int"
     },
     {
@@ -11880,7 +11880,7 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_adminphotosviewmodel_kt_list",
-      "community": 25,
+      "community": 22,
       "norm_label": "list"
     },
     {
@@ -11890,7 +11890,7 @@
       "source_location": "L48",
       "_origin": "ast",
       "id": "viewmodels_adminphotosviewmodel_adminphotosviewmodel",
-      "community": 25,
+      "community": 22,
       "norm_label": "adminphotosviewmodel"
     },
     {
@@ -11900,7 +11900,7 @@
       "source_location": "L62",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_adminphotosviewmodel_kt_stateflow",
-      "community": 25,
+      "community": 22,
       "norm_label": "stateflow"
     },
     {
@@ -11910,7 +11910,7 @@
       "source_location": "L64",
       "_origin": "ast",
       "id": "viewmodels_adminphotosviewmodel_adminphotosviewmodel_oncleared",
-      "community": 25,
+      "community": 22,
       "norm_label": ".oncleared()"
     },
     {
@@ -11920,7 +11920,7 @@
       "source_location": "L69",
       "_origin": "ast",
       "id": "viewmodels_adminphotosviewmodel_adminphotosviewmodel_startcheck",
-      "community": 25,
+      "community": 22,
       "norm_label": ".startcheck()"
     },
     {
@@ -11930,7 +11930,7 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "viewmodels_adminphotosviewmodel_adminphotosviewmodel_fetchallphotos",
-      "community": 25,
+      "community": 22,
       "norm_label": ".fetchallphotos()"
     },
     {
@@ -11940,7 +11940,7 @@
       "source_location": "L94",
       "_origin": "ast",
       "id": "viewmodels_adminphotosviewmodel_adminphotosviewmodel_checkallurls",
-      "community": 25,
+      "community": 22,
       "norm_label": ".checkallurls()"
     },
     {
@@ -11950,7 +11950,7 @@
       "source_location": "L117",
       "_origin": "ast",
       "id": "viewmodels_adminphotosviewmodel_adminphotosviewmodel_checkurl",
-      "community": 25,
+      "community": 22,
       "norm_label": ".checkurl()"
     },
     {
@@ -11960,7 +11960,7 @@
       "source_location": "L117",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_adminphotosviewmodel_kt_string",
-      "community": 25,
+      "community": 22,
       "norm_label": "string"
     },
     {
@@ -11970,7 +11970,7 @@
       "source_location": "L139",
       "_origin": "ast",
       "id": "viewmodels_adminphotosviewmodel_adminphotosviewmodel_updatephotostatus",
-      "community": 25,
+      "community": 22,
       "norm_label": ".updatephotostatus()"
     },
     {
@@ -11980,7 +11980,7 @@
       "source_location": "L149",
       "_origin": "ast",
       "id": "viewmodels_adminphotosviewmodel_adminphotosviewmodel_toggleselection",
-      "community": 25,
+      "community": 22,
       "norm_label": ".toggleselection()"
     },
     {
@@ -11990,7 +11990,7 @@
       "source_location": "L159",
       "_origin": "ast",
       "id": "viewmodels_adminphotosviewmodel_adminphotosviewmodel_selectallstale",
-      "community": 25,
+      "community": 22,
       "norm_label": ".selectallstale()"
     },
     {
@@ -12000,7 +12000,7 @@
       "source_location": "L171",
       "_origin": "ast",
       "id": "viewmodels_adminphotosviewmodel_adminphotosviewmodel_deselectall",
-      "community": 25,
+      "community": 22,
       "norm_label": ".deselectall()"
     },
     {
@@ -12010,7 +12010,7 @@
       "source_location": "L177",
       "_origin": "ast",
       "id": "viewmodels_adminphotosviewmodel_adminphotosviewmodel_deleteselected",
-      "community": 25,
+      "community": 22,
       "norm_label": ".deleteselected()"
     },
     {
@@ -13080,7 +13080,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "viewmodels_roversviewmodel",
-      "community": 22,
+      "community": 25,
       "norm_label": "roversviewmodel.kt"
     },
     {
@@ -13090,7 +13090,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "viewmodels_roversviewmodel_roversviewmodel",
-      "community": 22,
+      "community": 25,
       "norm_label": "roversviewmodel"
     },
     {
@@ -13100,7 +13100,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_roversviewmodel_kt_stateflow",
-      "community": 22,
+      "community": 25,
       "norm_label": "stateflow"
     },
     {
@@ -13110,7 +13110,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_roversviewmodel_kt_list",
-      "community": 22,
+      "community": 25,
       "norm_label": "list"
     },
     {
@@ -13120,7 +13120,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_roversviewmodel_kt_rover",
-      "community": 22,
+      "community": 25,
       "norm_label": "rover"
     },
     {
@@ -13130,7 +13130,7 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_roversviewmodel_kt_string",
-      "community": 22,
+      "community": 25,
       "norm_label": "string"
     },
     {
@@ -13140,7 +13140,7 @@
       "source_location": "L44",
       "_origin": "ast",
       "id": "viewmodels_roversviewmodel_roversviewmodel_onsearchquerychange",
-      "community": 22,
+      "community": 25,
       "norm_label": ".onsearchquerychange()"
     },
     {
@@ -13150,7 +13150,7 @@
       "source_location": "L48",
       "_origin": "ast",
       "id": "viewmodels_roversviewmodel_roversviewmodel_onroverclicked",
-      "community": 22,
+      "community": 25,
       "norm_label": ".onroverclicked()"
     },
     {
@@ -13160,7 +13160,7 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "viewmodels_roversviewmodel_roversviewmodel_onmissioninfoclicked",
-      "community": 22,
+      "community": 25,
       "norm_label": ".onmissioninfoclicked()"
     },
     {
@@ -13170,7 +13170,7 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "viewmodels_roversviewmodel_filterrovers",
-      "community": 22,
+      "community": 25,
       "norm_label": "filterrovers()"
     },
     {
@@ -13460,7 +13460,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "utils_numberformat",
-      "community": 11,
+      "community": 88,
       "norm_label": "numberformat.kt"
     },
     {
@@ -13470,7 +13470,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "utils_numberformat_formatthousands",
-      "community": 11,
+      "community": 88,
       "norm_label": "formatthousands()"
     },
     {
@@ -13480,7 +13480,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_utils_numberformat_kt_long",
-      "community": 11,
+      "community": 88,
       "norm_label": "long"
     },
     {
@@ -13490,7 +13490,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_utils_numberformat_kt_string",
-      "community": 11,
+      "community": 88,
       "norm_label": "string"
     },
     {
@@ -13500,7 +13500,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_utils_numberformat_kt_int",
-      "community": 11,
+      "community": 88,
       "norm_label": "int"
     },
     {
@@ -13510,7 +13510,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "utils_numberformat_formatcompact",
-      "community": 11,
+      "community": 88,
       "norm_label": "formatcompact()"
     },
     {
@@ -13520,7 +13520,7 @@
       "source_location": "L50",
       "_origin": "ast",
       "id": "utils_numberformat_rounddiv",
-      "community": 11,
+      "community": 88,
       "norm_label": "rounddiv()"
     },
     {
@@ -13530,7 +13530,7 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "utils_numberformat_decimal1",
-      "community": 11,
+      "community": 88,
       "norm_label": "decimal1()"
     },
     {
@@ -15050,7 +15050,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "viewmodels_roversfiltertest",
-      "community": 22,
+      "community": 25,
       "norm_label": "roversfiltertest.kt"
     },
     {
@@ -15060,7 +15060,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "viewmodels_roversfiltertest_rover",
-      "community": 22,
+      "community": 25,
       "norm_label": "rover()"
     },
     {
@@ -15070,7 +15070,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "shared_src_commontest_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_roversfiltertest_kt_long",
-      "community": 22,
+      "community": 25,
       "norm_label": "long"
     },
     {
@@ -15080,7 +15080,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "shared_src_commontest_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_roversfiltertest_kt_string",
-      "community": 22,
+      "community": 25,
       "norm_label": "string"
     },
     {
@@ -15090,7 +15090,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "viewmodels_roversfiltertest_roversfiltertest",
-      "community": 22,
+      "community": 25,
       "norm_label": "roversfiltertest"
     },
     {
@@ -15100,7 +15100,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "viewmodels_roversfiltertest_roversfiltertest_blankquery_returnsall",
-      "community": 22,
+      "community": 25,
       "norm_label": ".blankquery_returnsall()"
     },
     {
@@ -15110,7 +15110,7 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "viewmodels_roversfiltertest_roversfiltertest_whitespacequery_returnsall",
-      "community": 22,
+      "community": 25,
       "norm_label": ".whitespacequery_returnsall()"
     },
     {
@@ -15120,7 +15120,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "viewmodels_roversfiltertest_roversfiltertest_exactmatch_returnssinglerover",
-      "community": 22,
+      "community": 25,
       "norm_label": ".exactmatch_returnssinglerover()"
     },
     {
@@ -15130,7 +15130,7 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "viewmodels_roversfiltertest_roversfiltertest_caseinsensitive_matches",
-      "community": 22,
+      "community": 25,
       "norm_label": ".caseinsensitive_matches()"
     },
     {
@@ -15140,7 +15140,7 @@
       "source_location": "L48",
       "_origin": "ast",
       "id": "viewmodels_roversfiltertest_roversfiltertest_partialquery_returnssubset",
-      "community": 22,
+      "community": 25,
       "norm_label": ".partialquery_returnssubset()"
     },
     {
@@ -15150,7 +15150,7 @@
       "source_location": "L54",
       "_origin": "ast",
       "id": "viewmodels_roversfiltertest_roversfiltertest_nomatch_returnsempty",
-      "community": 22,
+      "community": 25,
       "norm_label": ".nomatch_returnsempty()"
     },
     {
@@ -15250,7 +15250,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "utils_numberformattest",
-      "community": 11,
+      "community": 88,
       "norm_label": "numberformattest.kt"
     },
     {
@@ -15260,7 +15260,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "utils_numberformattest_numberformattest",
-      "community": 11,
+      "community": 88,
       "norm_label": "numberformattest"
     },
     {
@@ -15270,7 +15270,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "utils_numberformattest_numberformattest_formatcompact_belowthousand_returnsasis",
-      "community": 11,
+      "community": 88,
       "norm_label": ".formatcompact_belowthousand_returnsasis()"
     },
     {
@@ -15280,7 +15280,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "utils_numberformattest_numberformattest_formatcompact_belowtenthousand_onedecimalk",
-      "community": 11,
+      "community": 88,
       "norm_label": ".formatcompact_belowtenthousand_onedecimalk()"
     },
     {
@@ -15290,7 +15290,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "utils_numberformattest_numberformattest_formatcompact_atorabovetenthousand_zerodecimalk",
-      "community": 11,
+      "community": 88,
       "norm_label": ".formatcompact_atorabovetenthousand_zerodecimalk()"
     },
     {
@@ -15300,7 +15300,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "utils_numberformattest_numberformattest_formatcompact_millions_onedecimalm",
-      "community": 11,
+      "community": 88,
       "norm_label": ".formatcompact_millions_onedecimalm()"
     },
     {
@@ -17514,6 +17514,186 @@
       "norm_label": "\"safe-to-fix\" backlog (will be delegated to fixer agents)"
     },
     {
+      "label": "pass-apple-app-store-review-with-admob-ads-ios.md",
+      "file_type": "document",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "plans_pass_apple_app_store_review_with_admob_ads_ios",
+      "community": 70,
+      "norm_label": "pass-apple-app-store-review-with-admob-ads-ios.md"
+    },
+    {
+      "label": "Plan: Pass Apple App Store Review with AdMob Ads (iOS)",
+      "file_type": "document",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "plans_pass_apple_app_store_review_with_admob_ads_ios_plan_pass_apple_app_store_review_with_admob_ads_ios",
+      "community": 70,
+      "norm_label": "plan: pass apple app store review with admob ads (ios)"
+    },
+    {
+      "label": "Context",
+      "file_type": "document",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "plans_pass_apple_app_store_review_with_admob_ads_ios_context",
+      "community": 70,
+      "norm_label": "context"
+    },
+    {
+      "label": "Already in place (verified \u2014 do NOT touch)",
+      "file_type": "document",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L14",
+      "_origin": "ast",
+      "id": "plans_pass_apple_app_store_review_with_admob_ads_ios_already_in_place_verified_do_not_touch",
+      "community": 70,
+      "norm_label": "already in place (verified \u2014 do not touch)"
+    },
+    {
+      "label": "The gaps this plan closes",
+      "file_type": "document",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L21",
+      "_origin": "ast",
+      "id": "plans_pass_apple_app_store_review_with_admob_ads_ios_the_gaps_this_plan_closes",
+      "community": 70,
+      "norm_label": "the gaps this plan closes"
+    },
+    {
+      "label": "Part A \u2014 Code / config changes (in this repo)",
+      "file_type": "document",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L30",
+      "_origin": "ast",
+      "id": "plans_pass_apple_app_store_review_with_admob_ads_ios_part_a_code_config_changes_in_this_repo",
+      "community": 70,
+      "norm_label": "part a \u2014 code / config changes (in this repo)"
+    },
+    {
+      "label": "A1. Create the app privacy manifest \u2014 `iosApp/iosApp/PrivacyInfo.xcprivacy` (CRITICAL)",
+      "file_type": "document",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L32",
+      "_origin": "ast",
+      "id": "plans_pass_apple_app_store_review_with_admob_ads_ios_a1_create_the_app_privacy_manifest_iosapp_iosapp_privacyinfo_xcprivacy_critical",
+      "community": 70,
+      "norm_label": "a1. create the app privacy manifest \u2014 `iosapp/iosapp/privacyinfo.xcprivacy` (critical)"
+    },
+    {
+      "label": "A2. Expand `SKAdNetworkItems` in `Info.plist:38-44` (revenue \u2014 user opted in)",
+      "file_type": "document",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L59",
+      "_origin": "ast",
+      "id": "plans_pass_apple_app_store_review_with_admob_ads_ios_a2_expand_skadnetworkitems_in_info_plist_38_44_revenue_user_opted_in",
+      "community": 70,
+      "norm_label": "a2. expand `skadnetworkitems` in `info.plist:38-44` (revenue \u2014 user opted in)"
+    },
+    {
+      "label": "A3. Harden ATT timing in `MarsRoverApp.swift` (hardening)",
+      "file_type": "document",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L66",
+      "_origin": "ast",
+      "id": "plans_pass_apple_app_store_review_with_admob_ads_ios_a3_harden_att_timing_in_marsroverapp_swift_hardening",
+      "community": 70,
+      "norm_label": "a3. harden att timing in `marsroverapp.swift` (hardening)"
+    },
+    {
+      "label": "A4. Sanity-check version strings (minor)",
+      "file_type": "document",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L75",
+      "_origin": "ast",
+      "id": "plans_pass_apple_app_store_review_with_admob_ads_ios_a4_sanity_check_version_strings_minor",
+      "community": 70,
+      "norm_label": "a4. sanity-check version strings (minor)"
+    },
+    {
+      "label": "Part B \u2014 App Store Connect (no code \u2014 do in the web console)",
+      "file_type": "document",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L84",
+      "_origin": "ast",
+      "id": "plans_pass_apple_app_store_review_with_admob_ads_ios_part_b_app_store_connect_no_code_do_in_the_web_console",
+      "community": 70,
+      "norm_label": "part b \u2014 app store connect (no code \u2014 do in the web console)"
+    },
+    {
+      "label": "B1. Fill out the App Privacy nutrition label (CRITICAL)",
+      "file_type": "document",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L88",
+      "_origin": "ast",
+      "id": "plans_pass_apple_app_store_review_with_admob_ads_ios_b1_fill_out_the_app_privacy_nutrition_label_critical",
+      "community": 70,
+      "norm_label": "b1. fill out the app privacy nutrition label (critical)"
+    },
+    {
+      "label": "B2. Verify the ATT prompt is reviewable",
+      "file_type": "document",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L95",
+      "_origin": "ast",
+      "id": "plans_pass_apple_app_store_review_with_admob_ads_ios_b2_verify_the_att_prompt_is_reviewable",
+      "community": 70,
+      "norm_label": "b2. verify the att prompt is reviewable"
+    },
+    {
+      "label": "B3. Privacy Policy URL",
+      "file_type": "document",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L102",
+      "_origin": "ast",
+      "id": "plans_pass_apple_app_store_review_with_admob_ads_ios_b3_privacy_policy_url",
+      "community": 70,
+      "norm_label": "b3. privacy policy url"
+    },
+    {
+      "label": "Out of scope / flag only",
+      "file_type": "document",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L109",
+      "_origin": "ast",
+      "id": "plans_pass_apple_app_store_review_with_admob_ads_ios_out_of_scope_flag_only",
+      "community": 70,
+      "norm_label": "out of scope / flag only"
+    },
+    {
+      "label": "Verification (end-to-end)",
+      "file_type": "document",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L116",
+      "_origin": "ast",
+      "id": "plans_pass_apple_app_store_review_with_admob_ads_ios_verification_end_to_end",
+      "community": 70,
+      "norm_label": "verification (end-to-end)"
+    },
+    {
+      "label": "Suggested execution order",
+      "file_type": "document",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L131",
+      "_origin": "ast",
+      "id": "plans_pass_apple_app_store_review_with_admob_ads_ios_suggested_execution_order",
+      "community": 70,
+      "norm_label": "suggested execution order"
+    },
+    {
+      "label": "todos.md",
+      "file_type": "document",
+      "source_file": ".context/todos.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "context_todos",
+      "community": 106,
+      "norm_label": "todos.md"
+    },
+    {
       "label": "AGENTS.md",
       "file_type": "document",
       "source_file": "AGENTS.md",
@@ -17814,6 +17994,76 @@
       "norm_label": "application"
     },
     {
+      "label": "RELEASE_NOTES_v4.0.0.md",
+      "file_type": "document",
+      "source_file": "RELEASE_NOTES_v4.0.0.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "release_notes_v4_0_0",
+      "community": 99,
+      "norm_label": "release_notes_v4.0.0.md"
+    },
+    {
+      "label": "v4.0.0 \u2014 Release Notes (Google Play)",
+      "file_type": "document",
+      "source_file": "RELEASE_NOTES_v4.0.0.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "release_notes_v4_0_0_v4_0_0_release_notes_google_play",
+      "community": 99,
+      "norm_label": "v4.0.0 \u2014 release notes (google play)"
+    },
+    {
+      "label": "\ud83d\udcf1 Play Store changelog (short \u2014 under the 500-char limit)",
+      "file_type": "document",
+      "source_file": "RELEASE_NOTES_v4.0.0.md",
+      "source_location": "L8",
+      "_origin": "ast",
+      "id": "release_notes_v4_0_0_play_store_changelog_short_under_the_500_char_limit",
+      "community": 99,
+      "norm_label": "\ud83d\udcf1 play store changelog (short \u2014 under the 500-char limit)"
+    },
+    {
+      "label": "\ud83d\udcdd Full \"What's New\" (expanded \u2014 website / GitHub release)",
+      "file_type": "document",
+      "source_file": "RELEASE_NOTES_v4.0.0.md",
+      "source_location": "L27",
+      "_origin": "ast",
+      "id": "release_notes_v4_0_0_full_what_s_new_expanded_website_github_release",
+      "community": 99,
+      "norm_label": "\ud83d\udcdd full \"what's new\" (expanded \u2014 website / github release)"
+    },
+    {
+      "label": "\ud83d\udd25 The stuff you'll notice first",
+      "file_type": "document",
+      "source_file": "RELEASE_NOTES_v4.0.0.md",
+      "source_location": "L31",
+      "_origin": "ast",
+      "id": "release_notes_v4_0_0_the_stuff_you_ll_notice_first",
+      "community": 99,
+      "norm_label": "\ud83d\udd25 the stuff you'll notice first"
+    },
+    {
+      "label": "\ud83d\udc4d Genuinely handy",
+      "file_type": "document",
+      "source_file": "RELEASE_NOTES_v4.0.0.md",
+      "source_location": "L44",
+      "_origin": "ast",
+      "id": "release_notes_v4_0_0_genuinely_handy",
+      "community": 99,
+      "norm_label": "\ud83d\udc4d genuinely handy"
+    },
+    {
+      "label": "\u2728 Nice to have",
+      "file_type": "document",
+      "source_file": "RELEASE_NOTES_v4.0.0.md",
+      "source_location": "L52",
+      "_origin": "ast",
+      "id": "release_notes_v4_0_0_nice_to_have",
+      "community": 99,
+      "norm_label": "\u2728 nice to have"
+    },
+    {
       "label": "WASM_WEB_SUPPORT.md",
       "file_type": "document",
       "source_file": "WASM_WEB_SUPPORT.md",
@@ -18002,6 +18252,86 @@
       "id": "docs_design_system_history",
       "community": 47,
       "norm_label": "history"
+    },
+    {
+      "label": "APP_STORE_PRIVACY_CHECKLIST.md",
+      "file_type": "document",
+      "source_file": "iosApp/APP_STORE_PRIVACY_CHECKLIST.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "iosapp_app_store_privacy_checklist",
+      "community": 94,
+      "norm_label": "app_store_privacy_checklist.md"
+    },
+    {
+      "label": "App Store Review \u2014 Ads / Privacy Checklist (iOS)",
+      "file_type": "document",
+      "source_file": "iosApp/APP_STORE_PRIVACY_CHECKLIST.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "iosapp_app_store_privacy_checklist_app_store_review_ads_privacy_checklist_ios",
+      "community": 94,
+      "norm_label": "app store review \u2014 ads / privacy checklist (ios)"
+    },
+    {
+      "label": "Code side \u2014 already done (for reference)",
+      "file_type": "document",
+      "source_file": "iosApp/APP_STORE_PRIVACY_CHECKLIST.md",
+      "source_location": "L8",
+      "_origin": "ast",
+      "id": "iosapp_app_store_privacy_checklist_code_side_already_done_for_reference",
+      "community": 94,
+      "norm_label": "code side \u2014 already done (for reference)"
+    },
+    {
+      "label": "B1 \u2014 App Privacy \"nutrition label\"  (App Store Connect \u2192 App Privacy)",
+      "file_type": "document",
+      "source_file": "iosApp/APP_STORE_PRIVACY_CHECKLIST.md",
+      "source_location": "L16",
+      "_origin": "ast",
+      "id": "iosapp_app_store_privacy_checklist_b1_app_privacy_nutrition_label_app_store_connect_app_privacy",
+      "community": 94,
+      "norm_label": "b1 \u2014 app privacy \"nutrition label\"  (app store connect \u2192 app privacy)"
+    },
+    {
+      "label": "B2 \u2014 Make the ATT prompt reviewable",
+      "file_type": "document",
+      "source_file": "iosApp/APP_STORE_PRIVACY_CHECKLIST.md",
+      "source_location": "L25",
+      "_origin": "ast",
+      "id": "iosapp_app_store_privacy_checklist_b2_make_the_att_prompt_reviewable",
+      "community": 94,
+      "norm_label": "b2 \u2014 make the att prompt reviewable"
+    },
+    {
+      "label": "B3 \u2014 Privacy Policy URL  (mandatory for ad-serving apps)",
+      "file_type": "document",
+      "source_file": "iosApp/APP_STORE_PRIVACY_CHECKLIST.md",
+      "source_location": "L32",
+      "_origin": "ast",
+      "id": "iosapp_app_store_privacy_checklist_b3_privacy_policy_url_mandatory_for_ad_serving_apps",
+      "community": 94,
+      "norm_label": "b3 \u2014 privacy policy url  (mandatory for ad-serving apps)"
+    },
+    {
+      "label": "Flag (separate from ads, verify before release)",
+      "file_type": "document",
+      "source_file": "iosApp/APP_STORE_PRIVACY_CHECKLIST.md",
+      "source_location": "L36",
+      "_origin": "ast",
+      "id": "iosapp_app_store_privacy_checklist_flag_separate_from_ads_verify_before_release",
+      "community": 94,
+      "norm_label": "flag (separate from ads, verify before release)"
+    },
+    {
+      "label": "Final parity check before submitting",
+      "file_type": "document",
+      "source_file": "iosApp/APP_STORE_PRIVACY_CHECKLIST.md",
+      "source_location": "L40",
+      "_origin": "ast",
+      "id": "iosapp_app_store_privacy_checklist_final_parity_check_before_submitting",
+      "community": 94,
+      "norm_label": "final parity check before submitting"
     },
     {
       "label": "README.md",
@@ -21122,9 +21452,9 @@
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/LastViewedPhotoStore.kt",
       "source_location": "L11",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "data_lastviewedphotostore",
-      "target": "data_lastviewedphotostore_lastviewedphotostore",
-      "confidence_score": 1.0
+      "target": "data_lastviewedphotostore_lastviewedphotostore"
     },
     {
       "relation": "method",
@@ -21132,9 +21462,9 @@
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/LastViewedPhotoStore.kt",
       "source_location": "L19",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "data_lastviewedphotostore_lastviewedphotostore",
-      "target": "data_lastviewedphotostore_lastviewedphotostore_consume",
-      "confidence_score": 1.0
+      "target": "data_lastviewedphotostore_lastviewedphotostore_consume"
     },
     {
       "relation": "method",
@@ -21142,9 +21472,9 @@
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/LastViewedPhotoStore.kt",
       "source_location": "L14",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "data_lastviewedphotostore_lastviewedphotostore",
-      "target": "data_lastviewedphotostore_lastviewedphotostore_set",
-      "confidence_score": 1.0
+      "target": "data_lastviewedphotostore_lastviewedphotostore_set"
     },
     {
       "relation": "references",
@@ -21153,9 +21483,9 @@
       "source_location": "L12",
       "weight": 1.0,
       "context": "field",
+      "confidence_score": 1.0,
       "source": "data_lastviewedphotostore_lastviewedphotostore",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_data_lastviewedphotostore_kt_string",
-      "confidence_score": 1.0
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_data_lastviewedphotostore_kt_string"
     },
     {
       "relation": "references",
@@ -21164,9 +21494,9 @@
       "source_location": "L19",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "data_lastviewedphotostore_lastviewedphotostore_consume",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_data_lastviewedphotostore_kt_string",
-      "confidence_score": 1.0
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_data_lastviewedphotostore_kt_string"
     },
     {
       "relation": "references",
@@ -21175,9 +21505,9 @@
       "source_location": "L14",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "data_lastviewedphotostore_lastviewedphotostore_set",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_data_lastviewedphotostore_kt_string",
-      "confidence_score": 1.0
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_data_lastviewedphotostore_kt_string"
     },
     {
       "relation": "contains",
@@ -31680,9 +32010,9 @@
       "source_location": "L123",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "screens_favoritescreen_favoritephotoscontent",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_favoritescreen_kt_lazystaggeredgridstate",
-      "confidence_score": 1.0
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_favoritescreen_kt_lazystaggeredgridstate"
     },
     {
       "relation": "references",
@@ -33683,9 +34013,9 @@
       "source_location": "L103",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "screens_popularscreen_popularphotoscontent",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_popularscreen_kt_lazystaggeredgridstate",
-      "confidence_score": 1.0
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_popularscreen_kt_lazystaggeredgridstate"
     },
     {
       "relation": "references",
@@ -38169,9 +38499,9 @@
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/FavoriteImagesViewModel.kt",
       "source_location": "L43",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "viewmodels_favoriteimagesviewmodel_favoriteimagesviewmodel",
-      "target": "viewmodels_favoriteimagesviewmodel_favoriteimagesviewmodel_consumelastviewedphotoid",
-      "confidence_score": 1.0
+      "target": "viewmodels_favoriteimagesviewmodel_favoriteimagesviewmodel_consumelastviewedphotoid"
     },
     {
       "relation": "method",
@@ -38221,9 +38551,9 @@
       "source_location": "L43",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "viewmodels_favoriteimagesviewmodel_favoriteimagesviewmodel_consumelastviewedphotoid",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_favoriteimagesviewmodel_kt_string",
-      "confidence_score": 1.0
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_favoriteimagesviewmodel_kt_string"
     },
     {
       "relation": "references",
@@ -39543,9 +39873,9 @@
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/PopularPhotosViewModel.kt",
       "source_location": "L36",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "viewmodels_popularphotosviewmodel_popularphotosviewmodel",
-      "target": "viewmodels_popularphotosviewmodel_popularphotosviewmodel_consumelastviewedphotoid",
-      "confidence_score": 1.0
+      "target": "viewmodels_popularphotosviewmodel_popularphotosviewmodel_consumelastviewedphotoid"
     },
     {
       "relation": "method",
@@ -39575,9 +39905,9 @@
       "source_location": "L36",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "viewmodels_popularphotosviewmodel_popularphotosviewmodel_consumelastviewedphotoid",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_popularphotosviewmodel_kt_string",
-      "confidence_score": 1.0
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_popularphotosviewmodel_kt_string"
     },
     {
       "relation": "contains",
@@ -46433,6 +46763,166 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "plans_pass_apple_app_store_review_with_admob_ads_ios",
+      "target": "plans_pass_apple_app_store_review_with_admob_ads_ios_plan_pass_apple_app_store_review_with_admob_ads_ios",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "plans_pass_apple_app_store_review_with_admob_ads_ios_plan_pass_apple_app_store_review_with_admob_ads_ios",
+      "target": "plans_pass_apple_app_store_review_with_admob_ads_ios_context",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L109",
+      "weight": 1.0,
+      "source": "plans_pass_apple_app_store_review_with_admob_ads_ios_plan_pass_apple_app_store_review_with_admob_ads_ios",
+      "target": "plans_pass_apple_app_store_review_with_admob_ads_ios_out_of_scope_flag_only",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L30",
+      "weight": 1.0,
+      "source": "plans_pass_apple_app_store_review_with_admob_ads_ios_plan_pass_apple_app_store_review_with_admob_ads_ios",
+      "target": "plans_pass_apple_app_store_review_with_admob_ads_ios_part_a_code_config_changes_in_this_repo",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L84",
+      "weight": 1.0,
+      "source": "plans_pass_apple_app_store_review_with_admob_ads_ios_plan_pass_apple_app_store_review_with_admob_ads_ios",
+      "target": "plans_pass_apple_app_store_review_with_admob_ads_ios_part_b_app_store_connect_no_code_do_in_the_web_console",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L131",
+      "weight": 1.0,
+      "source": "plans_pass_apple_app_store_review_with_admob_ads_ios_plan_pass_apple_app_store_review_with_admob_ads_ios",
+      "target": "plans_pass_apple_app_store_review_with_admob_ads_ios_suggested_execution_order",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L116",
+      "weight": 1.0,
+      "source": "plans_pass_apple_app_store_review_with_admob_ads_ios_plan_pass_apple_app_store_review_with_admob_ads_ios",
+      "target": "plans_pass_apple_app_store_review_with_admob_ads_ios_verification_end_to_end",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "plans_pass_apple_app_store_review_with_admob_ads_ios_context",
+      "target": "plans_pass_apple_app_store_review_with_admob_ads_ios_already_in_place_verified_do_not_touch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L21",
+      "weight": 1.0,
+      "source": "plans_pass_apple_app_store_review_with_admob_ads_ios_context",
+      "target": "plans_pass_apple_app_store_review_with_admob_ads_ios_the_gaps_this_plan_closes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L32",
+      "weight": 1.0,
+      "source": "plans_pass_apple_app_store_review_with_admob_ads_ios_part_a_code_config_changes_in_this_repo",
+      "target": "plans_pass_apple_app_store_review_with_admob_ads_ios_a1_create_the_app_privacy_manifest_iosapp_iosapp_privacyinfo_xcprivacy_critical",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L59",
+      "weight": 1.0,
+      "source": "plans_pass_apple_app_store_review_with_admob_ads_ios_part_a_code_config_changes_in_this_repo",
+      "target": "plans_pass_apple_app_store_review_with_admob_ads_ios_a2_expand_skadnetworkitems_in_info_plist_38_44_revenue_user_opted_in",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L66",
+      "weight": 1.0,
+      "source": "plans_pass_apple_app_store_review_with_admob_ads_ios_part_a_code_config_changes_in_this_repo",
+      "target": "plans_pass_apple_app_store_review_with_admob_ads_ios_a3_harden_att_timing_in_marsroverapp_swift_hardening",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L75",
+      "weight": 1.0,
+      "source": "plans_pass_apple_app_store_review_with_admob_ads_ios_part_a_code_config_changes_in_this_repo",
+      "target": "plans_pass_apple_app_store_review_with_admob_ads_ios_a4_sanity_check_version_strings_minor",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L88",
+      "weight": 1.0,
+      "source": "plans_pass_apple_app_store_review_with_admob_ads_ios_part_b_app_store_connect_no_code_do_in_the_web_console",
+      "target": "plans_pass_apple_app_store_review_with_admob_ads_ios_b1_fill_out_the_app_privacy_nutrition_label_critical",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L95",
+      "weight": 1.0,
+      "source": "plans_pass_apple_app_store_review_with_admob_ads_ios_part_b_app_store_connect_no_code_do_in_the_web_console",
+      "target": "plans_pass_apple_app_store_review_with_admob_ads_ios_b2_verify_the_att_prompt_is_reviewable",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".context/plans/pass-apple-app-store-review-with-admob-ads-ios.md",
+      "source_location": "L102",
+      "weight": 1.0,
+      "source": "plans_pass_apple_app_store_review_with_admob_ads_ios_part_b_app_store_connect_no_code_do_in_the_web_console",
+      "target": "plans_pass_apple_app_store_review_with_admob_ads_ios_b3_privacy_policy_url",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "AGENTS.md",
       "source_location": "L1",
       "weight": 1.0,
@@ -46725,6 +47215,66 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "RELEASE_NOTES_v4.0.0.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "release_notes_v4_0_0",
+      "target": "release_notes_v4_0_0_v4_0_0_release_notes_google_play",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "RELEASE_NOTES_v4.0.0.md",
+      "source_location": "L27",
+      "weight": 1.0,
+      "source": "release_notes_v4_0_0_v4_0_0_release_notes_google_play",
+      "target": "release_notes_v4_0_0_full_what_s_new_expanded_website_github_release",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "RELEASE_NOTES_v4.0.0.md",
+      "source_location": "L8",
+      "weight": 1.0,
+      "source": "release_notes_v4_0_0_v4_0_0_release_notes_google_play",
+      "target": "release_notes_v4_0_0_play_store_changelog_short_under_the_500_char_limit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "RELEASE_NOTES_v4.0.0.md",
+      "source_location": "L44",
+      "weight": 1.0,
+      "source": "release_notes_v4_0_0_full_what_s_new_expanded_website_github_release",
+      "target": "release_notes_v4_0_0_genuinely_handy",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "RELEASE_NOTES_v4.0.0.md",
+      "source_location": "L52",
+      "weight": 1.0,
+      "source": "release_notes_v4_0_0_full_what_s_new_expanded_website_github_release",
+      "target": "release_notes_v4_0_0_nice_to_have",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "RELEASE_NOTES_v4.0.0.md",
+      "source_location": "L31",
+      "weight": 1.0,
+      "source": "release_notes_v4_0_0_full_what_s_new_expanded_website_github_release",
+      "target": "release_notes_v4_0_0_the_stuff_you_ll_notice_first",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "WASM_WEB_SUPPORT.md",
       "source_location": "L1",
       "weight": 1.0,
@@ -46891,6 +47441,76 @@
       "confidence_score": 1.0,
       "source": "docs_design_system_rovers_variant_a_refined_list_row",
       "target": "docs_design_system_handoff_design_token_app_token_mapping"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "iosApp/APP_STORE_PRIVACY_CHECKLIST.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "iosapp_app_store_privacy_checklist",
+      "target": "iosapp_app_store_privacy_checklist_app_store_review_ads_privacy_checklist_ios",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "iosApp/APP_STORE_PRIVACY_CHECKLIST.md",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "iosapp_app_store_privacy_checklist_app_store_review_ads_privacy_checklist_ios",
+      "target": "iosapp_app_store_privacy_checklist_b1_app_privacy_nutrition_label_app_store_connect_app_privacy",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "iosApp/APP_STORE_PRIVACY_CHECKLIST.md",
+      "source_location": "L25",
+      "weight": 1.0,
+      "source": "iosapp_app_store_privacy_checklist_app_store_review_ads_privacy_checklist_ios",
+      "target": "iosapp_app_store_privacy_checklist_b2_make_the_att_prompt_reviewable",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "iosApp/APP_STORE_PRIVACY_CHECKLIST.md",
+      "source_location": "L32",
+      "weight": 1.0,
+      "source": "iosapp_app_store_privacy_checklist_app_store_review_ads_privacy_checklist_ios",
+      "target": "iosapp_app_store_privacy_checklist_b3_privacy_policy_url_mandatory_for_ad_serving_apps",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "iosApp/APP_STORE_PRIVACY_CHECKLIST.md",
+      "source_location": "L8",
+      "weight": 1.0,
+      "source": "iosapp_app_store_privacy_checklist_app_store_review_ads_privacy_checklist_ios",
+      "target": "iosapp_app_store_privacy_checklist_code_side_already_done_for_reference",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "iosApp/APP_STORE_PRIVACY_CHECKLIST.md",
+      "source_location": "L40",
+      "weight": 1.0,
+      "source": "iosapp_app_store_privacy_checklist_app_store_review_ads_privacy_checklist_ios",
+      "target": "iosapp_app_store_privacy_checklist_final_parity_check_before_submitting",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "iosApp/APP_STORE_PRIVACY_CHECKLIST.md",
+      "source_location": "L36",
+      "weight": 1.0,
+      "source": "iosapp_app_store_privacy_checklist_app_store_review_ads_privacy_checklist_ios",
+      "target": "iosapp_app_store_privacy_checklist_flag_separate_from_ads_verify_before_release",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -47190,5 +47810,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "7b00ce815727a67e0546c951c8a6f83447802ccb"
+  "built_at_commit": "6240b29371288e5e76893e85e93ec00d59e5c56e"
 }
