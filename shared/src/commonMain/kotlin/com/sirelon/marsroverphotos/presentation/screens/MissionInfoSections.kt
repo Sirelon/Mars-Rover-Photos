@@ -65,6 +65,12 @@ import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.presentation.ui.StatusBadge
 import com.sirelon.marsroverphotos.presentation.ui.painter
+import com.sirelon.marsroverphotos.presentation.ui.sharedRoverBadge
+import com.sirelon.marsroverphotos.presentation.ui.sharedRoverCameras
+import com.sirelon.marsroverphotos.presentation.ui.sharedRoverFunFact
+import com.sirelon.marsroverphotos.presentation.ui.sharedRoverImage
+import com.sirelon.marsroverphotos.presentation.ui.sharedRoverName
+import com.sirelon.marsroverphotos.presentation.ui.sharedRoverObjectives
 import com.sirelon.marsroverphotos.presentation.viewmodels.MilestoneType
 import com.sirelon.marsroverphotos.presentation.viewmodels.MissionInfoState
 import com.sirelon.marsroverphotos.presentation.viewmodels.TimelineMilestone
@@ -133,7 +139,7 @@ internal fun MissionInfoContent(
                 ) {
                     SectionHeader("Cameras & Instruments")
                     if (isMediumPlus) {
-                        CamerasGrid(cameras = state.cameras, onCameraClick = onCameraClick)
+                        CamerasGrid(cameras = state.cameras, onCameraClick = onCameraClick, modifier = Modifier.sharedRoverCameras(state.rover.id))
                     } else {
                         V1CamerasAccordion(cameras = state.cameras, onCameraClick = onCameraClick)
                     }
@@ -167,6 +173,7 @@ internal fun MissionInfoContent(
                             V1Objectives(
                                 objectives = state.missionFacts.objectives,
                                 twoCol = isMediumPlus,
+                                modifier = Modifier.sharedRoverObjectives(state.rover.id),
                             )
                         }
                     }
@@ -181,7 +188,7 @@ internal fun MissionInfoContent(
                             verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
                         ) {
                             SectionHeader("Did You Know?")
-                            FunFact(text = fact)
+                            FunFact(text = fact, modifier = Modifier.sharedRoverFunFact(state.rover.id))
                         }
                     }
                 }
@@ -239,7 +246,11 @@ private fun MissionHeroSection(rover: Rover, onBack: (() -> Unit)?) {
         )
     }
     Box(modifier = Modifier.fillMaxWidth()) {
-        RoverImageCard(rover = rover, aspectRatio = 16f / 9f)
+        RoverImageCard(
+            rover = rover,
+            aspectRatio = 16f / 9f,
+            modifier = Modifier.sharedRoverImage(rover.id),
+        )
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -275,8 +286,9 @@ private fun MissionHeroSection(rover: Rover, onBack: (() -> Unit)?) {
                 color = Color.White,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.sharedRoverName(rover.id),
             )
-            BadgeRow {
+            BadgeRow(modifier = Modifier.sharedRoverBadge(rover.id)) {
                 if (rover.isActive) StatusBadge("Active", activeStatusColor())
                 else AppBadge(rover.status.replaceFirstChar { it.uppercaseChar() })
             }
@@ -395,9 +407,9 @@ private fun StatCard(label: String, value: String, modifier: Modifier = Modifier
 // ── Objectives ────────────────────────────────────────────────────────────────
 
 @Composable
-internal fun V1Objectives(objectives: List<String>, twoCol: Boolean = false) {
+internal fun V1Objectives(objectives: List<String>, twoCol: Boolean = false, modifier: Modifier = Modifier) {
     if (twoCol) {
-        Column(verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)) {
+        Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)) {
             objectives.chunked(2).forEach { pair ->
                 Row(horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)) {
                     pair.forEach { obj ->
@@ -408,7 +420,7 @@ internal fun V1Objectives(objectives: List<String>, twoCol: Boolean = false) {
             }
         }
     } else {
-        Column(verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)) {
+        Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)) {
             objectives.forEachIndexed { i, obj -> ObjectiveRow(index = i, text = obj) }
         }
     }
@@ -534,8 +546,9 @@ private fun V1CamerasAccordion(
 internal fun CamerasGrid(
     cameras: ImmutableList<CameraSpec>,
     onCameraClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    AppOutlinedCard {
+    AppOutlinedCard(modifier = modifier) {
         Row(
             modifier = Modifier.padding(AppSpacing.lg),
             verticalAlignment = Alignment.CenterVertically,

@@ -37,6 +37,12 @@ import com.sirelon.marsroverphotos.presentation.ui.BadgeRow
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.presentation.ui.StatusBadge
+import com.sirelon.marsroverphotos.presentation.ui.sharedRoverBadge
+import com.sirelon.marsroverphotos.presentation.ui.sharedRoverCameras
+import com.sirelon.marsroverphotos.presentation.ui.sharedRoverFunFact
+import com.sirelon.marsroverphotos.presentation.ui.sharedRoverImage
+import com.sirelon.marsroverphotos.presentation.ui.sharedRoverName
+import com.sirelon.marsroverphotos.presentation.ui.sharedRoverObjectives
 import com.sirelon.marsroverphotos.presentation.viewmodels.MilestoneType
 import com.sirelon.marsroverphotos.presentation.viewmodels.MissionInfoState
 import com.sirelon.marsroverphotos.presentation.viewmodels.TimelineMilestone
@@ -64,7 +70,9 @@ internal fun ExpandedLayout(
                 RoverImageCard(
                     rover = state.rover,
                     aspectRatio = 4f / 3f,
-                    modifier = Modifier.clip(MaterialTheme.shapes.large),
+                    modifier = Modifier
+                        .sharedRoverImage(state.rover.id)
+                        .clip(MaterialTheme.shapes.large),
                 )
             }
             item { RoverIdentity(state) }
@@ -76,7 +84,7 @@ internal fun ExpandedLayout(
                 )
             }
             state.missionFacts?.funFacts?.firstOrNull()?.let { fact ->
-                item { FunFact(text = fact) }
+                item { FunFact(text = fact, modifier = Modifier.sharedRoverFunFact(state.rover.id)) }
             }
         }
 
@@ -102,14 +110,14 @@ internal fun ExpandedLayout(
             if (state.missionFacts?.objectives?.isNotEmpty() == true) {
                 item {
                     DesktopLogSection("Mission Objectives") {
-                        V1Objectives(objectives = state.missionFacts.objectives)
+                        V1Objectives(objectives = state.missionFacts.objectives, modifier = Modifier.sharedRoverObjectives(state.rover.id))
                     }
                 }
             }
             if (state.cameras.isNotEmpty()) {
                 item {
                     DesktopLogSection("Cameras & Instruments") {
-                        CamerasGrid(cameras = state.cameras, onCameraClick = onCameraClick)
+                        CamerasGrid(cameras = state.cameras, onCameraClick = onCameraClick, modifier = Modifier.sharedRoverCameras(state.rover.id))
                     }
                 }
             }
@@ -130,8 +138,9 @@ private fun RoverIdentity(state: MissionInfoState) {
             text = state.rover.name,
             style = nameStyle,
             color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.sharedRoverName(state.rover.id),
         )
-        BadgeRow {
+        BadgeRow(modifier = Modifier.sharedRoverBadge(state.rover.id)) {
             if (state.rover.isActive) StatusBadge("Active", activeStatusColor())
             else AppBadge(state.rover.status.replaceFirstChar { it.uppercaseChar() })
         }

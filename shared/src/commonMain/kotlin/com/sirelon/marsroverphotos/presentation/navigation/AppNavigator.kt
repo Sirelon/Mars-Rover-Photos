@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos.presentation.navigation
 
+import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.staticCompositionLocalOf
@@ -50,3 +51,7 @@ val LocalAppNavigator = staticCompositionLocalOf<AppNavigator> {
 // sharedPhoto/sharedFavorite without a SharedTransitionLayout (the modifiers no-op when it's null).
 @OptIn(ExperimentalSharedTransitionApi::class)
 val LocalSharedTransitionScope = staticCompositionLocalOf<SharedTransitionScope?> { null }
+
+// Provided by screens that run their own AnimatedContent layout transition (e.g. Mission Info
+// compact ↔ expanded). Null-defaulted so sharedRoverImage/sharedRoverName no-op in previews.
+val LocalMissionLayoutAnimatedVisibilityScope = staticCompositionLocalOf<AnimatedVisibilityScope?> { null }

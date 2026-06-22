@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
+import com.sirelon.marsroverphotos.presentation.navigation.LocalMissionLayoutAnimatedVisibilityScope
 import com.sirelon.marsroverphotos.presentation.navigation.LocalSharedTransitionScope
 import com.sirelon.marsroverphotos.presentation.theme.AppMotion
 
@@ -73,6 +74,102 @@ fun Modifier.sharedFavorite(id: String, enabled: Boolean = true): Modifier {
             sharedContentState = rememberSharedContentState(key = "photo_favorite_$id"),
             animatedVisibilityScope = animatedScope,
             boundsTransform = AppMotion.FavoriteBoundsTransform,
+        )
+    }
+}
+
+/**
+ * Shared bounds for the rover hero/portrait image between the Mission Info compact and expanded
+ * layouts. Uses `sharedBounds` because the two ends have different aspect ratios (16:9 vs 4:3).
+ */
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+fun Modifier.sharedRoverImage(roverId: Long): Modifier {
+    val shared = LocalSharedTransitionScope.current ?: return this
+    val animatedScope = LocalMissionLayoutAnimatedVisibilityScope.current ?: return this
+    return with(shared) {
+        sharedBounds(
+            sharedContentState = rememberSharedContentState(key = "mission_rover_image_$roverId"),
+            animatedVisibilityScope = animatedScope,
+            boundsTransform = AppMotion.PhotoBoundsTransform,
+        )
+    }
+}
+
+/**
+ * Shared bounds for the rover name text between the Mission Info compact (hero overlay) and
+ * expanded (identity card) layouts. Uses `sharedBounds` because the text styles differ.
+ */
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+fun Modifier.sharedRoverName(roverId: Long): Modifier {
+    val shared = LocalSharedTransitionScope.current ?: return this
+    val animatedScope = LocalMissionLayoutAnimatedVisibilityScope.current ?: return this
+    return with(shared) {
+        sharedBounds(
+            sharedContentState = rememberSharedContentState(key = "mission_rover_name_$roverId"),
+            animatedVisibilityScope = animatedScope,
+            boundsTransform = AppMotion.PhotoBoundsTransform,
+        )
+    }
+}
+
+/** Shared bounds for the rover status badge (flies with the name between hero and identity card). */
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+fun Modifier.sharedRoverBadge(roverId: Long): Modifier {
+    val shared = LocalSharedTransitionScope.current ?: return this
+    val animatedScope = LocalMissionLayoutAnimatedVisibilityScope.current ?: return this
+    return with(shared) {
+        sharedBounds(
+            sharedContentState = rememberSharedContentState(key = "mission_rover_badge_$roverId"),
+            animatedVisibilityScope = animatedScope,
+            boundsTransform = AppMotion.PhotoBoundsTransform,
+        )
+    }
+}
+
+/** Shared bounds for the fun-fact card (same composable in both layouts, morphs to new position). */
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+fun Modifier.sharedRoverFunFact(roverId: Long): Modifier {
+    val shared = LocalSharedTransitionScope.current ?: return this
+    val animatedScope = LocalMissionLayoutAnimatedVisibilityScope.current ?: return this
+    return with(shared) {
+        sharedBounds(
+            sharedContentState = rememberSharedContentState(key = "mission_rover_funfact_$roverId"),
+            animatedVisibilityScope = animatedScope,
+            boundsTransform = AppMotion.PhotoBoundsTransform,
+        )
+    }
+}
+
+/** Shared bounds for the objectives section (exact same composable in both layouts). */
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+fun Modifier.sharedRoverObjectives(roverId: Long): Modifier {
+    val shared = LocalSharedTransitionScope.current ?: return this
+    val animatedScope = LocalMissionLayoutAnimatedVisibilityScope.current ?: return this
+    return with(shared) {
+        sharedBounds(
+            sharedContentState = rememberSharedContentState(key = "mission_rover_objectives_$roverId"),
+            animatedVisibilityScope = animatedScope,
+            boundsTransform = AppMotion.PhotoBoundsTransform,
+        )
+    }
+}
+
+/** Shared bounds for the cameras grid (exact same composable in both layouts). */
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+fun Modifier.sharedRoverCameras(roverId: Long): Modifier {
+    val shared = LocalSharedTransitionScope.current ?: return this
+    val animatedScope = LocalMissionLayoutAnimatedVisibilityScope.current ?: return this
+    return with(shared) {
+        sharedBounds(
+            sharedContentState = rememberSharedContentState(key = "mission_rover_cameras_$roverId"),
+            animatedVisibilityScope = animatedScope,
+            boundsTransform = AppMotion.PhotoBoundsTransform,
         )
     }
 }
