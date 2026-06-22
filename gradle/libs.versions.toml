@@ -75,7 +75,7 @@ playReview = "2.0.2"
 
 # Navigation 3
 navigation3 = "1.1.1"
-lifecycle-navigation3 = "2.11.0-rc01"
+lifecycle-navigation3 = "2.11.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
