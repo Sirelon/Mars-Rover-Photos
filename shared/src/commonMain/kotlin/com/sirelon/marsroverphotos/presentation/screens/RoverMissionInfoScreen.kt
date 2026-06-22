@@ -139,6 +139,7 @@ private fun RoverMissionInfoScreen(
         AnimatedContent(
             targetState = MissionLayoutKey(state.missionInfoState, isExpanded, isMediumPlus),
             label = "MissionInfoContent",
+            contentKey = { key -> Triple(key.data != null, key.isExpanded, key.isMediumPlus) },
             modifier = Modifier.padding(paddingValues),
             transitionSpec = {
                 val dur = AppMotion.SharedContainerMs

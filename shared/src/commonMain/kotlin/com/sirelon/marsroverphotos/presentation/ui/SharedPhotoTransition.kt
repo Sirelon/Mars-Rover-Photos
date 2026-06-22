@@ -109,7 +109,7 @@ fun Modifier.sharedRoverName(roverId: Long): Modifier {
         sharedBounds(
             sharedContentState = rememberSharedContentState(key = "mission_rover_name_$roverId"),
             animatedVisibilityScope = animatedScope,
-            boundsTransform = AppMotion.PhotoBoundsTransform,
+            boundsTransform = AppMotion.TextBoundsTransform,
         )
     }
 }
@@ -124,7 +124,7 @@ fun Modifier.sharedRoverBadge(roverId: Long): Modifier {
         sharedBounds(
             sharedContentState = rememberSharedContentState(key = "mission_rover_badge_$roverId"),
             animatedVisibilityScope = animatedScope,
-            boundsTransform = AppMotion.PhotoBoundsTransform,
+            boundsTransform = AppMotion.TextBoundsTransform,
         )
     }
 }

@@ -3,6 +3,7 @@ package com.sirelon.marsroverphotos.presentation.theme
 import androidx.compose.animation.BoundsTransform
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 
 /**
@@ -40,4 +41,8 @@ object AppMotion {
     /** Bounds spec for the favorite heart shared element — same curve as the photo. */
     @OptIn(ExperimentalSharedTransitionApi::class)
     val FavoriteBoundsTransform = BoundsTransform { _, _ -> tween(SharedContainerMs, easing = Emphasized) }
+
+    /** Bounds spec for text/badge elements — linear tween avoids spring overshoot on text bounds. */
+    @OptIn(ExperimentalSharedTransitionApi::class)
+    val TextBoundsTransform = BoundsTransform { _, _ -> tween(SharedContainerMs, easing = FastOutSlowInEasing) }
 }
