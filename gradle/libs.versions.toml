@@ -60,7 +60,7 @@ gitliveFirebase = "2.4.0"
 firebaseBom = "34.14.1"
 firebaseAnalyticsVersion = "23.2.0"
 firebaseCrashlyticsVersion = "20.0.6"
-firebaseFirestoreVersion = "26.3.0"
+firebaseFirestoreVersion = "26.4.0"
 
 # Testing
 
