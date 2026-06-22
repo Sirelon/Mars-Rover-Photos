@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos.presentation.viewmodels
 
+import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sirelon.marsroverphotos.domain.models.Rover
@@ -172,6 +173,7 @@ private sealed interface MissionFactsStatus {
 /**
  * State for the mission info screen.
  */
+@Immutable
 data class MissionInfoState(
     val rover: Rover,
     val daysActive: Long,
@@ -186,6 +188,7 @@ data class MissionInfoState(
 /**
  * Represents a milestone in the mission timeline.
  */
+@Immutable
 data class TimelineMilestone(
     val label: String,
     val date: String,

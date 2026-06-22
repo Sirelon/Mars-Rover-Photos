@@ -101,7 +101,15 @@ val navigationModule = module {
                         camera = cameraAbbrev
                     )
                 )
-            }
+            },
+            onBrowsePhotos = {
+                navigator.navigate(
+                    AppDestination.Photos(
+                        roverId = destination.roverId,
+                        camera = null,
+                    )
+                )
+            },
         )
     }
 

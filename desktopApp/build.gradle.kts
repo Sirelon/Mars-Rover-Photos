@@ -23,6 +23,9 @@ dependencies {
 
     // Compose Desktop
     implementation(compose.desktop.currentOs)
+
+    // Main dispatcher for desktop (Swing event loop)
+    implementation(libs.kotlinx.coroutines.swing)
 }
 
 compose.desktop {
