@@ -57,7 +57,7 @@ gitliveFirebase = "2.4.0"
 
 # Firebase
 # https://firebase.google.com/support/release-notes/android
-firebaseBom = "34.14.1"
+firebaseBom = "34.15.0"
 firebaseAnalyticsVersion = "23.2.0"
 firebaseCrashlyticsVersion = "20.0.6"
 firebaseFirestoreVersion = "26.3.0"
