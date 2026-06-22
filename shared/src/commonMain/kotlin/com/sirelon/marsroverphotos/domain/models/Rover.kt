@@ -41,6 +41,8 @@ data class Rover(
     val maxDate: String,
 
     @SerialName(value = "total_photos")
-    val totalPhotos: Int
-)
+    val totalPhotos: Int,
+) {
+    val isActive: Boolean get() = status.equals("active", ignoreCase = true)
+}
 
