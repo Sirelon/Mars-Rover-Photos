@@ -47,7 +47,7 @@ ktor = "3.5.0"
 kermit = "2.1.0"
 # https://github.com/InsertKoinIO/koin
 koin = "4.2.1"
-koin-compose = "4.2.1"
+koin-compose = "4.2.2"
 
 # Navigation
 navigation-compose = "2.9.2"
