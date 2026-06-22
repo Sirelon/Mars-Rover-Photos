@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material3.IconButton
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -178,7 +180,7 @@ private fun RoverMissionInfoScreen(
         ) { key ->
             CompositionLocalProvider(LocalMissionLayoutAnimatedVisibilityScope provides this) {
             when {
-                key.data == null -> CenteredProgress()
+                key.data == null -> CenteredProgress(onBack = if (!key.isMediumPlus) onBack else null)
                 key.isExpanded -> ExpandedLayout(
                     state = key.data,
                     onCameraClick = onCameraClick,
@@ -198,9 +200,24 @@ private fun RoverMissionInfoScreen(
 }
 
 @Composable
-private fun CenteredProgress() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        CircularProgressIndicator()
+private fun CenteredProgress(onBack: (() -> Unit)? = null) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        if (onBack != null) {
+            IconButton(
+                onClick = onBack,
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .statusBarsPadding()
+                    .padding(AppSpacing.lg),
+            ) {
+                MaterialSymbolIcon(
+                    symbol = MaterialSymbol.ArrowBack,
+                    contentDescription = "Back",
+                    size = AppSize.iconDefault,
+                )
+            }
+        }
     }
 }
 

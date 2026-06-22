@@ -71,6 +71,7 @@ internal fun ExpandedLayout(
                     rover = state.rover,
                     aspectRatio = 4f / 3f,
                     modifier = Modifier
+                        .fillMaxWidth()
                         .sharedRoverImage(state.rover.id)
                         .clip(MaterialTheme.shapes.large),
                 )
@@ -83,7 +84,7 @@ internal fun ExpandedLayout(
                     earthDaysActive = state.earthDaysActive,
                 )
             }
-            state.missionFacts?.funFacts?.firstOrNull()?.let { fact ->
+            state.missionFacts?.funFacts?.randomOrNull()?.let { fact ->
                 item { FunFact(text = fact, modifier = Modifier.sharedRoverFunFact(state.rover.id)) }
             }
         }
@@ -128,12 +129,12 @@ internal fun ExpandedLayout(
 // ── Left panel composables ────────────────────────────────────────────────────
 
 @Composable
-private fun RoverIdentity(state: MissionInfoState) {
+private fun RoverIdentity(state: MissionInfoState, modifier: Modifier = Modifier) {
     val baseStyle = MaterialTheme.typography.headlineMedium
     val nameStyle = remember(baseStyle) {
         baseStyle.copy(fontWeight = FontWeight.ExtraBold, letterSpacing = (-0.8).sp)
     }
-    Column(verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)) {
         Text(
             text = state.rover.name,
             style = nameStyle,
@@ -148,7 +149,7 @@ private fun RoverIdentity(state: MissionInfoState) {
 }
 
 @Composable
-private fun StatsListTable(totalPhotos: Int, daysActive: Long, earthDaysActive: Long) {
+private fun StatsListTable(totalPhotos: Int, daysActive: Long, earthDaysActive: Long, modifier: Modifier = Modifier) {
     val rows = remember(totalPhotos, daysActive, earthDaysActive) {
         listOf(
             "Total Photos" to formatThousands(totalPhotos),
@@ -156,7 +157,7 @@ private fun StatsListTable(totalPhotos: Int, daysActive: Long, earthDaysActive: 
             "Earth Days"   to formatThousands(earthDaysActive),
         )
     }
-    AppOutlinedCard {
+    AppOutlinedCard(modifier = modifier) {
         rows.forEachIndexed { i, (label, value) ->
             Row(
                 modifier = Modifier
@@ -184,12 +185,12 @@ private fun StatsListTable(totalPhotos: Int, daysActive: Long, earthDaysActive: 
 // ── Right panel composables ───────────────────────────────────────────────────
 
 @Composable
-private fun ExpeditionLogHeader() {
+private fun ExpeditionLogHeader(modifier: Modifier = Modifier) {
     val baseStyle = MaterialTheme.typography.headlineSmall
     val titleStyle = remember(baseStyle) {
         baseStyle.copy(fontWeight = FontWeight.ExtraBold, letterSpacing = (-0.5).sp)
     }
-    Column(verticalArrangement = Arrangement.spacedBy(AppSpacing.xs)) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(AppSpacing.xs)) {
         SectionLabel("Expedition Log")
         Text(
             text = "Mission Overview",
@@ -200,8 +201,8 @@ private fun ExpeditionLogHeader() {
 }
 
 @Composable
-private fun DesktopLogSection(title: String, content: @Composable () -> Unit) {
-    Column(verticalArrangement = Arrangement.spacedBy(AppSpacing.lg)) {
+private fun DesktopLogSection(title: String, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(AppSpacing.lg)) {
         Text(text = title, style = AppTypography.sectionHeader, color = MaterialTheme.colorScheme.tertiary)
         HorizontalDivider()
         content()
@@ -209,14 +210,14 @@ private fun DesktopLogSection(title: String, content: @Composable () -> Unit) {
 }
 
 @Composable
-private fun DesktopTimeline(milestones: ImmutableList<TimelineMilestone>, status: String) {
+private fun DesktopTimeline(milestones: ImmutableList<TimelineMilestone>, status: String, modifier: Modifier = Modifier) {
     val activeDotColor   = MaterialTheme.colorScheme.secondary
     val inactiveDotColor = MaterialTheme.colorScheme.secondaryContainer
     val activeIconTint   = MaterialTheme.colorScheme.onSecondary
     val inactiveIconTint = MaterialTheme.colorScheme.onSecondaryContainer
     val connectorColor   = MaterialTheme.colorScheme.outlineVariant
 
-    Column {
+    Column(modifier = modifier) {
         milestones.forEachIndexed { i, milestone ->
             val isCurrent = milestone.type == MilestoneType.CURRENT || milestone.type == MilestoneType.END
             val isLast = i == milestones.size - 1

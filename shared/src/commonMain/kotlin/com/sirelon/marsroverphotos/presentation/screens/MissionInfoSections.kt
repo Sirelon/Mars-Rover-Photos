@@ -41,7 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -179,7 +179,7 @@ internal fun MissionInfoContent(
                     }
                 }
 
-                state.missionFacts.funFacts.firstOrNull()?.let { fact ->
+                state.missionFacts.funFacts.randomOrNull()?.let { fact ->
                     item {
                         Column(
                             modifier = Modifier
@@ -226,7 +226,7 @@ internal fun RoverImageCard(
             1f to bgColor.copy(alpha = 0.96f),
         )
     }
-    Box(modifier = modifier.fillMaxWidth().aspectRatio(aspectRatio)) {
+    Box(modifier = modifier.aspectRatio(aspectRatio)) {
         Image(
             painter = rover.painter(),
             contentDescription = rover.name,
@@ -238,18 +238,18 @@ internal fun RoverImageCard(
 }
 
 @Composable
-private fun MissionHeroSection(rover: Rover, onBack: (() -> Unit)?) {
+private fun MissionHeroSection(rover: Rover, onBack: (() -> Unit)?, modifier: Modifier = Modifier) {
     val topGradient = remember {
         Brush.verticalGradient(
             0f to Color.Black.copy(alpha = 0.52f),
             0.4f to Color.Transparent,
         )
     }
-    Box(modifier = Modifier.fillMaxWidth()) {
+    Box(modifier = modifier.fillMaxWidth()) {
         RoverImageCard(
             rover = rover,
             aspectRatio = 16f / 9f,
-            modifier = Modifier.sharedRoverImage(rover.id),
+            modifier = Modifier.fillMaxWidth().sharedRoverImage(rover.id),
         )
         Box(
             modifier = Modifier
@@ -371,9 +371,9 @@ private fun TimelineCard(milestone: TimelineMilestone, modifier: Modifier = Modi
 // ── Statistics ────────────────────────────────────────────────────────────────
 
 @Composable
-private fun V1Stats(totalPhotos: Int, daysActive: Long, earthDaysActive: Long) {
+private fun V1Stats(totalPhotos: Int, daysActive: Long, earthDaysActive: Long, modifier: Modifier = Modifier) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm),
     ) {
         StatCard(label = "Total Photos", value = formatThousands(totalPhotos), modifier = Modifier.weight(1f))
@@ -410,10 +410,10 @@ private fun StatCard(label: String, value: String, modifier: Modifier = Modifier
 internal fun V1Objectives(objectives: List<String>, twoCol: Boolean = false, modifier: Modifier = Modifier) {
     if (twoCol) {
         Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)) {
-            objectives.chunked(2).forEach { pair ->
+            objectives.chunked(2).forEachIndexed { chunkIdx, pair ->
                 Row(horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)) {
-                    pair.forEach { obj ->
-                        ObjectiveCard(index = objectives.indexOf(obj), text = obj, modifier = Modifier.weight(1f))
+                    pair.forEachIndexed { colIdx, obj ->
+                        ObjectiveCard(index = chunkIdx * 2 + colIdx, text = obj, modifier = Modifier.weight(1f))
                     }
                     if (pair.size == 1) Spacer(Modifier.weight(1f))
                 }
@@ -427,8 +427,9 @@ internal fun V1Objectives(objectives: List<String>, twoCol: Boolean = false, mod
 }
 
 @Composable
-private fun ObjectiveRow(index: Int, text: String) {
+private fun ObjectiveRow(index: Int, text: String, modifier: Modifier = Modifier) {
     Row(
+        modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(AppSpacing.md),
         verticalAlignment = Alignment.Top,
     ) {
@@ -486,7 +487,7 @@ private fun V1CamerasAccordion(
     onCameraClick: (String) -> Unit,
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
-    val arrowRotation by animateFloatAsState(
+    val arrowRotation = animateFloatAsState(
         targetValue = if (expanded) 180f else 0f,
         label = "accordionArrow",
     )
@@ -521,7 +522,7 @@ private fun V1CamerasAccordion(
                 symbol = MaterialSymbol.ExpandMore,
                 contentDescription = if (expanded) "Collapse" else "Expand",
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.rotate(arrowRotation),
+                modifier = Modifier.graphicsLayer { rotationZ = arrowRotation.value },
             )
         }
 
@@ -680,7 +681,7 @@ private fun BrowsePhotosButton(onClick: () -> Unit, modifier: Modifier = Modifie
 
 /** Small uppercase accent label used inside cards (stat labels, timeline type, etc.). */
 @Composable
-internal fun SectionLabel(text: String) {
+internal fun SectionLabel(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text.uppercase(),
         style = MaterialTheme.typography.labelSmall.copy(
@@ -688,15 +689,17 @@ internal fun SectionLabel(text: String) {
             letterSpacing = 1.1.sp,
         ),
         color = MaterialTheme.colorScheme.secondary,
+        modifier = modifier,
     )
 }
 
 /** Screen-level section title, e.g. "Mission Timeline". */
 @Composable
-private fun SectionHeader(title: String) {
+private fun SectionHeader(title: String, modifier: Modifier = Modifier) {
     Text(
         text = title,
         style = AppTypography.sectionHeader,
         color = MaterialTheme.colorScheme.tertiary,
+        modifier = modifier,
     )
 }
