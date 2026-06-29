@@ -144,17 +144,17 @@ class FirebasePhotosImpl : IFirebasePhotos {
 }
 
 private fun DocumentSnapshot.toFirebasePhoto() = FirebasePhoto(
-    id = get<String>("id") ?: id,
-    sol = get<Long>("sol") ?: 0L,
-    name = get<String>("name") ?: "",
-    imageUrl = get<String>("imageUrl") ?: "",
-    earthDate = get<String>("earthDate") ?: "",
-    seeCounter = get<Long>("seeCounter") ?: 0L,
-    scaleCounter = get<Long>("scaleCounter") ?: 0L,
-    saveCounter = get<Long>("saveCounter") ?: 0L,
-    shareCounter = get<Long>("shareCounter") ?: 0L,
-    favoriteCounter = get<Long>("favoriteCounter") ?: 0L,
-    roverId = get<Long>("roverId") ?: 0L
+    id = get<String?>("id") ?: id,
+    sol = get<Long?>("sol") ?: 0L,
+    name = get<String?>("name") ?: "",
+    imageUrl = get<String?>("imageUrl") ?: "",
+    earthDate = get<String?>("earthDate") ?: "",
+    seeCounter = get<Long?>("seeCounter") ?: 0L,
+    scaleCounter = get<Long?>("scaleCounter") ?: 0L,
+    saveCounter = get<Long?>("saveCounter") ?: 0L,
+    shareCounter = get<Long?>("shareCounter") ?: 0L,
+    favoriteCounter = get<Long?>("favoriteCounter") ?: 0L,
+    roverId = get<Long?>("roverId") ?: 0L
 )
 
 private fun FirebasePhoto.withBackfilledRoverId(roverId: Long): FirebasePhoto {
