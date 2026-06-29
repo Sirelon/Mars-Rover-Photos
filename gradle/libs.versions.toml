@@ -16,7 +16,7 @@ ktx = "1.19.0"
 # https://developer.android.com/jetpack/androidx/releases/lifecycle
 lifecycle = "2.10.0"
 # https://developer.android.com/jetpack/androidx/releases/compose
-compose = "1.11.2"
+compose = "1.11.3"
 # https://developer.android.com/jetpack/androidx/releases/compose-material3
 compose-material3 = "1.5.0-alpha22"
 # https://developer.android.com/jetpack/androidx/releases/glance
@@ -42,11 +42,11 @@ kotlinx-datetime = "0.8.0"
 # https://github.com/Kotlin/kotlinx.coroutines
 kotlinx-coroutines = "1.11.0"
 # https://github.com/ktorio/ktor/releases
-ktor = "3.5.0"
+ktor = "3.5.1"
 # https://github.com/touchlab/Kermit
 kermit = "2.1.0"
 # https://github.com/InsertKoinIO/koin
-koin = "4.2.1"
+koin = "4.2.2"
 koin-compose = "4.2.2"
 
 # Navigation
@@ -60,12 +60,12 @@ gitliveFirebase = "2.4.0"
 firebaseBom = "34.15.0"
 firebaseAnalyticsVersion = "23.2.0"
 firebaseCrashlyticsVersion = "20.0.6"
-firebaseFirestoreVersion = "26.3.0"
+firebaseFirestoreVersion = "26.4.0"
 
 # Testing
 
 # Android-only libraries
-playServicesAds = "25.3.0"
+playServicesAds = "25.4.0"
 # https://developers.google.com/admob/android/privacy/release-notes
 userMessagingPlatform = "4.0.0"
 # https://github.com/usuiat/Zoomable/releases
@@ -74,8 +74,8 @@ zoomable = "2.12.0"
 playReview = "2.0.2"
 
 # Navigation 3
-navigation3 = "1.1.1"
-lifecycle-navigation3 = "2.11.0-rc01"
+navigation3 = "1.1.3"
+lifecycle-navigation3 = "2.11.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -86,7 +86,7 @@ androidx-glance-appwidget = { module = "androidx.glance:glance-appwidget", versi
 androidx-room-runtime = { group = "androidx.room3", name = "room3-runtime", version.ref = "room" }
 androidx-room-compiler = { group = "androidx.room3", name = "room3-compiler", version.ref = "room" }
 androidx-room-paging = { group = "androidx.room3", name = "room3-paging", version.ref = "room" }
-androidx-sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version = "2.7.0-alpha06" }
+androidx-sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version = "2.7.0-rc01" }
 
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "core-splashscreen" }
@@ -154,7 +154,7 @@ paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pag
 paging-testing = { module = "androidx.paging:paging-testing", version.ref = "paging" }
 
 navigation3-runtime = { group = "androidx.navigation3", name = "navigation3-runtime", version.ref = "navigation3" }
-navigation3-ui = { group = "org.jetbrains.androidx.navigation3", name = "navigation3-ui", version.ref = "navigation3" }
+navigation3-ui = { group = "org.jetbrains.androidx.navigation3", name = "navigation3-ui", version = "1.1.1" }
 lifecycle-viewmodel-navigation3 = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-navigation3", version.ref = "lifecycle-navigation3" }
 
 # Android-only Compose (used by androidApp widget/glance code)
@@ -178,7 +178,7 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 firebase-perf = { id = "com.google.firebase.firebase-perf", version = "2.0.2" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.7" }
-google-services = { id = "com.google.gms.google-services", version = "4.4.4" }
+google-services = { id = "com.google.gms.google-services", version = "4.5.0" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 room = { id = "androidx.room3", version.ref = "room" }
 
