@@ -46,7 +46,7 @@ ktor = "3.5.0"
 # https://github.com/touchlab/Kermit
 kermit = "2.1.0"
 # https://github.com/InsertKoinIO/koin
-koin = "4.2.1"
+koin = "4.2.2"
 koin-compose = "4.2.2"
 
 # Navigation
