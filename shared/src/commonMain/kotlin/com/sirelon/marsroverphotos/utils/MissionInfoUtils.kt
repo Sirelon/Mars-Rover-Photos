@@ -31,9 +31,12 @@ internal fun calculateEarthDaysActive(landingDate: String, maxDate: String): Lon
 /**
  * Build timeline milestones for a rover mission.
  * @param rover The rover to build milestones for
+ * @param landingLocation Landing site label shown alongside sol numbers, e.g. "Jezero Crater"
  * @return List of timeline milestones
  */
-internal fun buildTimelineMilestones(rover: Rover): List<TimelineMilestone> {
+internal fun buildTimelineMilestones(rover: Rover, landingLocation: String = ""): List<TimelineMilestone> {
+    // Strip the planet suffix for the compact sub-label ("Jezero Crater, Mars" → "Jezero Crater")
+    val shortLocation = landingLocation.substringBefore(",").trim().takeIf { it.isNotEmpty() }
     val milestones = mutableListOf<TimelineMilestone>()
 
     // Launch
@@ -42,7 +45,7 @@ internal fun buildTimelineMilestones(rover: Rover): List<TimelineMilestone> {
             label = "Launch",
             date = formatDisplayDate(rover.launchDate),
             sol = null,
-            type = MilestoneType.LAUNCH
+            type = MilestoneType.LAUNCH,
         )
     )
 
@@ -52,31 +55,24 @@ internal fun buildTimelineMilestones(rover: Rover): List<TimelineMilestone> {
             label = "Landing",
             date = formatDisplayDate(rover.landingDate),
             sol = 0,
-            type = MilestoneType.LANDING
+            type = MilestoneType.LANDING,
+            location = shortLocation,
         )
     )
 
-    // Current
+    // Current / End
+    val currentLabel = if (rover.status.equals("complete", ignoreCase = true)) "End" else "Current"
+    val currentType  = if (rover.status.equals("complete", ignoreCase = true)) MilestoneType.END else MilestoneType.CURRENT
+    val currentSubLabel = if (rover.isActive) shortLocation else null
     milestones.add(
         TimelineMilestone(
-            label = "Current",
+            label = currentLabel,
             date = formatDisplayDate(rover.maxDate),
             sol = rover.maxSol,
-            type = MilestoneType.CURRENT
+            type = currentType,
+            location = currentSubLabel,
         )
     )
-
-    // End (only if mission is complete)
-    if (rover.status.equals("complete", ignoreCase = true)) {
-        milestones.add(
-            TimelineMilestone(
-                label = "End",
-                date = formatDisplayDate(rover.maxDate),
-                sol = rover.maxSol,
-                type = MilestoneType.END
-            )
-        )
-    }
 
     return milestones
 }

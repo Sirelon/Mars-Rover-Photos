@@ -9,8 +9,6 @@ object RoverMissionData {
 
     /**
      * Get camera specifications for a specific rover.
-     * @param roverId The ID of the rover
-     * @return List of camera specifications
      */
     fun getCamerasForRover(roverId: Long): List<CameraSpec> {
         return when (roverId) {
@@ -21,6 +19,26 @@ object RoverMissionData {
             INSIGHT_ID -> insightCameras
             else -> emptyList()
         }
+    }
+
+    /** Landing site displayed in the mission hero and timeline (e.g. "Jezero Crater, Mars"). */
+    fun getLandingLocation(roverId: Long): String = when (roverId) {
+        CURIOSITY_ID    -> "Gale Crater, Mars"
+        OPPORTUNITY_ID  -> "Meridiani Planum, Mars"
+        SPIRIT_ID       -> "Gusev Crater, Mars"
+        PERSEVERANCE_ID -> "Jezero Crater, Mars"
+        INSIGHT_ID      -> "Elysium Planitia, Mars"
+        else            -> "Mars"
+    }
+
+    /** One-sentence mission overview shown below the hero image. */
+    fun getMissionDescription(roverId: Long): String = when (roverId) {
+        CURIOSITY_ID    -> "Exploring the habitability of ancient Mars and searching for organic molecules in Gale Crater — a 154 km-wide impact crater that once held a lake."
+        OPPORTUNITY_ID  -> "Discovered evidence of ancient water on Mars during a record-breaking 15-year roving mission across Meridiani Planum."
+        SPIRIT_ID       -> "Explored Gusev Crater and uncovered evidence of past volcanic and hydrothermal activity over a six-year surface mission."
+        PERSEVERANCE_ID -> "Hunting for signs of ancient microbial life and caching rock samples in Jezero Crater — a former lake bed that held liquid water billions of years ago."
+        INSIGHT_ID      -> "Studying the deep interior structure of Mars using seismic instruments and a burrowing heat probe at Elysium Planitia."
+        else            -> ""
     }
 
     private val curiosityCameras = listOf(

@@ -244,8 +244,8 @@ private fun RoverMissionInfoScreenLoadedPreview() {
     )
     val previewMilestones = persistentListOf(
         TimelineMilestone(label = "Launch",  date = "Nov 26, 2011", sol = null,   type = MilestoneType.LAUNCH),
-        TimelineMilestone(label = "Landing", date = "Aug 6, 2012",  sol = null,   type = MilestoneType.LANDING),
-        TimelineMilestone(label = "Today",   date = "Oct 1, 2023",  sol = 4000L,  type = MilestoneType.CURRENT),
+        TimelineMilestone(label = "Landing", date = "Aug 6, 2012",  sol = 0L,     type = MilestoneType.LANDING, location = "Gale Crater"),
+        TimelineMilestone(label = "Current", date = "Oct 1, 2023",  sol = 4000L,  type = MilestoneType.CURRENT, location = "Gale Crater"),
     )
     val previewCameras = persistentListOf(
         CameraSpec(name = "MAST", fullName = "Mast Camera",         description = "Two cameras for color imaging."),
@@ -267,6 +267,8 @@ private fun RoverMissionInfoScreenLoadedPreview() {
                 factsLoading = false,
                 factsError = null,
                 timelineMilestones = previewMilestones,
+                landingLocation = "Gale Crater, Mars",
+                missionDescription = "Exploring the habitability of ancient Mars and searching for organic molecules in Gale Crater — a 154 km-wide impact crater that once held a lake.",
             )
         ),
         onBack = {},

@@ -34,16 +34,16 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -60,6 +60,8 @@ import com.sirelon.marsroverphotos.presentation.ui.AppCard
 import com.sirelon.marsroverphotos.presentation.ui.AppFactCard
 import com.sirelon.marsroverphotos.presentation.ui.AppIconBox
 import com.sirelon.marsroverphotos.presentation.ui.AppOutlinedCard
+import com.sirelon.marsroverphotos.presentation.ui.AppSectionHeader
+import com.sirelon.marsroverphotos.presentation.ui.AppSectionLabel
 import com.sirelon.marsroverphotos.presentation.ui.BadgeRow
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
@@ -94,7 +96,25 @@ internal fun MissionInfoContent(
     ) {
         // Full-bleed hero — no horizontal padding
         item {
-            MissionHeroSection(rover = state.rover, onBack = onBack)
+            MissionHeroSection(
+                rover = state.rover,
+                landingLocation = state.landingLocation,
+                onBack = onBack,
+            )
+        }
+
+        // Mission description paragraph — just below the hero
+        if (state.missionDescription.isNotEmpty()) {
+            item {
+                Text(
+                    text = state.missionDescription,
+                    style = AppTypography.body,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = AppSpacing.lg),
+                )
+            }
         }
 
         item {
@@ -104,7 +124,7 @@ internal fun MissionInfoContent(
                     .padding(horizontal = AppSpacing.lg),
                 verticalArrangement = Arrangement.spacedBy(AppSpacing.xl),
             ) {
-                SectionHeader("Mission Timeline")
+                AppSectionHeader("Mission Timeline")
                 V1Timeline(
                     milestones = state.timelineMilestones,
                     status = state.rover.status,
@@ -120,7 +140,7 @@ internal fun MissionInfoContent(
                     .padding(horizontal = AppSpacing.lg),
                 verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
             ) {
-                SectionHeader("Statistics")
+                AppSectionHeader("Statistics")
                 V1Stats(
                     totalPhotos = state.rover.totalPhotos,
                     daysActive = state.daysActive,
@@ -137,9 +157,13 @@ internal fun MissionInfoContent(
                         .padding(horizontal = AppSpacing.lg),
                     verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
                 ) {
-                    SectionHeader("Cameras & Instruments")
+                    AppSectionHeader("Cameras & Instruments")
                     if (isMediumPlus) {
-                        CamerasGrid(cameras = state.cameras, onCameraClick = onCameraClick, modifier = Modifier.sharedRoverCameras(state.rover.id))
+                        CamerasGrid(
+                            cameras = state.cameras,
+                            onCameraClick = onCameraClick,
+                            modifier = Modifier.sharedRoverCameras(state.rover.id),
+                        )
                     } else {
                         V1CamerasAccordion(cameras = state.cameras, onCameraClick = onCameraClick)
                     }
@@ -154,7 +178,7 @@ internal fun MissionInfoContent(
                         .fillMaxWidth()
                         .padding(horizontal = AppSpacing.lg),
                 ) {
-                    SectionHeader("Mission Info")
+                    AppSectionHeader("Mission Info")
                     Spacer(Modifier.height(AppSpacing.sm))
                     LinearProgressIndicator(Modifier.fillMaxWidth())
                 }
@@ -169,7 +193,7 @@ internal fun MissionInfoContent(
                                 .padding(horizontal = AppSpacing.lg),
                             verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
                         ) {
-                            SectionHeader("Mission Objectives")
+                            AppSectionHeader("Mission Objectives")
                             V1Objectives(
                                 objectives = state.missionFacts.objectives,
                                 twoCol = isMediumPlus,
@@ -187,7 +211,7 @@ internal fun MissionInfoContent(
                                 .padding(horizontal = AppSpacing.lg),
                             verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
                         ) {
-                            SectionHeader("Did You Know?")
+                            AppSectionHeader("Did You Know?")
                             FunFact(text = fact, modifier = Modifier.sharedRoverFunFact(state.rover.id))
                         }
                     }
@@ -210,8 +234,6 @@ internal fun MissionInfoContent(
 }
 
 // ── Hero ──────────────────────────────────────────────────────────────────────
-
-// ── Shared rover image with gradient ─────────────────────────────────────────
 
 @Composable
 internal fun RoverImageCard(
@@ -238,7 +260,12 @@ internal fun RoverImageCard(
 }
 
 @Composable
-private fun MissionHeroSection(rover: Rover, onBack: (() -> Unit)?, modifier: Modifier = Modifier) {
+private fun MissionHeroSection(
+    rover: Rover,
+    landingLocation: String,
+    onBack: (() -> Unit)?,
+    modifier: Modifier = Modifier,
+) {
     val topGradient = remember {
         Brush.verticalGradient(
             0f to Color.Black.copy(alpha = 0.52f),
@@ -288,9 +315,20 @@ private fun MissionHeroSection(rover: Rover, onBack: (() -> Unit)?, modifier: Mo
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.sharedRoverName(rover.id),
             )
-            BadgeRow(modifier = Modifier.sharedRoverBadge(rover.id)) {
+            Row(
+                modifier = Modifier.sharedRoverBadge(rover.id),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm),
+            ) {
                 if (rover.isActive) StatusBadge("Active", activeStatusColor())
                 else AppBadge(rover.status.replaceFirstChar { it.uppercaseChar() })
+                if (landingLocation.isNotEmpty()) {
+                    Text(
+                        text = landingLocation,
+                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+                        color = Color.White.copy(alpha = 0.85f),
+                    )
+                }
             }
         }
     }
@@ -351,15 +389,20 @@ private fun TimelineCard(milestone: TimelineMilestone, modifier: Modifier = Modi
                 tint = MaterialTheme.colorScheme.onSecondaryContainer,
             )
             Spacer(Modifier.height(AppSpacing.sm))
-            SectionLabel(milestone.label)
+            AppSectionLabel(milestone.label)
             Text(
                 text = milestone.date,
                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
                 color = MaterialTheme.colorScheme.onSurface,
             )
-            milestone.sol?.let {
+            // "Sol X · Location" sub-label
+            val solPart = milestone.sol?.let { "Sol ${formatThousands(it.toInt())}" }
+            val subLabel = listOfNotNull(solPart, milestone.location)
+                .joinToString(" · ")
+                .takeIf { it.isNotEmpty() }
+            if (subLabel != null) {
                 Text(
-                    text = "Sol $it",
+                    text = subLabel,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -391,7 +434,7 @@ private fun StatCard(label: String, value: String, modifier: Modifier = Modifier
                 .padding(AppSpacing.md),
             horizontalAlignment = Alignment.Start,
         ) {
-            SectionLabel(label)
+            AppSectionLabel(label)
             Text(
                 text = value,
                 style = MaterialTheme.typography.titleLarge.copy(
@@ -640,7 +683,7 @@ private fun CameraItemCard(
 internal fun FunFact(text: String, modifier: Modifier = Modifier) {
     AppFactCard(modifier = modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(AppSpacing.xl)) {
-            SectionLabel("✨  Did You Know?")
+            AppSectionLabel("✨  Did You Know?")
             Spacer(Modifier.height(AppSpacing.sm))
             Text(
                 text = text,
@@ -675,31 +718,4 @@ private fun BrowsePhotosButton(onClick: () -> Unit, modifier: Modifier = Modifie
             style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
         )
     }
-}
-
-// ── Shared screen-level helpers ───────────────────────────────────────────────
-
-/** Small uppercase accent label used inside cards (stat labels, timeline type, etc.). */
-@Composable
-internal fun SectionLabel(text: String, modifier: Modifier = Modifier) {
-    Text(
-        text = text.uppercase(),
-        style = MaterialTheme.typography.labelSmall.copy(
-            fontWeight = FontWeight.Bold,
-            letterSpacing = 1.1.sp,
-        ),
-        color = MaterialTheme.colorScheme.secondary,
-        modifier = modifier,
-    )
-}
-
-/** Screen-level section title, e.g. "Mission Timeline". */
-@Composable
-private fun SectionHeader(title: String, modifier: Modifier = Modifier) {
-    Text(
-        text = title,
-        style = AppTypography.sectionHeader,
-        color = MaterialTheme.colorScheme.tertiary,
-        modifier = modifier,
-    )
 }
