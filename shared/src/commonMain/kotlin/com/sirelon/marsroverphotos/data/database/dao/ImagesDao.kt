@@ -49,8 +49,15 @@ interface ImagesDao {
     fun loadPopularImages(): Flow<List<MarsImage>>
 
     // room-paging supports all KMP targets since room3 3.0.0-alpha05 (b/339934824)
-    @Query("SELECT * FROM images WHERE favorite = 1 ORDER BY `order` ASC, id ASC")
-    fun loadFavoritePagedSource(): PagingSource<Int, MarsImage>
+    // roverId = null means all rovers; non-null filters to the specified rover.
+    @Query("SELECT * FROM images WHERE favorite = 1 AND (:roverId IS NULL OR roverId = :roverId) ORDER BY `order` ASC, id ASC")
+    fun loadFavoritePagedRecent(roverId: Long?): PagingSource<Int, MarsImage>
+
+    @Query("SELECT * FROM images WHERE favorite = 1 AND (:roverId IS NULL OR roverId = :roverId) ORDER BY counter_see DESC, id ASC")
+    fun loadFavoritePagedByViews(roverId: Long?): PagingSource<Int, MarsImage>
+
+    @Query("SELECT * FROM images WHERE favorite = 1 AND (:roverId IS NULL OR roverId = :roverId) ORDER BY camera_name ASC, id ASC")
+    fun loadFavoritePagedByCamera(roverId: Long?): PagingSource<Int, MarsImage>
 
     @Query("SELECT * FROM images WHERE popular = 1 ORDER BY `order` ASC, id ASC")
     fun loadPopularPagedSource(): PagingSource<Int, MarsImage>

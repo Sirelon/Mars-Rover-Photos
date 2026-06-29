@@ -256,7 +256,7 @@ private fun StatsInfoText(counter: Long, symbol: MaterialSymbol, desc: String) {
     }
 }
 
-private fun compactCount(value: Long): String {
+internal fun compactCount(value: Long): String {
     val abs = if (value < 0) -value else value
     return when {
         abs < 1_000 -> value.toString()

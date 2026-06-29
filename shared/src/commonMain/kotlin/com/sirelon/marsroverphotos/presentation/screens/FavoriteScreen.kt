@@ -1,74 +1,62 @@
 package com.sirelon.marsroverphotos.presentation.screens
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
-import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import com.sirelon.marsroverphotos.presentation.ui.AppButton
-import com.sirelon.marsroverphotos.presentation.ui.AppCard
-import com.sirelon.marsroverphotos.presentation.ui.AppEmptyState
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
-import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
-import com.sirelon.marsroverphotos.presentation.theme.AppTypography
-import androidx.paging.LoadState
-import androidx.paging.compose.LazyPagingItems
-import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.itemContentType
-import androidx.paging.compose.itemKey
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
+import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
+import com.sirelon.marsroverphotos.presentation.ui.AppButton
+import com.sirelon.marsroverphotos.presentation.ui.AppEmptyState
+import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
 import com.sirelon.marsroverphotos.presentation.ui.MarsImageComposable
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import com.sirelon.marsroverphotos.domain.repositories.FavoriteSortOrder
 import com.sirelon.marsroverphotos.presentation.viewmodels.FavoriteImagesViewModel
-import com.sirelon.marsroverphotos.shared.resources.Res
-import com.sirelon.marsroverphotos.shared.resources.favorite_empty_btn
-import com.sirelon.marsroverphotos.shared.resources.favorite_empty_title
-import com.sirelon.marsroverphotos.shared.resources.favorite_title
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withTimeoutOrNull
-import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
-/** Cap the wait for the last-viewed photo to land in the paged snapshot on return from the viewer. */
 private const val SCROLL_RESTORE_TIMEOUT_MS = 3000L
 
-/**
- * Favorite images screen.
- * Displays the user's favorite Mars photos with paging support backed by Room.
- *
- * Created on 01.03.2021 22:32 for Mars-Rover-Photos.
- * Ported to Compose Multiplatform (KMP).
- */
 @Composable
 fun FavoriteScreen(
     onNavigateToImages: (selected: MarsImage) -> Unit,
@@ -76,46 +64,44 @@ fun FavoriteScreen(
     modifier: Modifier = Modifier,
     viewModel: FavoriteImagesViewModel = koinViewModel()
 ) {
-    val lazyPagingItems = viewModel.favoritePagedFlow.collectAsLazyPagingItems()
-    val gridView by viewModel.gridViewState.collectAsStateWithLifecycle()
-    val gridState = rememberLazyStaggeredGridState()
+    val items = viewModel.favoritePagedFlow.collectAsLazyPagingItems()
+    val chips by viewModel.roverChips.collectAsStateWithLifecycle()
+    val stats by viewModel.stats.collectAsStateWithLifecycle()
+    val sortOrder by viewModel.sortOrder.collectAsStateWithLifecycle()
+    val roverFilter by viewModel.roverFilter.collectAsStateWithLifecycle()
+    val gridState = rememberLazyGridState()
 
-    // On return from the viewer, scroll to the last-viewed photo unless it's already on screen
-    // (mirrors the rover Photos grid) — keeps position when popping back to a still-visible photo.
     LaunchedEffect(Unit) {
         val targetId = viewModel.consumeLastViewedPhotoId() ?: return@LaunchedEffect
         val index = withTimeoutOrNull(SCROLL_RESTORE_TIMEOUT_MS) {
-            snapshotFlow { lazyPagingItems.itemSnapshotList.indexOfFirst { it?.id == targetId } }
-                .first { it >= 0 }
+            snapshotFlow {
+                (0 until items.itemCount).firstOrNull { items.peek(it)?.id == targetId }
+            }.first { it != null }
         } ?: return@LaunchedEffect
         val visibleKeys = withTimeoutOrNull(SCROLL_RESTORE_TIMEOUT_MS) {
             snapshotFlow { gridState.layoutInfo.visibleItemsInfo.map { it.key } }
                 .first { it.isNotEmpty() }
         }.orEmpty()
-        if (targetId !in visibleKeys) gridState.scrollToItem(index)
+        // header items (stats + chips) = 2 slots before the photo items
+        if (targetId !in visibleKeys) gridState.scrollToItem((index + 2).coerceAtLeast(0))
     }
 
     FavoritePhotosContent(
         modifier = modifier,
-        title = stringResource(Res.string.favorite_title),
-        lazyPagingItems = lazyPagingItems,
-        gridView = gridView,
+        items = items,
+        chips = chips,
+        stats = stats,
+        sortOrder = sortOrder,
+        roverFilter = roverFilter,
         gridState = gridState,
         onFavoriteClick = { viewModel.updateFavForImage(it) },
         onItemClick = onNavigateToImages,
-        onGridChange = {
-            viewModel.onGridChange(!gridView)
+        onSortChange = { viewModel.sortOrder.value = it },
+        onRoverFilterChange = { viewModel.roverFilter.value = it },
+        onNavigateToRovers = {
+            viewModel.track("click_empty_favorite")
+            onNavigateToRovers()
         },
-        emptyContent = {
-            FavoriteEmptyContent(
-                title = stringResource(Res.string.favorite_empty_title),
-                btnTitle = stringResource(Res.string.favorite_empty_btn),
-                onBtnClick = {
-                    viewModel.track("click_empty_favorite")
-                    onNavigateToRovers()
-                }
-            )
-        }
     )
 }
 
@@ -123,142 +109,248 @@ fun FavoriteScreen(
 @Composable
 private fun FavoritePhotosContent(
     modifier: Modifier = Modifier,
-    title: String,
-    lazyPagingItems: LazyPagingItems<MarsImage>,
-    gridView: Boolean,
-    gridState: LazyStaggeredGridState,
-    onItemClick: (image: MarsImage) -> Unit,
-    onFavoriteClick: (image: MarsImage) -> Unit,
-    onGridChange: () -> Unit,
-    emptyContent: @Composable () -> Unit
+    items: LazyPagingItems<MarsImage>,
+    chips: List<FavoriteImagesViewModel.RoverChip>,
+    stats: FavoriteImagesViewModel.FavoriteStats,
+    sortOrder: FavoriteSortOrder,
+    roverFilter: Long?,
+    gridState: LazyGridState,
+    onItemClick: (MarsImage) -> Unit,
+    onFavoriteClick: (MarsImage) -> Unit,
+    onSortChange: (FavoriteSortOrder) -> Unit,
+    onRoverFilterChange: (Long?) -> Unit,
+    onNavigateToRovers: () -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    var sortMenuExpanded by remember { mutableStateOf(false) }
+    val isAllEmpty = stats.savedCount == 0
+    val isFilterEmpty = !isAllEmpty && items.itemCount == 0 && items.loadState.refresh !is LoadState.Loading
+
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        contentWindowInsets = WindowInsets(),
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             AppTopBar(
-                title = { Text(text = title) },
+                title = { Text(text = "Favorites", style = MaterialTheme.typography.headlineMedium) },
                 windowInsets = WindowInsets(0, 0, 0, 0),
                 actions = {
-                    if (lazyPagingItems.itemCount > 0) {
-                        IconButton(
-                            onClick = onGridChange,
-                        ) {
-                            if (gridView) {
-                                MaterialSymbolIcon(
-                                    symbol = MaterialSymbol.ViewList,
-                                    contentDescription = "Change to List View",
-                                )
-                            } else {
-                                MaterialSymbolIcon(
-                                    symbol = MaterialSymbol.GridView,
-                                    contentDescription = "Change to Grid View",
-                                )
+                    if (!isAllEmpty) {
+                        Box {
+                            FilterChip(
+                                selected = sortOrder != FavoriteSortOrder.Recent,
+                                onClick = { sortMenuExpanded = true },
+                                label = {
+                                    Text(
+                                        sortOrder.label,
+                                        style = MaterialTheme.typography.labelLarge,
+                                    )
+                                },
+                                leadingIcon = {
+                                    MaterialSymbolIcon(
+                                        symbol = MaterialSymbol.Tune,
+                                        contentDescription = "Sort",
+                                        size = 16.dp,
+                                    )
+                                },
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                                    selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                ),
+                            )
+                            DropdownMenu(
+                                expanded = sortMenuExpanded,
+                                onDismissRequest = { sortMenuExpanded = false },
+                            ) {
+                                FavoriteSortOrder.entries.forEach { order ->
+                                    DropdownMenuItem(
+                                        text = { Text(order.label) },
+                                        onClick = {
+                                            onSortChange(order)
+                                            sortMenuExpanded = false
+                                        },
+                                        trailingIcon = if (order == sortOrder) {
+                                            {
+                                                MaterialSymbolIcon(
+                                                    symbol = MaterialSymbol.CheckCircle,
+                                                    contentDescription = null,
+                                                    tint = MaterialTheme.colorScheme.primary,
+                                                    size = 16.dp,
+                                                )
+                                            }
+                                        } else null,
+                                    )
+                                }
                             }
                         }
                     }
                 },
                 scrollBehavior = scrollBehavior,
             )
-        }
+        },
     ) { innerPadding ->
-        when {
-            lazyPagingItems.loadState.refresh is LoadState.Loading && lazyPagingItems.itemCount == 0 -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+        if (isAllEmpty) {
+            AppEmptyState(
+                title = "No favorite photos yet.\nYou can save any photos you like.\nJust mark them as “favorite”.",
+                modifier = Modifier.padding(innerPadding),
+                action = {
+                    AppButton(onClick = onNavigateToRovers) { Text("Go to rovers") }
+                },
+            )
+        } else {
+            LazyVerticalGrid(
+                state = gridState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .consumeWindowInsets(innerPadding),
+                columns = GridCells.Adaptive(minSize = 160.dp),
+                contentPadding = PaddingValues(
+                    start = AppSpacing.md,
+                    end = AppSpacing.md,
+                    top = innerPadding.calculateTopPadding() + AppSpacing.sm,
+                    bottom = innerPadding.calculateBottomPadding() + AppSpacing.sm,
+                ),
+                verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
+                horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm),
+            ) {
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    FavoriteStatsRow(stats)
                 }
-            }
-
-            lazyPagingItems.itemCount == 0 -> {
-                emptyContent()
-            }
-
-            else -> {
-                LazyVerticalStaggeredGrid(
-                    state = gridState,
-                    modifier = Modifier.fillMaxSize().consumeWindowInsets(innerPadding),
-                    contentPadding = PaddingValues(
-                        start = AppSpacing.md,
-                        end = AppSpacing.md,
-                        top = innerPadding.calculateTopPadding() + AppSpacing.sm,
-                        bottom = innerPadding.calculateBottomPadding() + AppSpacing.sm,
-                    ),
-                    columns = if (gridView) {
-                        StaggeredGridCells.Adaptive(minSize = 180.dp)
-                    } else {
-                        StaggeredGridCells.Fixed(1)
-                    },
-                    verticalItemSpacing = 8.dp,
-                    horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm),
-                    content = {
-                        items(
-                            count = lazyPagingItems.itemCount,
-                            key = lazyPagingItems.itemKey { it.id },
-                            contentType = lazyPagingItems.itemContentType { "MarsImageComposable" }
-                        ) { index ->
-                            val image = lazyPagingItems[index] ?: return@items
-                            MarsImageComposable(
-                                modifier = Modifier,
-                                marsImage = image,
-                                onClick = { onItemClick(image) },
-                                onFavoriteClick = { onFavoriteClick(image) }
-                            )
-                        }
-                        if (lazyPagingItems.loadState.append is LoadState.Loading) {
-                            item(span = StaggeredGridItemSpan.FullLine) {
-                                LoadingMoreItem()
-                            }
-                        }
+                if (chips.size > 1) {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        FavoriteRoverChips(
+                            chips = chips,
+                            activeRoverId = roverFilter,
+                            onChipClick = onRoverFilterChange,
+                        )
                     }
-                )
+                }
+                if (isFilterEmpty) {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        AppEmptyState(
+                            title = "No photos saved for this rover yet.",
+                            showImage = false,
+                            action = {
+                                AppButton(onClick = { onRoverFilterChange(null) }) {
+                                    Text("Show all")
+                                }
+                            },
+                        )
+                    }
+                } else {
+                    items(
+                        count = items.itemCount,
+                        key = { index -> items.peek(index)?.id ?: index },
+                    ) { index ->
+                        val image = items[index] ?: return@items
+                        MarsImageComposable(
+                            marsImage = image,
+                            onClick = { onItemClick(image) },
+                            onFavoriteClick = { onFavoriteClick(image) },
+                        )
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
-private fun FavoriteEmptyContent(
-    title: String,
-    btnTitle: String,
-    onBtnClick: () -> Unit,
-    modifier: Modifier = Modifier
+private fun FavoriteStatsRow(
+    stats: FavoriteImagesViewModel.FavoriteStats,
+    modifier: Modifier = Modifier,
 ) {
-    AppEmptyState(
-        title = title,
-        modifier = modifier,
-        action = {
-            AppButton(onClick = onBtnClick) { Text(text = btnTitle) }
-        }
-    )
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = AppSpacing.xs, vertical = AppSpacing.xs),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm),
+    ) {
+        MaterialSymbolIcon(
+            symbol = MaterialSymbol.Favorite,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.error,
+            size = 14.dp,
+        )
+        Text(
+            text = "${stats.savedCount} saved",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = "·",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        MaterialSymbolIcon(
+            symbol = MaterialSymbol.Rocket,
+            contentDescription = null,
+            size = 14.dp,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = "${stats.roverCount} rover${if (stats.roverCount != 1) "s" else ""}",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = "·",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        MaterialSymbolIcon(
+            symbol = MaterialSymbol.CameraAlt,
+            contentDescription = null,
+            size = 14.dp,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = "${stats.cameraCount} camera${if (stats.cameraCount != 1) "s" else ""}",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
 }
 
 @Composable
-private fun LoadingMoreItem(
-    modifier: Modifier = Modifier
+private fun FavoriteRoverChips(
+    chips: List<FavoriteImagesViewModel.RoverChip>,
+    activeRoverId: Long?,
+    onChipClick: (Long?) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    AppCard(
+    Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = AppSpacing.lg, vertical = AppSpacing.sm),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        ),
+            .horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm),
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(AppSpacing.lg),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            CircularProgressIndicator(
-                modifier = Modifier.size(20.dp),
-                strokeWidth = 2.dp
+        chips.forEach { chip ->
+            val selected = chip.roverId == activeRoverId
+            FilterChip(
+                selected = selected,
+                onClick = { onChipClick(chip.roverId) },
+                label = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        Text(chip.name, style = MaterialTheme.typography.labelLarge)
+                        if (chip.count > 0) {
+                            Text(
+                                text = chip.count.toString(),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = if (selected) {
+                                    MaterialTheme.colorScheme.onSecondaryContainer
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                },
+                            )
+                        }
+                    }
+                },
             )
-            Spacer(modifier = Modifier.width(AppSpacing.md))
-            Text(text = "Loading more photos...")
         }
     }
 }

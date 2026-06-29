@@ -7,6 +7,7 @@ import androidx.paging.PagingData
 import com.sirelon.marsroverphotos.data.database.dao.ImagesDao
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.data.paging.PopularRemoteMediator
+import com.sirelon.marsroverphotos.domain.repositories.FavoriteSortOrder
 import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
 import com.sirelon.marsroverphotos.platform.IFirebasePhotos
 import com.sirelon.marsroverphotos.utils.Logger
@@ -37,12 +38,16 @@ class ImagesRepositoryImpl(
 
     override fun loadPopularImages(): Flow<List<MarsImage>> = imagesDao.loadPopularImages()
 
-    override fun loadFavoritePagedSource(): Flow<PagingData<MarsImage>> {
-        return Pager(
-            config = PagingConfig(pageSize = 10, initialLoadSize = 10, enablePlaceholders = false),
-            pagingSourceFactory = { imagesDao.loadFavoritePagedSource() }
-        ).flow
-    }
+    private val favoritePagedConfig = PagingConfig(pageSize = 10, initialLoadSize = 10, enablePlaceholders = false)
+
+    override fun loadFavoritePaged(sort: FavoriteSortOrder, roverId: Long?): Flow<PagingData<MarsImage>> =
+        Pager(config = favoritePagedConfig, pagingSourceFactory = {
+            when (sort) {
+                FavoriteSortOrder.Recent -> imagesDao.loadFavoritePagedRecent(roverId)
+                FavoriteSortOrder.MostViewed -> imagesDao.loadFavoritePagedByViews(roverId)
+                FavoriteSortOrder.ByCamera -> imagesDao.loadFavoritePagedByCamera(roverId)
+            }
+        }).flow
 
     override suspend fun updateFavForImage(item: MarsImage) {
         setFavorite(item, !item.favorite)

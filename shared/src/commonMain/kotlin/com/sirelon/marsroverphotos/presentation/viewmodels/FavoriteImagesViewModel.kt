@@ -6,72 +6,86 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.sirelon.marsroverphotos.data.LastViewedPhotoStore
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
+import com.sirelon.marsroverphotos.domain.repositories.FavoriteSortOrder
 import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
-import com.sirelon.marsroverphotos.domain.settings.AppSettings
+import com.sirelon.marsroverphotos.domain.repositories.RoversRepository
 import com.sirelon.marsroverphotos.platform.Tracker
 import com.sirelon.marsroverphotos.utils.Logger
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-/**
- * ViewModel for the favorite images screen.
- * Loads user's favorite images with paging support.
- *
- * Created on 25.08.2020 12:13 for Mars-Rover-Photos.
- */
 class FavoriteImagesViewModel(
     private val imagesRepository: ImagesRepository,
+    private val roversRepository: RoversRepository,
     private val tracker: Tracker,
-    private val appSettings: AppSettings,
     private val lastViewedPhotoStore: LastViewedPhotoStore,
 ) : ViewModel() {
 
-    val favoritePagedFlow: Flow<PagingData<MarsImage>> = imagesRepository
-        .loadFavoritePagedSource()
-        .cachedIn(viewModelScope)
+    data class RoverChip(val roverId: Long?, val name: String, val count: Int)
+    data class FavoriteStats(val savedCount: Int, val roverCount: Int, val cameraCount: Int)
 
-    val gridViewState = appSettings.gridViewFlow
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = false
+    val sortOrder: MutableStateFlow<FavoriteSortOrder> = MutableStateFlow(FavoriteSortOrder.Recent)
+    val roverFilter: MutableStateFlow<Long?> = MutableStateFlow(null)
+
+    // Drives the grid — paged, switches paging source when sort or rover filter changes.
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val favoritePagedFlow: Flow<PagingData<MarsImage>> = combine(sortOrder, roverFilter) { sort, rover ->
+        sort to rover
+    }.flatMapLatest { (sort, rover) ->
+        imagesRepository.loadFavoritePaged(sort, rover)
+    }.cachedIn(viewModelScope)
+
+    // Side flow for stats + rover chips — always the full unfiltered list.
+    private val allFavorites: StateFlow<List<MarsImage>> = imagesRepository.loadFavoriteImages()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    val roverChips: StateFlow<List<RoverChip>> = combine(
+        allFavorites, roversRepository.getRovers()
+    ) { favorites, rovers ->
+        val roverMap = rovers.associateBy { it.id }
+        val countByRover = favorites.groupingBy { it.roverId }.eachCount()
+        buildList {
+            add(RoverChip(null, "All", favorites.size))
+            countByRover.entries
+                .sortedBy { roverMap[it.key]?.name ?: "" }
+                .forEach { (id, count) ->
+                    val name = roverMap[id]?.name ?: return@forEach
+                    add(RoverChip(id, name, count))
+                }
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), listOf(RoverChip(null, "All", 0)))
+
+    val stats: StateFlow<FavoriteStats> = allFavorites.map { all ->
+        FavoriteStats(
+            savedCount = all.size,
+            roverCount = all.map { it.roverId }.toSet().size,
+            cameraCount = all.mapNotNull { it.camera?.name }.toSet().size,
         )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), FavoriteStats(0, 0, 0))
 
-    /** Photo last shown in the viewer (read + cleared once) so the grid can restore its scroll. */
     fun consumeLastViewedPhotoId(): String? = lastViewedPhotoStore.consume()
 
-    /**
-     * Track an analytics event.
-     * @param event Event name to track
-     */
     fun track(event: String) {
         tracker.trackClick(event)
     }
 
-    /**
-     * Toggle favorite status for an image.
-     * Room invalidates the PagingSource automatically after the DB write.
-     * @param image The image to update
-     */
     fun updateFavForImage(image: MarsImage) {
         viewModelScope.launch {
             try {
                 imagesRepository.updateFavForImage(item = image)
-                Logger.d("FavoriteImagesViewModel") {
-                    "Updated favorite for image ${image.id}: ${!image.favorite}"
-                }
             } catch (e: Exception) {
                 Logger.e("FavoriteImagesViewModel", e) {
                     "Error updating favorite for image ${image.id}"
                 }
             }
         }
-    }
-
-    fun onGridChange(bool: Boolean) {
-        track("click_grid_view")
-        appSettings.gridView = bool
     }
 }

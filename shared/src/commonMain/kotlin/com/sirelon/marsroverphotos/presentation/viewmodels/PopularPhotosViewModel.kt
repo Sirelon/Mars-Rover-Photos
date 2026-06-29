@@ -9,6 +9,9 @@ import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
 import com.sirelon.marsroverphotos.utils.Logger
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /**
@@ -31,6 +34,10 @@ class PopularPhotosViewModel(
     val popularPagedFlow: Flow<PagingData<MarsImage>> = imagesRepository
         .loadPopularPagedSource()
         .cachedIn(viewModelScope)
+
+    // Non-paged ordered list for the editorial layout. null = before first Room emission (loading).
+    val popularImages: StateFlow<List<MarsImage>?> = imagesRepository.loadPopularImages()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     /** Photo last shown in the viewer (read + cleared once) so the grid can restore its scroll. */
     fun consumeLastViewedPhotoId(): String? = lastViewedPhotoStore.consume()

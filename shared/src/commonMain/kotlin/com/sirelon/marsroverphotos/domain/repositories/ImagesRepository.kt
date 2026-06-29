@@ -4,6 +4,12 @@ import androidx.paging.PagingData
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import kotlinx.coroutines.flow.Flow
 
+enum class FavoriteSortOrder(val label: String) {
+    Recent("Recent"),
+    MostViewed("Most Viewed"),
+    ByCamera("By Camera"),
+}
+
 /**
  * Repository for managing local Mars images cache and favorites.
  * Created on 22.08.2020 17:48 for Mars-Rover-Photos.
@@ -35,10 +41,9 @@ interface ImagesRepository {
     fun loadPopularImages(): Flow<List<MarsImage>>
 
     /**
-     * Load favorite images with paging support.
-     * @return Flow of paged favorite images
+     * Load favorite images with paging support, sorted and optionally filtered by rover.
      */
-    fun loadFavoritePagedSource(): Flow<PagingData<MarsImage>>
+    fun loadFavoritePaged(sort: FavoriteSortOrder, roverId: Long? = null): Flow<PagingData<MarsImage>>
 
     /**
      * Toggle favorite status for an image.
