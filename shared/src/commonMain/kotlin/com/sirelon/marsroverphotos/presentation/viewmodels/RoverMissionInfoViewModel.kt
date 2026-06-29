@@ -57,11 +57,13 @@ class RoverMissionInfoViewModel(
                     maxDate = rover.maxDate
                 )
 
-                // Get cameras
+                // Get cameras + static mission metadata
                 val cameras = RoverMissionData.getCamerasForRover(roverId)
+                val landingLocation = RoverMissionData.getLandingLocation(roverId)
+                val missionDescription = RoverMissionData.getMissionDescription(roverId)
 
                 // Build timeline milestones
-                val milestones = buildTimelineMilestones(rover)
+                val milestones = buildTimelineMilestones(rover, landingLocation)
 
                 val factsUiState = MissionFactsUiState.fromStatus(factsStatus[roverId])
 
@@ -74,7 +76,9 @@ class RoverMissionInfoViewModel(
                     missionFacts = factsUiState.facts,
                     factsLoading = factsUiState.loading,
                     factsError = factsUiState.error,
-                    timelineMilestones = milestones.toImmutableList()
+                    timelineMilestones = milestones.toImmutableList(),
+                    landingLocation = landingLocation,
+                    missionDescription = missionDescription,
                 )
             }.collect { state ->
                 _stateFlow.value = state
@@ -182,7 +186,11 @@ data class MissionInfoState(
     val missionFacts: RoverMissionFacts?,
     val factsLoading: Boolean,
     val factsError: String?,
-    val timelineMilestones: ImmutableList<TimelineMilestone>
+    val timelineMilestones: ImmutableList<TimelineMilestone>,
+    /** Static landing site, e.g. "Jezero Crater, Mars". Always non-empty. */
+    val landingLocation: String,
+    /** One-sentence mission overview shown below the hero image. */
+    val missionDescription: String,
 )
 
 /**
@@ -193,7 +201,9 @@ data class TimelineMilestone(
     val label: String,
     val date: String,
     val sol: Long?,
-    val type: MilestoneType
+    val type: MilestoneType,
+    /** Optional place name shown alongside the sol number, e.g. "Jezero Crater". */
+    val location: String? = null,
 )
 
 /**

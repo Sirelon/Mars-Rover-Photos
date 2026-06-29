@@ -33,6 +33,8 @@ import com.sirelon.marsroverphotos.presentation.theme.AppTypography
 import com.sirelon.marsroverphotos.presentation.theme.activeStatusColor
 import com.sirelon.marsroverphotos.presentation.ui.AppBadge
 import com.sirelon.marsroverphotos.presentation.ui.AppOutlinedCard
+import com.sirelon.marsroverphotos.presentation.ui.AppSectionHeader
+import com.sirelon.marsroverphotos.presentation.ui.AppSectionLabel
 import com.sirelon.marsroverphotos.presentation.ui.BadgeRow
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
@@ -102,7 +104,7 @@ internal fun ExpandedLayout(
             ),
             verticalArrangement = Arrangement.spacedBy(AppSpacing.xxl),
         ) {
-            item { ExpeditionLogHeader() }
+            item { ExpeditionLogHeader(description = state.missionDescription) }
             item {
                 DesktopLogSection("Mission Timeline") {
                     DesktopTimeline(milestones = state.timelineMilestones, status = state.rover.status)
@@ -111,14 +113,21 @@ internal fun ExpandedLayout(
             if (state.missionFacts?.objectives?.isNotEmpty() == true) {
                 item {
                     DesktopLogSection("Mission Objectives") {
-                        V1Objectives(objectives = state.missionFacts.objectives, modifier = Modifier.sharedRoverObjectives(state.rover.id))
+                        V1Objectives(
+                            objectives = state.missionFacts.objectives,
+                            modifier = Modifier.sharedRoverObjectives(state.rover.id),
+                        )
                     }
                 }
             }
             if (state.cameras.isNotEmpty()) {
                 item {
                     DesktopLogSection("Cameras & Instruments") {
-                        CamerasGrid(cameras = state.cameras, onCameraClick = onCameraClick, modifier = Modifier.sharedRoverCameras(state.rover.id))
+                        CamerasGrid(
+                            cameras = state.cameras,
+                            onCameraClick = onCameraClick,
+                            modifier = Modifier.sharedRoverCameras(state.rover.id),
+                        )
                     }
                 }
             }
@@ -130,9 +139,12 @@ internal fun ExpandedLayout(
 
 @Composable
 private fun RoverIdentity(state: MissionInfoState, modifier: Modifier = Modifier) {
-    val baseStyle = MaterialTheme.typography.headlineMedium
-    val nameStyle = remember(baseStyle) {
-        baseStyle.copy(fontWeight = FontWeight.ExtraBold, letterSpacing = (-0.8).sp)
+    val baseNameStyle = MaterialTheme.typography.headlineMedium
+    val nameStyle = remember(baseNameStyle) {
+        baseNameStyle.copy(
+            fontWeight = FontWeight.ExtraBold,
+            letterSpacing = (-0.8).sp,
+        )
     }
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)) {
         Text(
@@ -141,15 +153,38 @@ private fun RoverIdentity(state: MissionInfoState, modifier: Modifier = Modifier
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.sharedRoverName(state.rover.id),
         )
-        BadgeRow(modifier = Modifier.sharedRoverBadge(state.rover.id)) {
+        Row(
+            modifier = Modifier.sharedRoverBadge(state.rover.id),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm),
+        ) {
             if (state.rover.isActive) StatusBadge("Active", activeStatusColor())
             else AppBadge(state.rover.status.replaceFirstChar { it.uppercaseChar() })
+            if (state.landingLocation.isNotEmpty()) {
+                Text(
+                    text = state.landingLocation,
+                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+        if (state.missionDescription.isNotEmpty()) {
+            Text(
+                text = state.missionDescription,
+                style = AppTypography.bodySecondary,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }
 
 @Composable
-private fun StatsListTable(totalPhotos: Int, daysActive: Long, earthDaysActive: Long, modifier: Modifier = Modifier) {
+private fun StatsListTable(
+    totalPhotos: Int,
+    daysActive: Long,
+    earthDaysActive: Long,
+    modifier: Modifier = Modifier,
+) {
     val rows = remember(totalPhotos, daysActive, earthDaysActive) {
         listOf(
             "Total Photos" to formatThousands(totalPhotos),
@@ -185,32 +220,51 @@ private fun StatsListTable(totalPhotos: Int, daysActive: Long, earthDaysActive: 
 // ── Right panel composables ───────────────────────────────────────────────────
 
 @Composable
-private fun ExpeditionLogHeader(modifier: Modifier = Modifier) {
-    val baseStyle = MaterialTheme.typography.headlineSmall
-    val titleStyle = remember(baseStyle) {
-        baseStyle.copy(fontWeight = FontWeight.ExtraBold, letterSpacing = (-0.5).sp)
+private fun ExpeditionLogHeader(description: String, modifier: Modifier = Modifier) {
+    val baseTitleStyle = MaterialTheme.typography.headlineSmall
+    val titleStyle = remember(baseTitleStyle) {
+        baseTitleStyle.copy(
+            fontWeight = FontWeight.ExtraBold,
+            letterSpacing = (-0.5).sp,
+        )
     }
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(AppSpacing.xs)) {
-        SectionLabel("Expedition Log")
+        AppSectionLabel("Expedition Log")
         Text(
             text = "Mission Overview",
             style = titleStyle,
             color = MaterialTheme.colorScheme.onSurface,
         )
+        if (description.isNotEmpty()) {
+            Spacer(Modifier.height(AppSpacing.xs))
+            Text(
+                text = description,
+                style = AppTypography.bodySecondary,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 }
 
 @Composable
-private fun DesktopLogSection(title: String, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+private fun DesktopLogSection(
+    title: String,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(AppSpacing.lg)) {
-        Text(text = title, style = AppTypography.sectionHeader, color = MaterialTheme.colorScheme.tertiary)
+        AppSectionHeader(title)
         HorizontalDivider()
         content()
     }
 }
 
 @Composable
-private fun DesktopTimeline(milestones: ImmutableList<TimelineMilestone>, status: String, modifier: Modifier = Modifier) {
+private fun DesktopTimeline(
+    milestones: ImmutableList<TimelineMilestone>,
+    status: String,
+    modifier: Modifier = Modifier,
+) {
     val activeDotColor   = MaterialTheme.colorScheme.secondary
     val inactiveDotColor = MaterialTheme.colorScheme.secondaryContainer
     val activeIconTint   = MaterialTheme.colorScheme.onSecondary
@@ -220,9 +274,9 @@ private fun DesktopTimeline(milestones: ImmutableList<TimelineMilestone>, status
     Column(modifier = modifier) {
         milestones.forEachIndexed { i, milestone ->
             val isCurrent = milestone.type == MilestoneType.CURRENT || milestone.type == MilestoneType.END
-            val isLast = i == milestones.size - 1
-            val dotColor = if (isCurrent) activeDotColor  else inactiveDotColor
-            val iconTint = if (isCurrent) activeIconTint  else inactiveIconTint
+            val isLast    = i == milestones.size - 1
+            val dotColor  = if (isCurrent) activeDotColor  else inactiveDotColor
+            val iconTint  = if (isCurrent) activeIconTint  else inactiveIconTint
 
             Row {
                 Column(
@@ -264,15 +318,20 @@ private fun DesktopTimeline(milestones: ImmutableList<TimelineMilestone>, status
                         .weight(1f)
                         .padding(bottom = if (!isLast) AppSpacing.xl else AppSpacing.xs),
                 ) {
-                    SectionLabel(milestone.label)
+                    AppSectionLabel(milestone.label)
                     Text(
                         text = milestone.date,
                         style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
                         color = MaterialTheme.colorScheme.onSurface,
                     )
-                    milestone.sol?.let {
+                    // "Sol X · Location" sub-label
+                    val solPart = milestone.sol?.let { "Sol ${formatThousands(it.toInt())}" }
+                    val subLabel = listOfNotNull(solPart, milestone.location)
+                        .joinToString(" · ")
+                        .takeIf { it.isNotEmpty() }
+                    if (subLabel != null) {
                         Text(
-                            text = "Sol $it",
+                            text = subLabel,
                             style = AppTypography.bodySecondary,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
