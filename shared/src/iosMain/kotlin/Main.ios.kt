@@ -1,6 +1,7 @@
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.window.ComposeUIViewController
+import com.sirelon.marsroverphotos.platform.BuildInfo
 import com.sirelon.marsroverphotos.presentation.App
 import com.sirelon.marsroverphotos.presentation.navigation.DeepLink
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -56,6 +57,7 @@ fun MainViewController(): UIViewController {
         App(
             deepLink = deepLink,
             onDeepLinkConsumed = { pendingDeepLink.value = null },
+            appVersion = BuildInfo.versionName,
             rateAppUrl = "https://apps.apple.com/app/mars-rover-photos"
         )
     }
