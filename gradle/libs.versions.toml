@@ -5,7 +5,7 @@ androidGradlePlugin = "9.2.1"
 ksp = "2.3.9"
 
 # Compose Multiplatform
-compose-multiplatform = "1.12.0-alpha01"
+compose-multiplatform = "1.12.0-alpha02"
 
 # AndroidX
 # https://developer.android.com/jetpack/androidx/releases/activity
@@ -18,13 +18,13 @@ lifecycle = "2.10.0"
 # https://developer.android.com/jetpack/androidx/releases/compose
 compose = "1.11.2"
 # https://developer.android.com/jetpack/androidx/releases/compose-material3
-compose-material3 = "1.5.0-alpha21"
+compose-material3 = "1.5.0-alpha22"
 # https://developer.android.com/jetpack/androidx/releases/glance
 glance = "1.3.0-alpha01"
 # https://developer.android.com/jetpack/androidx/releases/paging
 paging = "3.5.0"
 # https://developer.android.com/jetpack/androidx/releases/room3
-room = "3.0.0-alpha06"
+room = "3.0.0-rc01"
 # https://developer.android.com/jetpack/androidx/releases/work
 work = "2.11.2"
 # https://developer.android.com/jetpack/androidx/releases/core
@@ -47,7 +47,7 @@ ktor = "3.5.0"
 kermit = "2.1.0"
 # https://github.com/InsertKoinIO/koin
 koin = "4.2.1"
-koin-compose = "4.2.1"
+koin-compose = "4.2.2"
 
 # Navigation
 navigation-compose = "2.9.2"
@@ -57,7 +57,7 @@ gitliveFirebase = "2.4.0"
 
 # Firebase
 # https://firebase.google.com/support/release-notes/android
-firebaseBom = "34.14.1"
+firebaseBom = "34.15.0"
 firebaseAnalyticsVersion = "23.2.0"
 firebaseCrashlyticsVersion = "20.0.6"
 firebaseFirestoreVersion = "26.3.0"
