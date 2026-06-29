@@ -20,6 +20,15 @@ struct MarsRoverApp: App {
         IosApp.shared.start(isDebug: false)
         #endif
 
+        // Screenshot capture passes `hideAds` as a launch argument to hide all ads. Tolerate the
+        // forms it can arrive in: `-hideAds YES` (iOS maps it into UserDefaults) or a bare `hideAds`
+        // argv token (how Maestro forwards launchApp arguments). Always false in normal use.
+        let launchArgs = ProcessInfo.processInfo.arguments
+        let hideAdsArg = launchArgs.contains { $0.range(of: "hideAds", options: .caseInsensitive) != nil }
+        if UserDefaults.standard.bool(forKey: "hideAds") || hideAdsArg {
+            BuildInfo.shared.hideAds = true
+        }
+
         // Keep screen on during testing
         UIApplication.shared.isIdleTimerDisabled = true
     }
@@ -39,7 +48,8 @@ struct MarsRoverApp: App {
         // silently returns .denied (no prompt shown) if requested while the app is not
         // active, and the UMP consent form has no view controller to present from.
         .onChange(of: scenePhase) { newPhase in
-            guard newPhase == .active, !didBootstrapAds else { return }
+            // Skip the ATT / consent prompts entirely during screenshot capture.
+            guard newPhase == .active, !didBootstrapAds, !BuildInfo.shared.hideAds else { return }
             didBootstrapAds = true
             // Small delay so the prompts appear after the first frame (Apple HIG).
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {

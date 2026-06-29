@@ -1,0 +1,77 @@
+# Store screenshot flow for Mars Rover Photos (Android + iOS share the same appId).
+#
+# Run via the wrapper, which handles light/dark passes and theme restore:
+#   ./.maestro/capture.sh android
+#   ./.maestro/capture.sh ios
+#
+# Or directly, one pass (pin the device, and pass THEME + PLATFORM on the CLI):
+#   maestro --device <id> test -e THEME=light -e PLATFORM=android .maestro/store-screenshots.yaml
+#
+# `hideAds` (launch argument) suppresses every ad banner — see BuildInfo.hideAds.
+# `THEME` (light|dark) and `PLATFORM` (android|ios) MUST be supplied on the CLI; they are woven into
+# the screenshot path (`screenshots/<platform>/NN-screen-<theme>.png`) so light/dark and android/ios
+# sets never overwrite each other. Do NOT add in-file `env:` defaults for them — an in-file value
+# overrides the CLI one and every pass collapses onto a single name.
+# Requires: the TARGET device pinned with `--device` (Maestro otherwise picks any connected device),
+# the app installed, and network access. This flow does NOT clear app data.
+appId: com.sirelon.marsroverphotos
+---
+# NOTE: no `clearState` — the app's stored data (incl. the favorites you curated by hand) is
+# preserved. Mark the photos you want shown on the Favorites screen BEFORE running this flow.
+- launchApp:
+    stopApp: true
+    arguments:
+      hideAds: true
+# iOS App Tracking Transparency prompt can appear shortly after launch; dismiss it if shown.
+# Android has no launch-time prompt, so `optional` makes this a clean no-op there.
+- tapOn:
+    text: "Ask App Not to Track"
+    optional: true
+
+# 1) Rovers — the start screen
+- assertVisible: "Mars Rovers"
+- takeScreenshot: "screenshots/${PLATFORM}/01-rovers-${THEME}"
+
+# 2) Photos feed (Curiosity — a reliable photo source)
+- tapOn: "Curiosity"
+- extendedWaitUntil:
+    visible:
+      id: "photoCard"
+    timeout: 20000
+- takeScreenshot: "screenshots/${PLATFORM}/02-photos-${THEME}"
+
+# 3) Filters sheet — the filters icon only exposes its Material Symbol ligature ("tune").
+- tapOn:
+    text: "tune"
+- assertVisible: "Apply"
+- takeScreenshot: "screenshots/${PLATFORM}/03-filters-${THEME}"
+- tapOn: "Apply"
+
+# 4) Full-screen viewer (the hero)
+- tapOn:
+    id: "photoCard"
+    index: 0
+- waitForAnimationToEnd
+- takeScreenshot: "screenshots/${PLATFORM}/04-image-${THEME}"
+- back
+
+# 5) Popular
+- tapOn: "Popular"
+- extendedWaitUntil:
+    visible:
+      id: "photoItem"
+    timeout: 20000
+- takeScreenshot: "screenshots/${PLATFORM}/05-popular-${THEME}"
+
+# 6) Favorites — requires that you favorited at least one photo by hand beforehand.
+- tapOn: "Favorites"
+- extendedWaitUntil:
+    visible:
+      id: "photoItem"
+    timeout: 15000
+- takeScreenshot: "screenshots/${PLATFORM}/06-favorites-${THEME}"
+
+# 7) About — settings, theme, app info
+- tapOn: "About"
+- assertVisible: "About"
+- takeScreenshot: "screenshots/${PLATFORM}/07-about-${THEME}"

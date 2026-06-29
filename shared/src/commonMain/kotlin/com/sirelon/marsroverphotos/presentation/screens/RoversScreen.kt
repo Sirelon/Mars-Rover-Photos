@@ -41,6 +41,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -255,7 +256,7 @@ fun RoverItem(
     modifier: Modifier = Modifier
 ) {
     AppCard(
-        modifier = modifier,
+        modifier = modifier.testTag("roverCard"),
         onClick = { onClick(rover) },
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {

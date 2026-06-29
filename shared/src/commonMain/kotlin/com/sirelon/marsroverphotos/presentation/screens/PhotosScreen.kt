@@ -47,6 +47,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
@@ -527,6 +528,7 @@ private fun PhotoCard(
     AppCard(
         modifier = Modifier
             .fillMaxWidth()
+            .testTag("photoCard")
             .clickable { onPhotoClick(image) },
     ) {
         Column(verticalArrangement = Arrangement.SpaceBetween) {

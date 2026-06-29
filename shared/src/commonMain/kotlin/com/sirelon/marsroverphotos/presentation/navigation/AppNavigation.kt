@@ -35,6 +35,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
+import com.sirelon.marsroverphotos.platform.BuildInfo
 import com.sirelon.marsroverphotos.platform.Tracker
 import com.sirelon.marsroverphotos.presentation.theme.AppMotion
 import com.sirelon.marsroverphotos.presentation.ui.AdSlot
@@ -241,7 +242,7 @@ fun AppNavigation(
                 },
                 resetScrollKey = chromeDestination,
                 chromeVisible = !isImages,
-                bottomChrome = { AdSlot(modifier = Modifier.fillMaxWidth()) },
+                bottomChrome = { if (!BuildInfo.hideAds) AdSlot(modifier = Modifier.fillMaxWidth()) },
             ) {
                 val statusBarTop = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
                 val topPadding by animateDpAsState(

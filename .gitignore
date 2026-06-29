@@ -2,6 +2,9 @@
 *.apk
 *.ap_
 
+# Generated store screenshots (the Maestro flow + scripts are tracked; the PNGs are not)
+.maestro/screenshots/
+
 # Files for the Dalvik VM
 *.dex
 

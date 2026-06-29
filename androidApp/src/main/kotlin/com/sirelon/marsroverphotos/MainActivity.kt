@@ -7,12 +7,19 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import com.sirelon.marsroverphotos.gdpr.GdprHelper
 import com.sirelon.marsroverphotos.platform.ActivityProvider
+import com.sirelon.marsroverphotos.platform.BuildInfo
 import com.sirelon.marsroverphotos.presentation.App
 import com.sirelon.marsroverphotos.presentation.navigation.DeepLink
 import com.sirelon.marsroverphotos.utils.Logger
@@ -34,6 +41,11 @@ class MainActivity : ComponentActivity() {
         // Register this Activity so shared-module code (e.g. Play in-app review)
         // can reach an Activity reference without leaking it.
         ActivityProvider.set(this)
+        // Screenshot capture passes `hideAds` (Maestro launch argument → intent extra) to hide all ads.
+        // Maestro forwards it as a string extra, so accept either a boolean or "true".
+        val hideAds = intent?.getBooleanExtra("hideAds", false) == true ||
+            intent?.getStringExtra("hideAds")?.equals("true", ignoreCase = true) == true
+        if (hideAds) BuildInfo.hideAds = true
         enableEdgeToEdge()
         // Prevent the system from adding a translucent scrim over the NavigationBar —
         // the app's NavigationBar background provides the necessary contrast.
@@ -47,13 +59,18 @@ class MainActivity : ComponentActivity() {
         handleDeepLink(intent)
 
         setContent {
-            App(
-                deepLink = pendingDeepLink,
-                onDeepLinkConsumed = { pendingDeepLink = null },
-                onRateApp = ::openStoreListing,
-                appVersion = BuildConfig.VERSION_NAME,
-                rateAppUrl = "https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}"
-            )
+            // Expose Compose testTags as resource-ids so UI-test tooling (Maestro) can target
+            // elements by id. Propagates to all descendants; negligible runtime cost.
+            @OptIn(ExperimentalComposeUiApi::class)
+            Box(Modifier.fillMaxSize().semantics { testTagsAsResourceId = true }) {
+                App(
+                    deepLink = pendingDeepLink,
+                    onDeepLinkConsumed = { pendingDeepLink = null },
+                    onRateApp = ::openStoreListing,
+                    appVersion = BuildConfig.VERSION_NAME,
+                    rateAppUrl = "https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}"
+                )
+            }
         }
 
     }
