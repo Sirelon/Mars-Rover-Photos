@@ -8,6 +8,7 @@ import com.sirelon.marsroverphotos.data.LastViewedPhotoStore
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.domain.repositories.FavoriteSortOrder
 import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
+import com.sirelon.marsroverphotos.domain.repositories.RoverCount
 import com.sirelon.marsroverphotos.domain.repositories.RoversRepository
 import com.sirelon.marsroverphotos.platform.Tracker
 import com.sirelon.marsroverphotos.utils.Logger
@@ -43,33 +44,28 @@ class FavoriteImagesViewModel(
         imagesRepository.loadFavoritePaged(sort, rover)
     }.cachedIn(viewModelScope)
 
-    // Side flow for stats + rover chips — always the full unfiltered list.
-    private val allFavorites: StateFlow<List<MarsImage>> = imagesRepository.loadFavoriteImages()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
-
     val roverChips: StateFlow<List<RoverChip>> = combine(
-        allFavorites, roversRepository.getRovers()
-    ) { favorites, rovers ->
+        imagesRepository.loadFavoriteRoverCounts(),
+        roversRepository.getRovers()
+    ) { counts, rovers ->
         val roverMap = rovers.associateBy { it.id }
-        val countByRover = favorites.groupingBy { it.roverId }.eachCount()
         buildList {
-            add(RoverChip(null, "All", favorites.size))
-            countByRover.entries
-                .sortedBy { roverMap[it.key]?.name ?: "" }
-                .forEach { (id, count) ->
-                    val name = roverMap[id]?.name ?: return@forEach
-                    add(RoverChip(id, name, count))
+            add(RoverChip(null, "All", counts.sumOf { it.count }))
+            counts.sortedBy { roverMap[it.roverId]?.name ?: "" }
+                .forEach { rc: RoverCount ->
+                    val name = roverMap[rc.roverId]?.name ?: return@forEach
+                    add(RoverChip(rc.roverId, name, rc.count))
                 }
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), listOf(RoverChip(null, "All", 0)))
 
-    val stats: StateFlow<FavoriteStats> = allFavorites.map { all ->
-        FavoriteStats(
-            savedCount = all.size,
-            roverCount = all.map { it.roverId }.toSet().size,
-            cameraCount = all.mapNotNull { it.camera?.name }.toSet().size,
-        )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), FavoriteStats(0, 0, 0))
+    val stats: StateFlow<FavoriteStats> = imagesRepository.loadFavoriteCounts()
+        .map { FavoriteStats(savedCount = it.saved, roverCount = it.roverCount, cameraCount = it.cameraCount) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), FavoriteStats(0, 0, 0))
+
+    /** Returns the 0-based index of [targetId] in the current sort+filter view, or -1 if not found. */
+    suspend fun findScrollIndex(targetId: String): Int =
+        imagesRepository.loadFavoriteIndex(targetId, sortOrder.value, roverFilter.value)
 
     fun consumeLastViewedPhotoId(): String? = lastViewedPhotoStore.consume()
 

@@ -81,12 +81,7 @@ fun MarsImageComposable(
             if (showStats) {
                 PhotoStats(
                     marsImage = marsImage,
-                    onFavoriteClick = {
-                        if (!marsImage.favorite) {
-                            // heartState would be triggered by caller if needed
-                        }
-                        onFavoriteClick()
-                    },
+                    onFavoriteClick = { onFavoriteClick() },
                 )
             }
         }

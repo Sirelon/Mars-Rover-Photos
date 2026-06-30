@@ -9,6 +9,8 @@ import androidx.room3.Transaction
 import androidx.room3.Update
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.data.database.entities.PopularUpdate
+import com.sirelon.marsroverphotos.domain.repositories.FavoriteCounts
+import com.sirelon.marsroverphotos.domain.repositories.RoverCount
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -58,6 +60,21 @@ interface ImagesDao {
 
     @Query("SELECT * FROM images WHERE favorite = 1 AND (:roverId IS NULL OR roverId = :roverId) ORDER BY camera_name ASC, id ASC")
     fun loadFavoritePagedByCamera(roverId: Long?): PagingSource<Int, MarsImage>
+
+    @Query("SELECT roverId, COUNT(*) as count FROM images WHERE favorite = 1 GROUP BY roverId")
+    fun loadFavoriteRoverCounts(): Flow<List<RoverCount>>
+
+    @Query("SELECT COUNT(*) as saved, COUNT(DISTINCT roverId) as roverCount, COUNT(DISTINCT camera_name) as cameraCount FROM images WHERE favorite = 1")
+    fun loadFavoriteCounts(): Flow<FavoriteCounts>
+
+    @Query("SELECT id FROM images WHERE favorite = 1 AND (:roverId IS NULL OR roverId = :roverId) ORDER BY `order` ASC, id ASC")
+    suspend fun loadFavoriteIdsRecent(roverId: Long?): List<String>
+
+    @Query("SELECT id FROM images WHERE favorite = 1 AND (:roverId IS NULL OR roverId = :roverId) ORDER BY counter_see DESC, id ASC")
+    suspend fun loadFavoriteIdsByViews(roverId: Long?): List<String>
+
+    @Query("SELECT id FROM images WHERE favorite = 1 AND (:roverId IS NULL OR roverId = :roverId) ORDER BY camera_name ASC, id ASC")
+    suspend fun loadFavoriteIdsByCamera(roverId: Long?): List<String>
 
     @Query("SELECT * FROM images WHERE popular = 1 ORDER BY `order` ASC, id ASC")
     fun loadPopularPagedSource(): PagingSource<Int, MarsImage>

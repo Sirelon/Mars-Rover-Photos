@@ -55,8 +55,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withTimeoutOrNull
 import org.koin.compose.viewmodel.koinViewModel
 
-private const val SCROLL_RESTORE_TIMEOUT_MS = 3000L
-
 @Composable
 fun FavoriteScreen(
     onNavigateToImages: (selected: MarsImage) -> Unit,
@@ -73,17 +71,17 @@ fun FavoriteScreen(
 
     LaunchedEffect(Unit) {
         val targetId = viewModel.consumeLastViewedPhotoId() ?: return@LaunchedEffect
-        val index = withTimeoutOrNull(SCROLL_RESTORE_TIMEOUT_MS) {
-            snapshotFlow {
-                (0 until items.itemCount).firstOrNull { items.peek(it)?.id == targetId }
-            }.first { it != null }
-        } ?: return@LaunchedEffect
+        // Query DB directly for the sorted index — avoids the peek() limitation where
+        // items beyond the initial paging buffer would never be found.
+        val index = viewModel.findScrollIndex(targetId)
+        if (index < 0) return@LaunchedEffect
         val visibleKeys = withTimeoutOrNull(SCROLL_RESTORE_TIMEOUT_MS) {
             snapshotFlow { gridState.layoutInfo.visibleItemsInfo.map { it.key } }
                 .first { it.isNotEmpty() }
         }.orEmpty()
-        // header items (stats + chips) = 2 slots before the photo items
-        if (targetId !in visibleKeys) gridState.scrollToItem((index + 2).coerceAtLeast(0))
+        // stats row is always present; chips row only when more than one rover chip exists.
+        val headerCount = if (chips.size > 1) 2 else 1
+        if (targetId !in visibleKeys) gridState.scrollToItem((index + headerCount).coerceAtLeast(0))
     }
 
     FavoritePhotosContent(
@@ -191,7 +189,7 @@ private fun FavoritePhotosContent(
     ) { innerPadding ->
         if (isAllEmpty) {
             AppEmptyState(
-                title = "No favorite photos yet.\nYou can save any photos you like.\nJust mark them as “favorite”.",
+                title = "No favorite photos yet.\nYou can save any photos you like.\nJust mark them as "favorite".",
                 modifier = Modifier.padding(innerPadding),
                 action = {
                     AppButton(onClick = onNavigateToRovers) { Text("Go to rovers") }
@@ -334,7 +332,7 @@ private fun FavoriteRoverChips(
                 label = {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(AppSpacing.xs),
                     ) {
                         Text(chip.name, style = MaterialTheme.typography.labelLarge)
                         if (chip.count > 0) {

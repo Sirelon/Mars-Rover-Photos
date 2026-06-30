@@ -2,7 +2,6 @@ package com.sirelon.marsroverphotos.presentation.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,23 +19,18 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,6 +49,7 @@ import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
+import com.sirelon.marsroverphotos.presentation.theme.AppSize
 import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
 import com.sirelon.marsroverphotos.presentation.ui.AppButton
 import com.sirelon.marsroverphotos.presentation.ui.AppEmptyState
@@ -71,12 +66,6 @@ import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import com.sirelon.marsroverphotos.presentation.viewmodels.PopularPhotosViewModel
 
-private const val SCROLL_RESTORE_TIMEOUT_MS = 3000L
-
-private enum class TimeRange(val label: String) {
-    AllTime("All Time"), ThisWeek("This Week"), Today("Today")
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PopularScreen(
@@ -87,7 +76,6 @@ fun PopularScreen(
     // Keeps the PopularRemoteMediator alive so Firebase data flows into Room.
     val lazyPagingItems = viewModel.popularPagedFlow.collectAsLazyPagingItems()
     val items by viewModel.popularImages.collectAsStateWithLifecycle()
-    var timeRange by remember { mutableStateOf(TimeRange.AllTime) }
     val gridState = rememberLazyGridState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
@@ -104,9 +92,9 @@ fun PopularScreen(
                 .first { it.isNotEmpty() }
         }.orEmpty()
         if (targetId !in visibleKeys) {
-            // LazyGrid offset: 0=time chips, 1=hero, 2=runner-up#2, 3=runner-up#3, 4=divider, 5+=grid
+            // LazyGrid offset: 0=hero, 1=runner-up#2, 2=runner-up#3, 3=divider, 4+=grid
             val gridIndex = when (index) {
-                0 -> 1; 1 -> 2; 2 -> 3; else -> 5 + (index - 3)
+                0 -> 0; 1 -> 1; 2 -> 2; else -> index + 1
             }
             gridState.scrollToItem(gridIndex)
         }
@@ -165,14 +153,6 @@ fun PopularScreen(
                 ) {
                     val photoList = items!!
 
-                    // Time range chips (full span)
-                    item(span = { GridItemSpan(maxLineSpan) }) {
-                        TimeRangeChips(
-                            active = timeRange,
-                            onSelect = { timeRange = it },
-                        )
-                    }
-
                     // #1 Hero (full span)
                     if (photoList.isNotEmpty()) {
                         item(span = { GridItemSpan(maxLineSpan) }) {
@@ -212,8 +192,8 @@ fun PopularScreen(
                             PopularSectionDivider()
                         }
                         // Grid items #4+ (span=1 each)
-                        items(photoList.drop(3), key = { it.id }) { photo ->
-                            val rank = photoList.indexOf(photo) + 1
+                        itemsIndexed(photoList.drop(3), key = { _, photo -> photo.id }) { index, photo ->
+                            val rank = index + 4
                             PopularGridCard(
                                 photo = photo,
                                 rank = rank,
@@ -229,28 +209,6 @@ fun PopularScreen(
 }
 
 @Composable
-private fun TimeRangeChips(
-    active: TimeRange,
-    onSelect: (TimeRange) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .horizontalScroll(rememberScrollState()),
-        horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm),
-    ) {
-        TimeRange.entries.forEach { range ->
-            FilterChip(
-                selected = range == active,
-                onClick = { onSelect(range) },
-                label = { Text(range.label, style = MaterialTheme.typography.labelLarge) },
-            )
-        }
-    }
-}
-
-@Composable
 private fun HeroCard(
     photo: MarsImage,
     onFavoriteClick: () -> Unit,
@@ -260,7 +218,7 @@ private fun HeroCard(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(AppSize.cardRadius))
             .clickable(onClick = onClick),
     ) {
         AsyncImage(
@@ -292,13 +250,13 @@ private fun HeroCard(
         // #1 badge — top start
         Row(
             modifier = Modifier
-                .padding(12.dp)
+                .padding(AppSpacing.md)
                 .align(Alignment.TopStart)
                 .clip(RoundedCornerShape(8.dp))
                 .background(MaterialTheme.colorScheme.primary)
                 .padding(horizontal = 10.dp, vertical = 5.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(AppSpacing.xs),
         ) {
             MaterialSymbolIcon(
                 symbol = MaterialSymbol.LocalFireDepartment,

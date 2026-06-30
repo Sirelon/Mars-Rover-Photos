@@ -10,6 +10,9 @@ enum class FavoriteSortOrder(val label: String) {
     ByCamera("By Camera"),
 }
 
+data class RoverCount(val roverId: Long, val count: Int)
+data class FavoriteCounts(val saved: Int, val roverCount: Int, val cameraCount: Int)
+
 /**
  * Repository for managing local Mars images cache and favorites.
  * Created on 22.08.2020 17:48 for Mars-Rover-Photos.
@@ -44,6 +47,10 @@ interface ImagesRepository {
      * Load favorite images with paging support, sorted and optionally filtered by rover.
      */
     fun loadFavoritePaged(sort: FavoriteSortOrder, roverId: Long? = null): Flow<PagingData<MarsImage>>
+
+    fun loadFavoriteRoverCounts(): Flow<List<RoverCount>>
+    fun loadFavoriteCounts(): Flow<FavoriteCounts>
+    suspend fun loadFavoriteIndex(targetId: String, sort: FavoriteSortOrder, roverId: Long?): Int
 
     /**
      * Toggle favorite status for an image.

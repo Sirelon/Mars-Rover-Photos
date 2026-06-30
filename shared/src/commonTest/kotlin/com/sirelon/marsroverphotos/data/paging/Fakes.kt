@@ -5,7 +5,10 @@ import com.sirelon.marsroverphotos.data.database.dao.ImagesDao
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.data.database.entities.PopularUpdate
 import com.sirelon.marsroverphotos.domain.models.PhotosQueryRequest
+import com.sirelon.marsroverphotos.domain.repositories.FavoriteCounts
+import com.sirelon.marsroverphotos.domain.repositories.FavoriteSortOrder
 import com.sirelon.marsroverphotos.domain.repositories.PhotosRepository
+import com.sirelon.marsroverphotos.domain.repositories.RoverCount
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
@@ -57,7 +60,14 @@ class FakeImagesDao(
     override suspend fun updatePopular(update: PopularUpdate) = Unit
     override fun loadFavoriteImages(): Flow<List<MarsImage>> = emptyFlow()
     override fun loadPopularImages(): Flow<List<MarsImage>> = emptyFlow()
-    override fun loadFavoritePagedSource(): PagingSource<Int, MarsImage> = TODO("unused")
+    override fun loadFavoritePagedRecent(roverId: Long?): PagingSource<Int, MarsImage> = TODO("unused")
+    override fun loadFavoritePagedByViews(roverId: Long?): PagingSource<Int, MarsImage> = TODO("unused")
+    override fun loadFavoritePagedByCamera(roverId: Long?): PagingSource<Int, MarsImage> = TODO("unused")
+    override fun loadFavoriteRoverCounts(): Flow<List<RoverCount>> = emptyFlow()
+    override fun loadFavoriteCounts(): Flow<FavoriteCounts> = emptyFlow()
+    override suspend fun loadFavoriteIdsRecent(roverId: Long?): List<String> = emptyList()
+    override suspend fun loadFavoriteIdsByViews(roverId: Long?): List<String> = emptyList()
+    override suspend fun loadFavoriteIdsByCamera(roverId: Long?): List<String> = emptyList()
     override fun loadPopularPagedSource(): PagingSource<Int, MarsImage> = TODO("unused")
     override suspend fun clearPopularFlags() = Unit
 }
