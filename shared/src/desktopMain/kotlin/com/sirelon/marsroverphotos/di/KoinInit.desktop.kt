@@ -1,31 +1,25 @@
 package com.sirelon.marsroverphotos.di
 
+import android.app.Application
+import com.google.firebase.FirebasePlatform
 import com.sirelon.marsroverphotos.domain.repositories.RoversRepository
 import com.sirelon.marsroverphotos.platform.BuildInfo
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.FirebaseOptions
 import dev.gitlive.firebase.initialize
 import org.koin.core.context.startKoin
+import java.util.concurrent.ConcurrentHashMap
 
-/**
- * Initialize Koin for Desktop (JVM).
- * Called from the desktop app's main function.
- */
 fun initKoinDesktop() {
-    val platform = object : com.google.firebase.FirebasePlatform() {
-        private val storage = mutableMapOf<String, String>()
+    FirebasePlatform.initializeFirebasePlatform(object : FirebasePlatform() {
+        private val storage = ConcurrentHashMap<String, String>()
         override fun store(key: String, value: String) { storage[key] = value }
         override fun retrieve(key: String): String? = storage[key]
         override fun clear(key: String) { storage.remove(key) }
-        override fun log(msg: String) { println("[Firebase] $msg") }
-    }
-    com.google.firebase.FirebasePlatform::class.java
-        .getDeclaredField("firebasePlatform")
-        .apply { isAccessible = true }
-        .set(null, platform)
-
+        override fun log(msg: String) = println(msg)
+    })
     Firebase.initialize(
-        context = android.app.Application(),
+        context = Application(),
         options = FirebaseOptions(
             applicationId = "1:947086751944:android:c96a933297fcdc16",
             apiKey = "AIzaSyDQtKGkug6YiqzEUxjjfV-Jh8K4KwIfEgs",
@@ -44,12 +38,12 @@ fun initKoinDesktop() {
 
     val koinApplication = startKoin {
         modules(
-            platformModule,      // Desktop-specific dependencies
-            databaseModule,      // Room database and DAOs
-            networkModule,       // Ktor and REST API
-            repositoryModule,    // Repository implementations
-            viewModelModule,     // ViewModels
-            navigationModule     // Navigation 3 entries
+            platformModule,
+            databaseModule,
+            networkModule,
+            repositoryModule,
+            viewModelModule,
+            navigationModule
         )
     }
     koinApplication.koin.get<RoversRepository>().initialize()

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sirelon.marsroverphotos.domain.models.FirebasePhoto
 import com.sirelon.marsroverphotos.platform.IFirebasePhotos
+import com.sirelon.marsroverphotos.platform.IFirebasePhotos.PopularCursor
 import com.sirelon.marsroverphotos.platform.createHttpClientEngine
 import com.sirelon.marsroverphotos.utils.Logger
 import io.ktor.client.HttpClient
@@ -76,17 +77,23 @@ class AdminPhotosViewModel(
     private suspend fun fetchAllPhotos() {
         _state.update { it.copy(phase = AdminPhotosState.Phase.FetchingPhotos, photos = emptyList()) }
         val allPhotos = mutableListOf<FirebasePhoto>()
-        var lastId: String? = null
         while (true) {
+            val cursor = allPhotos.lastOrNull()?.let {
+                PopularCursor(
+                    shareCounter = it.shareCounter,
+                    saveCounter = it.saveCounter,
+                    scaleCounter = it.scaleCounter,
+                    seeCounter = it.seeCounter,
+                )
+            }
             val page = try {
-                firebasePhotos.loadPopularPhotos(count = 100, lastPhotoId = lastId)
+                firebasePhotos.loadPopularPhotos(count = 100, cursor = cursor)
             } catch (e: Exception) {
                 Logger.e("AdminPhotosViewModel", e) { "Failed to fetch photos page" }
                 break
             }
             if (page.isEmpty()) break
             allPhotos.addAll(page)
-            lastId = page.last().id
         }
         _state.update { it.copy(photos = allPhotos.map { photo -> AdminPhotoItem(photo) }) }
     }

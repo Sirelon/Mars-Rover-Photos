@@ -72,4 +72,7 @@ interface ImagesRepository {
      * @return Flow of paged popular images
      */
     fun loadPopularPagedSource(): Flow<PagingData<MarsImage>>
+
+    /** Load one page of popular photos from Firebase, after the given item (null = first page). */
+    suspend fun loadPopularPage(count: Int = 20, after: MarsImage? = null): List<MarsImage>
 }

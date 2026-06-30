@@ -86,16 +86,15 @@ class FirebasePhotosImpl : IFirebasePhotos {
         }
     }
 
-    override suspend fun loadPopularPhotos(count: Int, lastPhotoId: String?): List<FirebasePhoto> {
+    override suspend fun loadPopularPhotos(count: Int, cursor: IFirebasePhotos.PopularCursor?): List<FirebasePhoto> {
         var query = photosCollection()
             .orderBy("shareCounter", Direction.DESCENDING)
             .orderBy("saveCounter", Direction.DESCENDING)
             .orderBy("scaleCounter", Direction.DESCENDING)
             .orderBy("seeCounter", Direction.DESCENDING)
             .limit(count)
-        if (lastPhotoId != null) {
-            val lastDoc = photosCollection().document(lastPhotoId).get()
-            query = query.startAfter(lastDoc)
+        if (cursor != null) {
+            query = query.startAfter(cursor.shareCounter, cursor.saveCounter, cursor.scaleCounter, cursor.seeCounter)
         }
         return query.get().documents.map { it.toFirebasePhoto() }
     }

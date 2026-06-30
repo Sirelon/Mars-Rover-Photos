@@ -65,9 +65,20 @@ interface IFirebasePhotos {
      * @param lastPhotoId ID of the last photo from previous page (null for first page)
      * @return List of popular photos sorted by engagement metrics
      */
+    /**
+     * Cursor for multi-field popular photos pagination.
+     * Mirrors the four orderBy fields on the Firestore query.
+     */
+    data class PopularCursor(
+        val shareCounter: Long,
+        val saveCounter: Long,
+        val scaleCounter: Long,
+        val seeCounter: Long,
+    )
+
     suspend fun loadPopularPhotos(
         count: Int = 10,
-        lastPhotoId: String? = null
+        cursor: PopularCursor? = null
     ): List<FirebasePhoto>
 
     /**

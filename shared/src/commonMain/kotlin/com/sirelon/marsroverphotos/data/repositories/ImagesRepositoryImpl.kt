@@ -12,6 +12,7 @@ import com.sirelon.marsroverphotos.domain.repositories.FavoriteSortOrder
 import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
 import com.sirelon.marsroverphotos.domain.repositories.RoverCount
 import com.sirelon.marsroverphotos.platform.IFirebasePhotos
+import com.sirelon.marsroverphotos.platform.IFirebasePhotos.PopularCursor
 import com.sirelon.marsroverphotos.utils.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -95,5 +96,17 @@ class ImagesRepositoryImpl(
             pagingSourceFactory = { imagesDao.loadPopularPagedSource() },
             remoteMediator = PopularRemoteMediator(firebasePhotos, imagesDao)
         ).flow
+    }
+
+    override suspend fun loadPopularPage(count: Int, after: MarsImage?): List<MarsImage> {
+        val cursor = after?.let {
+            PopularCursor(
+                shareCounter = it.stats.share,
+                saveCounter = it.stats.save,
+                scaleCounter = it.stats.scale,
+                seeCounter = it.stats.see,
+            )
+        }
+        return firebasePhotos.loadPopularPhotos(count, cursor).mapIndexed { i, fp -> fp.toMarsImage(i + 1) }
     }
 }

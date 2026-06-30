@@ -1,15 +1,19 @@
 package com.sirelon.marsroverphotos.presentation.screens
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridState
@@ -17,6 +21,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,24 +41,36 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
+import com.sirelon.marsroverphotos.domain.repositories.FavoriteSortOrder
 import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
 import com.sirelon.marsroverphotos.presentation.ui.AppButton
 import com.sirelon.marsroverphotos.presentation.ui.AppEmptyState
 import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
-import com.sirelon.marsroverphotos.presentation.ui.MarsImageComposable
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
-import androidx.paging.LoadState
-import androidx.paging.compose.LazyPagingItems
-import androidx.paging.compose.collectAsLazyPagingItems
-import com.sirelon.marsroverphotos.domain.repositories.FavoriteSortOrder
+import com.sirelon.marsroverphotos.presentation.ui.compactCount
+import com.sirelon.marsroverphotos.presentation.ui.sharedPhoto
 import com.sirelon.marsroverphotos.presentation.viewmodels.FavoriteImagesViewModel
+import com.sirelon.marsroverphotos.shared.resources.Res
+import com.sirelon.marsroverphotos.shared.resources.img_placeholder
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withTimeoutOrNull
+import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -130,6 +148,13 @@ private fun FavoritePhotosContent(
         topBar = {
             AppTopBar(
                 title = { Text(text = "Favorites", style = MaterialTheme.typography.headlineMedium) },
+                subtitle = {
+                    Text(
+                        "Photos you saved",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                },
                 windowInsets = WindowInsets(0, 0, 0, 0),
                 actions = {
                     if (!isAllEmpty) {
@@ -241,8 +266,8 @@ private fun FavoritePhotosContent(
                         key = { index -> items.peek(index)?.id ?: index },
                     ) { index ->
                         val image = items[index] ?: return@items
-                        MarsImageComposable(
-                            marsImage = image,
+                        FavoritePhotoCard(
+                            photo = image,
                             onClick = { onItemClick(image) },
                             onFavoriteClick = { onFavoriteClick(image) },
                         )
@@ -250,6 +275,100 @@ private fun FavoritePhotosContent(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun FavoritePhotoCard(
+    photo: MarsImage,
+    onClick: () -> Unit,
+    onFavoriteClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .clickable(onClick = onClick),
+    ) {
+        AsyncImage(
+            model = ImageRequest.Builder(LocalPlatformContext.current)
+                .data(photo.imageUrl)
+                .crossfade(true)
+                .memoryCacheKey("photo_${photo.id}")
+                .build(),
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(1f)
+                .sharedPhoto(photo.id),
+            contentScale = ContentScale.Crop,
+            placeholder = painterResource(Res.drawable.img_placeholder),
+        )
+        // Bottom vignette
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .background(
+                    Brush.verticalGradient(
+                        0f to Color.Transparent,
+                        0.55f to Color.Transparent,
+                        1f to Color(0xB8000000),
+                    )
+                )
+        )
+        // Heart button — top end
+        FavoriteCardHeartButton(
+            isFav = photo.favorite,
+            onClick = onFavoriteClick,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(8.dp),
+        )
+        // Bottom: view count
+        Row(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(horizontal = 10.dp, vertical = 9.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            MaterialSymbolIcon(
+                symbol = MaterialSymbol.Visibility,
+                contentDescription = null,
+                size = 12.dp,
+                tint = Color.White.copy(alpha = 0.8f),
+            )
+            Text(
+                text = compactCount(photo.stats.see),
+                style = MaterialTheme.typography.labelSmall,
+                color = Color.White,
+            )
+        }
+    }
+}
+
+@Composable
+private fun FavoriteCardHeartButton(
+    isFav: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .size(44.dp)
+            .clip(CircleShape)
+            .background(if (isFav) MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.85f) else Color(0x6B000000))
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        MaterialSymbolIcon(
+            symbol = MaterialSymbol.Favorite,
+            contentDescription = if (isFav) "Unlike" else "Like",
+            size = 20.dp,
+            tint = if (isFav) MaterialTheme.colorScheme.error else Color.White,
+            filled = isFav,
+        )
     }
 }
 

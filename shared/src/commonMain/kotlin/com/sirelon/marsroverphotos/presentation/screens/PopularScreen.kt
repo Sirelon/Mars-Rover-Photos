@@ -17,9 +17,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -39,11 +38,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.LoadState
-import androidx.paging.compose.collectAsLazyPagingItems
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
@@ -73,15 +69,14 @@ fun PopularScreen(
     modifier: Modifier = Modifier,
     viewModel: PopularPhotosViewModel = koinViewModel(),
 ) {
-    // Keeps the PopularRemoteMediator alive so Firebase data flows into Room.
-    val lazyPagingItems = viewModel.popularPagedFlow.collectAsLazyPagingItems()
     val items by viewModel.popularImages.collectAsStateWithLifecycle()
+    val isLoadingMore by viewModel.isLoadingMore.collectAsStateWithLifecycle()
+    val hasMore by viewModel.hasMore.collectAsStateWithLifecycle()
     val gridState = rememberLazyGridState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     LaunchedEffect(Unit) {
         val targetId = viewModel.consumeLastViewedPhotoId() ?: return@LaunchedEffect
-        // Wait until items loads from Room (initial StateFlow value is null)
         val itemList = withTimeoutOrNull(SCROLL_RESTORE_TIMEOUT_MS) {
             snapshotFlow { items }.first { it != null }
         } ?: return@LaunchedEffect
@@ -92,11 +87,20 @@ fun PopularScreen(
                 .first { it.isNotEmpty() }
         }.orEmpty()
         if (targetId !in visibleKeys) {
-            // LazyGrid offset: 0=hero, 1=runner-up#2, 2=runner-up#3, 3=divider, 4+=grid
             val gridIndex = when (index) {
                 0 -> 0; 1 -> 1; 2 -> 2; else -> index + 1
             }
             gridState.scrollToItem(gridIndex)
+        }
+    }
+
+    LaunchedEffect(gridState) {
+        snapshotFlow {
+            val lastVisible = gridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+            val totalItems = gridState.layoutInfo.totalItemsCount
+            totalItems > 0 && lastVisible >= totalItems - 3
+        }.collect { isNearBottom ->
+            if (isNearBottom) viewModel.loadMore()
         }
     }
 
@@ -114,36 +118,30 @@ fun PopularScreen(
             scrollBehavior = scrollBehavior,
         )
 
-        val isRefreshing = lazyPagingItems.loadState.refresh is LoadState.Loading && items == null
-        val isError = lazyPagingItems.loadState.refresh is LoadState.Error && items?.isEmpty() == true
-
         when {
-            isRefreshing -> {
+            items == null -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
             }
-            isError -> {
+            items!!.isEmpty() -> {
                 AppEmptyState(
                     title = "No popular photos available.\nCheck back later!",
                     showImage = false,
                     action = {
-                        AppButton(onClick = { lazyPagingItems.retry() }) { Text("Retry") }
+                        AppButton(onClick = { viewModel.refresh() }) { Text("Retry") }
                     },
                 )
             }
-            items.isNullOrEmpty() -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
-            }
             else -> {
+                val photoList = items!!
+                val photoCount = photoList.size
                 LazyVerticalGrid(
                     state = gridState,
                     modifier = Modifier
                         .weight(1f)
                         .nestedScroll(scrollBehavior.nestedScrollConnection),
-                    columns = GridCells.Fixed(2),
+                    columns = GridCells.Adaptive(minSize = 180.dp),
                     contentPadding = PaddingValues(
                         horizontal = AppSpacing.md,
                         vertical = AppSpacing.sm,
@@ -151,21 +149,17 @@ fun PopularScreen(
                     verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
                     horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm),
                 ) {
-                    val photoList = items!!
-
                     // #1 Hero (full span)
-                    if (photoList.isNotEmpty()) {
-                        item(span = { GridItemSpan(maxLineSpan) }) {
-                            HeroCard(
-                                photo = photoList[0],
-                                onFavoriteClick = { viewModel.updateFavorite(photoList[0]) },
-                                onClick = { onNavigateToImages(photoList[0]) },
-                            )
-                        }
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        HeroCard(
+                            photo = photoList[0],
+                            onFavoriteClick = { viewModel.updateFavorite(photoList[0]) },
+                            onClick = { onNavigateToImages(photoList[0]) },
+                        )
                     }
 
-                    // #2 and #3 runner-up (each span=1)
-                    if (photoList.size > 1) {
+                    // #2 and #3 runner-ups (each span=1)
+                    if (photoCount > 1) {
                         item {
                             RunnerUpCard(
                                 photo = photoList[1],
@@ -175,7 +169,7 @@ fun PopularScreen(
                             )
                         }
                     }
-                    if (photoList.size > 2) {
+                    if (photoCount > 2) {
                         item {
                             RunnerUpCard(
                                 photo = photoList[2],
@@ -186,20 +180,34 @@ fun PopularScreen(
                         }
                     }
 
-                    // Section divider (full span)
-                    if (photoList.size > 3) {
+                    // Section divider + grid items #4+
+                    if (photoCount > 3) {
                         item(span = { GridItemSpan(maxLineSpan) }) {
                             PopularSectionDivider()
                         }
-                        // Grid items #4+ (span=1 each)
-                        itemsIndexed(photoList.drop(3), key = { _, photo -> photo.id }) { index, photo ->
-                            val rank = index + 4
+                        items(
+                            items = photoList.drop(3),
+                            key = { it.id },
+                        ) { photo ->
+                            val rank = photoList.indexOf(photo) + 1
                             PopularGridCard(
                                 photo = photo,
                                 rank = rank,
                                 onFavoriteClick = { viewModel.updateFavorite(photo) },
                                 onClick = { onNavigateToImages(photo) },
                             )
+                        }
+                    }
+
+                    // Infinite-scroll footer
+                    if (isLoadingMore) {
+                        item(span = { GridItemSpan(maxLineSpan) }) {
+                            Box(
+                                modifier = Modifier.fillMaxWidth().padding(AppSpacing.md),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                            }
                         }
                     }
                 }
@@ -406,8 +414,8 @@ private fun RunnerUpCard(
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(6.dp),
-            size = 28.dp,
-            iconSize = 13.dp,
+            size = 38.dp,
+            iconSize = 17.dp,
         )
         // Bottom info
         Column(
@@ -540,8 +548,8 @@ private fun PopularGridCard(
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(6.dp),
-            size = 26.dp,
-            iconSize = 12.dp,
+            size = 36.dp,
+            iconSize = 16.dp,
         )
         // Bottom row: rover name + view count
         Row(
@@ -588,8 +596,8 @@ private fun PopularFavButton(
     isFav: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    size: androidx.compose.ui.unit.Dp = 30.dp,
-    iconSize: androidx.compose.ui.unit.Dp = 14.dp,
+    size: androidx.compose.ui.unit.Dp = 44.dp,
+    iconSize: androidx.compose.ui.unit.Dp = 20.dp,
 ) {
     Box(
         modifier = modifier
