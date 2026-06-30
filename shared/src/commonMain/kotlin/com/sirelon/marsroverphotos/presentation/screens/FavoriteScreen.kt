@@ -189,7 +189,7 @@ private fun FavoritePhotosContent(
     ) { innerPadding ->
         if (isAllEmpty) {
             AppEmptyState(
-                title = "No favorite photos yet.\nYou can save any photos you like.\nJust mark them as "favorite".",
+                title = "No favorite photos yet.\nYou can save any photos you like.\nJust mark them as \"favorite\".",
                 modifier = Modifier.padding(innerPadding),
                 action = {
                     AppButton(onClick = onNavigateToRovers) { Text("Go to rovers") }
