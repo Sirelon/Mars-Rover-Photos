@@ -6,9 +6,14 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.sirelon.marsroverphotos.data.database.dao.ImagesDao
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
+import com.sirelon.marsroverphotos.data.database.entities.PopularUpdate
 import com.sirelon.marsroverphotos.data.paging.PopularRemoteMediator
+import com.sirelon.marsroverphotos.domain.repositories.FavoriteCounts
+import com.sirelon.marsroverphotos.domain.repositories.FavoriteSortOrder
 import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
+import com.sirelon.marsroverphotos.domain.repositories.RoverCount
 import com.sirelon.marsroverphotos.platform.IFirebasePhotos
+import com.sirelon.marsroverphotos.platform.IFirebasePhotos.PopularCursor
 import com.sirelon.marsroverphotos.utils.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -37,12 +42,27 @@ class ImagesRepositoryImpl(
 
     override fun loadPopularImages(): Flow<List<MarsImage>> = imagesDao.loadPopularImages()
 
-    override fun loadFavoritePagedSource(): Flow<PagingData<MarsImage>> {
-        return Pager(
-            config = PagingConfig(pageSize = 10, initialLoadSize = 10, enablePlaceholders = false),
-            pagingSourceFactory = { imagesDao.loadFavoritePagedSource() }
-        ).flow
-    }
+    private val favoritePagedConfig = PagingConfig(pageSize = 10, initialLoadSize = 10, enablePlaceholders = false)
+
+    override fun loadFavoritePaged(sort: FavoriteSortOrder, roverId: Long?): Flow<PagingData<MarsImage>> =
+        Pager(config = favoritePagedConfig, pagingSourceFactory = {
+            when (sort) {
+                FavoriteSortOrder.Recent -> imagesDao.loadFavoritePagedRecent(roverId)
+                FavoriteSortOrder.MostViewed -> imagesDao.loadFavoritePagedByViews(roverId)
+                FavoriteSortOrder.ByCamera -> imagesDao.loadFavoritePagedByCamera(roverId)
+            }
+        }).flow
+
+    override fun loadFavoriteRoverCounts(): Flow<List<RoverCount>> = imagesDao.loadFavoriteRoverCounts()
+
+    override fun loadFavoriteCounts(): Flow<FavoriteCounts> = imagesDao.loadFavoriteCounts()
+
+    override suspend fun loadFavoriteIndex(targetId: String, sort: FavoriteSortOrder, roverId: Long?): Int =
+        when (sort) {
+            FavoriteSortOrder.Recent -> imagesDao.favoriteIndexRecent(targetId, roverId)
+            FavoriteSortOrder.MostViewed -> imagesDao.favoriteIndexByViews(targetId, roverId)
+            FavoriteSortOrder.ByCamera -> imagesDao.favoriteIndexByCamera(targetId, roverId)
+        }
 
     override suspend fun updateFavForImage(item: MarsImage) {
         setFavorite(item, !item.favorite)
@@ -75,5 +95,28 @@ class ImagesRepositoryImpl(
             pagingSourceFactory = { imagesDao.loadPopularPagedSource() },
             remoteMediator = PopularRemoteMediator(firebasePhotos, imagesDao)
         ).flow
+    }
+
+    override suspend fun loadPopularPage(count: Int, after: MarsImage?): List<MarsImage> {
+        val cursor = after?.let {
+            PopularCursor(
+                shareCounter = it.stats.share,
+                saveCounter = it.stats.save,
+                scaleCounter = it.stats.scale,
+                seeCounter = it.stats.see,
+                docId = it.id,
+            )
+        }
+        val orderOffset = after?.order ?: 0
+        val photos = firebasePhotos.loadPopularPhotos(count, cursor).mapIndexed { i, fp -> fp.toMarsImage(orderOffset + i + 1) }
+        if (after == null) imagesDao.clearPopularFlags()
+        val rowIds = imagesDao.insertImages(photos)
+        rowIds.mapIndexed { index, rowId -> rowId to index }
+            .filter { it.first == -1L }
+            .forEach { (_, index) ->
+                val photo = photos[index]
+                imagesDao.updatePopular(PopularUpdate(photo.id, photo.popular, photo.order, photo.stats))
+            }
+        return photos
     }
 }

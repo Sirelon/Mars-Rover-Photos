@@ -77,7 +77,7 @@ class FirebasePhotosImpl : IFirebasePhotos {
     override suspend fun updatePhotoFavoriteCounter(photo: MarsImage, increment: Boolean): Long {
         return try {
             val fp = getOrCreate(photo)
-            val updated = fp.copy(favoriteCounter = fp.favoriteCounter + if (increment) 1 else -1)
+            val updated = fp.copy(favoriteCounter = (fp.favoriteCounter + if (increment) 1 else -1).coerceAtLeast(0))
             updatePhoto(updated)
             updated.favoriteCounter
         } catch (e: Exception) {
@@ -86,16 +86,20 @@ class FirebasePhotosImpl : IFirebasePhotos {
         }
     }
 
-    override suspend fun loadPopularPhotos(count: Int, lastPhotoId: String?): List<FirebasePhoto> {
+    override suspend fun loadPopularPhotos(count: Int, cursor: IFirebasePhotos.PopularCursor?): List<FirebasePhoto> {
         var query = photosCollection()
             .orderBy("shareCounter", Direction.DESCENDING)
             .orderBy("saveCounter", Direction.DESCENDING)
             .orderBy("scaleCounter", Direction.DESCENDING)
             .orderBy("seeCounter", Direction.DESCENDING)
             .limit(count)
-        if (lastPhotoId != null) {
-            val lastDoc = photosCollection().document(lastPhotoId).get()
-            query = query.startAfter(lastDoc)
+        if (cursor != null) {
+            query = query.startAfterFieldValues {
+                add(cursor.shareCounter)
+                add(cursor.saveCounter)
+                add(cursor.scaleCounter)
+                add(cursor.seeCounter)
+            }
         }
         return query.get().documents.map { it.toFirebasePhoto() }
     }

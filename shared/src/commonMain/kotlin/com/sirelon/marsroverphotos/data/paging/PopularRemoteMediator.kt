@@ -8,6 +8,7 @@ import com.sirelon.marsroverphotos.data.database.dao.ImagesDao
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.data.database.entities.PopularUpdate
 import com.sirelon.marsroverphotos.platform.IFirebasePhotos
+import com.sirelon.marsroverphotos.platform.IFirebasePhotos.PopularCursor
 import com.sirelon.marsroverphotos.utils.Logger
 
 /**
@@ -21,6 +22,8 @@ class PopularRemoteMediator(
     private val firebasePhotos: IFirebasePhotos,
     private val dao: ImagesDao
 ) : RemoteMediator<Int, MarsImage>() {
+
+    private var appendCursor: PopularCursor? = null
 
     override suspend fun initialize(): InitializeAction {
         // A fresh mediator is created per Pager, so always refresh cached data from
@@ -45,31 +48,34 @@ class PopularRemoteMediator(
         loadType: LoadType,
         state: PagingState<Int, MarsImage>
     ): MediatorResult {
-        // Don't prepend - popular photos are only appended
         if (loadType == LoadType.PREPEND) {
             return MediatorResult.Success(endOfPaginationReached = true)
         }
 
         val refresh = loadType == LoadType.REFRESH
+        if (refresh) appendCursor = null
 
-        // REFRESH restarts ranking from the top; only APPEND continues the Firebase
-        // cursor after the last loaded item and offsets `order` by what's already loaded.
-        val lastPhotoId = if (refresh) null else state.lastItemOrNull()?.id
+        val cursor = if (refresh) null else appendCursor
         val orderOffset = if (refresh) 1 else state.pages.sumOf { it.data.size } + 1
-
         val loadSize = state.config.pageSize
 
-        // Load popular photos from Firebase
-        val list = firebasePhotos.loadPopularPhotos(loadSize, lastPhotoId)
+        val list = firebasePhotos.loadPopularPhotos(loadSize, cursor)
             .mapIndexed { index, firebasePhoto ->
                 firebasePhoto.toMarsImage(index + orderOffset)
             }
 
+        if (list.isNotEmpty()) {
+            val last = list.last()
+            appendCursor = PopularCursor(
+                shareCounter = last.stats.share,
+                saveCounter = last.stats.save,
+                scaleCounter = last.stats.scale,
+                seeCounter = last.stats.see,
+                docId = last.id,
+            )
+        }
+
         if (refresh) {
-            // Reset stale popular flags so photos that dropped off Firebase's popular
-            // list don't stay popular forever and stale rows don't collide with this
-            // batch's order values 1..N. Flag-reset instead of delete: deleting would
-            // drop favorited photos and rows cached by the sol feed.
             dao.clearPopularFlags()
         }
 
@@ -77,9 +83,6 @@ class PopularRemoteMediator(
         val indexedIds = rowIds.mapIndexed { index, rowId -> rowId to index }
         val grouped = indexedIds.groupBy { it.first == -1L }
 
-        // Rows that already exist (insert returned -1, e.g. cached by the sol feed with
-        // popular = 0) are IGNOREd by the insert, so apply the popular flag, the fresh
-        // ranking order and stats via a partial update.
         val toUpdate = grouped[true]?.map { list[it.second] }
         toUpdate?.forEach { photo ->
             dao.updatePopular(PopularUpdate(photo.id, photo.popular, photo.order, photo.stats))
