@@ -6,6 +6,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.sirelon.marsroverphotos.data.database.dao.ImagesDao
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
+import com.sirelon.marsroverphotos.data.database.entities.PopularUpdate
 import com.sirelon.marsroverphotos.data.paging.PopularRemoteMediator
 import com.sirelon.marsroverphotos.domain.repositories.FavoriteCounts
 import com.sirelon.marsroverphotos.domain.repositories.FavoriteSortOrder
@@ -56,14 +57,12 @@ class ImagesRepositoryImpl(
 
     override fun loadFavoriteCounts(): Flow<FavoriteCounts> = imagesDao.loadFavoriteCounts()
 
-    override suspend fun loadFavoriteIndex(targetId: String, sort: FavoriteSortOrder, roverId: Long?): Int {
-        val ids = when (sort) {
-            FavoriteSortOrder.Recent -> imagesDao.loadFavoriteIdsRecent(roverId)
-            FavoriteSortOrder.MostViewed -> imagesDao.loadFavoriteIdsByViews(roverId)
-            FavoriteSortOrder.ByCamera -> imagesDao.loadFavoriteIdsByCamera(roverId)
+    override suspend fun loadFavoriteIndex(targetId: String, sort: FavoriteSortOrder, roverId: Long?): Int =
+        when (sort) {
+            FavoriteSortOrder.Recent -> imagesDao.favoriteIndexRecent(targetId, roverId)
+            FavoriteSortOrder.MostViewed -> imagesDao.favoriteIndexByViews(targetId, roverId)
+            FavoriteSortOrder.ByCamera -> imagesDao.favoriteIndexByCamera(targetId, roverId)
         }
-        return ids.indexOf(targetId)
-    }
 
     override suspend fun updateFavForImage(item: MarsImage) {
         setFavorite(item, !item.favorite)
@@ -105,8 +104,19 @@ class ImagesRepositoryImpl(
                 saveCounter = it.stats.save,
                 scaleCounter = it.stats.scale,
                 seeCounter = it.stats.see,
+                docId = it.id,
             )
         }
-        return firebasePhotos.loadPopularPhotos(count, cursor).mapIndexed { i, fp -> fp.toMarsImage(i + 1) }
+        val orderOffset = after?.order ?: 0
+        val photos = firebasePhotos.loadPopularPhotos(count, cursor).mapIndexed { i, fp -> fp.toMarsImage(orderOffset + i + 1) }
+        if (after == null) imagesDao.clearPopularFlags()
+        val rowIds = imagesDao.insertImages(photos)
+        rowIds.mapIndexed { index, rowId -> rowId to index }
+            .filter { it.first == -1L }
+            .forEach { (_, index) ->
+                val photo = photos[index]
+                imagesDao.updatePopular(PopularUpdate(photo.id, photo.popular, photo.order, photo.stats))
+            }
+        return photos
     }
 }

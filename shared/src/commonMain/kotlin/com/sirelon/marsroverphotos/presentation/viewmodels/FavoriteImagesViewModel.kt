@@ -59,9 +59,9 @@ class FavoriteImagesViewModel(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), listOf(RoverChip(null, "All", 0)))
 
-    val stats: StateFlow<FavoriteStats> = imagesRepository.loadFavoriteCounts()
+    val stats: StateFlow<FavoriteStats?> = imagesRepository.loadFavoriteCounts()
         .map { FavoriteStats(savedCount = it.saved, roverCount = it.roverCount, cameraCount = it.cameraCount) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), FavoriteStats(0, 0, 0))
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     /** Returns the 0-based index of [targetId] in the current sort+filter view, or -1 if not found. */
     suspend fun findScrollIndex(targetId: String): Int =

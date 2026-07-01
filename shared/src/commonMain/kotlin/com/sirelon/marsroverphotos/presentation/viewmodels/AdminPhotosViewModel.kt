@@ -84,6 +84,7 @@ class AdminPhotosViewModel(
                     saveCounter = it.saveCounter,
                     scaleCounter = it.scaleCounter,
                     seeCounter = it.seeCounter,
+                    docId = it.id,
                 )
             }
             val page = try {

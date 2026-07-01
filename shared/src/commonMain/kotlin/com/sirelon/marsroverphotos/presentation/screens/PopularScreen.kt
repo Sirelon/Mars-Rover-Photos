@@ -87,9 +87,8 @@ fun PopularScreen(
                 .first { it.isNotEmpty() }
         }.orEmpty()
         if (targetId !in visibleKeys) {
-            val gridIndex = when (index) {
-                0 -> 0; 1 -> 1; 2 -> 2; else -> index + 1
-            }
+            // Slots 0–2 map 1:1; slot 3 is the full-span divider, so items 3+ are offset by 1.
+            val gridIndex = if (index < 3) index else index + 1
             gridState.scrollToItem(gridIndex)
         }
     }

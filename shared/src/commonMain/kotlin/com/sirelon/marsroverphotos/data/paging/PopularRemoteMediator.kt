@@ -71,6 +71,7 @@ class PopularRemoteMediator(
                 saveCounter = last.stats.save,
                 scaleCounter = last.stats.scale,
                 seeCounter = last.stats.see,
+                docId = last.id,
             )
         }
 

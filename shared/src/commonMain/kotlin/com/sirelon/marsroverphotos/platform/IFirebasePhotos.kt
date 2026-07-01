@@ -74,6 +74,7 @@ interface IFirebasePhotos {
         val saveCounter: Long,
         val scaleCounter: Long,
         val seeCounter: Long,
+        val docId: String = "",
     )
 
     suspend fun loadPopularPhotos(

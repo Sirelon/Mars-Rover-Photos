@@ -127,7 +127,7 @@ private fun FavoritePhotosContent(
     modifier: Modifier = Modifier,
     items: LazyPagingItems<MarsImage>,
     chips: List<FavoriteImagesViewModel.RoverChip>,
-    stats: FavoriteImagesViewModel.FavoriteStats,
+    stats: FavoriteImagesViewModel.FavoriteStats?,
     sortOrder: FavoriteSortOrder,
     roverFilter: Long?,
     gridState: LazyGridState,
@@ -139,7 +139,8 @@ private fun FavoritePhotosContent(
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     var sortMenuExpanded by remember { mutableStateOf(false) }
-    val isAllEmpty = stats.savedCount == 0
+    // Treat null stats as "still loading" — do not show the empty state yet.
+    val isAllEmpty = stats != null && stats.savedCount == 0
     val isFilterEmpty = !isAllEmpty && items.itemCount == 0 && items.loadState.refresh !is LoadState.Loading
 
     Scaffold(
@@ -236,8 +237,10 @@ private fun FavoritePhotosContent(
                 verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
                 horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm),
             ) {
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    FavoriteStatsRow(stats)
+                if (stats != null) {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        FavoriteStatsRow(stats)
+                    }
                 }
                 if (chips.size > 1) {
                     item(span = { GridItemSpan(maxLineSpan) }) {
