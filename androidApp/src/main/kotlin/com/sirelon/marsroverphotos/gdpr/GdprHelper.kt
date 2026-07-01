@@ -57,9 +57,15 @@ class GdprHelper(private val activity: Activity) {
 
     private fun onError(error: FormError) {
         Logger.w(TAG) { "UMP error ${error.errorCode}: ${error.message}" }
-        recordException(RuntimeException("UMP ${error.errorCode}: ${error.message}"))
+        if (!error.isTransientNetworkError) {
+            recordException(RuntimeException("UMP ${error.errorCode}: ${error.message}"))
+        }
         updateAcceptanceFromConsentState()
     }
+
+    /** INTERNET_ERROR/TIME_OUT are expected on flaky connections, not actionable bugs. */
+    private val FormError.isTransientNetworkError: Boolean
+        get() = errorCode == FormError.ErrorCode.INTERNET_ERROR || errorCode == FormError.ErrorCode.TIME_OUT
 
     private fun loadForm() {
         UserMessagingPlatform.loadConsentForm(
@@ -75,7 +81,9 @@ class GdprHelper(private val activity: Activity) {
             consentForm.show(activity) { formError ->
                 if (formError != null) {
                     Logger.w(TAG) { "Consent form dismissed with error ${formError.errorCode}: ${formError.message}" }
-                    recordException(RuntimeException("UMP form dismiss ${formError.errorCode}: ${formError.message}"))
+                    if (!formError.isTransientNetworkError) {
+                        recordException(RuntimeException("UMP form dismiss ${formError.errorCode}: ${formError.message}"))
+                    }
                 }
                 // Reload form after dismissal so it is ready for future re-requests.
                 loadForm()
