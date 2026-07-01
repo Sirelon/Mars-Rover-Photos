@@ -649,10 +649,6 @@ private fun CameraFilterChip(cameras: Set<String>, onClear: () -> Unit) {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-// Max time to wait for the last-viewed photo to appear in the loaded snapshot before giving up
-// on restoring the grid scroll position (see the scroll-restore LaunchedEffect above).
-private const val SCROLL_RESTORE_TIMEOUT_MS = 3000L
-
 // 10 items = 5 rows ahead for a 2-column grid.
 private const val PREFETCH_ITEM_COUNT = 10
 

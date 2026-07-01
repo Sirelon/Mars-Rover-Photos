@@ -9,6 +9,8 @@ import androidx.room3.Transaction
 import androidx.room3.Update
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.data.database.entities.PopularUpdate
+import com.sirelon.marsroverphotos.domain.repositories.FavoriteCounts
+import com.sirelon.marsroverphotos.domain.repositories.RoverCount
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -49,8 +51,57 @@ interface ImagesDao {
     fun loadPopularImages(): Flow<List<MarsImage>>
 
     // room-paging supports all KMP targets since room3 3.0.0-alpha05 (b/339934824)
-    @Query("SELECT * FROM images WHERE favorite = 1 ORDER BY `order` ASC, id ASC")
-    fun loadFavoritePagedSource(): PagingSource<Int, MarsImage>
+    // roverId = null means all rovers; non-null filters to the specified rover.
+    @Query("SELECT * FROM images WHERE favorite = 1 AND (:roverId IS NULL OR roverId = :roverId) ORDER BY `order` ASC, id ASC")
+    fun loadFavoritePagedRecent(roverId: Long?): PagingSource<Int, MarsImage>
+
+    @Query("SELECT * FROM images WHERE favorite = 1 AND (:roverId IS NULL OR roverId = :roverId) ORDER BY counter_see DESC, id ASC")
+    fun loadFavoritePagedByViews(roverId: Long?): PagingSource<Int, MarsImage>
+
+    @Query("SELECT * FROM images WHERE favorite = 1 AND (:roverId IS NULL OR roverId = :roverId) ORDER BY camera_name ASC, id ASC")
+    fun loadFavoritePagedByCamera(roverId: Long?): PagingSource<Int, MarsImage>
+
+    @Query("SELECT roverId, COUNT(*) as count FROM images WHERE favorite = 1 GROUP BY roverId")
+    fun loadFavoriteRoverCounts(): Flow<List<RoverCount>>
+
+    @Query("SELECT COUNT(*) as saved, COUNT(DISTINCT roverId) as roverCount, COUNT(DISTINCT camera_name) as cameraCount FROM images WHERE favorite = 1")
+    fun loadFavoriteCounts(): Flow<FavoriteCounts>
+
+    @Query("""
+        SELECT CASE
+            WHEN NOT EXISTS(SELECT 1 FROM images WHERE id = :targetId AND favorite = 1 AND (:roverId IS NULL OR roverId = :roverId))
+            THEN -1
+            ELSE (SELECT COUNT(*) FROM images
+                  WHERE favorite = 1 AND (:roverId IS NULL OR roverId = :roverId)
+                    AND (`order` < (SELECT `order` FROM images WHERE id = :targetId)
+                         OR (`order` = (SELECT `order` FROM images WHERE id = :targetId) AND id < :targetId)))
+        END
+    """)
+    suspend fun favoriteIndexRecent(targetId: String, roverId: Long?): Int
+
+    @Query("""
+        SELECT CASE
+            WHEN NOT EXISTS(SELECT 1 FROM images WHERE id = :targetId AND favorite = 1 AND (:roverId IS NULL OR roverId = :roverId))
+            THEN -1
+            ELSE (SELECT COUNT(*) FROM images
+                  WHERE favorite = 1 AND (:roverId IS NULL OR roverId = :roverId)
+                    AND (counter_see > (SELECT counter_see FROM images WHERE id = :targetId)
+                         OR (counter_see = (SELECT counter_see FROM images WHERE id = :targetId) AND id < :targetId)))
+        END
+    """)
+    suspend fun favoriteIndexByViews(targetId: String, roverId: Long?): Int
+
+    @Query("""
+        SELECT CASE
+            WHEN NOT EXISTS(SELECT 1 FROM images WHERE id = :targetId AND favorite = 1 AND (:roverId IS NULL OR roverId = :roverId))
+            THEN -1
+            ELSE (SELECT COUNT(*) FROM images
+                  WHERE favorite = 1 AND (:roverId IS NULL OR roverId = :roverId)
+                    AND (camera_name < (SELECT camera_name FROM images WHERE id = :targetId)
+                         OR (camera_name = (SELECT camera_name FROM images WHERE id = :targetId) AND id < :targetId)))
+        END
+    """)
+    suspend fun favoriteIndexByCamera(targetId: String, roverId: Long?): Int
 
     @Query("SELECT * FROM images WHERE popular = 1 ORDER BY `order` ASC, id ASC")
     fun loadPopularPagedSource(): PagingSource<Int, MarsImage>
