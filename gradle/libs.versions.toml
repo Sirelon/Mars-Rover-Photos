@@ -69,7 +69,7 @@ playServicesAds = "25.4.0"
 # https://developers.google.com/admob/android/privacy/release-notes
 userMessagingPlatform = "4.0.0"
 # https://github.com/usuiat/Zoomable/releases
-zoomable = "2.12.0"
+zoomable = "2.13.0"
 # https://developer.android.com/guide/playcore/in-app-review/release-notes
 playReview = "2.0.2"
 
