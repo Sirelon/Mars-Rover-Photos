@@ -68,8 +68,11 @@ out/
 .idea/dictionaries
 .idea/libraries
 
-# Keystore files
+# Keystore files & signing secrets — never track these; repo is public
 *.jks
+keystore.properties
+privateKey
+private_key.pepk
 
 # Android App Bundles
 *.aab
