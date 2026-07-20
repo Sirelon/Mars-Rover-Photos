@@ -1,0 +1,106 @@
+default_platform(:ios)
+
+
+APP_IDENTIFIER = "com.sirelon.marsroverphotos"
+IOS_PROJECT    = "iosApp/iosApp.xcodeproj"
+IOS_SCHEME     = "iosApp"
+ANDROID_AAB         = "androidApp/build/outputs/bundle/release/androidApp-release.aab"
+GOOGLE_PLAY_KEY     = "fastlane/google-play-key.json"
+
+ASC_KEY_ID       = "G5TTXS7GV3"
+ASC_ISSUER_ID    = "8873b38c-775e-4a3e-baf5-4e2bada765a8"
+# Plain Ruby File.* calls in this Fastfile run relative to the fastlane/
+# folder itself, not the repo root actions like gradle()/build_app() resolve
+# their string params against, so anchor these to __dir__ explicitly.
+ASC_KEY_FILEPATH = File.expand_path("AuthKey_G5TTXS7GV3.p8", __dir__)
+
+# ---------------------------------------------------------------------------
+# iOS
+# ---------------------------------------------------------------------------
+
+platform :ios do
+  before_all do
+    next unless File.exist?(ASC_KEY_FILEPATH)
+
+    app_store_connect_api_key(
+      key_id: ASC_KEY_ID,
+      issuer_id: ASC_ISSUER_ID,
+      key_filepath: ASC_KEY_FILEPATH
+    )
+  end
+
+  desc "Sync MARKETING_VERSION / CURRENT_PROJECT_VERSION from buildSrc/AppVersion.kt"
+  private_lane :sync_version do
+    # buildSrc/AppVersion.kt is the single source of truth for the app version;
+    # the existing Gradle task pushes it into the Xcode project.
+    gradle(task: "syncIosVersion")
+  end
+
+  desc "Build and upload a new beta to TestFlight"
+  lane :beta do
+    sync_version
+    Bundler.with_unbundled_env do
+      build_app(
+        project: IOS_PROJECT,
+        scheme: IOS_SCHEME,
+        export_method: "app-store",
+        xcargs: "-allowProvisioningUpdates"
+      )
+    end
+    upload_to_testflight(
+      skip_waiting_for_build_processing: true,
+      changelog: ENV["CHANGELOG"] || "Bug fixes and improvements"
+    )
+  end
+
+  desc "Build and upload to App Store (does not submit for review)"
+  lane :release do
+    sync_version
+    Bundler.with_unbundled_env do
+      build_app(
+        project: IOS_PROJECT,
+        scheme: IOS_SCHEME,
+        export_method: "app-store",
+        xcargs: "-allowProvisioningUpdates"
+      )
+    end
+    upload_to_app_store(
+      app_identifier: APP_IDENTIFIER,
+      submit_for_review: false,
+      automatic_release: false,
+      skip_metadata: true,
+      skip_screenshots: true
+    )
+  end
+end
+
+# ---------------------------------------------------------------------------
+# Android
+# ---------------------------------------------------------------------------
+
+platform :android do
+  desc "Build release AAB and upload to Play Store internal testing"
+  lane :beta do
+    gradle(task: ":androidApp:bundleRelease")
+    upload_to_play_store(
+      track: "internal",
+      aab: ANDROID_AAB,
+      json_key: GOOGLE_PLAY_KEY,
+      skip_upload_apk: true
+    )
+  end
+
+  desc "Promote the latest internal build to production on Play Store"
+  lane :release do
+    upload_to_play_store(
+      track: "internal",
+      track_promote_to: "production",
+      json_key: GOOGLE_PLAY_KEY
+    )
+  end
+
+  desc "Build release AAB without uploading"
+  lane :build do
+    gradle(task: ":androidApp:bundleRelease")
+  end
+end

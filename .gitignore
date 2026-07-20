@@ -134,6 +134,14 @@ Podfile.lock
 # Firebase config — copy from GoogleService-Info.template.plist and fill in real values
 iosApp/iosApp/GoogleService-Info.plist
 
+# Fastlane — credentials stay untracked; build/report artifacts too
+fastlane/*.p8
+fastlane/google-play-key.json
+fastlane/report.xml
+fastlane/README.md
+*.ipa
+*.dSYM.zip
+
 # Claude Code session artifacts
 .claude/tmp/
 
