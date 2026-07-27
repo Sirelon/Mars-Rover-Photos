@@ -1,6 +1,6 @@
 [versions]
 # Core
-kotlin = "2.4.0"
+kotlin = "2.4.10"
 androidGradlePlugin = "9.2.1"
 ksp = "2.3.9"
 
