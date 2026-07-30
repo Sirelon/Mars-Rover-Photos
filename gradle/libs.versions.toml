@@ -14,7 +14,7 @@ activityCompose = "1.13.0"
 appcompat = "1.7.1"
 ktx = "1.19.0"
 # https://developer.android.com/jetpack/androidx/releases/lifecycle
-lifecycle = "2.10.0"
+lifecycle = "2.11.0"
 # https://developer.android.com/jetpack/androidx/releases/compose
 compose = "1.11.4"
 # https://developer.android.com/jetpack/androidx/releases/compose-material3
