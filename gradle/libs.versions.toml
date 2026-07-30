@@ -2,7 +2,7 @@
 # Core
 kotlin = "2.4.0"
 androidGradlePlugin = "9.2.1"
-ksp = "2.3.9"
+ksp = "2.3.10"
 
 # Compose Multiplatform
 compose-multiplatform = "1.12.0-alpha02"
@@ -14,17 +14,17 @@ activityCompose = "1.13.0"
 appcompat = "1.7.1"
 ktx = "1.19.0"
 # https://developer.android.com/jetpack/androidx/releases/lifecycle
-lifecycle = "2.10.0"
+lifecycle = "2.11.0"
 # https://developer.android.com/jetpack/androidx/releases/compose
 compose = "1.11.4"
 # https://developer.android.com/jetpack/androidx/releases/compose-material3
-compose-material3 = "1.5.0-alpha23"
+compose-material3 = "1.5.0-alpha24"
 # https://developer.android.com/jetpack/androidx/releases/glance
 glance = "1.3.0-alpha02"
 # https://developer.android.com/jetpack/androidx/releases/paging
 paging = "3.5.0"
 # https://developer.android.com/jetpack/androidx/releases/room3
-room = "3.0.0-rc01"
+room = "3.0.0"
 # https://developer.android.com/jetpack/androidx/releases/work
 work = "2.11.2"
 # https://developer.android.com/jetpack/androidx/releases/core
@@ -53,14 +53,14 @@ koin-compose = "4.2.2"
 navigation-compose = "2.9.2"
 
 # GitLive Firebase KMP SDK
-gitliveFirebase = "2.4.0"
+gitliveFirebase = "2.5.0"
 
 # Firebase
 # https://firebase.google.com/support/release-notes/android
-firebaseBom = "34.15.0"
+firebaseBom = "34.16.0"
 firebaseAnalyticsVersion = "23.2.0"
 firebaseCrashlyticsVersion = "20.0.6"
-firebaseFirestoreVersion = "26.4.0"
+firebaseFirestoreVersion = "26.4.1"
 
 # Testing
 
@@ -86,7 +86,7 @@ androidx-glance-appwidget = { module = "androidx.glance:glance-appwidget", versi
 androidx-room-runtime = { group = "androidx.room3", name = "room3-runtime", version.ref = "room" }
 androidx-room-compiler = { group = "androidx.room3", name = "room3-compiler", version.ref = "room" }
 androidx-room-paging = { group = "androidx.room3", name = "room3-paging", version.ref = "room" }
-androidx-sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version = "2.7.0-rc01" }
+androidx-sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version = "2.7.0" }
 
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "core-splashscreen" }
