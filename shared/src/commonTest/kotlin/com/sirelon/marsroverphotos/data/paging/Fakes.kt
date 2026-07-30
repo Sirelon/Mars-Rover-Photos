@@ -65,9 +65,9 @@ class FakeImagesDao(
     override fun loadFavoritePagedByCamera(roverId: Long?): PagingSource<Int, MarsImage> = TODO("unused")
     override fun loadFavoriteRoverCounts(): Flow<List<RoverCount>> = emptyFlow()
     override fun loadFavoriteCounts(): Flow<FavoriteCounts> = emptyFlow()
-    override suspend fun loadFavoriteIdsRecent(roverId: Long?): List<String> = emptyList()
-    override suspend fun loadFavoriteIdsByViews(roverId: Long?): List<String> = emptyList()
-    override suspend fun loadFavoriteIdsByCamera(roverId: Long?): List<String> = emptyList()
+    override suspend fun favoriteIndexRecent(targetId: String, roverId: Long?): Int = -1
+    override suspend fun favoriteIndexByViews(targetId: String, roverId: Long?): Int = -1
+    override suspend fun favoriteIndexByCamera(targetId: String, roverId: Long?): Int = -1
     override fun loadPopularPagedSource(): PagingSource<Int, MarsImage> = TODO("unused")
     override suspend fun clearPopularFlags() = Unit
 }
