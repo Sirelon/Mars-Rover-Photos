@@ -18,7 +18,7 @@ lifecycle = "2.11.0"
 # https://developer.android.com/jetpack/androidx/releases/compose
 compose = "1.11.4"
 # https://developer.android.com/jetpack/androidx/releases/compose-material3
-compose-material3 = "1.5.0-alpha23"
+compose-material3 = "1.5.0-alpha24"
 # https://developer.android.com/jetpack/androidx/releases/glance
 glance = "1.3.0-alpha02"
 # https://developer.android.com/jetpack/androidx/releases/paging
