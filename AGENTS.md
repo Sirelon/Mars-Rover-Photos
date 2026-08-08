@@ -42,14 +42,29 @@ Never hand-edit the version in `project.pbxproj` — it is overwritten on the ne
 ## Coding Style & Naming Conventions
 Kotlin files use four-space indentation, `val` first, and explicit visibility for public APIs. Compose functions and classes stay in PascalCase, constants in `UPPER_SNAKE_CASE`, and extension files match their receiver (`ImageRequestExt.kt`). Keep packages cohesive; add a `feature/*` subpackage for new screens. Run `./gradlew detekt` before review instead of hand-tuning formatting.
 
+## Architecture & Layering
+Before adding a screen, ViewModel, or domain model, read **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**.
+It carries the layer map (`domain` ← `data` / `presentation`, wired only in `di/`) and the prescriptive
+rules that reviews keep catching: `domain/` never imports `presentation/` (map domain values to UI types
+with an extension in the UI layer); every screen that shows data gets a ViewModel registered with
+`viewModelOf(::X)`, even when the data is currently static; ViewModel state is always observable
+(`StateFlow`/`Flow`, never a plain `val`) with one-shot signals as `Channel`/`SharedFlow`; navigation
+composables route but never make business decisions; and top-level type names must stand alone
+(`Release.Change`, not `Change`). It ends with a pre-review self-check list.
+
 ## Design System & UI/UX
 Before writing or changing any Compose UI, read **[docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md)** — the
 living design-system doc. It carries the prescriptive UI/UX rules (token usage, the `App*` component
 family, adaptive-nav ownership), a component index with file links, and the non-obvious insights
 (e.g. dark `surface` == `background`, no green slot in the M3 palette, the full Material Symbols font).
 Reuse the `App*` components in `presentation/ui/` before adding new ones; prefer `AppSpacing` /
-`AppSize` over adding new raw `.dp` literals, and use `MaterialTheme.colorScheme` instead of hardcoded theme colors. **Keep the doc
-updated**: when you add a reusable component, a token, or learn a UI gotcha, record it there.
+`AppSize` over adding new raw `.dp` literals, and use `MaterialTheme.colorScheme` instead of hardcoded theme colors.
+The same reuse-first rule applies **within** the token scales: check `AppSpacing` / `AppSize` / `AppMotion`
+for a value that fits before adding an entry, and don't borrow a token whose name belongs to another
+component just because the number matches. **Keep the doc updated**: when you add a reusable component,
+a token, or learn a UI gotcha, record it there — and when a UI fix takes several rounds to land, leave a
+short symptom-first note in that doc's *Insights / gotchas* section so the next reader recognizes it from
+the behavior.
 
 ## Testing Guidelines
 Place unit specs in `shared/src/commonTest` (or `androidTest` for Android-instrumented tests), mirroring the source package and ending class names with `*Test`. Common tests use `kotlin.test` + `kotlinx-coroutines-test` with hand-rolled fakes (see `data/paging/Fakes.kt`) — no mocking library in commonTest; JUnit4 and Mockito-Kotlin apply to Android-instrumented tests only. Paging behavior should be verified at two levels: `PagingSource.load()` unit tests, plus `TestPager` (androidx.paging:paging-testing, KMP) for Pager-level invariants like continuation pages and end-of-pagination. Compose UI or Room integration checks belong in `androidApp/src/androidTest` and should describe the scenario in the test name. Cover paging boundaries, offline caching, and error flows whenever you touch those areas.

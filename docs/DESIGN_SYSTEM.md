@@ -31,9 +31,23 @@ coral **accent/secondary** (`#FC6C4B`, "the Mars accent"). Light theme is white-
 - **Color** → always `MaterialTheme.colorScheme.*`. **No hardcoded theme colors.** The only allowed
   exceptions are documented per-theme helpers that fill a missing M3 slot (see Insights). Apply text
   color at the call site so light/dark both work.
+  - A screen that must stay dark regardless of theme (fullscreen story / viewer) is **not** an
+    exception — wrap its content in `MaterialTheme(colorScheme = DarkColorPalette)` and keep reading
+    `MaterialTheme.colorScheme.*` inside (`screens/whatsnew/WhatsNewStoryScreen.kt`). A file-level
+    `private val StoryBackground = Color(0xFF0A0908)` is the wrong answer to this problem.
+  - Scrims painted **over photography** (`Color(0x7A000000)` in `PopularScreen`/`FavoriteScreen`) are
+    the standing literal exception: they darken an image for text legibility, not the theme.
+  - Draw lambdas (`Canvas`, `drawBehind`) don't run in composable scope — read the colors into locals
+    in the composable and capture them, rather than reaching for a constant.
 - **Motion (durations / easing / shared-element specs)** → `AppMotion` (`theme/AppMotion.kt`). No raw
   `tween(600)`/`spring()` in screens or nav specs — route through `AppMotion` so the cross-screen fade
   and the shared-element bounds share one timing curve. See **Motion** below.
+- **Reuse an existing token before adding one.** Scan the scale first; a new token is for when nothing
+  fits, not when nothing matches exactly — a 48dp travel distance that could be `AppSpacing.x3l` does
+  not need its own entry. Two things this rule does *not* ask for: don't reuse a token whose name
+  belongs to another component just because the number matches (`segmentedControlPadding` is a
+  segmented-control inset, not "3dp"), and don't reach for a spacing token to size a component. When
+  you do add one, name it for what it is app-wide, not for the screen that needed it first.
 
 ### Components
 - Reuse the `App*` family in `presentation/ui/` before writing new UI. If you need a variant, prefer a
@@ -62,6 +76,11 @@ coral **accent/secondary** (`#FC6C4B`, "the Mars accent"). Light theme is white-
 - Run `./gradlew detekt` before review; `./gradlew testDebugUnitTest` (JVM) and
   `:shared:desktopTest` run the shared logic tests. There is **no Compose UI-test infra** in `shared`
   yet — styling-only changes are verified by compile + visual smoke test, not unit tests.
+- **If a UI fix took more than a couple of rounds, write down what you learned** as a short note in
+  **Insights / gotchas** below — descriptive, not a new rule. Lead with the symptom as it was
+  reported ("laggy", "bounces back", "small pause"), then the cause, so the next reader matches on the
+  behavior they're seeing rather than on a diagnosis they don't have yet. One tight bullet each; the
+  goal is that the same trap costs one round next time, not four.
 
 ### Motion & shared-element transitions
 - **Tokens:** `AppMotion` (`theme/AppMotion.kt`) — `ScreenEnterMs`/`ScreenExitFadeMs` (standard slide
@@ -118,6 +137,26 @@ coral **accent/secondary** (`#FC6C4B`, "the Mars accent"). Light theme is white-
 - **Android in-app review silently no-ops in debug.** `AppReview.requestReview()` returns `true` even
   when nothing renders (Play throttling), so any "rate" flow needs a guaranteed store-listing fallback;
   ensure each platform shell passes a store URL.
+
+**Driven progress / pager timers** — notes from four rounds on the What's New story bar
+(`screens/whatsnew/WhatsNewStoryScreen.kt`), each symptom looked like a different bug:
+
+- **"Laggy" usually means the animation is read in composition.** Reading `Animatable.value` where the
+  segments are *declared* recomposed the whole screen — pager and page content included — every frame,
+  plus a relayout per segment from `fillMaxWidth(fraction)`. Passing `() -> Float` and reading it inside
+  `Canvas`/`graphicsLayer` drops the frame cost to one repaint of the strip.
+- **"Bounces to the end, then back" = two values that disagree for one frame.** With `(index, fraction)`
+  as separate state, the index flips on settle while the fraction still holds the previous page's `1f`;
+  the reset lands a frame later. One continuous value over all segments (`2.4f` = segment 2, 40% full)
+  makes the desync unrepresentable.
+- **`settledPage` updates only *after* the slide finishes; `targetPage` at commit.** A per-page timer
+  keyed on `settledPage` idles for the whole scroll (reads as a pause between cards). Keyed on
+  `targetPage` it starts as the page starts moving. Corollary: run `animateScrollToPage` in
+  `rememberCoroutineScope`, not inside the effect keyed on `targetPage` — otherwise the scroll changes
+  the key and cancels itself mid-slide.
+- **Springs overshoot, and a clamped value renders overshoot as a dead stop.** For "run the rest of this
+  segment out" when the user skips ahead, a spring parks at 100% while it settles past 1f. A short tween
+  + `AppMotion.Emphasized` gives the decelerating feel without the stall.
 
 ---
 
@@ -275,3 +314,10 @@ tokens rather than re-introducing literals:
   (`AppNavigation`) fades with the bounds via `AppMotion.SharedContainerMs`; extended the effect to
   Favorite/Popular (`MarsImageComposable`); added `~large`→`~orig` progressive loading
   (`nasaImageLargeUrl`). Reviewed by a 2-member committee before implementation.
+- 2026-08-08 — **What's New story screen motion.** Added the "driven progress / pager timers" notes to
+  Insights (draw-phase reads, one continuous progress value, `targetPage` vs `settledPage`, springs on
+  clamped values) — all four came from separate rounds on the same progress bar. Added
+  `AppSize.progressTrack`; the story content's swipe parallax reuses `AppSpacing.x3l` as its travel
+  base rather than introducing a token. Also spelled out the forced-dark-screen answer under **Color**
+  (themed `MaterialTheme(colorScheme = DarkColorPalette)`, not file-level color constants) after that
+  screen first shipped with hardcoded hex values.
