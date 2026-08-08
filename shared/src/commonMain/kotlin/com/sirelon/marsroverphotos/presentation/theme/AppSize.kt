@@ -61,6 +61,9 @@ object AppSize {
     /** 14dp — gap between a settings row's icon-box and its text. */
     val rowIconGap: Dp = 14.dp
 
+    /** 3dp — story-screen segmented progress track height. */
+    val progressTrack: Dp = 3.dp
+
     /** 840dp — max settings-content width; the column caps and centers only in the EXPANDED width class. */
     val contentMaxWidth: Dp = 840.dp
 

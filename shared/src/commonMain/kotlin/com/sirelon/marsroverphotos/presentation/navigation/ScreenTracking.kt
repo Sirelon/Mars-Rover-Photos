@@ -56,6 +56,10 @@ fun AppDestination.toScreenView(): ScreenView = when (this) {
             if (roverId != null) putAll(roverParams(roverId))
         },
     )
+
+    AppDestination.WhatsNewDialog -> ScreenView("whats_new_dialog")
+    AppDestination.AllVersions -> ScreenView("all_versions")
+    is AppDestination.WhatsNewStory -> ScreenView("whats_new_story", mapOf("version" to version))
 }
 
 private fun roverParams(roverId: Long): Map<String, String> = mapOf("rover_id" to roverId.toString())

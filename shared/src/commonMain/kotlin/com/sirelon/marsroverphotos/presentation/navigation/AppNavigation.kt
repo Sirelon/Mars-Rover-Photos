@@ -36,6 +36,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.sirelon.marsroverphotos.platform.BuildInfo
+import com.sirelon.marsroverphotos.presentation.viewmodels.WhatsNewViewModel
 import com.sirelon.marsroverphotos.platform.Tracker
 import com.sirelon.marsroverphotos.presentation.theme.AppMotion
 import com.sirelon.marsroverphotos.presentation.ui.AdSlot
@@ -160,13 +161,22 @@ fun AppNavigation(
     }
     val dialogOverlaySceneStrategy = remember { DialogOverlaySceneStrategy<NavKey>() }
     val tracker: Tracker = koinInject()
+    val whatsNewViewModel: WhatsNewViewModel = koinViewModel()
     val isImages = chromeDestination is AppDestination.Images
+    val isFullscreen = isImages || chromeDestination is AppDestination.WhatsNewStory
 
     // One screen_view observer for the whole app rather than a call per screen: whatever is on top
     // of the back stack (including the dialog destinations) is what the user is looking at.
     val screenView = remember(currentDestination) { currentDestination.toScreenView() }
     LaunchedEffect(screenView) {
         tracker.trackScreen(screenView.name, screenView.params)
+    }
+
+    LaunchedEffect(Unit) {
+        // ViewModel resolves "should show" once on creation (handles fresh-install vs update).
+        if (whatsNewViewModel.state.value.shouldShowDialog && deepLink == null) {
+            navigator.navigate(AppDestination.WhatsNewDialog)
+        }
     }
 
     LaunchedEffect(deepLink) {
@@ -250,13 +260,13 @@ fun AppNavigation(
                     navigator.selectTopLevel(destination)
                 },
                 resetScrollKey = chromeDestination,
-                chromeVisible = !isImages,
+                chromeVisible = !isFullscreen,
                 bottomChrome = { if (!BuildInfo.hideAds) AdSlot(modifier = Modifier.fillMaxWidth()) },
             ) {
                 val statusBarTop = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
                 val topPadding by animateDpAsState(
-                    targetValue = if (isImages) 0.dp else statusBarTop,
-                    animationSpec = tween(if (isImages) CHROME_HIDE_MS else CHROME_SHOW_MS),
+                    targetValue = if (isFullscreen) 0.dp else statusBarTop,
+                    animationSpec = tween(if (isFullscreen) CHROME_HIDE_MS else CHROME_SHOW_MS),
                     label = "statusBarPadding",
                 )
                 Column(
@@ -268,7 +278,7 @@ fun AppNavigation(
                         // there's no double inset after the chrome animates back in.
                         .consumeWindowInsets(PaddingValues(top = topPadding)),
                 ) {
-                    AnimatedVisibility(chromeDestination !is AppDestination.Ukraine && !isImages) {
+                    AnimatedVisibility(chromeDestination !is AppDestination.Ukraine && !isFullscreen) {
                         UkraineBanner(
                             modifier = Modifier.fillMaxWidth(),
                             onClick = {
@@ -310,6 +320,10 @@ private fun AppDestination.topLevelDestination(): AppDestination {
         AppDestination.Favorite -> AppDestination.Favorite
         AppDestination.Popular -> AppDestination.Popular
         AppDestination.About -> AppDestination.About
+
+        AppDestination.AllVersions,
+        is AppDestination.WhatsNewStory,
+        AppDestination.WhatsNewDialog -> AppDestination.Rovers
     }
 }
 
@@ -327,6 +341,9 @@ private val navBackStackConfiguration = SavedStateConfiguration {
             subclass(AppDestination.PhotosDateJumpPicker::class, AppDestination.PhotosDateJumpPicker.serializer())
             subclass(AppDestination.PhotosFilters::class, AppDestination.PhotosFilters.serializer())
             subclass(AppDestination.AdminPhotos::class, AppDestination.AdminPhotos.serializer())
+            subclass(AppDestination.WhatsNewDialog::class, AppDestination.WhatsNewDialog.serializer())
+            subclass(AppDestination.AllVersions::class, AppDestination.AllVersions.serializer())
+            subclass(AppDestination.WhatsNewStory::class, AppDestination.WhatsNewStory.serializer())
         }
     }
 }

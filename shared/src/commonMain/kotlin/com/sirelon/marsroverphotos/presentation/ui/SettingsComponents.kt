@@ -14,39 +14,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
 import com.sirelon.marsroverphotos.presentation.theme.AppSize
 import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
 
-/** Inset where a [SettingsRow]'s text starts: horizontal padding + icon-box + gap. */
-private val RowTextInset = AppSpacing.lg + AppSize.iconBox + AppSize.rowIconGap
+private val AppRowTextInset = AppSpacing.lg + AppSize.iconBox + AppSize.rowIconGap
 
-/** Indent aligning content under a row's label (icon-box + gap), e.g. the theme segmented control. */
-internal val SettingsRowIndent = AppSize.iconBox + AppSize.rowIconGap
-
-/**
- * Design-system section label — coral, uppercase, letter-spaced header that sits above a grouped
- * card. Mirrors the design's grouped-settings section headers (APPEARANCE / DATA …).
- */
-@Composable
-fun SettingsSectionLabel(text: String, modifier: Modifier = Modifier) {
-    Text(
-        text = text.uppercase(),
-        style = MaterialTheme.typography.labelSmall,
-        fontWeight = FontWeight.Bold,
-        letterSpacing = 1.1.sp,
-        color = MaterialTheme.colorScheme.secondary,
-        modifier = modifier.padding(bottom = AppSpacing.sm)
-    )
-}
+/** Indent aligning content under a row's label (icon-box + gap), e.g. a segmented control. */
+val AppRowIndent = AppSize.iconBox + AppSize.rowIconGap
 
 /**
- * Design-system settings row — leading [AppIconBox] + [label] + optional [sub] label, with a
- * trailing region that is either a custom [trailing] control (toggle, segmented…) or, for a link
- * row (non-null [onClick] and no [trailing]), a chevron. Tapping anywhere fires [onClick].
+ * Design-system list row — leading [AppIconBox] + [label] + optional [sub] label, with a trailing
+ * region that is either a custom [trailing] control or, for a link row (non-null [onClick] and no
+ * [trailing]), a chevron.
  */
 @Composable
-fun SettingsRow(
+fun AppRow(
     icon: MaterialSymbol,
     iconContainer: Color,
     iconTint: Color,
@@ -93,12 +75,47 @@ fun SettingsRow(
     }
 }
 
-/** Hairline divider between [SettingsRow]s, inset to start after the leading icon-box. */
+/** Hairline divider between [AppRow]s, inset to start after the leading icon-box. */
 @Composable
-fun SettingsRowDivider(modifier: Modifier = Modifier) {
+fun AppRowDivider(modifier: Modifier = Modifier) {
     HorizontalDivider(
-        modifier = modifier.padding(start = RowTextInset, end = AppSpacing.lg),
+        modifier = modifier.padding(start = AppRowTextInset, end = AppSpacing.lg),
         thickness = AppSize.hairline,
         color = MaterialTheme.colorScheme.outlineVariant
     )
+}
+
+/**
+ * Design-system grouped section — an optional label above an [AppOutlinedCard] that contains
+ * [content] rows.
+ *
+ * [header] and [footer] are rendered inside the card before and after [content]. A divider is
+ * automatically inserted before [footer]. This covers both the classic labelled-settings pattern
+ * (pass [label]) and richer cards with custom inner header/footer rows (pass [header]/[footer]).
+ *
+ * Pass [onClick] to make the whole card tappable.
+ */
+@Composable
+fun AppSection(
+    modifier: Modifier = Modifier,
+    label: String? = null,
+    onClick: (() -> Unit)? = null,
+    header: (@Composable () -> Unit)? = null,
+    footer: (@Composable () -> Unit)? = null,
+    content: @Composable () -> Unit,
+) {
+    val cardModifier = if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier
+    Column(modifier = modifier) {
+        if (label != null) AppSectionLabel(text = label)
+        AppOutlinedCard(modifier = cardModifier) {
+            Column {
+                header?.invoke()
+                content()
+                if (footer != null) {
+                    AppRowDivider()
+                    footer()
+                }
+            }
+        }
+    }
 }

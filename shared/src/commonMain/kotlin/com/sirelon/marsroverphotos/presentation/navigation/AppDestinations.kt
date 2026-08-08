@@ -64,4 +64,16 @@ sealed interface AppDestination : NavKey {
     /** Dialog destination: filters sheet (camera, date, appearance). Shares PhotosViewModel with [Photos]. */
     @Serializable
     data class PhotosFilters(val roverId: Long) : DialogDestination
+
+    /** Dialog destination: what's new for the current release. */
+    @Serializable
+    data object WhatsNewDialog : DialogDestination
+
+    /** Full-screen scrollable list of all past releases. */
+    @Serializable
+    data object AllVersions : AppDestination
+
+    /** Full-screen story-style pager for a single release. */
+    @Serializable
+    data class WhatsNewStory(val version: String, val page: Int = 0) : AppDestination
 }
