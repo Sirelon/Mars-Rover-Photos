@@ -14,7 +14,9 @@ import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
 import com.sirelon.marsroverphotos.domain.repositories.RoversRepository
 import com.sirelon.marsroverphotos.platform.ImageOperationResult
 import com.sirelon.marsroverphotos.platform.ImageOperations
+import com.sirelon.marsroverphotos.platform.Tracker
 import com.sirelon.marsroverphotos.presentation.navigation.AppDestination
+import com.sirelon.marsroverphotos.presentation.navigation.ScreenNames
 import com.sirelon.marsroverphotos.utils.Logger
 import com.sirelon.marsroverphotos.utils.nasaImageOrigUrl
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -47,21 +49,20 @@ class ImageViewModel(
     private val imageOperations: ImageOperations,
     private val roverFeedPager: RoverFeedPager,
     private val lastViewedPhotoStore: LastViewedPhotoStore,
+    private val tracker: Tracker,
 ) : ViewModel() {
 
     private val idsEmitter = MutableStateFlow<List<String>>(emptyList())
     private val sourceEmitter = MutableStateFlow(AppDestination.ImagesSource.DIRECT_IDS)
     private val uiEventEmitter = Channel<UiEvent>(capacity = Channel.BUFFERED)
     private val hideUiEmitter = MutableStateFlow(false)
+    private val zoomTracked = mutableSetOf<String>()
 
     /** Flow of UI events (photo saved, errors, etc.). */
     val uiEvent: Flow<UiEvent> = uiEventEmitter.receiveAsFlow()
 
     /** Whether to hide UI chrome (toolbar, controls). */
     val hideUi: StateFlow<Boolean> = hideUiEmitter
-
-    /** Whether to track user interactions (can be disabled for specific contexts). */
-    var shouldTrack = true
 
     /** Paged images for the pager — see class doc for per-source behavior. */
     val pagedImages: Flow<PagingData<MarsImage>> =
@@ -166,6 +167,7 @@ class ImageViewModel(
         viewModelScope.launch {
             try {
                 imagesRepository.setFavorite(image, favorite)
+                tracker.trackFavorite(image, from = ScreenNames.PHOTO_DETAIL, fav = favorite)
             } catch (e: Exception) {
                 Logger.e("ImageViewModel", e) { "Error setting favorite for image ${image.id}" }
             }
@@ -179,6 +181,7 @@ class ImageViewModel(
             when (val result = imageOperations.saveImage(fullResPhoto)) {
                 is ImageOperationResult.Success -> {
                     Logger.d("ImageViewModel") { "Image saved: ${result.message}" }
+                    tracker.trackSave(photo)
                     uiEventEmitter.send(UiEvent.PhotoSaved(result.message))
                 }
                 is ImageOperationResult.Error -> {
@@ -194,8 +197,11 @@ class ImageViewModel(
         val fullResImage = marsImage.copy(imageUrl = nasaImageOrigUrl(marsImage.imageUrl))
         viewModelScope.launch {
             when (val result = imageOperations.shareImage(fullResImage)) {
-                is ImageOperationResult.Success ->
+                is ImageOperationResult.Success -> {
                     Logger.d("ImageViewModel") { "Image shared successfully" }
+                    // The chosen target app isn't reported back by the KMP share sheet.
+                    tracker.trackShare(marsImage, packageName = null)
+                }
                 is ImageOperationResult.Error -> {
                     Logger.e("ImageViewModel", null) { "Error sharing image: ${result.error}" }
                     uiEventEmitter.send(UiEvent.ShareError(result.error))
@@ -204,7 +210,7 @@ class ImageViewModel(
         }
     }
 
-    /** Handle image being shown (for analytics). */
+    /** The photo the pager is closest to snapping to — drives the title and scroll restore. */
     fun onShown(marsPhoto: MarsImage, page: Int) {
         Logger.d("ImageViewModel") { "Photo shown: ${marsPhoto.id} at page $page" }
         // Remember the photo currently on screen so the originating list can restore its scroll
@@ -215,12 +221,25 @@ class ImageViewModel(
         } else {
             lastViewedPhotoStore.set(marsPhoto.id)
         }
-        // Analytics tracking would go here if needed
+    }
+
+    /** The photo the pager actually settled on — the honest signal for a "seen" event. */
+    fun onSeen(marsPhoto: MarsImage) {
+        tracker.trackSeen(marsPhoto)
+    }
+
+    /**
+     * Pinch-zoom on a photo. Logged once per photo per viewer session — the gesture emits a scale
+     * on every frame, so an unguarded call would flood analytics.
+     */
+    fun onZoomed(photo: MarsImage) {
+        if (zoomTracked.add(photo.id)) tracker.trackScale(photo)
     }
 
     /** Toggle UI visibility (toolbar, controls). */
     fun onTap() {
         hideUiEmitter.value = !hideUiEmitter.value
+        tracker.trackClick("tap_fullscreen_photo")
     }
 }
 

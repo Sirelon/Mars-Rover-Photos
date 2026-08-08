@@ -21,7 +21,9 @@ import com.sirelon.marsroverphotos.domain.repositories.FactsRepository
 import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
 import com.sirelon.marsroverphotos.domain.repositories.RoversRepository
 import com.sirelon.marsroverphotos.domain.settings.AppSettings
+import com.sirelon.marsroverphotos.platform.Tracker
 import com.sirelon.marsroverphotos.presentation.models.GridItem
+import com.sirelon.marsroverphotos.presentation.navigation.ScreenNames
 import com.sirelon.marsroverphotos.utils.Logger
 import com.sirelon.marsroverphotos.utils.RoverDateUtil
 import com.sirelon.marsroverphotos.utils.formatDisplayDate
@@ -64,6 +66,7 @@ class PhotosViewModel(
     private val appSettings: AppSettings,
     private val roverFeedPager: RoverFeedPager,
     private val imagesRepository: ImagesRepository,
+    private val tracker: Tracker,
 ) : ViewModel() {
 
     private val roverIdEmitter = MutableStateFlow<Long?>(null)
@@ -287,7 +290,10 @@ class PhotosViewModel(
     fun toggleFavorite(image: MarsImage) {
         val desired = !(roverFeedPager.favoriteOverrides[image.id] ?: image.favorite)
         roverFeedPager.favoriteOverrides[image.id] = desired
-        viewModelScope.launch { imagesRepository.setFavorite(image, desired) }
+        viewModelScope.launch {
+            imagesRepository.setFavorite(image, desired)
+            tracker.trackFavorite(image, from = ScreenNames.PHOTOS, fav = desired)
+        }
     }
 
     fun randomize() {

@@ -90,6 +90,9 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
+/** Scale past which a photo counts as zoomed in — drives both the full-res swap and the Scale event. */
+private const val ZOOM_THRESHOLD = 1.1f
+
 /**
  * Fullscreen image viewer — horizontal pager with pinch-to-zoom, save, share, info sheet.
  *
@@ -193,6 +196,8 @@ fun ImagesScreen(
                     favoriteFlies = source == AppDestination.ImagesSource.ROVER_FEED,
                     onBack = onBack,
                     onShown = viewModel::onShown,
+                    onSeen = viewModel::onSeen,
+                    onZoomed = viewModel::onZoomed,
                     onTap = viewModel::onTap,
                     onFavoriteClick = viewModel::setFavorite,
                     onSaveClick = viewModel::saveImage,
@@ -241,6 +246,8 @@ private fun ImagesPagerContent(
     favoriteFlies: Boolean,
     onBack: () -> Unit,
     onShown: (MarsImage, Int) -> Unit,
+    onSeen: (MarsImage) -> Unit,
+    onZoomed: (MarsImage) -> Unit,
     onTap: () -> Unit,
     onFavoriteClick: (MarsImage, Boolean) -> Unit,
     onSaveClick: (MarsImage) -> Unit,
@@ -252,6 +259,16 @@ private fun ImagesPagerContent(
     // Per-page zoom scale — used to gate the dismiss gesture when an image is zoomed in
     val pageScales = remember { mutableStateMapOf<Int, Float>() }
     val isCurrentPageZoomed = (pageScales[pagerState.currentPage] ?: 1f) > 1f
+
+    // PhotoSeen rides settledPage, not currentPage: currentPage flips at the snap midpoint, so a
+    // drag that crosses it and springs back would log a photo the user never landed on. The title
+    // and scroll-restore below stay on currentPage — they self-correct on the way back, and moving
+    // them would delay the title until the settle animation finishes.
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.settledPage }.collect { page ->
+            pagingItems.peek(page)?.let(onSeen)
+        }
+    }
 
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
@@ -348,6 +365,7 @@ private fun ImagesPagerContent(
             favoriteFlies = favoriteFlies,
             onTap = onTap,
             onFavoriteClick = onFavoriteClick,
+            onZoomed = onZoomed,
             onScaleChange = { page, scale -> pageScales[page] = scale },
         )
 
@@ -527,6 +545,7 @@ private fun ImagesPager(
     favoriteFlies: Boolean,
     onTap: () -> Unit,
     onFavoriteClick: (MarsImage, Boolean) -> Unit,
+    onZoomed: (MarsImage) -> Unit,
     onScaleChange: (page: Int, scale: Float) -> Unit,
 ) {
     NoScrollEffect {
@@ -561,9 +580,16 @@ private fun ImagesPager(
             // zoom upgrade to ~orig is itself flash-free.
             // Threshold (> 1.1f, not > 1f) so an overscroll/settle bounce doesn't trigger a heavy
             // ~orig decode; the screen-sized ~large already looks crisp until a real zoom.
-            val zoomedIn by remember { derivedStateOf { zoomState.scale > 1.1f } }
+            val zoomedIn by remember { derivedStateOf { zoomState.scale > ZOOM_THRESHOLD } }
             val largeUrl = remember(marsImage.imageUrl) { nasaImageLargeUrl(marsImage.imageUrl) }
             val origUrl = remember(marsImage.imageUrl) { nasaImageOrigUrl(marsImage.imageUrl) }
+
+            // Reuses the full-res swap's own threshold rather than re-deriving it from the raw
+            // scale stream, and names the photo directly — no page-index lookup to go stale when
+            // a PREPEND shifts indices. onZoomed still dedupes to one event per photo.
+            LaunchedEffect(zoomedIn) {
+                if (zoomedIn) onZoomed(marsImage)
+            }
 
             Box(modifier = Modifier.fillMaxSize()) {
                 val heartState = rememberLikeHeartState()

@@ -40,14 +40,27 @@ class MissionInfoUtilsTest {
     }
 
     @Test
-    fun buildTimelineMilestones_completeRover_includesEnd() {
+    fun buildTimelineMilestones_completeRover_endReplacesCurrent() {
         val rover = buildRover(status = "complete")
 
         val milestones = buildTimelineMilestones(rover)
 
-        assertEquals(4, milestones.size)
+        // A finished mission has no "current" position: END takes the third slot rather than being
+        // appended after CURRENT. Both are built from maxDate/maxSol, so appending would render two
+        // identical rows in the timeline.
+        assertEquals(3, milestones.size)
+        assertEquals(MilestoneType.LAUNCH, milestones[0].type)
+        assertEquals(MilestoneType.LANDING, milestones[1].type)
+        assertEquals(MilestoneType.END, milestones[2].type)
+        assertEquals("End", milestones[2].label)
+        assertEquals(rover.maxSol, milestones[2].sol)
+    }
+
+    @Test
+    fun buildTimelineMilestones_completeRoverIsCaseInsensitive() {
+        val milestones = buildTimelineMilestones(buildRover(status = "Complete"))
+
         assertEquals(MilestoneType.END, milestones.last().type)
-        assertEquals("End", milestones.last().label)
     }
 
     private fun buildRover(status: String): Rover {

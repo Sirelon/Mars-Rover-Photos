@@ -162,6 +162,13 @@ fun AppNavigation(
     val tracker: Tracker = koinInject()
     val isImages = chromeDestination is AppDestination.Images
 
+    // One screen_view observer for the whole app rather than a call per screen: whatever is on top
+    // of the back stack (including the dialog destinations) is what the user is looking at.
+    val screenView = remember(currentDestination) { currentDestination.toScreenView() }
+    LaunchedEffect(screenView) {
+        tracker.trackScreen(screenView.name, screenView.params)
+    }
+
     LaunchedEffect(deepLink) {
         val target = deepLink ?: return@LaunchedEffect
         when (target) {
@@ -237,7 +244,9 @@ fun AppNavigation(
                 modifier = Modifier.fillMaxSize(),
                 selectedDestination = chromeDestination.topLevelDestination(),
                 onDestinationClick = { destination ->
-                    tracker.trackClick("nav_${destination.analyticsTag}")
+                    // Same name as the screen_view this click leads to, so nav clicks and screen
+                    // views join on one label instead of drifting apart.
+                    tracker.trackClick("nav_${destination.toScreenView().name}")
                     navigator.selectTopLevel(destination)
                 },
                 resetScrollKey = chromeDestination,
@@ -303,17 +312,6 @@ private fun AppDestination.topLevelDestination(): AppDestination {
         AppDestination.About -> AppDestination.About
     }
 }
-
-private val AppDestination.analyticsTag: String
-    get() = when (this) {
-        AppDestination.Rovers -> "rovers"
-        AppDestination.Favorite -> "favorite"
-        AppDestination.Popular -> "popular"
-        AppDestination.About -> "about"
-        AppDestination.Ukraine -> "ukraine"
-        is AppDestination.PhotosFilters -> "photos_filters"
-        else -> "other"
-    }
 
 private val navBackStackConfiguration = SavedStateConfiguration {
     serializersModule = SerializersModule {
