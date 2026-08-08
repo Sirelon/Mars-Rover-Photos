@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.sirelon.marsroverphotos.data.LastViewedPhotoStore
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
+import com.sirelon.marsroverphotos.platform.Tracker
+import com.sirelon.marsroverphotos.presentation.navigation.ScreenNames
 import com.sirelon.marsroverphotos.utils.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
@@ -16,6 +18,7 @@ import kotlinx.coroutines.launch
 class PopularPhotosViewModel(
     private val imagesRepository: ImagesRepository,
     private val lastViewedPhotoStore: LastViewedPhotoStore,
+    private val tracker: Tracker,
 ) : ViewModel() {
 
     private val pageSize = 20
@@ -85,6 +88,10 @@ class PopularPhotosViewModel(
         viewModelScope.launch {
             try {
                 imagesRepository.updateFavForImage(image)
+                // updateFavForImage toggles, so the state it just wrote is the inverse of what we
+                // were handed. Logged after the write so a failure doesn't report a favorite, and
+                // before the list update below, which bails early when nothing is loaded.
+                tracker.trackFavorite(image, from = ScreenNames.POPULAR, fav = !image.favorite)
                 val current = _popularImages.value ?: return@launch
                 _popularImages.value = current.map {
                     if (it.id == image.id) it.copy(favorite = !image.favorite) else it

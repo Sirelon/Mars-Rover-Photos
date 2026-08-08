@@ -11,6 +11,7 @@ import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
 import com.sirelon.marsroverphotos.domain.repositories.RoverCount
 import com.sirelon.marsroverphotos.domain.repositories.RoversRepository
 import com.sirelon.marsroverphotos.platform.Tracker
+import com.sirelon.marsroverphotos.presentation.navigation.ScreenNames
 import com.sirelon.marsroverphotos.utils.Logger
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -77,6 +78,9 @@ class FavoriteImagesViewModel(
         viewModelScope.launch {
             try {
                 imagesRepository.updateFavForImage(item = image)
+                // updateFavForImage toggles, so the state it just wrote is the inverse of what we
+                // were handed. Logged after the write so a failure doesn't report a favorite.
+                tracker.trackFavorite(image, from = ScreenNames.FAVORITE, fav = !image.favorite)
             } catch (e: Exception) {
                 Logger.e("FavoriteImagesViewModel", e) {
                     "Error updating favorite for image ${image.id}"

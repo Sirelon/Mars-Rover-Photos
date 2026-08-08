@@ -13,32 +13,43 @@ class FirebaseTracker(private val analytics: FirebaseAnalytics) : Tracker {
     }
 
     override fun trackEvent(event: String, params: Map<String, String>) {
-        analytics.logEvent(event, params as Map<String, Any>)
+        analytics.logEvent(event, params)
+    }
+
+    override fun trackScreen(screenName: String, params: Map<String, String>) {
+        // GA4 rewrites screen_name/screen_class into firebase_screen/firebase_screen_class in the
+        // BigQuery export. screen_class is sent too so the "Screen class" report stops collapsing
+        // every Compose destination into the host Activity.
+        analytics.logEvent(
+            "screen_view",
+            params + mapOf("screen_name" to screenName, "screen_class" to screenName),
+        )
     }
 
     override fun trackFavorite(photo: MarsImage, from: String, fav: Boolean) {
         val event = if (fav) "FavoritePhoto" else "UnFavoritePhoto"
-        analytics.logEvent(
-            event,
-            mapOf("screen" to from, "photo_id" to photo.id) as Map<String, Any>
-        )
+        analytics.logEvent(event, mapOf("screen" to from, "photo_id" to photo.id))
     }
 
     override fun trackSeen(photo: MarsImage) {
-        analytics.logEvent("PhotoSeen", mapOf("photo_id" to photo.id) as Map<String, Any>)
+        analytics.logEvent("PhotoSeen", mapOf("photo_id" to photo.id))
     }
 
     override fun trackScale(photo: MarsImage) {
-        analytics.logEvent("Scale", mapOf("photo_id" to photo.id) as Map<String, Any>)
+        analytics.logEvent("Scale", mapOf("photo_id" to photo.id))
     }
 
     override fun trackSave(photo: MarsImage) {
-        analytics.logEvent("SavePhoto", mapOf("photo_id" to photo.id) as Map<String, Any>)
+        analytics.logEvent("SavePhoto", mapOf("photo_id" to photo.id))
     }
 
     override fun trackShare(photo: MarsImage, packageName: String?) {
-        val params = mutableMapOf<String, Any>("photo_id" to photo.id)
-        if (packageName != null) params["package_name"] = packageName
-        analytics.logEvent("SharePhoto", params)
+        analytics.logEvent(
+            "SharePhoto",
+            buildMap {
+                put("photo_id", photo.id)
+                if (packageName != null) put("package_name", packageName)
+            },
+        )
     }
 }
