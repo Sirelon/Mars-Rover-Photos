@@ -49,7 +49,9 @@ class RoversRepositoryImpl(
                 // Seed initial rover data
                 seedRovers()
 
-                // Observe and persist photo counts for page-based rovers as they are fetched.
+                // Persist Perseverance's mission-wide photo count. Only unfiltered requests feed
+                // this flow — see [RestApi.perseveranceTotalImages]. Insight has no such source
+                // (its raw feed only reports per-query totals), so its count stays as seeded.
                 launch {
                     try {
                         api.perseveranceTotalImages.collectLatest { totalPhotos ->
@@ -58,16 +60,6 @@ class RoversRepositoryImpl(
                         }
                     } catch (e: Exception) {
                         Logger.e("RoversRepository", e) { "Error observing Perseverance photo count" }
-                    }
-                }
-                launch {
-                    try {
-                        api.insightTotalImages.collectLatest { totalPhotos ->
-                            Logger.d("RoversRepository") { "Insight total photos: $totalPhotos" }
-                            roverDao.updateRoverCountPhotos(INSIGHT_ID, totalPhotos)
-                        }
-                    } catch (e: Exception) {
-                        Logger.e("RoversRepository", e) { "Error observing Insight photo count" }
                     }
                 }
 

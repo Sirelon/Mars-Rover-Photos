@@ -4,6 +4,126 @@
   "graph": {},
   "nodes": [
     {
+      "label": "workflow-template.js",
+      "file_type": "code",
+      "source_file": ".claude/skills/fact-research/workflow-template.js",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "fact_research_workflow_template",
+      "community": 106,
+      "norm_label": "workflow-template.js"
+    },
+    {
+      "label": "meta",
+      "file_type": "code",
+      "source_file": ".claude/skills/fact-research/workflow-template.js",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "fact_research_workflow_template_meta",
+      "community": 106,
+      "norm_label": "meta"
+    },
+    {
+      "label": "EXCLUDE",
+      "file_type": "code",
+      "source_file": ".claude/skills/fact-research/workflow-template.js",
+      "source_location": "L15",
+      "_origin": "ast",
+      "id": "fact_research_workflow_template_exclude",
+      "community": 106,
+      "norm_label": "exclude"
+    },
+    {
+      "label": "excludeList",
+      "file_type": "code",
+      "source_file": ".claude/skills/fact-research/workflow-template.js",
+      "source_location": "L18",
+      "_origin": "ast",
+      "id": "fact_research_workflow_template_excludelist",
+      "community": 106,
+      "norm_label": "excludelist"
+    },
+    {
+      "label": "TOPICS",
+      "file_type": "code",
+      "source_file": ".claude/skills/fact-research/workflow-template.js",
+      "source_location": "L23",
+      "_origin": "ast",
+      "id": "fact_research_workflow_template_topics",
+      "community": 106,
+      "norm_label": "topics"
+    },
+    {
+      "label": "FACTS_SCHEMA",
+      "file_type": "code",
+      "source_file": ".claude/skills/fact-research/workflow-template.js",
+      "source_location": "L33",
+      "_origin": "ast",
+      "id": "fact_research_workflow_template_facts_schema",
+      "community": 106,
+      "norm_label": "facts_schema"
+    },
+    {
+      "label": "SCORED_SCHEMA",
+      "file_type": "code",
+      "source_file": ".claude/skills/fact-research/workflow-template.js",
+      "source_location": "L52",
+      "_origin": "ast",
+      "id": "fact_research_workflow_template_scored_schema",
+      "community": 106,
+      "norm_label": "scored_schema"
+    },
+    {
+      "label": "FINAL_SCHEMA",
+      "file_type": "code",
+      "source_file": ".claude/skills/fact-research/workflow-template.js",
+      "source_location": "L76",
+      "_origin": "ast",
+      "id": "fact_research_workflow_template_final_schema",
+      "community": 106,
+      "norm_label": "final_schema"
+    },
+    {
+      "label": "researchPrompt()",
+      "file_type": "code",
+      "source_file": ".claude/skills/fact-research/workflow-template.js",
+      "source_location": "L107",
+      "_origin": "ast",
+      "id": "fact_research_workflow_template_researchprompt",
+      "community": 106,
+      "norm_label": "researchprompt()"
+    },
+    {
+      "label": "scorePrompt()",
+      "file_type": "code",
+      "source_file": ".claude/skills/fact-research/workflow-template.js",
+      "source_location": "L119",
+      "_origin": "ast",
+      "id": "fact_research_workflow_template_scoreprompt",
+      "community": 106,
+      "norm_label": "scoreprompt()"
+    },
+    {
+      "label": "allScored",
+      "file_type": "code",
+      "source_file": ".claude/skills/fact-research/workflow-template.js",
+      "source_location": "L141",
+      "_origin": "ast",
+      "id": "fact_research_workflow_template_allscored",
+      "community": 106,
+      "norm_label": "allscored"
+    },
+    {
+      "label": "total",
+      "file_type": "code",
+      "source_file": ".claude/skills/fact-research/workflow-template.js",
+      "source_location": "L160",
+      "_origin": "ast",
+      "id": "fact_research_workflow_template_total",
+      "community": 106,
+      "norm_label": "total"
+    },
+    {
       "label": "capture.sh",
       "file_type": "code",
       "source_file": ".maestro/capture.sh",
@@ -27,7 +147,7 @@
         "kind": "bash_entrypoint"
       },
       "_origin": "ast",
-      "id": "users_sirelon_conductor_workspaces_marsroverphotos_delhi_maestro_capture_sh__entry",
+      "id": "users_sirelon_projects_marsroverphotos_maestro_capture_sh__entry",
       "community": 173,
       "norm_label": "capture.sh script"
     },
@@ -146,7 +266,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "marsroverphotos_mainactivity",
-      "community": 7,
+      "community": 166,
       "norm_label": "mainactivity.kt"
     },
     {
@@ -156,7 +276,7 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "marsroverphotos_mainactivity_mainactivity",
-      "community": 7,
+      "community": 166,
       "norm_label": "mainactivity"
     },
     {
@@ -166,7 +286,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "componentactivity",
-      "community": 7,
+      "community": 30,
       "norm_label": "componentactivity"
     },
     {
@@ -176,7 +296,7 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "androidapp_src_main_kotlin_com_sirelon_marsroverphotos_mainactivity_kt_deeplink",
-      "community": 7,
+      "community": 166,
       "norm_label": "deeplink"
     },
     {
@@ -186,7 +306,7 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "marsroverphotos_mainactivity_mainactivity_oncreate",
-      "community": 7,
+      "community": 166,
       "norm_label": ".oncreate()"
     },
     {
@@ -196,7 +316,7 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "androidapp_src_main_kotlin_com_sirelon_marsroverphotos_mainactivity_kt_bundle",
-      "community": 7,
+      "community": 166,
       "norm_label": "bundle"
     },
     {
@@ -206,7 +326,7 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "marsroverphotos_mainactivity_mainactivity_openstorelisting",
-      "community": 7,
+      "community": 166,
       "norm_label": ".openstorelisting()"
     },
     {
@@ -216,7 +336,7 @@
       "source_location": "L87",
       "_origin": "ast",
       "id": "marsroverphotos_mainactivity_mainactivity_onnewintent",
-      "community": 7,
+      "community": 166,
       "norm_label": ".onnewintent()"
     },
     {
@@ -226,7 +346,7 @@
       "source_location": "L87",
       "_origin": "ast",
       "id": "intent",
-      "community": 7,
+      "community": 166,
       "norm_label": "intent"
     },
     {
@@ -236,7 +356,7 @@
       "source_location": "L92",
       "_origin": "ast",
       "id": "marsroverphotos_mainactivity_mainactivity_ondestroy",
-      "community": 7,
+      "community": 166,
       "norm_label": ".ondestroy()"
     },
     {
@@ -246,7 +366,7 @@
       "source_location": "L105",
       "_origin": "ast",
       "id": "marsroverphotos_mainactivity_mainactivity_handledeeplink",
-      "community": 7,
+      "community": 166,
       "norm_label": ".handledeeplink()"
     },
     {
@@ -516,7 +636,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "widget_marsphotowidgetconfigactivity",
-      "community": 7,
+      "community": 30,
       "norm_label": "marsphotowidgetconfigactivity.kt"
     },
     {
@@ -526,7 +646,7 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "widget_marsphotowidgetconfigactivity_marsphotowidgetconfigactivity",
-      "community": 7,
+      "community": 30,
       "norm_label": "marsphotowidgetconfigactivity"
     },
     {
@@ -536,7 +656,7 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "androidapp_src_main_kotlin_com_sirelon_marsroverphotos_widget_marsphotowidgetconfigactivity_kt_int",
-      "community": 7,
+      "community": 30,
       "norm_label": "int"
     },
     {
@@ -546,7 +666,7 @@
       "source_location": "L57",
       "_origin": "ast",
       "id": "widget_marsphotowidgetconfigactivity_marsphotowidgetconfigactivity_oncreate",
-      "community": 7,
+      "community": 30,
       "norm_label": ".oncreate()"
     },
     {
@@ -556,7 +676,7 @@
       "source_location": "L57",
       "_origin": "ast",
       "id": "androidapp_src_main_kotlin_com_sirelon_marsroverphotos_widget_marsphotowidgetconfigactivity_kt_bundle",
-      "community": 7,
+      "community": 30,
       "norm_label": "bundle"
     },
     {
@@ -566,7 +686,7 @@
       "source_location": "L85",
       "_origin": "ast",
       "id": "widget_marsphotowidgetconfigactivity_marsphotowidgetconfigactivity_saveselection",
-      "community": 7,
+      "community": 30,
       "norm_label": ".saveselection()"
     },
     {
@@ -576,7 +696,7 @@
       "source_location": "L85",
       "_origin": "ast",
       "id": "androidapp_src_main_kotlin_com_sirelon_marsroverphotos_widget_marsphotowidgetconfigactivity_kt_long",
-      "community": 7,
+      "community": 30,
       "norm_label": "long"
     },
     {
@@ -586,7 +706,7 @@
       "source_location": "L112",
       "_origin": "ast",
       "id": "widget_marsphotowidgetconfigactivity_widgetconfigscreen",
-      "community": 7,
+      "community": 30,
       "norm_label": "widgetconfigscreen()"
     },
     {
@@ -596,7 +716,7 @@
       "source_location": "L173",
       "_origin": "ast",
       "id": "widget_marsphotowidgetconfigactivity_roverrow",
-      "community": 7,
+      "community": 30,
       "norm_label": "roverrow()"
     },
     {
@@ -606,7 +726,7 @@
       "source_location": "L173",
       "_origin": "ast",
       "id": "roveroption",
-      "community": 7,
+      "community": 30,
       "norm_label": "roveroption"
     },
     {
@@ -616,7 +736,7 @@
       "source_location": "L173",
       "_origin": "ast",
       "id": "androidapp_src_main_kotlin_com_sirelon_marsroverphotos_widget_marsphotowidgetconfigactivity_kt_boolean",
-      "community": 7,
+      "community": 30,
       "norm_label": "boolean"
     },
     {
@@ -626,7 +746,7 @@
       "source_location": "L195",
       "_origin": "ast",
       "id": "widget_marsphotowidgetconfigactivity_roveroption",
-      "community": 7,
+      "community": 30,
       "norm_label": "roveroption"
     },
     {
@@ -716,7 +836,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "widget_marsphotowidgetworker",
-      "community": 2,
+      "community": 178,
       "norm_label": "marsphotowidgetworker.kt"
     },
     {
@@ -726,7 +846,7 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "widget_marsphotowidgetworker_marsphotowidgetworker",
-      "community": 2,
+      "community": 25,
       "norm_label": "marsphotowidgetworker"
     },
     {
@@ -736,7 +856,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "coroutineworker",
-      "community": 2,
+      "community": 25,
       "norm_label": "coroutineworker"
     },
     {
@@ -746,7 +866,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "koincomponent",
-      "community": 2,
+      "community": 25,
       "norm_label": "koincomponent"
     },
     {
@@ -756,7 +876,7 @@
       "source_location": "L47",
       "_origin": "ast",
       "id": "androidapp_src_main_kotlin_com_sirelon_marsroverphotos_widget_marsphotowidgetworker_kt_imagesrepository",
-      "community": 2,
+      "community": 25,
       "norm_label": "imagesrepository"
     },
     {
@@ -766,7 +886,7 @@
       "source_location": "L48",
       "_origin": "ast",
       "id": "restapi",
-      "community": 2,
+      "community": 25,
       "norm_label": "restapi"
     },
     {
@@ -776,7 +896,7 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "androidapp_src_main_kotlin_com_sirelon_marsroverphotos_widget_marsphotowidgetworker_kt_tracker",
-      "community": 2,
+      "community": 25,
       "norm_label": "tracker"
     },
     {
@@ -786,7 +906,7 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "widget_marsphotowidgetworker_marsphotowidgetworker_dowork",
-      "community": 2,
+      "community": 25,
       "norm_label": ".dowork()"
     },
     {
@@ -796,7 +916,7 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "result",
-      "community": 2,
+      "community": 25,
       "norm_label": "result"
     },
     {
@@ -806,7 +926,7 @@
       "source_location": "L112",
       "_origin": "ast",
       "id": "widget_marsphotowidgetworker_marsphotowidgetworker_fetchlatestphoto",
-      "community": 2,
+      "community": 25,
       "norm_label": ".fetchlatestphoto()"
     },
     {
@@ -816,7 +936,7 @@
       "source_location": "L112",
       "_origin": "ast",
       "id": "androidapp_src_main_kotlin_com_sirelon_marsroverphotos_widget_marsphotowidgetworker_kt_long",
-      "community": 2,
+      "community": 25,
       "norm_label": "long"
     },
     {
@@ -826,7 +946,7 @@
       "source_location": "L112",
       "_origin": "ast",
       "id": "androidapp_src_main_kotlin_com_sirelon_marsroverphotos_widget_marsphotowidgetworker_kt_marsimage",
-      "community": 2,
+      "community": 25,
       "norm_label": "marsimage"
     },
     {
@@ -836,7 +956,7 @@
       "source_location": "L124",
       "_origin": "ast",
       "id": "widget_marsphotowidgetworker_marsphotowidgetworker_loadbitmap",
-      "community": 2,
+      "community": 25,
       "norm_label": ".loadbitmap()"
     },
     {
@@ -846,7 +966,7 @@
       "source_location": "L124",
       "_origin": "ast",
       "id": "androidapp_src_main_kotlin_com_sirelon_marsroverphotos_widget_marsphotowidgetworker_kt_context",
-      "community": 2,
+      "community": 178,
       "norm_label": "context"
     },
     {
@@ -856,7 +976,7 @@
       "source_location": "L124",
       "_origin": "ast",
       "id": "androidapp_src_main_kotlin_com_sirelon_marsroverphotos_widget_marsphotowidgetworker_kt_string",
-      "community": 2,
+      "community": 25,
       "norm_label": "string"
     },
     {
@@ -866,7 +986,7 @@
       "source_location": "L124",
       "_origin": "ast",
       "id": "bitmap",
-      "community": 2,
+      "community": 25,
       "norm_label": "bitmap"
     },
     {
@@ -876,7 +996,7 @@
       "source_location": "L137",
       "_origin": "ast",
       "id": "widget_marsphotowidgetworker_marsphotowidgetworker_savebitmap",
-      "community": 2,
+      "community": 25,
       "norm_label": ".savebitmap()"
     },
     {
@@ -886,7 +1006,7 @@
       "source_location": "L137",
       "_origin": "ast",
       "id": "androidapp_src_main_kotlin_com_sirelon_marsroverphotos_widget_marsphotowidgetworker_kt_file",
-      "community": 2,
+      "community": 25,
       "norm_label": "file"
     },
     {
@@ -896,7 +1016,7 @@
       "source_location": "L152",
       "_origin": "ast",
       "id": "widget_marsphotowidgetworker_enqueueperiodic",
-      "community": 2,
+      "community": 178,
       "norm_label": "enqueueperiodic()"
     },
     {
@@ -906,7 +1026,7 @@
       "source_location": "L168",
       "_origin": "ast",
       "id": "widget_marsphotowidgetworker_enqueueonce",
-      "community": 2,
+      "community": 178,
       "norm_label": "enqueueonce()"
     },
     {
@@ -3253,7 +3373,7 @@
       "label": "NasaApi",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/network/RestApi.kt",
-      "source_location": "L64",
+      "source_location": "L70",
       "_origin": "ast",
       "id": "nasaapi",
       "community": 32,
@@ -3263,7 +3383,7 @@
       "label": ".getRoversPhotos()",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/network/RestApi.kt",
-      "source_location": "L74",
+      "source_location": "L80",
       "_origin": "ast",
       "id": "network_restapi_restapi_getroversphotos",
       "community": 32,
@@ -3273,7 +3393,7 @@
       "label": "PhotosQueryRequest",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/network/RestApi.kt",
-      "source_location": "L74",
+      "source_location": "L80",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_data_network_restapi_kt_photosqueryrequest",
       "community": 32,
@@ -3283,7 +3403,7 @@
       "label": "List",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/network/RestApi.kt",
-      "source_location": "L74",
+      "source_location": "L80",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_data_network_restapi_kt_list",
       "community": 32,
@@ -3293,7 +3413,7 @@
       "label": "MarsImage",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/network/RestApi.kt",
-      "source_location": "L74",
+      "source_location": "L80",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_data_network_restapi_kt_marsimage",
       "community": 32,
@@ -3303,7 +3423,7 @@
       "label": ".loadPerseverance()",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/network/RestApi.kt",
-      "source_location": "L97",
+      "source_location": "L103",
       "_origin": "ast",
       "id": "network_restapi_restapi_loadperseverance",
       "community": 32,
@@ -3313,7 +3433,7 @@
       "label": ".getInsightLatestPhotos()",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/network/RestApi.kt",
-      "source_location": "L103",
+      "source_location": "L110",
       "_origin": "ast",
       "id": "network_restapi_restapi_getinsightlatestphotos",
       "community": 32,
@@ -3323,7 +3443,7 @@
       "label": ".getCuriosityLatestPhotos()",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/network/RestApi.kt",
-      "source_location": "L107",
+      "source_location": "L114",
       "_origin": "ast",
       "id": "network_restapi_restapi_getcuriositylatestphotos",
       "community": 32,
@@ -3333,7 +3453,7 @@
       "label": ".getCuriosityLatestSol()",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/network/RestApi.kt",
-      "source_location": "L112",
+      "source_location": "L119",
       "_origin": "ast",
       "id": "network_restapi_restapi_getcuriositylatestsol",
       "community": 32,
@@ -3343,7 +3463,7 @@
       "label": "Long",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/network/RestApi.kt",
-      "source_location": "L112",
+      "source_location": "L119",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_data_network_restapi_kt_long",
       "community": 32,
@@ -3353,7 +3473,7 @@
       "label": ".searchImages()",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/network/RestApi.kt",
-      "source_location": "L117",
+      "source_location": "L124",
       "_origin": "ast",
       "id": "network_restapi_restapi_searchimages",
       "community": 32,
@@ -3363,7 +3483,7 @@
       "label": "String",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/network/RestApi.kt",
-      "source_location": "L117",
+      "source_location": "L124",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_data_network_restapi_kt_string",
       "community": 32,
@@ -3373,7 +3493,7 @@
       "label": "Int",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/network/RestApi.kt",
-      "source_location": "L117",
+      "source_location": "L124",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_data_network_restapi_kt_int",
       "community": 32,
@@ -3383,7 +3503,7 @@
       "label": "NasaImagesSearchResponse",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/network/RestApi.kt",
-      "source_location": "L117",
+      "source_location": "L124",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_data_network_restapi_kt_nasaimagessearchresponse",
       "community": 32,
@@ -3393,7 +3513,7 @@
       "label": ".getPerseveranceLatestPhotos()",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/network/RestApi.kt",
-      "source_location": "L124",
+      "source_location": "L131",
       "_origin": "ast",
       "id": "network_restapi_restapi_getperseverancelatestphotos",
       "community": 32,
@@ -4466,7 +4586,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "imagesrepository",
-      "community": 2,
+      "community": 25,
       "norm_label": "imagesrepository"
     },
     {
@@ -4903,7 +5023,7 @@
       "label": ".seedRovers()",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/repositories/RoversRepositoryImpl.kt",
-      "source_location": "L111",
+      "source_location": "L103",
       "_origin": "ast",
       "id": "repositories_roversrepositoryimpl_roversrepositoryimpl_seedrovers",
       "community": 39,
@@ -4913,7 +5033,7 @@
       "label": ".updateRoverCountPhotos()",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/repositories/RoversRepositoryImpl.kt",
-      "source_location": "L197",
+      "source_location": "L189",
       "_origin": "ast",
       "id": "repositories_roversrepositoryimpl_roversrepositoryimpl_updaterovercountphotos",
       "community": 39,
@@ -4923,7 +5043,7 @@
       "label": "Long",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/repositories/RoversRepositoryImpl.kt",
-      "source_location": "L197",
+      "source_location": "L189",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_data_repositories_roversrepositoryimpl_kt_long",
       "community": 39,
@@ -4933,7 +5053,7 @@
       "label": ".getRovers()",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/repositories/RoversRepositoryImpl.kt",
-      "source_location": "L202",
+      "source_location": "L194",
       "_origin": "ast",
       "id": "repositories_roversrepositoryimpl_roversrepositoryimpl_getrovers",
       "community": 39,
@@ -4943,7 +5063,7 @@
       "label": "Flow",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/repositories/RoversRepositoryImpl.kt",
-      "source_location": "L202",
+      "source_location": "L194",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_data_repositories_roversrepositoryimpl_kt_flow",
       "community": 39,
@@ -4953,7 +5073,7 @@
       "label": "List",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/repositories/RoversRepositoryImpl.kt",
-      "source_location": "L202",
+      "source_location": "L194",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_data_repositories_roversrepositoryimpl_kt_list",
       "community": 39,
@@ -4963,7 +5083,7 @@
       "label": "Rover",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/repositories/RoversRepositoryImpl.kt",
-      "source_location": "L202",
+      "source_location": "L194",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_data_repositories_roversrepositoryimpl_kt_rover",
       "community": 39,
@@ -4973,7 +5093,7 @@
       "label": ".loadRoverById()",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/repositories/RoversRepositoryImpl.kt",
-      "source_location": "L206",
+      "source_location": "L198",
       "_origin": "ast",
       "id": "repositories_roversrepositoryimpl_roversrepositoryimpl_loadroverbyid",
       "community": 39,
@@ -7356,7 +7476,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "presentation_app",
-      "community": 7,
+      "community": 175,
       "norm_label": "app.kt"
     },
     {
@@ -7366,7 +7486,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "presentation_app_app",
-      "community": 7,
+      "community": 175,
       "norm_label": "app()"
     },
     {
@@ -7376,7 +7496,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_app_kt_deeplink",
-      "community": 7,
+      "community": 175,
       "norm_label": "deeplink"
     },
     {
@@ -7386,7 +7506,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_app_kt_unit",
-      "community": 7,
+      "community": 175,
       "norm_label": "unit"
     },
     {
@@ -7396,7 +7516,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_app_kt_string",
-      "community": 7,
+      "community": 175,
       "norm_label": "string"
     },
     {
@@ -7406,7 +7526,7 @@
       "source_location": "L87",
       "_origin": "ast",
       "id": "presentation_app_appcontent",
-      "community": 7,
+      "community": 175,
       "norm_label": "appcontent()"
     },
     {
@@ -8056,7 +8176,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "navmetadatakey",
-      "community": 68,
+      "community": 12,
       "norm_label": "navmetadatakey"
     },
     {
@@ -8166,7 +8286,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "navigation_localaboutcallbacks",
-      "community": 7,
+      "community": 175,
       "norm_label": "localaboutcallbacks.kt"
     },
     {
@@ -8176,7 +8296,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "navigation_localaboutcallbacks_aboutcallbacks",
-      "community": 7,
+      "community": 175,
       "norm_label": "aboutcallbacks"
     },
     {
@@ -9766,7 +9886,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "screens_photoinfobottomsheet",
-      "community": 30,
+      "community": 4,
       "norm_label": "photoinfobottomsheet.kt"
     },
     {
@@ -9776,7 +9896,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "screens_photoinfobottomsheet_photoinfobottomsheet",
-      "community": 30,
+      "community": 4,
       "norm_label": "photoinfobottomsheet()"
     },
     {
@@ -9786,7 +9906,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_photoinfobottomsheet_kt_marsimage",
-      "community": 30,
+      "community": 4,
       "norm_label": "marsimage"
     },
     {
@@ -9796,7 +9916,7 @@
       "source_location": "L116",
       "_origin": "ast",
       "id": "screens_photoinfobottomsheet_infosection",
-      "community": 30,
+      "community": 4,
       "norm_label": "infosection()"
     },
     {
@@ -9806,7 +9926,7 @@
       "source_location": "L116",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_photoinfobottomsheet_kt_string",
-      "community": 30,
+      "community": 4,
       "norm_label": "string"
     },
     {
@@ -9816,7 +9936,7 @@
       "source_location": "L131",
       "_origin": "ast",
       "id": "screens_photoinfobottomsheet_statitem",
-      "community": 30,
+      "community": 4,
       "norm_label": "statitem()"
     },
     {
@@ -9826,7 +9946,7 @@
       "source_location": "L131",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_photoinfobottomsheet_kt_long",
-      "community": 30,
+      "community": 4,
       "norm_label": "long"
     },
     {
@@ -9836,7 +9956,7 @@
       "source_location": "L156",
       "_origin": "ast",
       "id": "screens_photoinfobottomsheet_formatstatvalue",
-      "community": 30,
+      "community": 4,
       "norm_label": "formatstatvalue()"
     },
     {
@@ -9846,7 +9966,7 @@
       "source_location": "L169",
       "_origin": "ast",
       "id": "screens_photoinfobottomsheet_formatearthdate",
-      "community": 30,
+      "community": 4,
       "norm_label": "formatearthdate()"
     },
     {
@@ -10756,7 +10876,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "theme_theme",
-      "community": 7,
+      "community": 171,
       "norm_label": "theme.kt"
     },
     {
@@ -10766,7 +10886,7 @@
       "source_location": "L82",
       "_origin": "ast",
       "id": "theme_theme_withbrandoverrides",
-      "community": 7,
+      "community": 171,
       "norm_label": "withbrandoverrides()"
     },
     {
@@ -10776,7 +10896,7 @@
       "source_location": "L82",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_theme_theme_kt_boolean",
-      "community": 7,
+      "community": 171,
       "norm_label": "boolean"
     },
     {
@@ -10786,7 +10906,7 @@
       "source_location": "L82",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_theme_theme_kt_colorscheme",
-      "community": 7,
+      "community": 171,
       "norm_label": "colorscheme"
     },
     {
@@ -10796,7 +10916,7 @@
       "source_location": "L114",
       "_origin": "ast",
       "id": "theme_theme_marsroverphotostheme",
-      "community": 7,
+      "community": 171,
       "norm_label": "marsroverphotostheme()"
     },
     {
@@ -10806,7 +10926,7 @@
       "source_location": "L130",
       "_origin": "ast",
       "id": "theme_theme_animatecolorscheme",
-      "community": 7,
+      "community": 171,
       "norm_label": "animatecolorscheme()"
     },
     {
@@ -10816,7 +10936,7 @@
       "source_location": "L216",
       "_origin": "ast",
       "id": "theme_theme_issystemindarktheme",
-      "community": 7,
+      "community": 171,
       "norm_label": "issystemindarktheme()"
     },
     {
@@ -10826,7 +10946,7 @@
       "source_location": "L224",
       "_origin": "ast",
       "id": "theme_theme_supportsdynamiccolor",
-      "community": 7,
+      "community": 171,
       "norm_label": "supportsdynamiccolor()"
     },
     {
@@ -10836,7 +10956,7 @@
       "source_location": "L232",
       "_origin": "ast",
       "id": "theme_theme_getdynamicdarkcolorscheme",
-      "community": 7,
+      "community": 171,
       "norm_label": "getdynamicdarkcolorscheme()"
     },
     {
@@ -10846,7 +10966,7 @@
       "source_location": "L240",
       "_origin": "ast",
       "id": "theme_theme_getdynamiclightcolorscheme",
-      "community": 7,
+      "community": 171,
       "norm_label": "getdynamiclightcolorscheme()"
     },
     {
@@ -11346,7 +11466,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "ui_appoutlinedcard",
-      "community": 103,
+      "community": 179,
       "norm_label": "appoutlinedcard.kt"
     },
     {
@@ -11356,7 +11476,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "ui_appoutlinedcard_appoutlinedcard",
-      "community": 103,
+      "community": 179,
       "norm_label": "appoutlinedcard()"
     },
     {
@@ -11366,7 +11486,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_appoutlinedcard_kt_modifier",
-      "community": 103,
+      "community": 179,
       "norm_label": "modifier"
     },
     {
@@ -13996,7 +14116,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "viewmodels_rovermissioninfoviewmodel_rovermissioninfoviewmodel",
-      "community": 24,
+      "community": 176,
       "norm_label": "rovermissioninfoviewmodel"
     },
     {
@@ -14006,7 +14126,7 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_rovermissioninfoviewmodel_kt_stateflow",
-      "community": 24,
+      "community": 176,
       "norm_label": "stateflow"
     },
     {
@@ -14016,7 +14136,7 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_rovermissioninfoviewmodel_kt_missioninfostate",
-      "community": 24,
+      "community": 176,
       "norm_label": "missioninfostate"
     },
     {
@@ -14026,7 +14146,7 @@
       "source_location": "L98",
       "_origin": "ast",
       "id": "viewmodels_rovermissioninfoviewmodel_rovermissioninfoviewmodel_setroverid",
-      "community": 24,
+      "community": 176,
       "norm_label": ".setroverid()"
     },
     {
@@ -14036,7 +14156,7 @@
       "source_location": "L98",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_rovermissioninfoviewmodel_kt_long",
-      "community": 24,
+      "community": 176,
       "norm_label": "long"
     },
     {
@@ -14046,7 +14166,7 @@
       "source_location": "L102",
       "_origin": "ast",
       "id": "viewmodels_rovermissioninfoviewmodel_rovermissioninfoviewmodel_ensuremissionfacts",
-      "community": 24,
+      "community": 176,
       "norm_label": ".ensuremissionfacts()"
     },
     {
@@ -14056,7 +14176,7 @@
       "source_location": "L132",
       "_origin": "ast",
       "id": "viewmodels_rovermissioninfoviewmodel_rovermissioninfoviewmodel_trackevent",
-      "community": 24,
+      "community": 176,
       "norm_label": ".trackevent()"
     },
     {
@@ -14066,7 +14186,7 @@
       "source_location": "L132",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_rovermissioninfoviewmodel_kt_string",
-      "community": 24,
+      "community": 176,
       "norm_label": "string"
     },
     {
@@ -14186,7 +14306,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "viewmodels_roversviewmodel",
-      "community": 25,
+      "community": 169,
       "norm_label": "roversviewmodel.kt"
     },
     {
@@ -14196,7 +14316,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "viewmodels_roversviewmodel_roversviewmodel",
-      "community": 25,
+      "community": 169,
       "norm_label": "roversviewmodel"
     },
     {
@@ -14206,7 +14326,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_roversviewmodel_kt_stateflow",
-      "community": 25,
+      "community": 169,
       "norm_label": "stateflow"
     },
     {
@@ -14216,7 +14336,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_roversviewmodel_kt_list",
-      "community": 25,
+      "community": 169,
       "norm_label": "list"
     },
     {
@@ -14226,7 +14346,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_roversviewmodel_kt_rover",
-      "community": 25,
+      "community": 169,
       "norm_label": "rover"
     },
     {
@@ -14236,7 +14356,7 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_roversviewmodel_kt_string",
-      "community": 25,
+      "community": 169,
       "norm_label": "string"
     },
     {
@@ -14246,7 +14366,7 @@
       "source_location": "L44",
       "_origin": "ast",
       "id": "viewmodels_roversviewmodel_roversviewmodel_onsearchquerychange",
-      "community": 25,
+      "community": 169,
       "norm_label": ".onsearchquerychange()"
     },
     {
@@ -14256,7 +14376,7 @@
       "source_location": "L48",
       "_origin": "ast",
       "id": "viewmodels_roversviewmodel_roversviewmodel_onroverclicked",
-      "community": 25,
+      "community": 169,
       "norm_label": ".onroverclicked()"
     },
     {
@@ -14266,7 +14386,7 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "viewmodels_roversviewmodel_roversviewmodel_onmissioninfoclicked",
-      "community": 25,
+      "community": 169,
       "norm_label": ".onmissioninfoclicked()"
     },
     {
@@ -18810,14 +18930,54 @@
       "norm_label": "\"safe-to-fix\" backlog (will be delegated to fixer agents)"
     },
     {
-      "label": "todos.md",
+      "label": "SKILL.md",
       "file_type": "document",
-      "source_file": ".context/todos.md",
+      "source_file": ".claude/skills/fact-research/SKILL.md",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "context_todos",
-      "community": 106,
-      "norm_label": "todos.md"
+      "id": "fact_research_skill",
+      "community": 177,
+      "norm_label": "skill.md"
+    },
+    {
+      "label": "Fact Research Pipeline",
+      "file_type": "document",
+      "source_file": ".claude/skills/fact-research/SKILL.md",
+      "source_location": "L6",
+      "_origin": "ast",
+      "id": "fact_research_skill_fact_research_pipeline",
+      "community": 177,
+      "norm_label": "fact research pipeline"
+    },
+    {
+      "label": "Target data",
+      "file_type": "document",
+      "source_file": ".claude/skills/fact-research/SKILL.md",
+      "source_location": "L10",
+      "_origin": "ast",
+      "id": "fact_research_skill_target_data",
+      "community": 177,
+      "norm_label": "target data"
+    },
+    {
+      "label": "Pipeline",
+      "file_type": "document",
+      "source_file": ".claude/skills/fact-research/SKILL.md",
+      "source_location": "L28",
+      "_origin": "ast",
+      "id": "fact_research_skill_pipeline",
+      "community": 177,
+      "norm_label": "pipeline"
+    },
+    {
+      "label": "Rules",
+      "file_type": "document",
+      "source_file": ".claude/skills/fact-research/SKILL.md",
+      "source_location": "L52",
+      "_origin": "ast",
+      "id": "fact_research_skill_rules",
+      "community": 177,
+      "norm_label": "rules"
     },
     {
       "label": "README.md",
@@ -19932,6 +20092,116 @@
   ],
   "links": [
     {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/skills/fact-research/workflow-template.js",
+      "source_location": "L141",
+      "weight": 1.0,
+      "source": "fact_research_workflow_template",
+      "target": "fact_research_workflow_template_allscored",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/skills/fact-research/workflow-template.js",
+      "source_location": "L15",
+      "weight": 1.0,
+      "source": "fact_research_workflow_template",
+      "target": "fact_research_workflow_template_exclude",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/skills/fact-research/workflow-template.js",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "fact_research_workflow_template",
+      "target": "fact_research_workflow_template_excludelist",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/skills/fact-research/workflow-template.js",
+      "source_location": "L33",
+      "weight": 1.0,
+      "source": "fact_research_workflow_template",
+      "target": "fact_research_workflow_template_facts_schema",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/skills/fact-research/workflow-template.js",
+      "source_location": "L76",
+      "weight": 1.0,
+      "source": "fact_research_workflow_template",
+      "target": "fact_research_workflow_template_final_schema",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/skills/fact-research/workflow-template.js",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "fact_research_workflow_template",
+      "target": "fact_research_workflow_template_meta",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/skills/fact-research/workflow-template.js",
+      "source_location": "L107",
+      "weight": 1.0,
+      "source": "fact_research_workflow_template",
+      "target": "fact_research_workflow_template_researchprompt",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/skills/fact-research/workflow-template.js",
+      "source_location": "L52",
+      "weight": 1.0,
+      "source": "fact_research_workflow_template",
+      "target": "fact_research_workflow_template_scored_schema",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/skills/fact-research/workflow-template.js",
+      "source_location": "L119",
+      "weight": 1.0,
+      "source": "fact_research_workflow_template",
+      "target": "fact_research_workflow_template_scoreprompt",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/skills/fact-research/workflow-template.js",
+      "source_location": "L23",
+      "weight": 1.0,
+      "source": "fact_research_workflow_template",
+      "target": "fact_research_workflow_template_topics",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/skills/fact-research/workflow-template.js",
+      "source_location": "L160",
+      "weight": 1.0,
+      "source": "fact_research_workflow_template",
+      "target": "fact_research_workflow_template_total",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "defines",
       "confidence": "EXTRACTED",
       "source_file": ".maestro/capture.sh",
@@ -19957,9 +20227,9 @@
       "source_file": ".maestro/capture.sh",
       "source_location": "L1",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "maestro_capture",
-      "target": "users_sirelon_conductor_workspaces_marsroverphotos_delhi_maestro_capture_sh__entry"
+      "target": "users_sirelon_projects_marsroverphotos_maestro_capture_sh__entry",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -19968,9 +20238,9 @@
       "source_location": "L36",
       "weight": 1.0,
       "context": "call",
-      "confidence_score": 1.0,
-      "source": "users_sirelon_conductor_workspaces_marsroverphotos_delhi_maestro_capture_sh__entry",
-      "target": "maestro_capture_run_flow"
+      "source": "users_sirelon_projects_marsroverphotos_maestro_capture_sh__entry",
+      "target": "maestro_capture_run_flow",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -19979,9 +20249,9 @@
       "source_location": "L36",
       "weight": 1.0,
       "context": "call",
-      "confidence_score": 1.0,
-      "source": "users_sirelon_conductor_workspaces_marsroverphotos_delhi_maestro_capture_sh__entry",
-      "target": "maestro_capture_set_theme"
+      "source": "users_sirelon_projects_marsroverphotos_maestro_capture_sh__entry",
+      "target": "maestro_capture_set_theme",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -42828,9 +43098,9 @@
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/ImageViewModel.kt",
       "source_location": "L227",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "viewmodels_imageviewmodel_imageviewmodel",
-      "target": "viewmodels_imageviewmodel_imageviewmodel_onseen",
-      "confidence_score": 1.0
+      "target": "viewmodels_imageviewmodel_imageviewmodel_onseen"
     },
     {
       "relation": "method",
@@ -42930,9 +43200,9 @@
       "source_location": "L227",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "viewmodels_imageviewmodel_imageviewmodel_onseen",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_imageviewmodel_kt_marsimage",
-      "confidence_score": 1.0
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_imageviewmodel_kt_marsimage"
     },
     {
       "relation": "references",
@@ -51465,6 +51735,46 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": ".claude/skills/fact-research/SKILL.md",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "fact_research_skill",
+      "target": "fact_research_skill_fact_research_pipeline",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/skills/fact-research/SKILL.md",
+      "source_location": "L28",
+      "weight": 1.0,
+      "source": "fact_research_skill_fact_research_pipeline",
+      "target": "fact_research_skill_pipeline",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/skills/fact-research/SKILL.md",
+      "source_location": "L52",
+      "weight": 1.0,
+      "source": "fact_research_skill_fact_research_pipeline",
+      "target": "fact_research_skill_rules",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/skills/fact-research/SKILL.md",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "fact_research_skill_fact_research_pipeline",
+      "target": "fact_research_skill_target_data",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": ".maestro/README.md",
       "source_location": "L1",
       "weight": 1.0,
@@ -52412,5 +52722,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "ae10c44977ec6a7fbf62b00bd3bfa8960faf27e5"
+  "built_at_commit": "3f1a22e36cf663639a03ebe1d436a5f81d05daea"
 }
