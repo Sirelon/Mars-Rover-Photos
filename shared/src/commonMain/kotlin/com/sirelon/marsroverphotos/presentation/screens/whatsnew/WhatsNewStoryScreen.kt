@@ -51,9 +51,11 @@ import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.presentation.ui.toIcon
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sirelon.marsroverphotos.presentation.viewmodels.WhatsNewViewModel
 import kotlin.math.abs
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -88,30 +90,31 @@ fun WhatsNewStoryScreen(version: String, startPage: Int) {
     }
 
     // Auto-advance: fill the target page's segment over PAGE_DURATION_MS, then move on.
-    // Keyed on targetPage, not settledPage: the pager commits to a page the moment the scroll starts,
-    // so the next segment begins filling during the slide instead of idling until it settles.
-    LaunchedEffect(pagerState.targetPage) {
-        val page = pagerState.targetPage
-        if (storyProgress.value < page) {
-            // Skipping ahead — run the segments we're leaving out to full instead of snapping them.
+    // snapshotFlow emits whenever targetPage changes; collectLatest cancels the in-progress block the
+    // moment the pager commits to a new page — same cancel-on-advance behaviour as the old
+    // LaunchedEffect(targetPage) key, but without invalidating WhatsNewStoryScreen's restart scope.
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.targetPage }.collectLatest { page ->
+            if (storyProgress.value < page) {
+                // Skipping ahead — run the segments we're leaving out to full instead of snapping them.
+                storyProgress.animateTo(
+                    targetValue = page.toFloat(),
+                    animationSpec = tween(CATCH_UP_MS, easing = AppMotion.Emphasized),
+                )
+            } else {
+                // Going back — rewind straight to the start of the target segment.
+                storyProgress.snapTo(page.toFloat())
+            }
             storyProgress.animateTo(
-                targetValue = page.toFloat(),
-                animationSpec = tween(CATCH_UP_MS, easing = AppMotion.Emphasized),
+                targetValue = page + 1f,
+                animationSpec = tween(durationMillis = PAGE_DURATION_MS, easing = LinearEasing),
             )
-        } else {
-            // Going back — rewind straight to the start of the target segment.
-            storyProgress.snapTo(page.toFloat())
-        }
-        storyProgress.animateTo(
-            targetValue = page + 1f,
-            animationSpec = tween(durationMillis = PAGE_DURATION_MS, easing = LinearEasing),
-        )
-        // Only auto-advance if the fill ran to completion (wasn't cut short by a tap or swipe).
-        // The scroll runs outside this effect: advancing moves targetPage, which cancels us.
-        if (storyProgress.value >= page + 1f) {
-            val next = page + 1
-            if (next < changes.size) scope.launch { pagerState.animateScrollToPage(next) }
-            else navigator.goBack()
+            // Only auto-advance if the fill ran to completion (wasn't cut short by a tap or swipe).
+            if (storyProgress.value >= page + 1f) {
+                val next = page + 1
+                if (next < changes.size) scope.launch { pagerState.animateScrollToPage(next) }
+                else navigator.goBack()
+            }
         }
     }
 
@@ -221,16 +224,15 @@ fun WhatsNewStoryScreen(version: String, startPage: Int) {
                     }
                 }
 
-                // Primary action button
-                val currentPage = pagerState.currentPage
-                val isLast = currentPage == changes.size - 1
-                val change = changes[currentPage]
+                // Primary action button — reads currentPage inside the content lambda so that only
+                // the button subtree recomposes on page changes, not WhatsNewStoryScreen itself.
                 AppButton(
                     onClick = {
-                        if (isLast) {
+                        val page = pagerState.currentPage
+                        if (page == changes.size - 1) {
                             navigator.goBack()
                         } else {
-                            scope.launch { pagerState.animateScrollToPage(currentPage + 1) }
+                            scope.launch { pagerState.animateScrollToPage(page + 1) }
                         }
                     },
                     modifier = Modifier
@@ -238,7 +240,9 @@ fun WhatsNewStoryScreen(version: String, startPage: Int) {
                         .padding(horizontal = AppSpacing.xl)
                         .padding(bottom = AppSpacing.xl),
                 ) {
-                    Text(text = if (isLast) "Done" else (change.actionLabel ?: "Next"))
+                    val currentPage = pagerState.currentPage
+                    val isLast = currentPage == changes.size - 1
+                    Text(text = if (isLast) "Done" else (changes[currentPage].actionLabel ?: "Next"))
                 }
             }
         }

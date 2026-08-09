@@ -1,12 +1,14 @@
 package com.sirelon.marsroverphotos.domain.releasenotes
 
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
 
-val RELEASES: List<Release> = listOf(
+val RELEASES: ImmutableList<Release> = persistentListOf(
     Release(
         version = "5.0.0",
         date = LocalDate(2025, 8, 1),
-        changes = listOf(
+        changes = persistentListOf(
             Release.Change(
                 id = "mission_info",
                 type = ChangeType.MISSION_INFO,
@@ -33,7 +35,7 @@ val RELEASES: List<Release> = listOf(
     Release(
         version = "4.2.0",
         date = LocalDate(2024, 11, 1),
-        changes = listOf(
+        changes = persistentListOf(
             Release.Change(
                 id = "favorites",
                 type = ChangeType.FAVORITES,
@@ -53,7 +55,7 @@ val RELEASES: List<Release> = listOf(
     Release(
         version = "4.0.0",
         date = LocalDate(2024, 5, 1),
-        changes = listOf(
+        changes = persistentListOf(
             Release.Change(
                 id = "redesign",
                 type = ChangeType.REDESIGN,

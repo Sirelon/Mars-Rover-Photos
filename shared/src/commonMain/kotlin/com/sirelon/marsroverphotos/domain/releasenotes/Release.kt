@@ -1,5 +1,6 @@
 package com.sirelon.marsroverphotos.domain.releasenotes
 
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.datetime.LocalDate
 
 enum class ChangeType {
@@ -10,7 +11,7 @@ enum class ChangeType {
 data class Release(
     val version: String,
     val date: LocalDate,
-    val changes: List<Change>,
+    val changes: ImmutableList<Change>,
 ) {
     data class Change(
         val id: String,

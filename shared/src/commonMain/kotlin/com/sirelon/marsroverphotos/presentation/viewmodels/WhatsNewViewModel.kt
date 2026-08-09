@@ -5,13 +5,14 @@ import com.sirelon.marsroverphotos.domain.releasenotes.RELEASES
 import com.sirelon.marsroverphotos.domain.releasenotes.Release
 import com.sirelon.marsroverphotos.domain.settings.AppSettings
 import com.sirelon.marsroverphotos.platform.BuildInfo
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 data class WhatsNewUiState(
-    val releases: List<Release>,
+    val releases: ImmutableList<Release>,
     val currentRelease: Release?,
     val shouldShowDialog: Boolean,
 )
