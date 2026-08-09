@@ -24,4 +24,12 @@ class NumberFormatTest {
     fun formatCompact_millions_oneDecimalM() {
         assertEquals("1.2M", formatCompact(1_200_000))
     }
+
+    @Test
+    fun formatCompact_roundingCarriesIntoMillions() {
+        // Rounding to thousands would give "1000K"; it must promote to the next unit instead.
+        assertEquals("1.0M", formatCompact(999_500))
+        assertEquals("1.0M", formatCompact(999_999))
+        assertEquals("999K", formatCompact(999_499))
+    }
 }

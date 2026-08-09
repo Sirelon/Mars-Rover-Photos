@@ -1,21 +1,17 @@
 package com.sirelon.marsroverphotos.presentation.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import com.sirelon.marsroverphotos.presentation.theme.AppSize
 import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
 import com.sirelon.marsroverphotos.presentation.theme.AppTypography
 import com.sirelon.marsroverphotos.presentation.theme.activeStatusColor
@@ -36,8 +31,6 @@ import com.sirelon.marsroverphotos.presentation.ui.AppOutlinedCard
 import com.sirelon.marsroverphotos.presentation.ui.AppSectionHeader
 import com.sirelon.marsroverphotos.presentation.ui.AppSectionLabel
 import com.sirelon.marsroverphotos.presentation.ui.BadgeRow
-import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
-import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.presentation.ui.StatusBadge
 import com.sirelon.marsroverphotos.presentation.ui.sharedRoverBadge
 import com.sirelon.marsroverphotos.presentation.ui.sharedRoverCameras
@@ -45,11 +38,8 @@ import com.sirelon.marsroverphotos.presentation.ui.sharedRoverFunFact
 import com.sirelon.marsroverphotos.presentation.ui.sharedRoverImage
 import com.sirelon.marsroverphotos.presentation.ui.sharedRoverName
 import com.sirelon.marsroverphotos.presentation.ui.sharedRoverObjectives
-import com.sirelon.marsroverphotos.presentation.viewmodels.MilestoneType
 import com.sirelon.marsroverphotos.presentation.viewmodels.MissionInfoState
-import com.sirelon.marsroverphotos.presentation.viewmodels.TimelineMilestone
 import com.sirelon.marsroverphotos.utils.formatThousands
-import kotlinx.collections.immutable.ImmutableList
 
 // ── Expanded 2-panel layout ───────────────────────────────────────────────────
 
@@ -71,9 +61,9 @@ internal fun ExpandedLayout(
             item {
                 RoverImageCard(
                     rover = state.rover,
-                    aspectRatio = 4f / 3f,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .aspectRatio(4f / 3f)
                         .sharedRoverImage(state.rover.id)
                         .clip(MaterialTheme.shapes.large),
                 )
@@ -107,7 +97,7 @@ internal fun ExpandedLayout(
             item { ExpeditionLogHeader(description = state.missionDescription) }
             item {
                 DesktopLogSection("Mission Timeline") {
-                    DesktopTimeline(milestones = state.timelineMilestones, status = state.rover.status)
+                    MissionTimeline(milestones = state.timelineMilestones)
                 }
             }
             if (state.missionFacts?.objectives?.isNotEmpty() == true) {
@@ -259,85 +249,3 @@ private fun DesktopLogSection(
     }
 }
 
-@Composable
-private fun DesktopTimeline(
-    milestones: ImmutableList<TimelineMilestone>,
-    status: String,
-    modifier: Modifier = Modifier,
-) {
-    val activeDotColor   = MaterialTheme.colorScheme.secondary
-    val inactiveDotColor = MaterialTheme.colorScheme.secondaryContainer
-    val activeIconTint   = MaterialTheme.colorScheme.onSecondary
-    val inactiveIconTint = MaterialTheme.colorScheme.onSecondaryContainer
-    val connectorColor   = MaterialTheme.colorScheme.outlineVariant
-
-    Column(modifier = modifier) {
-        milestones.forEachIndexed { i, milestone ->
-            val isCurrent = milestone.type == MilestoneType.CURRENT || milestone.type == MilestoneType.END
-            val isLast    = i == milestones.size - 1
-            val dotColor  = if (isCurrent) activeDotColor  else inactiveDotColor
-            val iconTint  = if (isCurrent) activeIconTint  else inactiveIconTint
-
-            Row {
-                Column(
-                    modifier = Modifier.width(AppSpacing.xxl),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(AppSpacing.xl)
-                            .clip(CircleShape)
-                            .background(dotColor),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        val iconSymbol = when (milestone.type) {
-                            MilestoneType.LAUNCH  -> MaterialSymbol.Rocket
-                            MilestoneType.LANDING -> MaterialSymbol.FlightLand
-                            MilestoneType.CURRENT -> MaterialSymbol.Star
-                            MilestoneType.END     -> MaterialSymbol.Flag
-                        }
-                        MaterialSymbolIcon(
-                            symbol = iconSymbol,
-                            contentDescription = null,
-                            tint = iconTint,
-                            size = AppSize.iconInline,
-                        )
-                    }
-                    if (!isLast) {
-                        Box(
-                            modifier = Modifier
-                                .width(AppSize.hairline * 2)
-                                .height(AppSpacing.x3l)
-                                .background(connectorColor)
-                        )
-                    }
-                }
-                Spacer(Modifier.width(AppSpacing.lg))
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(bottom = if (!isLast) AppSpacing.xl else AppSpacing.xs),
-                ) {
-                    AppSectionLabel(milestone.label)
-                    Text(
-                        text = milestone.date,
-                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                    // "Sol X · Location" sub-label
-                    val solPart = milestone.sol?.let { "Sol ${formatThousands(it.toInt())}" }
-                    val subLabel = listOfNotNull(solPart, milestone.location)
-                        .joinToString(" · ")
-                        .takeIf { it.isNotEmpty() }
-                    if (subLabel != null) {
-                        Text(
-                            text = subLabel,
-                            style = AppTypography.bodySecondary,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
-            }
-        }
-    }
-}

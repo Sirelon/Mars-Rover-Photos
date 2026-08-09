@@ -38,8 +38,15 @@ fun formatCompact(value: Long): String {
     if (value < 0) return "-" + formatCompact(-value)
     return when {
         value < 1_000L -> value.toString()
-        value < 1_000_000L ->
-            if (value < 10_000L) decimal1(value, 1_000L) + "K" else roundDiv(value, 1_000L).toString() + "K"
+        value < 1_000_000L -> {
+            if (value < 10_000L) {
+                decimal1(value, 1_000L) + "K"
+            } else {
+                // Rounding can carry into the next unit (999,500 → 1000K), so promote to M.
+                val thousands = roundDiv(value, 1_000L)
+                if (thousands >= 1_000L) decimal1(value, 1_000_000L) + "M" else "${thousands}K"
+            }
+        }
         else -> decimal1(value, 1_000_000L) + "M"
     }
 }

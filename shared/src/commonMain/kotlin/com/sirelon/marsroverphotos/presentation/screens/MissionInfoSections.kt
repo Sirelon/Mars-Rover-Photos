@@ -7,14 +7,15 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,7 +24,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -47,12 +47,12 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.sp
 import com.sirelon.marsroverphotos.domain.models.Rover
 import com.sirelon.marsroverphotos.domain.models.mission.CameraSpec
 import com.sirelon.marsroverphotos.presentation.theme.AppSize
 import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
 import com.sirelon.marsroverphotos.presentation.theme.AppTypography
+import com.sirelon.marsroverphotos.presentation.theme.MarsRoverPhotosTheme
 import com.sirelon.marsroverphotos.presentation.theme.activeStatusColor
 import com.sirelon.marsroverphotos.presentation.ui.AppBadge
 import com.sirelon.marsroverphotos.presentation.ui.AppButton
@@ -76,6 +76,7 @@ import com.sirelon.marsroverphotos.presentation.ui.sharedRoverObjectives
 import com.sirelon.marsroverphotos.presentation.viewmodels.MilestoneType
 import com.sirelon.marsroverphotos.presentation.viewmodels.MissionInfoState
 import com.sirelon.marsroverphotos.presentation.viewmodels.TimelineMilestone
+import com.sirelon.marsroverphotos.utils.formatCompact
 import com.sirelon.marsroverphotos.utils.formatThousands
 import kotlinx.collections.immutable.ImmutableList
 
@@ -91,6 +92,9 @@ internal fun MissionInfoContent(
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
+        // The nav chrome (ad slot + bottom bar) is laid out *below* the content area by
+        // MarsNavigationSuite, so it never overlaps this list; the trailing space is only
+        // breathing room under the last section.
         contentPadding = PaddingValues(bottom = AppSpacing.x3l),
         verticalArrangement = Arrangement.spacedBy(AppSpacing.xl),
     ) {
@@ -122,14 +126,10 @@ internal fun MissionInfoContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = AppSpacing.lg),
-                verticalArrangement = Arrangement.spacedBy(AppSpacing.xl),
+                verticalArrangement = Arrangement.spacedBy(AppSpacing.lg),
             ) {
                 AppSectionHeader("Mission Timeline")
-                V1Timeline(
-                    milestones = state.timelineMilestones,
-                    status = state.rover.status,
-                    fillWidth = isMediumPlus,
-                )
+                MissionTimeline(milestones = state.timelineMilestones)
             }
         }
 
@@ -138,7 +138,7 @@ internal fun MissionInfoContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = AppSpacing.lg),
-                verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
+                verticalArrangement = Arrangement.spacedBy(AppSpacing.md),
             ) {
                 AppSectionHeader("Statistics")
                 V1Stats(
@@ -155,7 +155,7 @@ internal fun MissionInfoContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = AppSpacing.lg),
-                    verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
+                    verticalArrangement = Arrangement.spacedBy(AppSpacing.md),
                 ) {
                     AppSectionHeader("Cameras & Instruments")
                     if (isMediumPlus) {
@@ -179,7 +179,7 @@ internal fun MissionInfoContent(
                         .padding(horizontal = AppSpacing.lg),
                 ) {
                     AppSectionHeader("Mission Info")
-                    Spacer(Modifier.height(AppSpacing.sm))
+                    Spacer(Modifier.height(AppSpacing.md))
                     LinearProgressIndicator(Modifier.fillMaxWidth())
                 }
             }
@@ -191,7 +191,7 @@ internal fun MissionInfoContent(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = AppSpacing.lg),
-                            verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
+                            verticalArrangement = Arrangement.spacedBy(AppSpacing.md),
                         ) {
                             AppSectionHeader("Mission Objectives")
                             V1Objectives(
@@ -209,7 +209,7 @@ internal fun MissionInfoContent(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = AppSpacing.lg),
-                            verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
+                            verticalArrangement = Arrangement.spacedBy(AppSpacing.md),
                         ) {
                             AppSectionHeader("Did You Know?")
                             FunFact(text = fact, modifier = Modifier.sharedRoverFunFact(state.rover.id))
@@ -235,27 +235,34 @@ internal fun MissionInfoContent(
 
 // ── Hero ──────────────────────────────────────────────────────────────────────
 
+/** Mission hero photo proportions — the rover portraits are 16:9 crops. */
+private const val HeroAspectRatio = 16f / 9f
+
+/**
+ * Rover photo under a [scrim]. The caller sizes it (aspect ratio or fixed height) and may supply its
+ * own scrim; the default fades the bottom of the image into the surrounding background.
+ */
 @Composable
 internal fun RoverImageCard(
     rover: Rover,
-    aspectRatio: Float,
     modifier: Modifier = Modifier,
+    scrim: Brush? = null,
 ) {
     val bgColor = MaterialTheme.colorScheme.background
-    val gradient = remember(bgColor) {
+    val defaultScrim = remember(bgColor) {
         Brush.verticalGradient(
             0.45f to Color.Transparent,
             1f to bgColor.copy(alpha = 0.96f),
         )
     }
-    Box(modifier = modifier.aspectRatio(aspectRatio)) {
+    Box(modifier = modifier) {
         Image(
             painter = rover.painter(),
             contentDescription = rover.name,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop,
         )
-        Box(modifier = Modifier.fillMaxSize().background(gradient))
+        Box(modifier = Modifier.fillMaxSize().background(scrim ?: defaultScrim))
     }
 }
 
@@ -266,68 +273,79 @@ private fun MissionHeroSection(
     onBack: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
-    val topGradient = remember {
-        Brush.verticalGradient(
-            0f to Color.Black.copy(alpha = 0.52f),
-            0.4f to Color.Transparent,
-        )
-    }
-    Box(modifier = modifier.fillMaxWidth()) {
-        RoverImageCard(
-            rover = rover,
-            aspectRatio = 16f / 9f,
-            modifier = Modifier.fillMaxWidth().sharedRoverImage(rover.id),
-        )
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(16f / 9f)
-                .background(topGradient),
-        )
-        if (onBack != null) {
-            IconButton(
-                onClick = onBack,
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .statusBarsPadding()
-                    .padding(AppSpacing.lg)
-                    .background(Color.Black.copy(alpha = 0.42f), CircleShape),
-            ) {
-                MaterialSymbolIcon(
-                    symbol = MaterialSymbol.ArrowBack,
-                    contentDescription = "Back",
-                    tint = Color.White,
-                    size = AppSize.iconDefault,
-                )
-            }
-        }
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(start = AppSpacing.xl, end = AppSpacing.xl, bottom = AppSpacing.xl),
-            verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
-        ) {
-            Text(
-                text = rover.name,
-                style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.ExtraBold),
-                color = Color.White,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.sharedRoverName(rover.id),
+    // The hero is a photo with text laid over it — a permanently dark region whatever the app theme
+    // is, so it runs on the dark theme and everything inside reads `colorScheme` normally instead of
+    // hardcoding white. Forcing the theme (not the palette) keeps the brand overrides and dynamic
+    // color — see docs/DESIGN_SYSTEM.md › Color.
+    MarsRoverPhotosTheme(darkTheme = true) {
+        val colors = MaterialTheme.colorScheme
+        val heroScrim = remember(colors.scrim, colors.background) {
+            Brush.verticalGradient(
+                0f to colors.scrim.copy(alpha = 0.52f),
+                0.4f to Color.Transparent,
+                1f to colors.background.copy(alpha = 0.97f),
             )
-            Row(
-                modifier = Modifier.sharedRoverBadge(rover.id),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm),
-            ) {
-                if (rover.isActive) StatusBadge("Active", activeStatusColor())
-                else AppBadge(rover.status.replaceFirstChar { it.uppercaseChar() })
-                if (landingLocation.isNotEmpty()) {
-                    Text(
-                        text = landingLocation,
-                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
-                        color = Color.White.copy(alpha = 0.85f),
+        }
+        Box(modifier = modifier.fillMaxWidth()) {
+            RoverImageCard(
+                rover = rover,
+                scrim = heroScrim,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(HeroAspectRatio)
+                    .sharedRoverImage(rover.id),
+            )
+            if (onBack != null) {
+                IconButton(
+                    onClick = onBack,
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .statusBarsPadding()
+                        .padding(AppSpacing.lg)
+                        .background(colors.scrim.copy(alpha = 0.42f), CircleShape),
+                ) {
+                    MaterialSymbolIcon(
+                        symbol = MaterialSymbol.ArrowBack,
+                        contentDescription = "Back",
+                        tint = colors.onSurface,
+                        size = AppSize.iconDefault,
                     )
+                }
+            }
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(
+                        start = AppSpacing.lg,
+                        end = AppSpacing.lg,
+                        bottom = AppSpacing.lg,
+                    ),
+                verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
+            ) {
+                Text(
+                    text = rover.name,
+                    style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.ExtraBold),
+                    color = colors.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.sharedRoverName(rover.id),
+                )
+                Row(
+                    modifier = Modifier.sharedRoverBadge(rover.id),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm),
+                ) {
+                    if (rover.isActive) StatusBadge("Active", activeStatusColor())
+                    else AppBadge(rover.status.replaceFirstChar { it.uppercaseChar() })
+                    if (landingLocation.isNotEmpty()) {
+                        Text(
+                            text = landingLocation,
+                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+                            color = colors.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
                 }
             }
         }
@@ -336,92 +354,102 @@ private fun MissionHeroSection(
 
 // ── Timeline ──────────────────────────────────────────────────────────────────
 
+/**
+ * Vertical mission timeline — one circular icon node per milestone, joined by a 2dp rail, with the
+ * label / date / "Sol X · Location" sub-line stacked beside it. Used by every window size: it wraps
+ * instead of scrolling sideways, so nothing clips at compact widths.
+ */
 @Composable
-private fun V1Timeline(
+internal fun MissionTimeline(
     milestones: ImmutableList<TimelineMilestone>,
-    status: String,
-    fillWidth: Boolean,
+    modifier: Modifier = Modifier,
 ) {
-    @Composable
-    fun connector(rowScope: androidx.compose.foundation.layout.RowScope) = with(rowScope) {
-        Box(
-            modifier = Modifier
-                .align(Alignment.CenterVertically)
-                .height(AppSize.hairline * 2)
-                .run { if (fillWidth) weight(0.25f) else width(AppSpacing.lg) }
-                .background(MaterialTheme.colorScheme.outlineVariant)
-        )
-    }
-
-    if (fillWidth) {
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
-            milestones.forEachIndexed { i, milestone ->
-                TimelineCard(milestone = milestone, modifier = Modifier.weight(1f))
-                if (i < milestones.size - 1) connector(this)
-            }
-        }
-    } else {
-        Row(
-            modifier = Modifier.horizontalScroll(rememberScrollState()),
-            verticalAlignment = Alignment.Top,
-        ) {
-            milestones.forEachIndexed { i, milestone ->
-                TimelineCard(milestone = milestone)
-                if (i < milestones.size - 1) connector(this)
-            }
-        }
-    }
-}
-
-@Composable
-private fun TimelineCard(milestone: TimelineMilestone, modifier: Modifier = Modifier) {
-    val iconSymbol = when (milestone.type) {
-        MilestoneType.LAUNCH  -> MaterialSymbol.Rocket
-        MilestoneType.LANDING -> MaterialSymbol.FlightLand
-        MilestoneType.CURRENT -> MaterialSymbol.Star
-        MilestoneType.END     -> MaterialSymbol.Flag
-    }
-    AppCard(modifier = modifier) {
-        Column(modifier = Modifier.padding(AppSpacing.lg)) {
-            AppIconBox(
-                symbol = iconSymbol,
-                container = MaterialTheme.colorScheme.secondaryContainer,
-                tint = MaterialTheme.colorScheme.onSecondaryContainer,
-            )
-            Spacer(Modifier.height(AppSpacing.sm))
-            AppSectionLabel(milestone.label)
-            Text(
-                text = milestone.date,
-                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            // "Sol X · Location" sub-label
-            val solPart = milestone.sol?.let { "Sol ${formatThousands(it.toInt())}" }
-            val subLabel = listOfNotNull(solPart, milestone.location)
-                .joinToString(" · ")
-                .takeIf { it.isNotEmpty() }
-            if (subLabel != null) {
-                Text(
-                    text = subLabel,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+    val colors = MaterialTheme.colorScheme
+    Column(modifier = modifier.fillMaxWidth()) {
+        milestones.forEachIndexed { i, milestone ->
+            val isCurrent = milestone.type == MilestoneType.CURRENT || milestone.type == MilestoneType.END
+            val isLast = i == milestones.size - 1
+            // The row is measured to its tallest child so the rail can stretch between nodes.
+            Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
+                Column(
+                    modifier = Modifier.width(AppSize.iconBox),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(AppSize.iconBox)
+                            .clip(CircleShape)
+                            .background(if (isCurrent) colors.secondary else colors.secondaryContainer),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        MaterialSymbolIcon(
+                            symbol = milestone.type.symbol(),
+                            contentDescription = null,
+                            tint = if (isCurrent) colors.onSecondary else colors.onSecondaryContainer,
+                            size = AppSize.icon,
+                        )
+                    }
+                    if (!isLast) {
+                        Box(
+                            modifier = Modifier
+                                .width(AppSize.hairline * 2)
+                                .weight(1f)
+                                .background(colors.outlineVariant)
+                        )
+                    }
+                }
+                Spacer(Modifier.width(AppSpacing.lg))
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .then(if (isLast) Modifier else Modifier.padding(bottom = AppSpacing.xl)),
+                ) {
+                    AppSectionLabel(milestone.label)
+                    Text(
+                        text = milestone.date,
+                        style = AppTypography.body.copy(fontWeight = FontWeight.SemiBold),
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    val subLabel = milestone.subLabel()
+                    if (subLabel != null) {
+                        Text(
+                            text = subLabel,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
             }
         }
     }
 }
+
+private fun MilestoneType.symbol(): MaterialSymbol = when (this) {
+    MilestoneType.LAUNCH  -> MaterialSymbol.Rocket
+    MilestoneType.LANDING -> MaterialSymbol.FlightLand
+    MilestoneType.CURRENT -> MaterialSymbol.Star
+    MilestoneType.END     -> MaterialSymbol.Flag
+}
+
+/** "Sol X · Location" sub-line, or null when the milestone has neither. */
+private fun TimelineMilestone.subLabel(): String? =
+    listOfNotNull(sol?.let { "Sol ${formatThousands(it)}" }, location)
+        .joinToString(" · ")
+        .takeIf { it.isNotEmpty() }
 
 // ── Statistics ────────────────────────────────────────────────────────────────
 
 @Composable
 private fun V1Stats(totalPhotos: Int, daysActive: Long, earthDaysActive: Long, modifier: Modifier = Modifier) {
+    // Photo counts run into the millions, so they're abbreviated (1.0M); sol/day counts stay exact
+    // and grouped (1,945). Both fit one line in a third of a compact screen.
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().height(IntrinsicSize.Min),
         horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm),
     ) {
-        StatCard(label = "Total Photos", value = formatThousands(totalPhotos), modifier = Modifier.weight(1f))
-        StatCard(label = "Sols on Mars", value = formatThousands(daysActive),  modifier = Modifier.weight(1f))
-        StatCard(label = "Earth Days",   value = formatThousands(earthDaysActive), modifier = Modifier.weight(1f))
+        StatCard("Total Photos", formatCompact(totalPhotos), Modifier.weight(1f).fillMaxHeight())
+        StatCard("Sols on Mars", formatThousands(daysActive), Modifier.weight(1f).fillMaxHeight())
+        StatCard("Earth Days", formatThousands(earthDaysActive), Modifier.weight(1f).fillMaxHeight())
     }
 }
 
@@ -435,13 +463,13 @@ private fun StatCard(label: String, value: String, modifier: Modifier = Modifier
             horizontalAlignment = Alignment.Start,
         ) {
             AppSectionLabel(label)
+            // One line, always — a wrapped value would make the three cards different heights.
             Text(
                 text = value,
-                style = MaterialTheme.typography.titleLarge.copy(
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = (-0.3).sp,
-                ),
+                style = AppTypography.statValue,
                 color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                softWrap = false,
             )
         }
     }
