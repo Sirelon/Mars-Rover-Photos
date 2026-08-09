@@ -38,6 +38,11 @@ coral **accent/secondary** (`#FC6C4B`, "the Mars accent"). Light theme is white-
     `withBrandOverrides` + dynamic color, so the screen drifts from every other surface on
     Android 12+. A file-level `private val StoryBackground = Color(0xFF0A0908)` is the wrong
     answer to this problem too.
+  - The same applies to a dark **region** inside an otherwise themed screen — a photo with text laid
+    over it. Wrap the photo *and* its overlay in `MarsRoverPhotosTheme(darkTheme = true)`
+    (`MissionHeroSection` in `screens/MissionInfoSections.kt`) instead of hardcoding `Color.White`
+    on each child: shared components (`AppBadge`, `activeStatusColor()`) then resolve their
+    on-dark colors by themselves.
   - A forced-dark **fullscreen** screen also owns the system bars: pair it with
     `DisposableEffect { setStatusBarAppearance(lightIcons = true); onDispose { …false } }`, or a
     device on a light system theme draws dark status icons on your black background.
@@ -77,6 +82,11 @@ coral **accent/secondary** (`#FC6C4B`, "the Mars accent"). Light theme is white-
   `contentWindowInsets = WindowInsets()` and consume `innerPadding` in the content.
 - For content that shouldn't stretch on wide windows, constrain to a centered max width
   (`AppSize` content-width token) rather than filling.
+- **Don't pad for the ad slot or the navigation bar.** `MarsNavigationSuite` puts the content area in
+  a `weight(1f)` box and lays `bottomChrome` (the `AdSlot`) + the `BottomAppBar` *below* it, and the
+  `BottomAppBar` consumes the navigation-bar inset itself — so nothing overlaps a screen's content
+  and a screen adding its own `navigationBarsPadding()`/ad-height padding just double-pads. Trailing
+  `contentPadding` on a screen's list is breathing room, nothing more.
 
 ### Process
 - Run `./gradlew detekt` before review; `./gradlew testDebugUnitTest` (JVM) and
@@ -143,6 +153,25 @@ coral **accent/secondary** (`#FC6C4B`, "the Mars accent"). Light theme is white-
 - **Android in-app review silently no-ops in debug.** `AppReview.requestReview()` returns `true` even
   when nothing renders (Play throttling), so any "rate" flow needs a guaranteed store-listing fallback;
   ensure each platform shell passes a store URL.
+
+- **"Why is this screen dark/washed out?" — a screen-level theme wrapper is almost never the answer.**
+  A Mission Info pass added a private `MissionInfoTheme` (a bare `MaterialTheme` with a copied
+  `DarkColorPalette` + a shrunken `Typography`) to hit a dark-only design spec. It bypassed the app's
+  theme selector *and* `withBrandOverrides`/dynamic color, and silently re-scaled the type on the
+  tablet layout too. Every screen is already wrapped by `MarsRoverPhotosTheme` at the root — if a
+  screen genuinely must stay dark, force the *theme* (`MarsRoverPhotosTheme(darkTheme = true)`, see
+  **Color** above); otherwise fix the colors you're actually reading.
+- **"The white hero text looks awful in light theme" — wrap the dark region, don't repaint its
+  contents.** The Mission Info hero faded the photo into `colorScheme.background` (white in light
+  theme) with white text over it. Two fixes look reasonable and are both wrong: re-coloring the text
+  to `onBackground` (the photo washes out to white and the type follows the page instead of the
+  image), and hardcoding a black scrim + `Color.White` text (every child then needs a literal —
+  `AppBadge` still draws `onSurfaceVariant`, `activeStatusColor()` still returns the light-theme
+  green, and the next widget added there starts the argument again). The answer is the standing
+  forced-dark rule applied to a **region** rather than a screen: wrap the photo *and the content laid
+  over it* in `MarsRoverPhotosTheme(darkTheme = true)`, then everything inside — scrim, title,
+  badges, `activeStatusColor()` — reads `colorScheme` normally and is correct in both app themes,
+  with brand overrides and dynamic color intact.
 
 **Driven progress / pager timers** — notes from four rounds on the What's New story bar
 (`screens/whatsnew/WhatsNewStoryScreen.kt`), each symptom looked like a different bug:
@@ -214,7 +243,10 @@ enum in `ui/MaterialSymbolIcon.kt` (the bundled full variable font renders them)
 **Number formatting** (`utils/NumberFormat.kt`): `formatThousands` → grouped (`74,525`) for exact
 counts; `formatCompact` → abbreviated K/M (`1.5K`, `134K`, `1.2M`) for tight metric strips. Use
 `formatCompact` in dense/inline metric contexts (rover `AppMetricItem`s), `formatThousands` where the
-full number reads better.
+full number reads better. Rounding **carries between units** — `999,500` rounds to `1000` thousands
+and must print `1.0M`, not `1000K`; the same trap waits at any unit boundary if a branch is added.
+The same number can legitimately be formatted differently per layout (compact Mission Info stat card
+= `formatCompact`, the expanded table = `formatThousands`) — that's an affordance decision, not drift.
 
 **Adaptive layout (one source, two breakpoints):** drive both column count and width-cap from
 `currentWindowAdaptiveInfo().windowSizeClass.isWidthAtLeastBreakpoint(...)` (the same adaptive source
@@ -291,6 +323,42 @@ tokens rather than re-introducing literals:
 | `--radius-*` | `MaterialTheme.shapes` (small/medium/large) / `AppSize` radii |
 | M3 type scale (`--body-medium`, `--title-large`, …) | `MaterialTheme.typography.*` / `AppTypography` |
 
+**A design brief quoting exact px is not a licence to mint tokens.** A spec asking for "20px
+gutters, 28px between sections, a 290px hero, a 40px timeline node" reads like four new `AppSize`
+entries; it isn't. Round to the scale — `AppSpacing.lg` / `AppSpacing.xl` / the existing 16:9 hero /
+`AppSize.iconBox` — and only add a token when nothing fits *and* the value is app-wide (see **Reuse
+an existing token before adding one**). A 4dp deviation nobody can see is not worth an entry, and
+`missionHeroHeight`-style names are screen names in disguise. Same for type: a brief's "body 15px /
+headings 18px" is the M3 scale one step down, not a reason for a screen-local `Typography`.
+
+---
+
+## Mission Info
+
+`screens/RoverMissionInfoScreen.kt` (chrome + layout switch), `MissionInfoSections.kt` (compact /
+medium single column), `MissionInfoExpandedLayout.kt` (expanded two-panel). It follows the app theme
+like every other screen — light, dark and system all render it; there is **no screen-level theme
+wrapper and no screen-level type scale** here.
+
+- **Hero.** `MissionHeroSection` wraps the photo *and* its overlay content in
+  `MarsRoverPhotosTheme(darkTheme = true)` — it is a permanently dark region, so nothing inside
+  hardcodes a color (see the Insights note). Inside: a 16:9 `RoverImageCard` under one scrim brush
+  (`scrim` 52% at the top so the back arrow reads, transparent mid, `background` 97% at the bottom),
+  with the title / status pill / location on `onSurface` / `onSurfaceVariant`. `RoverImageCard` takes
+  the scrim as an optional parameter (default: fade the bottom into `background`) and is sized by the
+  caller's modifier.
+- **Timeline is vertical at every width** (`MissionTimeline`, shared by compact and expanded): an
+  `AppSize.iconBox` circular node, a 2dp rail stretched between nodes via `height(IntrinsicSize.Min)`
+  \+ `weight(1f)`, and label / date / sub-line stacked beside it. The old horizontally-scrolling card
+  row clipped on compact — don't reintroduce it. The expanded layout's near-identical
+  `DesktopTimeline` was folded into this one.
+- **Statistics.** Three equal-height cards (`height(IntrinsicSize.Min)` + `fillMaxHeight`), value on
+  one line (`maxLines = 1`, `softWrap = false`, `AppTypography.statValue`). Photos use `formatCompact`
+  (`696K`) because the exact count doesn't fit a third of a phone; the expanded `StatsListTable` is a
+  full-width table and keeps `formatThousands`.
+- **Bottom padding.** The trailing `x3l` is breathing room only — see the no-ad/nav-padding rule
+  under **Adaptive layout & navigation**.
+
 ---
 
 ## History
@@ -339,3 +407,18 @@ tokens rather than re-introducing literals:
   `AppTypography.storyVersionGhost` / `storyTitle` — the story screen's raw `tween(...)` durations
   and `fontSize = 96.sp` / `38.sp` overrides now resolve through tokens. `AppSection(onClick)` clips
   to `CardShape` before `clickable` so the ripple follows the card's corners.
+- 2026-08-09 — **Mission Info compact pass.** Replaced the horizontally-scrolling timeline card row
+  with the vertical `MissionTimeline` (now shared with the expanded layout, which lost its private
+  `DesktopTimeline`); merged the hero's two stacked gradients into one `scrim` brush parameter on
+  `RoverImageCard` and put the hero region under `MarsRoverPhotosTheme(darkTheme = true)` so its
+  scrim, title and badges are theme-driven and legible in light theme; made the
+  statistic values single-line, equal-height and `formatCompact` for photos. Fixed `formatCompact`
+  rounding `999,500`→`"1000K"` instead of `"1.0M"`.
+  Took three rounds to land, and the two wrong turns are the notes worth keeping: it first shipped a
+  private `MissionInfoTheme` (bare `MaterialTheme` + copied palette + shrunken `Typography`) that
+  overrode the user's theme setting for one screen, and four new `AppSize` tokens transcribed
+  straight from a px design brief. Both are recorded above — Insights (screen-level theme wrappers;
+  "the white hero text looks awful in light theme"), **Color** (forced-dark *regions*), and the
+  handoff-mapping note that a px brief is not a licence to mint tokens. Also promoted the
+  "don't pad for the ad slot / nav bar" fact into **Adaptive layout & navigation** and the
+  unit-carry trap into **Number formatting**. New **Mission Info** section.
