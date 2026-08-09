@@ -256,7 +256,6 @@ private fun AboutContent(
     }
 }
 
-
 /**
  * Hero gradient top tint — resolved per applied theme so the gradient reads correctly in both.
  * Dark keeps the deep navy [primaryVariant]; light uses a soft light-blue (the design's light

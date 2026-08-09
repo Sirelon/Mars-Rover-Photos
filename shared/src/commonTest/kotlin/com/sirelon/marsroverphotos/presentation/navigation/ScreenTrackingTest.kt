@@ -18,6 +18,9 @@ class ScreenTrackingTest {
         AppDestination.PhotosDateJumpPicker(roverId = 5),
         AppDestination.PhotosFilters(roverId = 5),
         AppDestination.Images(),
+        AppDestination.WhatsNewDialog,
+        AppDestination.AllVersions,
+        AppDestination.WhatsNewStory(version = "5.0.0"),
     )
 
     @Test
@@ -27,6 +30,14 @@ class ScreenTrackingTest {
         names.forEach {
             assertTrue(it.matches(Regex("[a-z][a-z0-9_]*")), "not snake_case: $it")
         }
+    }
+
+    @Test
+    fun `the release story carries its version`() {
+        assertEquals(
+            ScreenView("whats_new_story", mapOf("version" to "5.0.0")),
+            AppDestination.WhatsNewStory(version = "5.0.0", page = 2).toScreenView(),
+        )
     }
 
     @Test

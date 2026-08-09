@@ -66,8 +66,49 @@ a token, or learn a UI gotcha, record it there — and when a UI fix takes sever
 short symptom-first note in that doc's *Insights / gotchas* section so the next reader recognizes it from
 the behavior.
 
+## Strings & Localization
+**The app is English-only and there is no localization.** `shared/src/commonMain/composeResources/`
+has a single `values/strings.xml` and no `values-*` locale variants; none are planned. Consequences
+for reviews and new code:
+
+- Hardcoded user-facing copy in a composable (`Text("Version History")`, `contentDescription = "Close"`)
+  is **acceptable** — it is not a review finding, and moving copy into `strings.xml` is not a
+  prerequisite for merging. `AboutScreen.kt` and the What's New screens are the established precedent.
+- `strings.xml` is still fine to use, and existing `stringResource(Res.string.…)` call sites should stay
+  as they are — don't churn them either direction. Reach for a resource when the same copy is genuinely
+  shared across several call sites; inline it when it isn't.
+- The same applies to English-language copy on a domain model (`Release.Change.title/summary/detail` in
+  `domain/releasenotes/`). What `domain/` must not hold is a **Compose/UI type** — see the
+  domain-never-imports-presentation rule in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). A `String` is
+  not that.
+- Plural/count copy may be built inline (`"$n change${if (n != 1) "s" else ""}"`); no plural resource
+  needed.
+
+If translations are ever added, this section is the thing to revisit — at that point the copy does need
+to be pulled into resources, and this note should be replaced rather than quietly ignored.
+
 ## Testing Guidelines
 Place unit specs in `shared/src/commonTest` (or `androidTest` for Android-instrumented tests), mirroring the source package and ending class names with `*Test`. Common tests use `kotlin.test` + `kotlinx-coroutines-test` with hand-rolled fakes (see `data/paging/Fakes.kt`) — no mocking library in commonTest; JUnit4 and Mockito-Kotlin apply to Android-instrumented tests only. Paging behavior should be verified at two levels: `PagingSource.load()` unit tests, plus `TestPager` (androidx.paging:paging-testing, KMP) for Pager-level invariants like continuation pages and end-of-pagination. Compose UI or Room integration checks belong in `androidApp/src/androidTest` and should describe the scenario in the test name. Cover paging boundaries, offline caching, and error flows whenever you touch those areas.
+
+## Acting on Code-Review Comments
+**Verify every review comment against the current code before changing anything.** A comment is a
+claim, not an instruction — treat it as a lead to check, not a ticket to close. In practice:
+
+- **Re-read the code the comment points at, at HEAD.** Reviews are frequently written against an
+  earlier commit on the same branch; findings about performance, stability or an API's shape are
+  routinely already fixed by a later commit. Check `git log`/`git diff` for the file before acting.
+- **Confirm the mechanism, not just the conclusion.** If a comment says a value is unclamped, a
+  ViewModel is a different instance, or a doc rule is being violated, open the relevant source /
+  doc and confirm it. Quoted compiler reports, line numbers and library internals in a comment can
+  all be stale.
+- **Check the suggested fix is actually equivalent.** "Deleting X produces the same output" is often
+  true on the path the reviewer looked at and false on another call site.
+- **Say so when a comment is wrong, and don't apply it.** Reply on the comment (Conductor MCP:
+  `mcp__conductor__DiffComment`) explaining what the code actually does, and list the rejected or
+  already-fixed comments in the summary alongside the ones you fixed. Silently "fixing" an inaccurate
+  comment is worse than leaving it open.
+- A comment that is right about the mechanism but wrong about severity or scope gets the same
+  treatment: fix what is real, state plainly what isn't.
 
 ## Commit & Pull Request Guidelines
 Follow the existing history with concise imperative subject lines under ~70 characters (e.g., `Fix release build`). Keep functional changes grouped per commit. Pull requests need a short summary, call out UI or API changes, link issues, and attach emulator screenshots or recordings when visuals move. Confirm `assembleDebug`, `testDebugUnitTest`, `:shared:desktopTest`, and `detekt` succeed before requesting review.

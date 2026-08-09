@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import com.sirelon.marsroverphotos.presentation.theme.AppSize
@@ -104,7 +105,14 @@ fun AppSection(
     footer: (@Composable () -> Unit)? = null,
     content: @Composable () -> Unit,
 ) {
-    val cardModifier = if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier
+    // Clip before clickable: AppOutlinedCard applies its own clip *after* this modifier, so an
+    // unclipped clickable would ripple as a rectangle over the card's rounded corners and take
+    // touches outside them.
+    val cardModifier = if (onClick != null) {
+        Modifier.clip(CardShape).clickable(onClick = onClick)
+    } else {
+        Modifier
+    }
     Column(modifier = modifier) {
         if (label != null) AppSectionLabel(text = label)
         AppOutlinedCard(modifier = cardModifier) {

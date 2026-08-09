@@ -32,9 +32,15 @@ coral **accent/secondary** (`#FC6C4B`, "the Mars accent"). Light theme is white-
   exceptions are documented per-theme helpers that fill a missing M3 slot (see Insights). Apply text
   color at the call site so light/dark both work.
   - A screen that must stay dark regardless of theme (fullscreen story / viewer) is **not** an
-    exception — wrap its content in `MaterialTheme(colorScheme = DarkColorPalette)` and keep reading
-    `MaterialTheme.colorScheme.*` inside (`screens/whatsnew/WhatsNewStoryScreen.kt`). A file-level
-    `private val StoryBackground = Color(0xFF0A0908)` is the wrong answer to this problem.
+    exception — wrap its content in `MarsRoverPhotosTheme(darkTheme = true)` and keep reading
+    `MaterialTheme.colorScheme.*` inside (`screens/whatsnew/WhatsNewStoryScreen.kt`). Force the
+    *theme*, not the palette: a bare `MaterialTheme(colorScheme = DarkColorPalette)` skips
+    `withBrandOverrides` + dynamic color, so the screen drifts from every other surface on
+    Android 12+. A file-level `private val StoryBackground = Color(0xFF0A0908)` is the wrong
+    answer to this problem too.
+  - A forced-dark **fullscreen** screen also owns the system bars: pair it with
+    `DisposableEffect { setStatusBarAppearance(lightIcons = true); onDispose { …false } }`, or a
+    device on a light system theme draws dark status icons on your black background.
   - Scrims painted **over photography** (`Color(0x7A000000)` in `PopularScreen`/`FavoriteScreen`) are
     the standing literal exception: they darken an image for text legibility, not the theme.
   - Draw lambdas (`Canvas`, `drawBehind`) don't run in composable scope — read the colors into locals
@@ -168,6 +174,7 @@ Stable design-system pieces (path = `shared/src/commonMain/kotlin/com/sirelon/ma
 | --- | --- | --- |
 | `AppCard` | `ui/AppCard.kt` | **Elevated** card (2dp), 16dp radius. Optional `onClick` makes it interactive: the card owns the `clickable` + a desktop **hover-lift** (`cardElevationResting`→`cardElevationHover` via `animateDpAsState`) internally — pass `onClick` rather than wrapping the card in your own `clickable`/elevation. Null `onClick` ⇒ non-interactive and honors the caller's `elevation` param (default resting; e.g. a 4dp header card). `AppFactCard` = secondaryContainer fact card. |
 | `AppOutlinedCard` | `ui/AppOutlinedCard.kt` | **Non-elevated** grouped card: `surfaceContainerHigh` fill + hairline outline + 16dp radius. Exports `CardShape`. Use for grouped lists/surfaces; not a flag on `AppCard`. |
+| `AppRow` / `AppRowDivider` / `AppSection` | `ui/AppRow.kt` | The list-row family (renamed from `Settings*`; they long outgrew settings). `AppRow` = leading `AppIconBox` + label + optional `sub`, with a trailing region that is either a custom `trailing` slot or — for a link row (non-null `onClick`, no `trailing`) — the app-wide chevron. **Don't hand-build that chevron**; pass `onClick` and let the row draw it. `AppRowDivider` = hairline inset past the icon-box. `AppSection` = optional `label` + an `AppOutlinedCard` of rows, with `header`/`footer` slots (a divider is inserted before `footer`) and an optional `onClick` that makes the whole card tappable (clipped to `CardShape` first, so the ripple follows the corners). Exports `AppRowIndent` for aligning content under a row's label. |
 | `AppIconBox` | `ui/AppIconBox.kt` | Tinted rounded container holding a `MaterialSymbol` (tinted container + icon). General — use anywhere a colored icon tile is needed. |
 | `AppMetricItem` | `ui/AppMetricItem.kt` | Inline icon + value + label trio in one `Row` (e.g. "🖼 134K photos"). Icon/label = `onSurfaceVariant`, value = `onSurface` (SemiBold `bodyMedium`); inline icon size. Repeats 3× in a rover row's metric strip; general anywhere a compact metric is needed. |
 | `AppBadge` / `StatusBadge` / `BadgeRow` | `ui/Badges.kt` | `AppBadge` = neutral outlined pill; `StatusBadge(label, color)` = colored dot + label (parameterized); `BadgeRow` = slot row composing them. |
@@ -186,15 +193,16 @@ Stable design-system pieces (path = `shared/src/commonMain/kotlin/com/sirelon/ma
 | `AppSpacing` | `theme/AppSpacing.kt` | 8dp-grid **spacing** tokens. |
 | `AppSize` | `theme/AppSize.kt` | Component **dimension/radius** tokens (icon/card/hero/content-width, etc.). |
 | `AppTypography` | `theme/AppTypography.kt` | Semantic type aliases. |
-| `AppMotion` | `theme/AppMotion.kt` | Motion **tokens**: durations (screen slide, shared container), `Emphasized` easing, `Photo`/`FavoriteBoundsTransform`. Route all transition timing through here. |
+| `AppMotion` | `theme/AppMotion.kt` | Motion **tokens**: durations (screen slide, shared container, story page/catch-up/enter), `Emphasized` easing, `Photo`/`FavoriteBoundsTransform`. Route all transition timing through here. |
 | `sharedPhoto` / `sharedFavorite` / `navFadeEnter` | `ui/SharedPhotoTransition.kt` | `Modifier` extensions for the photo grid/list ↔ viewer shared-element transition (keys, resize mode, bounds, overlay clip). Null-safe (no-op in previews). See **Motion**. |
 | `MarsRoverPhotosTheme` + palettes | `theme/Theme.kt` | Color schemes, brand overrides, dynamic color. |
 | `activeStatusColor()` | `theme/AppColors.kt` | Theme-aware "active / live / connected" green (`@Composable @ReadOnlyComposable`). Luminance-based: `#5BBF86` dark / `#2E9E63` light. Fills the **no-green-slot** gap (see Insights); use instead of a literal. Generalized out of the old AboutScreen-local `liveColor`. |
 
-> Settings-row primitives (`SettingsRow`, `SettingsSectionLabel`, `SettingsRowDivider`) live in
-> `ui/SettingsComponents.kt` and compose the general pieces above; they're list-row-shaped, so they
-> keep the `Settings*` name. The general building blocks (`AppIconBox`, `AppOutlinedCard`, badges) are
-> reusable beyond settings.
+> The row family (`AppRow`, `AppSection`, `AppRowDivider`) composes the general pieces above.
+> Feature-specific rows built on it — `WhatsNewRow` / `ReleaseCard`, which take domain types —
+> live with their screen (`screens/whatsnew/`), not in `ui/`: `ui/` holds general `App*` primitives.
+> Domain→UI mappings for those rows (`ChangeType.toIcon()`) stay in `ui/` — see
+> docs/ARCHITECTURE.md › Domain never imports presentation.
 
 **New `MaterialSymbol` glyphs (Rovers):** `Collections`, `Schedule`, `Event`, `Search` — added to the
 enum in `ui/MaterialSymbolIcon.kt` (the bundled full variable font renders them).
@@ -319,5 +327,15 @@ tokens rather than re-introducing literals:
   clamped values) — all four came from separate rounds on the same progress bar. Added
   `AppSize.progressTrack`; the story content's swipe parallax reuses `AppSpacing.x3l` as its travel
   base rather than introducing a token. Also spelled out the forced-dark-screen answer under **Color**
-  (themed `MaterialTheme(colorScheme = DarkColorPalette)`, not file-level color constants) after that
-  screen first shipped with hardcoded hex values.
+  (a themed wrapper, not file-level color constants) after that screen first shipped with hardcoded
+  hex values.
+- 2026-08-09 — **What's New review pass.** Renamed `SettingsComponents.kt` → `ui/AppRow.kt` (no
+  `Settings*` symbol was left after the `App*` rename) and documented the row family, including
+  `AppSection`'s `header`/`footer`/`onClick` slots and `AppRowIndent`, in the component index.
+  Feature rows that take domain types (`WhatsNewRow`, `ReleaseCard`) moved out of `ui/` to
+  `screens/whatsnew/`. Tightened the forced-dark rule to `MarsRoverPhotosTheme(darkTheme = true)`
+  (the bare-palette form skips brand overrides + dynamic color) and added the matching status-bar
+  rule. New tokens: `AppMotion.StoryPageMs` / `StoryCatchUpMs` / `StoryEnterMs`,
+  `AppTypography.storyVersionGhost` / `storyTitle` — the story screen's raw `tween(...)` durations
+  and `fontSize = 96.sp` / `38.sp` overrides now resolve through tokens. `AppSection(onClick)` clips
+  to `CardShape` before `clickable` so the ripple follows the card's corners.

@@ -30,7 +30,7 @@ Imports point **inward**: `presentation` → `domain`, never the reverse.
   `dp`, no Compose-facing type in a domain model.
 - When a domain value needs a UI representation, map it **in the UI layer** with an extension function
   placed next to the component that renders it — `ChangeType.toIcon(): MaterialSymbol` lives in
-  `presentation/ui/WhatsNewRow.kt`, not on `ChangeType` and not in `domain/`.
+  `presentation/ui/ChangeTypeIcon.kt`, not on `ChangeType` and not in `domain/`.
 - The check: *would `domain/` still compile if `presentation/` were deleted?* If not, something is in
   the wrong layer. Wanting to import a UI type into a domain class means you're solving it at the
   wrong altitude — add a domain enum and map it in the UI.

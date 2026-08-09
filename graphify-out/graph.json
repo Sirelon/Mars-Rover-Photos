@@ -266,7 +266,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "marsroverphotos_mainactivity",
-      "community": 7,
+      "community": 71,
       "norm_label": "mainactivity.kt"
     },
     {
@@ -276,7 +276,7 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "marsroverphotos_mainactivity_mainactivity",
-      "community": 7,
+      "community": 71,
       "norm_label": "mainactivity"
     },
     {
@@ -286,7 +286,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "componentactivity",
-      "community": 7,
+      "community": 25,
       "norm_label": "componentactivity"
     },
     {
@@ -296,7 +296,7 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "androidapp_src_main_kotlin_com_sirelon_marsroverphotos_mainactivity_kt_deeplink",
-      "community": 7,
+      "community": 71,
       "norm_label": "deeplink"
     },
     {
@@ -306,7 +306,7 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "marsroverphotos_mainactivity_mainactivity_oncreate",
-      "community": 7,
+      "community": 71,
       "norm_label": ".oncreate()"
     },
     {
@@ -316,7 +316,7 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "androidapp_src_main_kotlin_com_sirelon_marsroverphotos_mainactivity_kt_bundle",
-      "community": 7,
+      "community": 71,
       "norm_label": "bundle"
     },
     {
@@ -326,7 +326,7 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "marsroverphotos_mainactivity_mainactivity_openstorelisting",
-      "community": 7,
+      "community": 71,
       "norm_label": ".openstorelisting()"
     },
     {
@@ -336,7 +336,7 @@
       "source_location": "L87",
       "_origin": "ast",
       "id": "marsroverphotos_mainactivity_mainactivity_onnewintent",
-      "community": 7,
+      "community": 71,
       "norm_label": ".onnewintent()"
     },
     {
@@ -346,7 +346,7 @@
       "source_location": "L87",
       "_origin": "ast",
       "id": "intent",
-      "community": 7,
+      "community": 71,
       "norm_label": "intent"
     },
     {
@@ -356,7 +356,7 @@
       "source_location": "L92",
       "_origin": "ast",
       "id": "marsroverphotos_mainactivity_mainactivity_ondestroy",
-      "community": 7,
+      "community": 71,
       "norm_label": ".ondestroy()"
     },
     {
@@ -366,7 +366,7 @@
       "source_location": "L105",
       "_origin": "ast",
       "id": "marsroverphotos_mainactivity_mainactivity_handledeeplink",
-      "community": 7,
+      "community": 71,
       "norm_label": ".handledeeplink()"
     },
     {
@@ -636,7 +636,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "widget_marsphotowidgetconfigactivity",
-      "community": 7,
+      "community": 25,
       "norm_label": "marsphotowidgetconfigactivity.kt"
     },
     {
@@ -646,7 +646,7 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "widget_marsphotowidgetconfigactivity_marsphotowidgetconfigactivity",
-      "community": 7,
+      "community": 25,
       "norm_label": "marsphotowidgetconfigactivity"
     },
     {
@@ -656,7 +656,7 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "androidapp_src_main_kotlin_com_sirelon_marsroverphotos_widget_marsphotowidgetconfigactivity_kt_int",
-      "community": 7,
+      "community": 25,
       "norm_label": "int"
     },
     {
@@ -666,7 +666,7 @@
       "source_location": "L57",
       "_origin": "ast",
       "id": "widget_marsphotowidgetconfigactivity_marsphotowidgetconfigactivity_oncreate",
-      "community": 7,
+      "community": 25,
       "norm_label": ".oncreate()"
     },
     {
@@ -676,7 +676,7 @@
       "source_location": "L57",
       "_origin": "ast",
       "id": "androidapp_src_main_kotlin_com_sirelon_marsroverphotos_widget_marsphotowidgetconfigactivity_kt_bundle",
-      "community": 7,
+      "community": 25,
       "norm_label": "bundle"
     },
     {
@@ -686,7 +686,7 @@
       "source_location": "L85",
       "_origin": "ast",
       "id": "widget_marsphotowidgetconfigactivity_marsphotowidgetconfigactivity_saveselection",
-      "community": 7,
+      "community": 25,
       "norm_label": ".saveselection()"
     },
     {
@@ -696,7 +696,7 @@
       "source_location": "L85",
       "_origin": "ast",
       "id": "androidapp_src_main_kotlin_com_sirelon_marsroverphotos_widget_marsphotowidgetconfigactivity_kt_long",
-      "community": 7,
+      "community": 25,
       "norm_label": "long"
     },
     {
@@ -706,7 +706,7 @@
       "source_location": "L112",
       "_origin": "ast",
       "id": "widget_marsphotowidgetconfigactivity_widgetconfigscreen",
-      "community": 7,
+      "community": 25,
       "norm_label": "widgetconfigscreen()"
     },
     {
@@ -716,7 +716,7 @@
       "source_location": "L173",
       "_origin": "ast",
       "id": "widget_marsphotowidgetconfigactivity_roverrow",
-      "community": 7,
+      "community": 25,
       "norm_label": "roverrow()"
     },
     {
@@ -726,7 +726,7 @@
       "source_location": "L173",
       "_origin": "ast",
       "id": "roveroption",
-      "community": 7,
+      "community": 25,
       "norm_label": "roveroption"
     },
     {
@@ -736,7 +736,7 @@
       "source_location": "L173",
       "_origin": "ast",
       "id": "androidapp_src_main_kotlin_com_sirelon_marsroverphotos_widget_marsphotowidgetconfigactivity_kt_boolean",
-      "community": 7,
+      "community": 25,
       "norm_label": "boolean"
     },
     {
@@ -746,7 +746,7 @@
       "source_location": "L195",
       "_origin": "ast",
       "id": "widget_marsphotowidgetconfigactivity_roveroption",
-      "community": 7,
+      "community": 25,
       "norm_label": "roveroption"
     },
     {
@@ -3526,7 +3526,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "models_nasaimagesmodels",
-      "community": 89,
+      "community": 3,
       "norm_label": "nasaimagesmodels.kt"
     },
     {
@@ -3536,7 +3536,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "models_nasaimagesmodels_nasaimagessearchresponse",
-      "community": 89,
+      "community": 3,
       "norm_label": "nasaimagessearchresponse"
     },
     {
@@ -3546,7 +3546,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "models_nasaimagesmodels_nasaimagescollection",
-      "community": 89,
+      "community": 3,
       "norm_label": "nasaimagescollection"
     },
     {
@@ -3556,7 +3556,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "models_nasaimagesmodels_nasaimagesitem",
-      "community": 89,
+      "community": 3,
       "norm_label": "nasaimagesitem"
     },
     {
@@ -3566,7 +3566,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "models_nasaimagesmodels_nasaimagesitemdata",
-      "community": 89,
+      "community": 3,
       "norm_label": "nasaimagesitemdata"
     },
     {
@@ -3576,7 +3576,7 @@
       "source_location": "L47",
       "_origin": "ast",
       "id": "models_nasaimagesmodels_nasaimagesitemlink",
-      "community": 89,
+      "community": 3,
       "norm_label": "nasaimagesitemlink"
     },
     {
@@ -3586,7 +3586,7 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "models_nasaimagesmodels_nasaimagesmetadata",
-      "community": 89,
+      "community": 3,
       "norm_label": "nasaimagesmetadata"
     },
     {
@@ -3596,7 +3596,7 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "models_nasaimagesmodels_nasaimagescollectionlink",
-      "community": 89,
+      "community": 3,
       "norm_label": "nasaimagescollectionlink"
     },
     {
@@ -4586,7 +4586,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "imagesrepository",
-      "community": 15,
+      "community": 2,
       "norm_label": "imagesrepository"
     },
     {
@@ -5593,7 +5593,7 @@
       "label": "ChangeType",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/releasenotes/Release.kt",
-      "source_location": "L5",
+      "source_location": "L6",
       "_origin": "ast",
       "id": "releasenotes_release_changetype",
       "community": 181,
@@ -5603,7 +5603,7 @@
       "label": "Release",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/releasenotes/Release.kt",
-      "source_location": "L10",
+      "source_location": "L11",
       "_origin": "ast",
       "id": "releasenotes_release_release",
       "community": 181,
@@ -5613,7 +5613,7 @@
       "label": "Change",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/releasenotes/Release.kt",
-      "source_location": "L15",
+      "source_location": "L16",
       "_origin": "ast",
       "id": "releasenotes_release_change",
       "community": 181,
@@ -7536,7 +7536,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "presentation_app",
-      "community": 7,
+      "community": 116,
       "norm_label": "app.kt"
     },
     {
@@ -7546,7 +7546,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "presentation_app_app",
-      "community": 7,
+      "community": 116,
       "norm_label": "app()"
     },
     {
@@ -7556,7 +7556,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_app_kt_deeplink",
-      "community": 7,
+      "community": 116,
       "norm_label": "deeplink"
     },
     {
@@ -7566,7 +7566,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_app_kt_unit",
-      "community": 7,
+      "community": 116,
       "norm_label": "unit"
     },
     {
@@ -7576,7 +7576,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_app_kt_string",
-      "community": 7,
+      "community": 116,
       "norm_label": "string"
     },
     {
@@ -7586,7 +7586,7 @@
       "source_location": "L87",
       "_origin": "ast",
       "id": "presentation_app_appcontent",
-      "community": 7,
+      "community": 116,
       "norm_label": "appcontent()"
     },
     {
@@ -7740,10 +7740,20 @@
       "norm_label": "dialogdestination"
     },
     {
+      "label": "FullscreenDestination",
+      "file_type": "code",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppDestinations.kt",
+      "source_location": "L18",
+      "_origin": "ast",
+      "id": "navigation_appdestinations_fullscreendestination",
+      "community": 12,
+      "norm_label": "fullscreendestination"
+    },
+    {
       "label": "ImagesSource",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppDestinations.kt",
-      "source_location": "L13",
+      "source_location": "L20",
       "_origin": "ast",
       "id": "navigation_appdestinations_imagessource",
       "community": 12,
@@ -7753,7 +7763,7 @@
       "label": "Rovers",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppDestinations.kt",
-      "source_location": "L23",
+      "source_location": "L30",
       "_origin": "ast",
       "id": "navigation_appdestinations_rovers",
       "community": 12,
@@ -7763,7 +7773,7 @@
       "label": "Photos",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppDestinations.kt",
-      "source_location": "L26",
+      "source_location": "L33",
       "_origin": "ast",
       "id": "navigation_appdestinations_photos",
       "community": 12,
@@ -7773,7 +7783,7 @@
       "label": "Images",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppDestinations.kt",
-      "source_location": "L29",
+      "source_location": "L36",
       "_origin": "ast",
       "id": "navigation_appdestinations_images",
       "community": 12,
@@ -7783,7 +7793,7 @@
       "label": "Favorite",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppDestinations.kt",
-      "source_location": "L42",
+      "source_location": "L49",
       "_origin": "ast",
       "id": "navigation_appdestinations_favorite",
       "community": 12,
@@ -7793,7 +7803,7 @@
       "label": "Popular",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppDestinations.kt",
-      "source_location": "L45",
+      "source_location": "L52",
       "_origin": "ast",
       "id": "navigation_appdestinations_popular",
       "community": 12,
@@ -7803,7 +7813,7 @@
       "label": "Mission",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppDestinations.kt",
-      "source_location": "L48",
+      "source_location": "L55",
       "_origin": "ast",
       "id": "navigation_appdestinations_mission",
       "community": 12,
@@ -7813,7 +7823,7 @@
       "label": "About",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppDestinations.kt",
-      "source_location": "L51",
+      "source_location": "L58",
       "_origin": "ast",
       "id": "navigation_appdestinations_about",
       "community": 12,
@@ -7823,7 +7833,7 @@
       "label": "Ukraine",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppDestinations.kt",
-      "source_location": "L54",
+      "source_location": "L61",
       "_origin": "ast",
       "id": "navigation_appdestinations_ukraine",
       "community": 12,
@@ -7833,7 +7843,7 @@
       "label": "AdminPhotos",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppDestinations.kt",
-      "source_location": "L57",
+      "source_location": "L64",
       "_origin": "ast",
       "id": "navigation_appdestinations_adminphotos",
       "community": 12,
@@ -7843,7 +7853,7 @@
       "label": "PhotosDateJumpPicker",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppDestinations.kt",
-      "source_location": "L61",
+      "source_location": "L68",
       "_origin": "ast",
       "id": "navigation_appdestinations_photosdatejumppicker",
       "community": 12,
@@ -7853,7 +7863,7 @@
       "label": "PhotosFilters",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppDestinations.kt",
-      "source_location": "L65",
+      "source_location": "L72",
       "_origin": "ast",
       "id": "navigation_appdestinations_photosfilters",
       "community": 12,
@@ -7863,7 +7873,7 @@
       "label": "WhatsNewDialog",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppDestinations.kt",
-      "source_location": "L69",
+      "source_location": "L76",
       "_origin": "ast",
       "id": "navigation_appdestinations_whatsnewdialog",
       "community": 12,
@@ -7873,7 +7883,7 @@
       "label": "AllVersions",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppDestinations.kt",
-      "source_location": "L73",
+      "source_location": "L80",
       "_origin": "ast",
       "id": "navigation_appdestinations_allversions",
       "community": 12,
@@ -7883,7 +7893,7 @@
       "label": "WhatsNewStory",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppDestinations.kt",
-      "source_location": "L77",
+      "source_location": "L84",
       "_origin": "ast",
       "id": "navigation_appdestinations_whatsnewstory",
       "community": 12,
@@ -7896,7 +7906,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "navigation_appnaventrydecorators",
-      "community": 12,
+      "community": 5,
       "norm_label": "appnaventrydecorators.kt"
     },
     {
@@ -7906,7 +7916,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "navigation_appnaventrydecorators_rememberappnaventrydecorators",
-      "community": 12,
+      "community": 5,
       "norm_label": "rememberappnaventrydecorators()"
     },
     {
@@ -7916,7 +7926,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_navigation_appnaventrydecorators_kt_list",
-      "community": 12,
+      "community": 5,
       "norm_label": "list"
     },
     {
@@ -7926,7 +7936,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_navigation_appnaventrydecorators_kt_naventrydecorator",
-      "community": 12,
+      "community": 5,
       "norm_label": "naventrydecorator"
     },
     {
@@ -7936,7 +7946,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_navigation_appnaventrydecorators_kt_navkey",
-      "community": 12,
+      "community": 5,
       "norm_label": "navkey"
     },
     {
@@ -8003,7 +8013,7 @@
       "label": "photosContentKey()",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppNavigation.kt",
-      "source_location": "L307",
+      "source_location": "L312",
       "_origin": "ast",
       "id": "navigation_appnavigation_photoscontentkey",
       "community": 43,
@@ -8013,7 +8023,7 @@
       "label": "Long",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppNavigation.kt",
-      "source_location": "L307",
+      "source_location": "L312",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_navigation_appnavigation_kt_long",
       "community": 43,
@@ -8023,7 +8033,7 @@
       "label": "String",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppNavigation.kt",
-      "source_location": "L307",
+      "source_location": "L312",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_navigation_appnavigation_kt_string",
       "community": 43,
@@ -8033,7 +8043,7 @@
       "label": "topLevelDestination()",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppNavigation.kt",
-      "source_location": "L309",
+      "source_location": "L314",
       "_origin": "ast",
       "id": "navigation_appnavigation_topleveldestination",
       "community": 43,
@@ -8376,7 +8386,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "navigation_localaboutcallbacks",
-      "community": 7,
+      "community": 116,
       "norm_label": "localaboutcallbacks.kt"
     },
     {
@@ -8386,7 +8396,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "navigation_localaboutcallbacks_aboutcallbacks",
-      "community": 7,
+      "community": 116,
       "norm_label": "aboutcallbacks"
     },
     {
@@ -8543,7 +8553,7 @@
       "label": "ScreenView",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/ScreenTracking.kt",
-      "source_location": "L31",
+      "source_location": "L34",
       "_origin": "ast",
       "id": "navigation_screentracking_screenview",
       "community": 42,
@@ -8553,7 +8563,7 @@
       "label": "toScreenView()",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/ScreenTracking.kt",
-      "source_location": "L37",
+      "source_location": "L40",
       "_origin": "ast",
       "id": "navigation_screentracking_toscreenview",
       "community": 42,
@@ -8563,7 +8573,7 @@
       "label": "roverParams()",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/ScreenTracking.kt",
-      "source_location": "L65",
+      "source_location": "L71",
       "_origin": "ast",
       "id": "navigation_screentracking_roverparams",
       "community": 42,
@@ -8573,7 +8583,7 @@
       "label": "Long",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/ScreenTracking.kt",
-      "source_location": "L65",
+      "source_location": "L71",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_navigation_screentracking_kt_long",
       "community": 42,
@@ -8583,7 +8593,7 @@
       "label": "Map",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/ScreenTracking.kt",
-      "source_location": "L65",
+      "source_location": "L71",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_navigation_screentracking_kt_map",
       "community": 42,
@@ -8593,7 +8603,7 @@
       "label": "String",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/ScreenTracking.kt",
-      "source_location": "L65",
+      "source_location": "L71",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_navigation_screentracking_kt_string",
       "community": 42,
@@ -8606,7 +8616,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "navigation_sharedviewmodelstorenaventrydecorator",
-      "community": 12,
+      "community": 5,
       "norm_label": "sharedviewmodelstorenaventrydecorator.kt"
     },
     {
@@ -8616,7 +8626,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "navigation_sharedviewmodelstorenaventrydecorator_remembersharedviewmodelstorenaventrydecorator",
-      "community": 12,
+      "community": 5,
       "norm_label": "remembersharedviewmodelstorenaventrydecorator()"
     },
     {
@@ -8626,7 +8636,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "viewmodelstoreowner",
-      "community": 12,
+      "community": 5,
       "norm_label": "viewmodelstoreowner"
     },
     {
@@ -8636,7 +8646,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "sharedviewmodelstorenaventrydecorator",
-      "community": 12,
+      "community": 5,
       "norm_label": "sharedviewmodelstorenaventrydecorator"
     },
     {
@@ -8646,7 +8656,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_navigation_sharedviewmodelstorenaventrydecorator_kt_t",
-      "community": 12,
+      "community": 5,
       "norm_label": "t"
     },
     {
@@ -8656,7 +8666,7 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "navigation_sharedviewmodelstorenaventrydecorator_sharedviewmodelstorenaventrydecorator",
-      "community": 12,
+      "community": 5,
       "norm_label": "sharedviewmodelstorenaventrydecorator"
     },
     {
@@ -8666,7 +8676,7 @@
       "source_location": "L70",
       "_origin": "ast",
       "id": "navigation_sharedviewmodelstorenaventrydecorator_parent",
-      "community": 12,
+      "community": 5,
       "norm_label": "parent()"
     },
     {
@@ -8676,7 +8686,7 @@
       "source_location": "L70",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_navigation_sharedviewmodelstorenaventrydecorator_kt_any",
-      "community": 12,
+      "community": 5,
       "norm_label": "any"
     },
     {
@@ -8686,7 +8696,7 @@
       "source_location": "L70",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_navigation_sharedviewmodelstorenaventrydecorator_kt_map",
-      "community": 12,
+      "community": 5,
       "norm_label": "map"
     },
     {
@@ -8696,7 +8706,7 @@
       "source_location": "L70",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_navigation_sharedviewmodelstorenaventrydecorator_kt_string",
-      "community": 12,
+      "community": 5,
       "norm_label": "string"
     },
     {
@@ -8706,7 +8716,7 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "navigation_sharedviewmodelstorenaventrydecorator_parentkey",
-      "community": 12,
+      "community": 5,
       "norm_label": "parentkey"
     },
     {
@@ -8716,137 +8726,127 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "screens_aboutscreen",
-      "community": 116,
+      "community": 165,
       "norm_label": "aboutscreen.kt"
     },
     {
       "label": "AboutScreen()",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/AboutScreen.kt",
-      "source_location": "L78",
+      "source_location": "L77",
       "_origin": "ast",
       "id": "screens_aboutscreen_aboutscreen",
-      "community": 116,
+      "community": 165,
       "norm_label": "aboutscreen()"
     },
     {
       "label": "AboutContent()",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/AboutScreen.kt",
-      "source_location": "L105",
+      "source_location": "L104",
       "_origin": "ast",
       "id": "screens_aboutscreen_aboutcontent",
-      "community": 116,
+      "community": 165,
       "norm_label": "aboutcontent()"
     },
     {
       "label": "Theme",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/AboutScreen.kt",
-      "source_location": "L105",
+      "source_location": "L104",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_aboutscreen_kt_theme",
-      "community": 116,
+      "community": 165,
       "norm_label": "theme"
     },
     {
       "label": "Boolean",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/AboutScreen.kt",
-      "source_location": "L105",
+      "source_location": "L104",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_aboutscreen_kt_boolean",
-      "community": 116,
+      "community": 165,
       "norm_label": "boolean"
     },
     {
       "label": "String",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/AboutScreen.kt",
-      "source_location": "L105",
+      "source_location": "L104",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_aboutscreen_kt_string",
-      "community": 116,
+      "community": 165,
       "norm_label": "string"
     },
     {
       "label": "Unit",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/AboutScreen.kt",
-      "source_location": "L105",
+      "source_location": "L104",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_aboutscreen_kt_unit",
-      "community": 116,
+      "community": 165,
       "norm_label": "unit"
-    },
-    {
-      "label": "SettingsSection()",
-      "file_type": "code",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/AboutScreen.kt",
-      "source_location": "L261",
-      "_origin": "ast",
-      "id": "screens_aboutscreen_settingssection",
-      "community": 116,
-      "norm_label": "settingssection()"
     },
     {
       "label": "heroTopColor()",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/AboutScreen.kt",
-      "source_location": "L274",
+      "source_location": "L264",
       "_origin": "ast",
       "id": "screens_aboutscreen_herotopcolor",
-      "community": 171,
+      "community": 165,
       "norm_label": "herotopcolor()"
     },
     {
       "label": "Color",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/AboutScreen.kt",
-      "source_location": "L274",
+      "source_location": "L264",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_aboutscreen_kt_color",
-      "community": 171,
+      "community": 165,
       "norm_label": "color"
     },
     {
       "label": "Hero()",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/AboutScreen.kt",
-      "source_location": "L278",
+      "source_location": "L268",
       "_origin": "ast",
       "id": "screens_aboutscreen_hero",
-      "community": 171,
+      "community": 165,
       "norm_label": "hero()"
     },
     {
       "label": "Blurb()",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/AboutScreen.kt",
-      "source_location": "L338",
+      "source_location": "L328",
       "_origin": "ast",
       "id": "screens_aboutscreen_blurb",
-      "community": 116,
+      "community": 165,
       "norm_label": "blurb()"
     },
     {
       "label": "ThemeRow()",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/AboutScreen.kt",
-      "source_location": "L365",
+      "source_location": "L355",
       "_origin": "ast",
       "id": "screens_aboutscreen_themerow",
-      "community": 116,
+      "community": 165,
       "norm_label": "themerow()"
     },
     {
       "label": "Footer()",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/AboutScreen.kt",
-      "source_location": "L415",
+      "source_location": "L405",
       "_origin": "ast",
       "id": "screens_aboutscreen_footer",
-      "community": 116,
+      "community": 165,
       "norm_label": "footer()"
     },
     {
@@ -9976,7 +9976,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "screens_photoinfobottomsheet",
-      "community": 30,
+      "community": 4,
       "norm_label": "photoinfobottomsheet.kt"
     },
     {
@@ -9986,7 +9986,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "screens_photoinfobottomsheet_photoinfobottomsheet",
-      "community": 30,
+      "community": 4,
       "norm_label": "photoinfobottomsheet()"
     },
     {
@@ -9996,7 +9996,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_photoinfobottomsheet_kt_marsimage",
-      "community": 30,
+      "community": 4,
       "norm_label": "marsimage"
     },
     {
@@ -10006,7 +10006,7 @@
       "source_location": "L116",
       "_origin": "ast",
       "id": "screens_photoinfobottomsheet_infosection",
-      "community": 30,
+      "community": 4,
       "norm_label": "infosection()"
     },
     {
@@ -10016,7 +10016,7 @@
       "source_location": "L116",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_photoinfobottomsheet_kt_string",
-      "community": 30,
+      "community": 4,
       "norm_label": "string"
     },
     {
@@ -10026,7 +10026,7 @@
       "source_location": "L131",
       "_origin": "ast",
       "id": "screens_photoinfobottomsheet_statitem",
-      "community": 30,
+      "community": 4,
       "norm_label": "statitem()"
     },
     {
@@ -10036,7 +10036,7 @@
       "source_location": "L131",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_photoinfobottomsheet_kt_long",
-      "community": 30,
+      "community": 4,
       "norm_label": "long"
     },
     {
@@ -10046,7 +10046,7 @@
       "source_location": "L156",
       "_origin": "ast",
       "id": "screens_photoinfobottomsheet_formatstatvalue",
-      "community": 30,
+      "community": 4,
       "norm_label": "formatstatvalue()"
     },
     {
@@ -10056,7 +10056,7 @@
       "source_location": "L169",
       "_origin": "ast",
       "id": "screens_photoinfobottomsheet_formatearthdate",
-      "community": 30,
+      "community": 4,
       "norm_label": "formatearthdate()"
     },
     {
@@ -10626,7 +10626,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "screens_roversscreen",
-      "community": 1,
+      "community": 88,
       "norm_label": "roversscreen.kt"
     },
     {
@@ -10636,7 +10636,7 @@
       "source_location": "L80",
       "_origin": "ast",
       "id": "screens_roversscreen_roversscreen",
-      "community": 1,
+      "community": 88,
       "norm_label": "roversscreen()"
     },
     {
@@ -10646,7 +10646,7 @@
       "source_location": "L106",
       "_origin": "ast",
       "id": "screens_roversscreen_roverscontent",
-      "community": 1,
+      "community": 88,
       "norm_label": "roverscontent()"
     },
     {
@@ -10656,7 +10656,7 @@
       "source_location": "L106",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_roversscreen_kt_list",
-      "community": 1,
+      "community": 88,
       "norm_label": "list"
     },
     {
@@ -10666,7 +10666,7 @@
       "source_location": "L106",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_roversscreen_kt_rover",
-      "community": 1,
+      "community": 88,
       "norm_label": "rover"
     },
     {
@@ -10676,7 +10676,7 @@
       "source_location": "L106",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_roversscreen_kt_string",
-      "community": 1,
+      "community": 88,
       "norm_label": "string"
     },
     {
@@ -10686,7 +10686,7 @@
       "source_location": "L106",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_roversscreen_kt_modifier",
-      "community": 1,
+      "community": 88,
       "norm_label": "modifier"
     },
     {
@@ -10696,7 +10696,7 @@
       "source_location": "L251",
       "_origin": "ast",
       "id": "screens_roversscreen_roveritem",
-      "community": 1,
+      "community": 88,
       "norm_label": "roveritem()"
     },
     {
@@ -10706,7 +10706,7 @@
       "source_location": "L312",
       "_origin": "ast",
       "id": "screens_roversscreen_titleline",
-      "community": 1,
+      "community": 88,
       "norm_label": "titleline()"
     },
     {
@@ -10716,7 +10716,7 @@
       "source_location": "L338",
       "_origin": "ast",
       "id": "screens_roversscreen_metricstrip",
-      "community": 1,
+      "community": 88,
       "norm_label": "metricstrip()"
     },
     {
@@ -10833,7 +10833,7 @@
       "label": "AllVersionsScreen()",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/AllVersionsScreen.kt",
-      "source_location": "L25",
+      "source_location": "L34",
       "_origin": "ast",
       "id": "whatsnew_allversionsscreen_allversionsscreen",
       "community": 63,
@@ -10853,11 +10853,71 @@
       "label": "WhatsNewDialogScreen()",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewDialogScreen.kt",
-      "source_location": "L31",
+      "source_location": "L29",
       "_origin": "ast",
       "id": "whatsnew_whatsnewdialogscreen_whatsnewdialogscreen",
       "community": 165,
       "norm_label": "whatsnewdialogscreen()"
+    },
+    {
+      "label": "WhatsNewRow.kt",
+      "file_type": "code",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewRow.kt",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "whatsnew_whatsnewrow",
+      "community": 165,
+      "norm_label": "whatsnewrow.kt"
+    },
+    {
+      "label": "WhatsNewRow()",
+      "file_type": "code",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewRow.kt",
+      "source_location": "L32",
+      "_origin": "ast",
+      "id": "whatsnew_whatsnewrow_whatsnewrow",
+      "community": 165,
+      "norm_label": "whatsnewrow()"
+    },
+    {
+      "label": "Release",
+      "file_type": "code",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewRow.kt",
+      "source_location": "L32",
+      "_origin": "ast",
+      "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewrow_kt_release",
+      "community": 165,
+      "norm_label": "release"
+    },
+    {
+      "label": "Modifier",
+      "file_type": "code",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewRow.kt",
+      "source_location": "L32",
+      "_origin": "ast",
+      "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewrow_kt_modifier",
+      "community": 165,
+      "norm_label": "modifier"
+    },
+    {
+      "label": "Unit",
+      "file_type": "code",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewRow.kt",
+      "source_location": "L32",
+      "_origin": "ast",
+      "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewrow_kt_unit",
+      "community": 165,
+      "norm_label": "unit"
+    },
+    {
+      "label": "ReleaseCard()",
+      "file_type": "code",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewRow.kt",
+      "source_location": "L55",
+      "_origin": "ast",
+      "id": "whatsnew_whatsnewrow_releasecard",
+      "community": 165,
+      "norm_label": "releasecard()"
     },
     {
       "label": "WhatsNewStoryScreen.kt",
@@ -10870,10 +10930,20 @@
       "norm_label": "whatsnewstoryscreen.kt"
     },
     {
+      "label": "ExitLatch",
+      "file_type": "code",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
+      "source_location": "L65",
+      "_origin": "ast",
+      "id": "whatsnew_whatsnewstoryscreen_exitlatch",
+      "community": 166,
+      "norm_label": "exitlatch"
+    },
+    {
       "label": "WhatsNewStoryScreen()",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
-      "source_location": "L68",
+      "source_location": "L69",
       "_origin": "ast",
       "id": "whatsnew_whatsnewstoryscreen_whatsnewstoryscreen",
       "community": 166,
@@ -10883,7 +10953,7 @@
       "label": "String",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
-      "source_location": "L68",
+      "source_location": "L69",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewstoryscreen_kt_string",
       "community": 166,
@@ -10893,17 +10963,47 @@
       "label": "Int",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
-      "source_location": "L68",
+      "source_location": "L69",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewstoryscreen_kt_int",
       "community": 166,
       "norm_label": "int"
     },
     {
+      "label": "invisibleClickable()",
+      "file_type": "code",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
+      "source_location": "L292",
+      "_origin": "ast",
+      "id": "whatsnew_whatsnewstoryscreen_invisibleclickable",
+      "community": 166,
+      "norm_label": "invisibleclickable()"
+    },
+    {
+      "label": "Boolean",
+      "file_type": "code",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
+      "source_location": "L292",
+      "_origin": "ast",
+      "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewstoryscreen_kt_boolean",
+      "community": 166,
+      "norm_label": "boolean"
+    },
+    {
+      "label": "Modifier",
+      "file_type": "code",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
+      "source_location": "L292",
+      "_origin": "ast",
+      "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewstoryscreen_kt_modifier",
+      "community": 166,
+      "norm_label": "modifier"
+    },
+    {
       "label": "pageOffsetOf()",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
-      "source_location": "L249",
+      "source_location": "L306",
       "_origin": "ast",
       "id": "whatsnew_whatsnewstoryscreen_pageoffsetof",
       "community": 166,
@@ -10913,7 +11013,7 @@
       "label": "Float",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
-      "source_location": "L249",
+      "source_location": "L306",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewstoryscreen_kt_float",
       "community": 166,
@@ -10923,27 +11023,17 @@
       "label": "StoryProgressBar()",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
-      "source_location": "L260",
+      "source_location": "L317",
       "_origin": "ast",
       "id": "whatsnew_whatsnewstoryscreen_storyprogressbar",
       "community": 166,
       "norm_label": "storyprogressbar()"
     },
     {
-      "label": "Modifier",
-      "file_type": "code",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
-      "source_location": "L260",
-      "_origin": "ast",
-      "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewstoryscreen_kt_modifier",
-      "community": 166,
-      "norm_label": "modifier"
-    },
-    {
       "label": "storyParallax()",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
-      "source_location": "L310",
+      "source_location": "L367",
       "_origin": "ast",
       "id": "whatsnew_whatsnewstoryscreen_storyparallax",
       "community": 166,
@@ -10953,7 +11043,7 @@
       "label": "StoryPage()",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
-      "source_location": "L324",
+      "source_location": "L381",
       "_origin": "ast",
       "id": "whatsnew_whatsnewstoryscreen_storypage",
       "community": 166,
@@ -10963,7 +11053,7 @@
       "label": "Release",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
-      "source_location": "L324",
+      "source_location": "L381",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewstoryscreen_kt_release",
       "community": 166,
@@ -11093,7 +11183,7 @@
       "label": "AppTypography",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/theme/AppTypography.kt",
-      "source_location": "L26",
+      "source_location": "L27",
       "_origin": "ast",
       "id": "theme_apptypography_apptypography",
       "community": 7,
@@ -11103,7 +11193,7 @@
       "label": "TextStyle",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/theme/AppTypography.kt",
-      "source_location": "L29",
+      "source_location": "L30",
       "_origin": "ast",
       "id": "textstyle",
       "community": 7,
@@ -11116,7 +11206,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "theme_theme",
-      "community": 7,
+      "community": 89,
       "norm_label": "theme.kt"
     },
     {
@@ -11126,7 +11216,7 @@
       "source_location": "L82",
       "_origin": "ast",
       "id": "theme_theme_withbrandoverrides",
-      "community": 7,
+      "community": 89,
       "norm_label": "withbrandoverrides()"
     },
     {
@@ -11136,7 +11226,7 @@
       "source_location": "L82",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_theme_theme_kt_boolean",
-      "community": 7,
+      "community": 89,
       "norm_label": "boolean"
     },
     {
@@ -11146,7 +11236,7 @@
       "source_location": "L82",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_theme_theme_kt_colorscheme",
-      "community": 7,
+      "community": 89,
       "norm_label": "colorscheme"
     },
     {
@@ -11156,7 +11246,7 @@
       "source_location": "L114",
       "_origin": "ast",
       "id": "theme_theme_marsroverphotostheme",
-      "community": 7,
+      "community": 89,
       "norm_label": "marsroverphotostheme()"
     },
     {
@@ -11166,7 +11256,7 @@
       "source_location": "L130",
       "_origin": "ast",
       "id": "theme_theme_animatecolorscheme",
-      "community": 7,
+      "community": 89,
       "norm_label": "animatecolorscheme()"
     },
     {
@@ -11176,7 +11266,7 @@
       "source_location": "L216",
       "_origin": "ast",
       "id": "theme_theme_issystemindarktheme",
-      "community": 7,
+      "community": 89,
       "norm_label": "issystemindarktheme()"
     },
     {
@@ -11186,7 +11276,7 @@
       "source_location": "L224",
       "_origin": "ast",
       "id": "theme_theme_supportsdynamiccolor",
-      "community": 7,
+      "community": 89,
       "norm_label": "supportsdynamiccolor()"
     },
     {
@@ -11196,7 +11286,7 @@
       "source_location": "L232",
       "_origin": "ast",
       "id": "theme_theme_getdynamicdarkcolorscheme",
-      "community": 7,
+      "community": 89,
       "norm_label": "getdynamicdarkcolorscheme()"
     },
     {
@@ -11206,7 +11296,7 @@
       "source_location": "L240",
       "_origin": "ast",
       "id": "theme_theme_getdynamiclightcolorscheme",
-      "community": 7,
+      "community": 89,
       "norm_label": "getdynamiclightcolorscheme()"
     },
     {
@@ -11656,7 +11746,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "ui_appmetricitem",
-      "community": 1,
+      "community": 168,
       "norm_label": "appmetricitem.kt"
     },
     {
@@ -11666,7 +11756,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "ui_appmetricitem_appmetricitem",
-      "community": 1,
+      "community": 168,
       "norm_label": "appmetricitem()"
     },
     {
@@ -11676,7 +11766,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_appmetricitem_kt_materialsymbol",
-      "community": 1,
+      "community": 168,
       "norm_label": "materialsymbol"
     },
     {
@@ -11686,7 +11776,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_appmetricitem_kt_string",
-      "community": 1,
+      "community": 168,
       "norm_label": "string"
     },
     {
@@ -11696,7 +11786,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_appmetricitem_kt_modifier",
-      "community": 1,
+      "community": 168,
       "norm_label": "modifier"
     },
     {
@@ -11728,6 +11818,106 @@
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_appoutlinedcard_kt_modifier",
       "community": 70,
       "norm_label": "modifier"
+    },
+    {
+      "label": "AppRow.kt",
+      "file_type": "code",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppRow.kt",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "ui_approw",
+      "community": 165,
+      "norm_label": "approw.kt"
+    },
+    {
+      "label": "AppRow()",
+      "file_type": "code",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppRow.kt",
+      "source_location": "L31",
+      "_origin": "ast",
+      "id": "ui_approw_approw",
+      "community": 165,
+      "norm_label": "approw()"
+    },
+    {
+      "label": "MaterialSymbol",
+      "file_type": "code",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppRow.kt",
+      "source_location": "L31",
+      "_origin": "ast",
+      "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_approw_kt_materialsymbol",
+      "community": 165,
+      "norm_label": "materialsymbol"
+    },
+    {
+      "label": "Color",
+      "file_type": "code",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppRow.kt",
+      "source_location": "L31",
+      "_origin": "ast",
+      "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_approw_kt_color",
+      "community": 165,
+      "norm_label": "color"
+    },
+    {
+      "label": "String",
+      "file_type": "code",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppRow.kt",
+      "source_location": "L31",
+      "_origin": "ast",
+      "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_approw_kt_string",
+      "community": 165,
+      "norm_label": "string"
+    },
+    {
+      "label": "Modifier",
+      "file_type": "code",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppRow.kt",
+      "source_location": "L31",
+      "_origin": "ast",
+      "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_approw_kt_modifier",
+      "community": 165,
+      "norm_label": "modifier"
+    },
+    {
+      "label": "Unit",
+      "file_type": "code",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppRow.kt",
+      "source_location": "L31",
+      "_origin": "ast",
+      "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_approw_kt_unit",
+      "community": 165,
+      "norm_label": "unit"
+    },
+    {
+      "label": "Composable",
+      "file_type": "code",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppRow.kt",
+      "source_location": "L31",
+      "_origin": "ast",
+      "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_approw_kt_composable",
+      "community": 165,
+      "norm_label": "composable"
+    },
+    {
+      "label": "AppRowDivider()",
+      "file_type": "code",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppRow.kt",
+      "source_location": "L80",
+      "_origin": "ast",
+      "id": "ui_approw_approwdivider",
+      "community": 165,
+      "norm_label": "approwdivider()"
+    },
+    {
+      "label": "AppSection()",
+      "file_type": "code",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppRow.kt",
+      "source_location": "L99",
+      "_origin": "ast",
+      "id": "ui_approw_appsection",
+      "community": 165,
+      "norm_label": "appsection()"
     },
     {
       "label": "AppSectionHeader.kt",
@@ -11936,7 +12126,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "ui_badges",
-      "community": 171,
+      "community": 165,
       "norm_label": "badges.kt"
     },
     {
@@ -11946,7 +12136,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "ui_badges_appbadge",
-      "community": 171,
+      "community": 165,
       "norm_label": "appbadge()"
     },
     {
@@ -11956,7 +12146,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_badges_kt_string",
-      "community": 171,
+      "community": 165,
       "norm_label": "string"
     },
     {
@@ -11966,7 +12156,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_badges_kt_modifier",
-      "community": 171,
+      "community": 165,
       "norm_label": "modifier"
     },
     {
@@ -11976,7 +12166,7 @@
       "source_location": "L45",
       "_origin": "ast",
       "id": "ui_badges_statusbadge",
-      "community": 171,
+      "community": 165,
       "norm_label": "statusbadge()"
     },
     {
@@ -11986,7 +12176,7 @@
       "source_location": "L45",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_badges_kt_color",
-      "community": 171,
+      "community": 165,
       "norm_label": "color"
     },
     {
@@ -11996,7 +12186,7 @@
       "source_location": "L64",
       "_origin": "ast",
       "id": "ui_badges_badgerow",
-      "community": 171,
+      "community": 165,
       "norm_label": "badgerow()"
     },
     {
@@ -12040,13 +12230,43 @@
       "norm_label": "centeredprogress()"
     },
     {
+      "label": "ChangeTypeIcon.kt",
+      "file_type": "code",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/ChangeTypeIcon.kt",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "ui_changetypeicon",
+      "community": 171,
+      "norm_label": "changetypeicon.kt"
+    },
+    {
+      "label": "toIcon()",
+      "file_type": "code",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/ChangeTypeIcon.kt",
+      "source_location": "L11",
+      "_origin": "ast",
+      "id": "ui_changetypeicon_toicon",
+      "community": 171,
+      "norm_label": "toicon()"
+    },
+    {
+      "label": "MaterialSymbol",
+      "file_type": "code",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/ChangeTypeIcon.kt",
+      "source_location": "L11",
+      "_origin": "ast",
+      "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_changetypeicon_kt_materialsymbol",
+      "community": 171,
+      "norm_label": "materialsymbol"
+    },
+    {
       "label": "LikeHeart.kt",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/LikeHeart.kt",
       "source_location": "L1",
       "_origin": "ast",
       "id": "ui_likeheart",
-      "community": 175,
+      "community": 9,
       "norm_label": "likeheart.kt"
     },
     {
@@ -12056,7 +12276,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "ui_likeheart_likeheartstate",
-      "community": 175,
+      "community": 9,
       "norm_label": "likeheartstate"
     },
     {
@@ -12066,7 +12286,7 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "ui_likeheart_likeheartstate_trigger",
-      "community": 175,
+      "community": 9,
       "norm_label": ".trigger()"
     },
     {
@@ -12076,7 +12296,7 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "ui_likeheart_rememberlikeheartstate",
-      "community": 175,
+      "community": 9,
       "norm_label": "rememberlikeheartstate()"
     },
     {
@@ -12086,7 +12306,7 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "ui_likeheart_likeheartoverlay",
-      "community": 175,
+      "community": 9,
       "norm_label": "likeheartoverlay()"
     },
     {
@@ -12096,7 +12316,7 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_likeheart_kt_boolean",
-      "community": 175,
+      "community": 9,
       "norm_label": "boolean"
     },
     {
@@ -12106,7 +12326,7 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_likeheart_kt_modifier",
-      "community": 175,
+      "community": 9,
       "norm_label": "modifier"
     },
     {
@@ -12116,7 +12336,7 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_likeheart_kt_dp",
-      "community": 175,
+      "community": 9,
       "norm_label": "dp"
     },
     {
@@ -12636,7 +12856,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "ui_segmentedcontrol",
-      "community": 172,
+      "community": 165,
       "norm_label": "segmentedcontrol.kt"
     },
     {
@@ -12646,7 +12866,7 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "ui_segmentedcontrol_segmentedcontrol",
-      "community": 172,
+      "community": 165,
       "norm_label": "segmentedcontrol()"
     },
     {
@@ -12656,7 +12876,7 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_segmentedcontrol_kt_list",
-      "community": 172,
+      "community": 165,
       "norm_label": "list"
     },
     {
@@ -12666,7 +12886,7 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_segmentedcontrol_kt_t",
-      "community": 172,
+      "community": 165,
       "norm_label": "t"
     },
     {
@@ -12676,108 +12896,8 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_segmentedcontrol_kt_modifier",
-      "community": 172,
+      "community": 165,
       "norm_label": "modifier"
-    },
-    {
-      "label": "SettingsComponents.kt",
-      "file_type": "code",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/SettingsComponents.kt",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "ui_settingscomponents",
-      "community": 5,
-      "norm_label": "settingscomponents.kt"
-    },
-    {
-      "label": "SettingsSectionLabel()",
-      "file_type": "code",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/SettingsComponents.kt",
-      "source_location": "L31",
-      "_origin": "ast",
-      "id": "ui_settingscomponents_settingssectionlabel",
-      "community": 5,
-      "norm_label": "settingssectionlabel()"
-    },
-    {
-      "label": "String",
-      "file_type": "code",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/SettingsComponents.kt",
-      "source_location": "L31",
-      "_origin": "ast",
-      "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_settingscomponents_kt_string",
-      "community": 5,
-      "norm_label": "string"
-    },
-    {
-      "label": "Modifier",
-      "file_type": "code",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/SettingsComponents.kt",
-      "source_location": "L31",
-      "_origin": "ast",
-      "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_settingscomponents_kt_modifier",
-      "community": 5,
-      "norm_label": "modifier"
-    },
-    {
-      "label": "SettingsRow()",
-      "file_type": "code",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/SettingsComponents.kt",
-      "source_location": "L48",
-      "_origin": "ast",
-      "id": "ui_settingscomponents_settingsrow",
-      "community": 5,
-      "norm_label": "settingsrow()"
-    },
-    {
-      "label": "MaterialSymbol",
-      "file_type": "code",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/SettingsComponents.kt",
-      "source_location": "L48",
-      "_origin": "ast",
-      "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_settingscomponents_kt_materialsymbol",
-      "community": 5,
-      "norm_label": "materialsymbol"
-    },
-    {
-      "label": "Color",
-      "file_type": "code",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/SettingsComponents.kt",
-      "source_location": "L48",
-      "_origin": "ast",
-      "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_settingscomponents_kt_color",
-      "community": 5,
-      "norm_label": "color"
-    },
-    {
-      "label": "Unit",
-      "file_type": "code",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/SettingsComponents.kt",
-      "source_location": "L48",
-      "_origin": "ast",
-      "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_settingscomponents_kt_unit",
-      "community": 5,
-      "norm_label": "unit"
-    },
-    {
-      "label": "Composable",
-      "file_type": "code",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/SettingsComponents.kt",
-      "source_location": "L48",
-      "_origin": "ast",
-      "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_settingscomponents_kt_composable",
-      "community": 5,
-      "norm_label": "composable"
-    },
-    {
-      "label": "SettingsRowDivider()",
-      "file_type": "code",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/SettingsComponents.kt",
-      "source_location": "L97",
-      "_origin": "ast",
-      "id": "ui_settingscomponents_settingsrowdivider",
-      "community": 5,
-      "norm_label": "settingsrowdivider()"
     },
     {
       "label": "SharedPhotoTransition.kt",
@@ -12988,86 +13108,6 @@
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_ukrainebanner_kt_string",
       "community": 174,
       "norm_label": "string"
-    },
-    {
-      "label": "WhatsNewRow.kt",
-      "file_type": "code",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/WhatsNewRow.kt",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "ui_whatsnewrow",
-      "community": 176,
-      "norm_label": "whatsnewrow.kt"
-    },
-    {
-      "label": "toIcon()",
-      "file_type": "code",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/WhatsNewRow.kt",
-      "source_location": "L21",
-      "_origin": "ast",
-      "id": "ui_whatsnewrow_toicon",
-      "community": 176,
-      "norm_label": "toicon()"
-    },
-    {
-      "label": "MaterialSymbol",
-      "file_type": "code",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/WhatsNewRow.kt",
-      "source_location": "L21",
-      "_origin": "ast",
-      "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_whatsnewrow_kt_materialsymbol",
-      "community": 176,
-      "norm_label": "materialsymbol"
-    },
-    {
-      "label": "WhatsNewRow()",
-      "file_type": "code",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/WhatsNewRow.kt",
-      "source_location": "L31",
-      "_origin": "ast",
-      "id": "ui_whatsnewrow_whatsnewrow",
-      "community": 176,
-      "norm_label": "whatsnewrow()"
-    },
-    {
-      "label": "Release",
-      "file_type": "code",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/WhatsNewRow.kt",
-      "source_location": "L31",
-      "_origin": "ast",
-      "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_whatsnewrow_kt_release",
-      "community": 176,
-      "norm_label": "release"
-    },
-    {
-      "label": "Modifier",
-      "file_type": "code",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/WhatsNewRow.kt",
-      "source_location": "L31",
-      "_origin": "ast",
-      "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_whatsnewrow_kt_modifier",
-      "community": 176,
-      "norm_label": "modifier"
-    },
-    {
-      "label": "Unit",
-      "file_type": "code",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/WhatsNewRow.kt",
-      "source_location": "L31",
-      "_origin": "ast",
-      "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_whatsnewrow_kt_unit",
-      "community": 176,
-      "norm_label": "unit"
-    },
-    {
-      "label": "ReleaseCard()",
-      "file_type": "code",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/WhatsNewRow.kt",
-      "source_location": "L64",
-      "_origin": "ast",
-      "id": "ui_whatsnewrow_releasecard",
-      "community": 176,
-      "norm_label": "releasecard()"
     },
     {
       "label": "widgets.kt",
@@ -13606,7 +13646,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "viewmodels_imageviewmodel",
-      "community": 25,
+      "community": 4,
       "norm_label": "imageviewmodel.kt"
     },
     {
@@ -13616,7 +13656,7 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "viewmodels_imageviewmodel_imageviewmodel",
-      "community": 25,
+      "community": 4,
       "norm_label": "imageviewmodel"
     },
     {
@@ -13626,7 +13666,7 @@
       "source_location": "L62",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_imageviewmodel_kt_flow",
-      "community": 25,
+      "community": 4,
       "norm_label": "flow"
     },
     {
@@ -13636,7 +13676,7 @@
       "source_location": "L62",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_imageviewmodel_kt_uievent",
-      "community": 25,
+      "community": 4,
       "norm_label": "uievent"
     },
     {
@@ -13646,7 +13686,7 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_imageviewmodel_kt_stateflow",
-      "community": 25,
+      "community": 4,
       "norm_label": "stateflow"
     },
     {
@@ -13656,7 +13696,7 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_imageviewmodel_kt_boolean",
-      "community": 25,
+      "community": 4,
       "norm_label": "boolean"
     },
     {
@@ -13666,7 +13706,7 @@
       "source_location": "L68",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_imageviewmodel_kt_pagingdata",
-      "community": 25,
+      "community": 4,
       "norm_label": "pagingdata"
     },
     {
@@ -13676,7 +13716,7 @@
       "source_location": "L68",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_imageviewmodel_kt_marsimage",
-      "community": 25,
+      "community": 4,
       "norm_label": "marsimage"
     },
     {
@@ -13686,7 +13726,7 @@
       "source_location": "L90",
       "_origin": "ast",
       "id": "viewmodels_imageviewmodel_imageviewmodel_setimagesource",
-      "community": 178,
+      "community": 4,
       "norm_label": ".setimagesource()"
     },
     {
@@ -13696,7 +13736,7 @@
       "source_location": "L90",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_imageviewmodel_kt_appdestination",
-      "community": 178,
+      "community": 4,
       "norm_label": "appdestination"
     },
     {
@@ -13706,7 +13746,7 @@
       "source_location": "L90",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_imageviewmodel_kt_list",
-      "community": 178,
+      "community": 4,
       "norm_label": "list"
     },
     {
@@ -13716,7 +13756,7 @@
       "source_location": "L90",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_imageviewmodel_kt_string",
-      "community": 178,
+      "community": 4,
       "norm_label": "string"
     },
     {
@@ -13726,7 +13766,7 @@
       "source_location": "L90",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_imageviewmodel_kt_long",
-      "community": 178,
+      "community": 4,
       "norm_label": "long"
     },
     {
@@ -13736,7 +13776,7 @@
       "source_location": "L90",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_imageviewmodel_kt_set",
-      "community": 178,
+      "community": 4,
       "norm_label": "set"
     },
     {
@@ -13746,7 +13786,7 @@
       "source_location": "L110",
       "_origin": "ast",
       "id": "viewmodels_imageviewmodel_imageviewmodel_restoreroverfeedifneeded",
-      "community": 178,
+      "community": 4,
       "norm_label": ".restoreroverfeedifneeded()"
     },
     {
@@ -13756,7 +13796,7 @@
       "source_location": "L165",
       "_origin": "ast",
       "id": "viewmodels_imageviewmodel_imageviewmodel_setfavorite",
-      "community": 25,
+      "community": 4,
       "norm_label": ".setfavorite()"
     },
     {
@@ -13766,7 +13806,7 @@
       "source_location": "L178",
       "_origin": "ast",
       "id": "viewmodels_imageviewmodel_imageviewmodel_saveimage",
-      "community": 25,
+      "community": 4,
       "norm_label": ".saveimage()"
     },
     {
@@ -13776,7 +13816,7 @@
       "source_location": "L196",
       "_origin": "ast",
       "id": "viewmodels_imageviewmodel_imageviewmodel_sharemarsimage",
-      "community": 25,
+      "community": 4,
       "norm_label": ".sharemarsimage()"
     },
     {
@@ -13786,7 +13826,7 @@
       "source_location": "L214",
       "_origin": "ast",
       "id": "viewmodels_imageviewmodel_imageviewmodel_onshown",
-      "community": 25,
+      "community": 4,
       "norm_label": ".onshown()"
     },
     {
@@ -13796,7 +13836,7 @@
       "source_location": "L214",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_imageviewmodel_kt_int",
-      "community": 25,
+      "community": 4,
       "norm_label": "int"
     },
     {
@@ -13806,7 +13846,7 @@
       "source_location": "L227",
       "_origin": "ast",
       "id": "viewmodels_imageviewmodel_imageviewmodel_onseen",
-      "community": 25,
+      "community": 4,
       "norm_label": ".onseen()"
     },
     {
@@ -13816,7 +13856,7 @@
       "source_location": "L235",
       "_origin": "ast",
       "id": "viewmodels_imageviewmodel_imageviewmodel_onzoomed",
-      "community": 25,
+      "community": 4,
       "norm_label": ".onzoomed()"
     },
     {
@@ -13826,7 +13866,7 @@
       "source_location": "L240",
       "_origin": "ast",
       "id": "viewmodels_imageviewmodel_imageviewmodel_ontap",
-      "community": 25,
+      "community": 4,
       "norm_label": ".ontap()"
     },
     {
@@ -13836,7 +13876,7 @@
       "source_location": "L249",
       "_origin": "ast",
       "id": "viewmodels_imageviewmodel_uievent",
-      "community": 25,
+      "community": 4,
       "norm_label": "uievent"
     },
     {
@@ -13846,7 +13886,7 @@
       "source_location": "L251",
       "_origin": "ast",
       "id": "viewmodels_imageviewmodel_photosaved",
-      "community": 25,
+      "community": 4,
       "norm_label": "photosaved"
     },
     {
@@ -13856,7 +13896,7 @@
       "source_location": "L254",
       "_origin": "ast",
       "id": "viewmodels_imageviewmodel_photosaveerror",
-      "community": 25,
+      "community": 4,
       "norm_label": "photosaveerror"
     },
     {
@@ -13866,7 +13906,7 @@
       "source_location": "L257",
       "_origin": "ast",
       "id": "viewmodels_imageviewmodel_shareerror",
-      "community": 25,
+      "community": 4,
       "norm_label": "shareerror"
     },
     {
@@ -14743,7 +14783,7 @@
       "label": "WhatsNewViewModel",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/WhatsNewViewModel.kt",
-      "source_location": "L19",
+      "source_location": "L18",
       "_origin": "ast",
       "id": "viewmodels_whatsnewviewmodel_whatsnewviewmodel",
       "community": 179,
@@ -14753,27 +14793,67 @@
       "label": "StateFlow",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/WhatsNewViewModel.kt",
-      "source_location": "L22",
+      "source_location": "L26",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_whatsnewviewmodel_kt_stateflow",
       "community": 179,
       "norm_label": "stateflow"
     },
     {
-      "label": ".computeInitialState()",
+      "label": ".releaseFor()",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/WhatsNewViewModel.kt",
-      "source_location": "L24",
+      "source_location": "L29",
       "_origin": "ast",
-      "id": "viewmodels_whatsnewviewmodel_whatsnewviewmodel_computeinitialstate",
+      "id": "viewmodels_whatsnewviewmodel_whatsnewviewmodel_releasefor",
       "community": 179,
-      "norm_label": ".computeinitialstate()"
+      "norm_label": ".releasefor()"
+    },
+    {
+      "label": "String",
+      "file_type": "code",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/WhatsNewViewModel.kt",
+      "source_location": "L29",
+      "_origin": "ast",
+      "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_whatsnewviewmodel_kt_string",
+      "community": 179,
+      "norm_label": "string"
+    },
+    {
+      "label": "Release",
+      "file_type": "code",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/WhatsNewViewModel.kt",
+      "source_location": "L29",
+      "_origin": "ast",
+      "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_whatsnewviewmodel_kt_release",
+      "community": 179,
+      "norm_label": "release"
+    },
+    {
+      "label": ".shouldShowDialog()",
+      "file_type": "code",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/WhatsNewViewModel.kt",
+      "source_location": "L52",
+      "_origin": "ast",
+      "id": "viewmodels_whatsnewviewmodel_whatsnewviewmodel_shouldshowdialog",
+      "community": 179,
+      "norm_label": ".shouldshowdialog()"
+    },
+    {
+      "label": "Boolean",
+      "file_type": "code",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/WhatsNewViewModel.kt",
+      "source_location": "L52",
+      "_origin": "ast",
+      "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_whatsnewviewmodel_kt_boolean",
+      "community": 179,
+      "norm_label": "boolean"
     },
     {
       "label": ".markSeen()",
       "file_type": "code",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/WhatsNewViewModel.kt",
-      "source_location": "L43",
+      "source_location": "L56",
       "_origin": "ast",
       "id": "viewmodels_whatsnewviewmodel_whatsnewviewmodel_markseen",
       "community": 179,
@@ -15016,7 +15096,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "utils_nasaimageurl",
-      "community": 71,
+      "community": 3,
       "norm_label": "nasaimageurl.kt"
     },
     {
@@ -15026,7 +15106,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "utils_nasaimageurl_nasaimageorigurl",
-      "community": 71,
+      "community": 3,
       "norm_label": "nasaimageorigurl()"
     },
     {
@@ -15036,7 +15116,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_utils_nasaimageurl_kt_string",
-      "community": 71,
+      "community": 3,
       "norm_label": "string"
     },
     {
@@ -15046,7 +15126,7 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "utils_nasaimageurl_nasaimagesmallurl",
-      "community": 168,
+      "community": 3,
       "norm_label": "nasaimagesmallurl()"
     },
     {
@@ -15056,7 +15136,7 @@
       "source_location": "L47",
       "_origin": "ast",
       "id": "utils_nasaimageurl_nasaimagelargeurl",
-      "community": 71,
+      "community": 3,
       "norm_label": "nasaimagelargeurl()"
     },
     {
@@ -15436,7 +15516,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "network_nasaimageorigurltest",
-      "community": 71,
+      "community": 3,
       "norm_label": "nasaimageorigurltest.kt"
     },
     {
@@ -15446,7 +15526,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "network_nasaimageorigurltest_nasaimageorigurltest",
-      "community": 71,
+      "community": 3,
       "norm_label": "nasaimageorigurltest"
     },
     {
@@ -15456,7 +15536,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "network_nasaimageorigurltest_nasaimageorigurltest_smalltoken_replacedwithorig",
-      "community": 71,
+      "community": 3,
       "norm_label": ".smalltoken_replacedwithorig()"
     },
     {
@@ -15466,7 +15546,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "network_nasaimageorigurltest_nasaimageorigurltest_thumbtoken_replacedwithorig",
-      "community": 71,
+      "community": 3,
       "norm_label": ".thumbtoken_replacedwithorig()"
     },
     {
@@ -15476,7 +15556,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "network_nasaimageorigurltest_nasaimageorigurltest_mediumtoken_replacedwithorig",
-      "community": 71,
+      "community": 3,
       "norm_label": ".mediumtoken_replacedwithorig()"
     },
     {
@@ -15486,7 +15566,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "network_nasaimageorigurltest_nasaimageorigurltest_largetoken_replacedwithorig",
-      "community": 71,
+      "community": 3,
       "norm_label": ".largetoken_replacedwithorig()"
     },
     {
@@ -15496,7 +15576,7 @@
       "source_location": "L45",
       "_origin": "ast",
       "id": "network_nasaimageorigurltest_nasaimageorigurltest_pngextension_preserved",
-      "community": 71,
+      "community": 3,
       "norm_label": ".pngextension_preserved()"
     },
     {
@@ -15506,7 +15586,7 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "network_nasaimageorigurltest_nasaimageorigurltest_nosizetoken_returnshrefasis",
-      "community": 71,
+      "community": 3,
       "norm_label": ".nosizetoken_returnshrefasis()"
     },
     {
@@ -15516,7 +15596,7 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "network_nasaimageorigurltest_nasaimageorigurltest_caseinsensitive_lowercasetoken",
-      "community": 71,
+      "community": 3,
       "norm_label": ".caseinsensitive_lowercasetoken()"
     },
     {
@@ -15526,7 +15606,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "network_nasaimagesmallurltest",
-      "community": 168,
+      "community": 3,
       "norm_label": "nasaimagesmallurltest.kt"
     },
     {
@@ -15536,7 +15616,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "network_nasaimagesmallurltest_nasaimagesmallurltest",
-      "community": 168,
+      "community": 3,
       "norm_label": "nasaimagesmallurltest"
     },
     {
@@ -15546,7 +15626,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "network_nasaimagesmallurltest_nasaimagesmallurltest_thumbtoken_replacedwithsmall",
-      "community": 168,
+      "community": 3,
       "norm_label": ".thumbtoken_replacedwithsmall()"
     },
     {
@@ -15556,7 +15636,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "network_nasaimagesmallurltest_nasaimagesmallurltest_smalltoken_remainssmall",
-      "community": 168,
+      "community": 3,
       "norm_label": ".smalltoken_remainssmall()"
     },
     {
@@ -15566,7 +15646,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "network_nasaimagesmallurltest_nasaimagesmallurltest_mediumtoken_replacedwithsmall",
-      "community": 168,
+      "community": 3,
       "norm_label": ".mediumtoken_replacedwithsmall()"
     },
     {
@@ -15576,7 +15656,7 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "network_nasaimagesmallurltest_nasaimagesmallurltest_largetoken_replacedwithsmall",
-      "community": 168,
+      "community": 3,
       "norm_label": ".largetoken_replacedwithsmall()"
     },
     {
@@ -15586,7 +15666,7 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "network_nasaimagesmallurltest_nasaimagesmallurltest_pngextension_preserved",
-      "community": 168,
+      "community": 3,
       "norm_label": ".pngextension_preserved()"
     },
     {
@@ -15596,7 +15676,7 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "network_nasaimagesmallurltest_nasaimagesmallurltest_nosizetoken_passthroughunchanged",
-      "community": 168,
+      "community": 3,
       "norm_label": ".nosizetoken_passthroughunchanged()"
     },
     {
@@ -15606,7 +15686,7 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "network_nasaimagesmallurltest_nasaimagesmallurltest_caseinsensitive_uppercasetoken",
-      "community": 168,
+      "community": 3,
       "norm_label": ".caseinsensitive_uppercasetoken()"
     },
     {
@@ -15616,7 +15696,7 @@
       "source_location": "L75",
       "_origin": "ast",
       "id": "network_nasaimagesmallurltest_nasaimagesmallurltest_nonnasalibraryurl_orighelperpassesthrough",
-      "community": 71,
+      "community": 3,
       "norm_label": ".nonnasalibraryurl_orighelperpassesthrough()"
     },
     {
@@ -15626,7 +15706,7 @@
       "source_location": "L85",
       "_origin": "ast",
       "id": "network_nasaimagesmallurltest_nasaimagesmallurltest_tomarsimages_storessmallurl",
-      "community": 89,
+      "community": 3,
       "norm_label": ".tomarsimages_storessmallurl()"
     },
     {
@@ -15636,7 +15716,7 @@
       "source_location": "L97",
       "_origin": "ast",
       "id": "network_nasaimagesmallurltest_nasaimagesmallurltest_tomarsimages_origurlrecoverable",
-      "community": 89,
+      "community": 3,
       "norm_label": ".tomarsimages_origurlrecoverable()"
     },
     {
@@ -15646,7 +15726,7 @@
       "source_location": "L108",
       "_origin": "ast",
       "id": "network_nasaimagesmallurltest_nasaimagesmallurltest_tomarsimages_storesroverid",
-      "community": 89,
+      "community": 3,
       "norm_label": ".tomarsimages_storesroverid()"
     },
     {
@@ -15656,7 +15736,7 @@
       "source_location": "L117",
       "_origin": "ast",
       "id": "network_nasaimagesmallurltest_nasaimagesmallurltest_fakeresponse",
-      "community": 89,
+      "community": 3,
       "norm_label": ".fakeresponse()"
     },
     {
@@ -15666,7 +15746,7 @@
       "source_location": "L117",
       "_origin": "ast",
       "id": "shared_src_commontest_kotlin_com_sirelon_marsroverphotos_data_network_nasaimagesmallurltest_kt_string",
-      "community": 89,
+      "community": 3,
       "norm_label": "string"
     },
     {
@@ -16773,17 +16853,27 @@
       "label": ".`every destination maps to a distinct snake_case screen name`()",
       "file_type": "code",
       "source_file": "shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/presentation/navigation/ScreenTrackingTest.kt",
-      "source_location": "L23",
+      "source_location": "L26",
       "_origin": "ast",
       "id": "navigation_screentrackingtest_screentrackingtest_every_destination_maps_to_a_distinct_snake_case_screen_name",
       "community": 42,
       "norm_label": ".`every destination maps to a distinct snake_case screen name`()"
     },
     {
+      "label": ".`the release story carries its version`()",
+      "file_type": "code",
+      "source_file": "shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/presentation/navigation/ScreenTrackingTest.kt",
+      "source_location": "L35",
+      "_origin": "ast",
+      "id": "navigation_screentrackingtest_screentrackingtest_the_release_story_carries_its_version",
+      "community": 42,
+      "norm_label": ".`the release story carries its version`()"
+    },
+    {
       "label": ".`rover-scoped destinations carry rover_id`()",
       "file_type": "code",
       "source_file": "shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/presentation/navigation/ScreenTrackingTest.kt",
-      "source_location": "L32",
+      "source_location": "L43",
       "_origin": "ast",
       "id": "navigation_screentrackingtest_screentrackingtest_rover_scoped_destinations_carry_rover_id",
       "community": 42,
@@ -16793,7 +16883,7 @@
       "label": ".`images carries its source and only carries rover_id when feed-backed`()",
       "file_type": "code",
       "source_file": "shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/presentation/navigation/ScreenTrackingTest.kt",
-      "source_location": "L44",
+      "source_location": "L55",
       "_origin": "ast",
       "id": "navigation_screentrackingtest_screentrackingtest_images_carries_its_source_and_only_carries_rover_id_when_feed_backed",
       "community": 42,
@@ -16803,7 +16893,7 @@
       "label": ".`changing a photos camera filter does not count as a new screen view`()",
       "file_type": "code",
       "source_file": "shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/presentation/navigation/ScreenTrackingTest.kt",
-      "source_location": "L60",
+      "source_location": "L71",
       "_origin": "ast",
       "id": "navigation_screentrackingtest_screentrackingtest_changing_a_photos_camera_filter_does_not_count_as_a_new_screen_view",
       "community": 42,
@@ -16813,7 +16903,7 @@
       "label": ".`swiping to another photo does not count as a new screen view`()",
       "file_type": "code",
       "source_file": "shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/presentation/navigation/ScreenTrackingTest.kt",
-      "source_location": "L68",
+      "source_location": "L79",
       "_origin": "ast",
       "id": "navigation_screentrackingtest_screentrackingtest_swiping_to_another_photo_does_not_count_as_a_new_screen_view",
       "community": 42,
@@ -19310,136 +19400,6 @@
       "norm_label": "\"safe-to-fix\" backlog (will be delegated to fixer agents)"
     },
     {
-      "label": "session-retro-whats-new.md",
-      "file_type": "document",
-      "source_file": ".claude/session-retro-whats-new.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "claude_session_retro_whats_new",
-      "community": 88,
-      "norm_label": "session-retro-whats-new.md"
-    },
-    {
-      "label": "Session Retrospective \u2014 What's New Feature",
-      "file_type": "document",
-      "source_file": ".claude/session-retro-whats-new.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "claude_session_retro_whats_new_session_retrospective_what_s_new_feature",
-      "community": 88,
-      "norm_label": "session retrospective \u2014 what's new feature"
-    },
-    {
-      "label": "What we built",
-      "file_type": "document",
-      "source_file": ".claude/session-retro-whats-new.md",
-      "source_location": "L11",
-      "_origin": "ast",
-      "id": "claude_session_retro_whats_new_what_we_built",
-      "community": 88,
-      "norm_label": "what we built"
-    },
-    {
-      "label": "Mistakes (in order)",
-      "file_type": "document",
-      "source_file": ".claude/session-retro-whats-new.md",
-      "source_location": "L17",
-      "_origin": "ast",
-      "id": "claude_session_retro_whats_new_mistakes_in_order",
-      "community": 88,
-      "norm_label": "mistakes (in order)"
-    },
-    {
-      "label": "1. UI type inside a domain model",
-      "file_type": "document",
-      "source_file": ".claude/session-retro-whats-new.md",
-      "source_location": "L19",
-      "_origin": "ast",
-      "id": "claude_session_retro_whats_new_1_ui_type_inside_a_domain_model",
-      "community": 88,
-      "norm_label": "1. ui type inside a domain model"
-    },
-    {
-      "label": "2. Type name too generic",
-      "file_type": "document",
-      "source_file": ".claude/session-retro-whats-new.md",
-      "source_location": "L33",
-      "_origin": "ast",
-      "id": "claude_session_retro_whats_new_2_type_name_too_generic",
-      "community": 88,
-      "norm_label": "2. type name too generic"
-    },
-    {
-      "label": "3. Hardcoded color literals in screen code",
-      "file_type": "document",
-      "source_file": ".claude/session-retro-whats-new.md",
-      "source_location": "L45",
-      "_origin": "ast",
-      "id": "claude_session_retro_whats_new_3_hardcoded_color_literals_in_screen_code",
-      "community": 88,
-      "norm_label": "3. hardcoded color literals in screen code"
-    },
-    {
-      "label": "4. No ViewModel at all",
-      "file_type": "document",
-      "source_file": ".claude/session-retro-whats-new.md",
-      "source_location": "L65",
-      "_origin": "ast",
-      "id": "claude_session_retro_whats_new_4_no_viewmodel_at_all",
-      "community": 88,
-      "norm_label": "4. no viewmodel at all"
-    },
-    {
-      "label": "5. ViewModel with plain properties instead of StateFlow",
-      "file_type": "document",
-      "source_file": ".claude/session-retro-whats-new.md",
-      "source_location": "L79",
-      "_origin": "ast",
-      "id": "claude_session_retro_whats_new_5_viewmodel_with_plain_properties_instead_of_stateflow",
-      "community": 88,
-      "norm_label": "5. viewmodel with plain properties instead of stateflow"
-    },
-    {
-      "label": "6. Business logic and settings injection in the navigation composable",
-      "file_type": "document",
-      "source_file": ".claude/session-retro-whats-new.md",
-      "source_location": "L117",
-      "_origin": "ast",
-      "id": "claude_session_retro_whats_new_6_business_logic_and_settings_injection_in_the_navigation_composable",
-      "community": 88,
-      "norm_label": "6. business logic and settings injection in the navigation composable"
-    },
-    {
-      "label": "7. Duplicating existing UI components instead of reusing them",
-      "file_type": "document",
-      "source_file": ".claude/session-retro-whats-new.md",
-      "source_location": "L150",
-      "_origin": "ast",
-      "id": "claude_session_retro_whats_new_7_duplicating_existing_ui_components_instead_of_reusing_them",
-      "community": 88,
-      "norm_label": "7. duplicating existing ui components instead of reusing them"
-    },
-    {
-      "label": "What should become permanent guidance",
-      "file_type": "document",
-      "source_file": ".claude/session-retro-whats-new.md",
-      "source_location": "L166",
-      "_origin": "ast",
-      "id": "claude_session_retro_whats_new_what_should_become_permanent_guidance",
-      "community": 88,
-      "norm_label": "what should become permanent guidance"
-    },
-    {
-      "label": "What to do with this document",
-      "file_type": "document",
-      "source_file": ".claude/session-retro-whats-new.md",
-      "source_location": "L182",
-      "_origin": "ast",
-      "id": "claude_session_retro_whats_new_what_to_do_with_this_document",
-      "community": 88,
-      "norm_label": "what to do with this document"
-    },
-    {
       "label": "SKILL.md",
       "file_type": "document",
       "source_file": ".claude/skills/fact-research/SKILL.md",
@@ -19550,6 +19510,26 @@
       "norm_label": "comment"
     },
     {
+      "label": "661710f7-c380-454b-ac18-4c3dcf484656.md",
+      "file_type": "document",
+      "source_file": ".context/attachments/comments/661710f7-c380-454b-ac18-4c3dcf484656.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "comments_661710f7_c380_454b_ac18_4c3dcf484656",
+      "community": 172,
+      "norm_label": "661710f7-c380-454b-ac18-4c3dcf484656.md"
+    },
+    {
+      "label": "Comment",
+      "file_type": "document",
+      "source_file": ".context/attachments/comments/661710f7-c380-454b-ac18-4c3dcf484656.md",
+      "source_location": "L9",
+      "_origin": "ast",
+      "id": "comments_661710f7_c380_454b_ac18_4c3dcf484656_comment",
+      "community": 172,
+      "norm_label": "comment"
+    },
+    {
       "label": "69664dc4-a6f8-4b84-913e-304bae224fab.md",
       "file_type": "document",
       "source_file": ".context/attachments/comments/69664dc4-a6f8-4b84-913e-304bae224fab.md",
@@ -19587,6 +19567,26 @@
       "_origin": "ast",
       "id": "comments_79d35518_b249_4b67_8c33_6c6939f49f76_comment",
       "community": 186,
+      "norm_label": "comment"
+    },
+    {
+      "label": "d9cff9ab-6f86-454e-9fd3-1fd15cddf98f.md",
+      "file_type": "document",
+      "source_file": ".context/attachments/comments/d9cff9ab-6f86-454e-9fd3-1fd15cddf98f.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "comments_d9cff9ab_6f86_454e_9fd3_1fd15cddf98f",
+      "community": 175,
+      "norm_label": "d9cff9ab-6f86-454e-9fd3-1fd15cddf98f.md"
+    },
+    {
+      "label": "Comment",
+      "file_type": "document",
+      "source_file": ".context/attachments/comments/d9cff9ab-6f86-454e-9fd3-1fd15cddf98f.md",
+      "source_location": "L9",
+      "_origin": "ast",
+      "id": "comments_d9cff9ab_6f86_454e_9fd3_1fd15cddf98f_comment",
+      "community": 175,
       "norm_label": "comment"
     },
     {
@@ -19800,20 +19800,40 @@
       "norm_label": "coding style & naming conventions"
     },
     {
-      "label": "Design System & UI/UX",
+      "label": "Architecture & Layering",
       "file_type": "document",
       "source_file": "AGENTS.md",
       "source_location": "L45",
+      "_origin": "ast",
+      "id": "agents_architecture_layering",
+      "community": 115,
+      "norm_label": "architecture & layering"
+    },
+    {
+      "label": "Design System & UI/UX",
+      "file_type": "document",
+      "source_file": "AGENTS.md",
+      "source_location": "L55",
       "_origin": "ast",
       "id": "agents_design_system_ui_ux",
       "community": 115,
       "norm_label": "design system & ui/ux"
     },
     {
+      "label": "Strings & Localization",
+      "file_type": "document",
+      "source_file": "AGENTS.md",
+      "source_location": "L69",
+      "_origin": "ast",
+      "id": "agents_strings_localization",
+      "community": 115,
+      "norm_label": "strings & localization"
+    },
+    {
       "label": "Testing Guidelines",
       "file_type": "document",
       "source_file": "AGENTS.md",
-      "source_location": "L59",
+      "source_location": "L90",
       "_origin": "ast",
       "id": "agents_testing_guidelines",
       "community": 115,
@@ -19823,7 +19843,7 @@
       "label": "Commit & Pull Request Guidelines",
       "file_type": "document",
       "source_file": "AGENTS.md",
-      "source_location": "L62",
+      "source_location": "L93",
       "_origin": "ast",
       "id": "agents_commit_pull_request_guidelines",
       "community": 115,
@@ -19833,7 +19853,7 @@
       "label": "Security & Configuration Tips",
       "file_type": "document",
       "source_file": "AGENTS.md",
-      "source_location": "L65",
+      "source_location": "L96",
       "_origin": "ast",
       "id": "agents_security_configuration_tips",
       "community": 115,
@@ -19850,10 +19870,20 @@
       "norm_label": "claude.md"
     },
     {
-      "label": "graphify",
+      "label": "Project guidance",
       "file_type": "document",
       "source_file": "CLAUDE.md",
       "source_location": "L1",
+      "_origin": "ast",
+      "id": "claude_project_guidance",
+      "community": 58,
+      "norm_label": "project guidance"
+    },
+    {
+      "label": "graphify",
+      "file_type": "document",
+      "source_file": "CLAUDE.md",
+      "source_location": "L11",
       "_origin": "ast",
       "id": "claude_graphify",
       "community": 58,
@@ -20140,6 +20170,116 @@
       "norm_label": "todo before re-enabling shared wasm"
     },
     {
+      "label": "ARCHITECTURE.md",
+      "file_type": "document",
+      "source_file": "docs/ARCHITECTURE.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_architecture",
+      "community": 30,
+      "norm_label": "architecture.md"
+    },
+    {
+      "label": "Architecture \u2014 Mars Rover Photos",
+      "file_type": "document",
+      "source_file": "docs/ARCHITECTURE.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_architecture_architecture_mars_rover_photos",
+      "community": 30,
+      "norm_label": "architecture \u2014 mars rover photos"
+    },
+    {
+      "label": "Layer map",
+      "file_type": "document",
+      "source_file": "docs/ARCHITECTURE.md",
+      "source_location": "L10",
+      "_origin": "ast",
+      "id": "docs_architecture_layer_map",
+      "community": 30,
+      "norm_label": "layer map"
+    },
+    {
+      "label": "Rules (prescriptive \u2014 follow these)",
+      "file_type": "document",
+      "source_file": "docs/ARCHITECTURE.md",
+      "source_location": "L26",
+      "_origin": "ast",
+      "id": "docs_architecture_rules_prescriptive_follow_these",
+      "community": 30,
+      "norm_label": "rules (prescriptive \u2014 follow these)"
+    },
+    {
+      "label": "Domain never imports presentation",
+      "file_type": "document",
+      "source_file": "docs/ARCHITECTURE.md",
+      "source_location": "L28",
+      "_origin": "ast",
+      "id": "docs_architecture_domain_never_imports_presentation",
+      "community": 30,
+      "norm_label": "domain never imports presentation"
+    },
+    {
+      "label": "Every screen that shows data has a ViewModel",
+      "file_type": "document",
+      "source_file": "docs/ARCHITECTURE.md",
+      "source_location": "L38",
+      "_origin": "ast",
+      "id": "docs_architecture_every_screen_that_shows_data_has_a_viewmodel",
+      "community": 30,
+      "norm_label": "every screen that shows data has a viewmodel"
+    },
+    {
+      "label": "ViewModel state is observable \u2014 always",
+      "file_type": "document",
+      "source_file": "docs/ARCHITECTURE.md",
+      "source_location": "L47",
+      "_origin": "ast",
+      "id": "docs_architecture_viewmodel_state_is_observable_always",
+      "community": 30,
+      "norm_label": "viewmodel state is observable \u2014 always"
+    },
+    {
+      "label": "Navigation routes; it does not decide",
+      "file_type": "document",
+      "source_file": "docs/ARCHITECTURE.md",
+      "source_location": "L60",
+      "_origin": "ast",
+      "id": "docs_architecture_navigation_routes_it_does_not_decide",
+      "community": 30,
+      "norm_label": "navigation routes; it does not decide"
+    },
+    {
+      "label": "Type names must stand alone",
+      "file_type": "document",
+      "source_file": "docs/ARCHITECTURE.md",
+      "source_location": "L71",
+      "_origin": "ast",
+      "id": "docs_architecture_type_names_must_stand_alone",
+      "community": 30,
+      "norm_label": "type names must stand alone"
+    },
+    {
+      "label": "Self-check before review",
+      "file_type": "document",
+      "source_file": "docs/ARCHITECTURE.md",
+      "source_location": "L80",
+      "_origin": "ast",
+      "id": "docs_architecture_self_check_before_review",
+      "community": 30,
+      "norm_label": "self-check before review"
+    },
+    {
+      "label": "History",
+      "file_type": "document",
+      "source_file": "docs/ARCHITECTURE.md",
+      "source_location": "L92",
+      "_origin": "ast",
+      "id": "docs_architecture_history",
+      "community": 30,
+      "norm_label": "history"
+    },
+    {
       "label": "DESIGN_SYSTEM.md",
       "file_type": "document",
       "source_file": "docs/DESIGN_SYSTEM.md",
@@ -20183,7 +20323,7 @@
       "label": "Components",
       "file_type": "document",
       "source_file": "docs/DESIGN_SYSTEM.md",
-      "source_location": "L44",
+      "source_location": "L58",
       "_origin": "ast",
       "id": "docs_design_system_components",
       "community": 47,
@@ -20193,7 +20333,7 @@
       "label": "Adaptive layout & navigation",
       "file_type": "document",
       "source_file": "docs/DESIGN_SYSTEM.md",
-      "source_location": "L57",
+      "source_location": "L71",
       "_origin": "ast",
       "id": "docs_design_system_adaptive_layout_navigation",
       "community": 47,
@@ -20203,7 +20343,7 @@
       "label": "Process",
       "file_type": "document",
       "source_file": "docs/DESIGN_SYSTEM.md",
-      "source_location": "L67",
+      "source_location": "L81",
       "_origin": "ast",
       "id": "docs_design_system_process",
       "community": 47,
@@ -20213,7 +20353,7 @@
       "label": "Motion & shared-element transitions",
       "file_type": "document",
       "source_file": "docs/DESIGN_SYSTEM.md",
-      "source_location": "L77",
+      "source_location": "L91",
       "_origin": "ast",
       "id": "docs_design_system_motion_shared_element_transitions",
       "community": 47,
@@ -20223,7 +20363,7 @@
       "label": "Insights / gotchas (the expensive-to-rediscover stuff)",
       "file_type": "document",
       "source_file": "docs/DESIGN_SYSTEM.md",
-      "source_location": "L109",
+      "source_location": "L123",
       "_origin": "ast",
       "id": "docs_design_system_insights_gotchas_the_expensive_to_rediscover_stuff",
       "community": 47,
@@ -20233,7 +20373,7 @@
       "label": "Component index",
       "file_type": "document",
       "source_file": "docs/DESIGN_SYSTEM.md",
-      "source_location": "L155",
+      "source_location": "L169",
       "_origin": "ast",
       "id": "docs_design_system_component_index",
       "community": 47,
@@ -20243,7 +20383,7 @@
       "label": "Rovers \u2014 Variant A \"Refined List\" row",
       "file_type": "document",
       "source_file": "docs/DESIGN_SYSTEM.md",
-      "source_location": "L225",
+      "source_location": "L241",
       "_origin": "ast",
       "id": "docs_design_system_rovers_variant_a_refined_list_row",
       "community": 47,
@@ -20253,7 +20393,7 @@
       "label": "Handoff design-token \u2192 app-token mapping",
       "file_type": "document",
       "source_file": "docs/DESIGN_SYSTEM.md",
-      "source_location": "L263",
+      "source_location": "L279",
       "_origin": "ast",
       "id": "docs_design_system_handoff_design_token_app_token_mapping",
       "community": 47,
@@ -20263,7 +20403,7 @@
       "label": "History",
       "file_type": "document",
       "source_file": "docs/DESIGN_SYSTEM.md",
-      "source_location": "L280",
+      "source_location": "L296",
       "_origin": "ast",
       "id": "docs_design_system_history",
       "community": 47,
@@ -20757,9 +20897,9 @@
       "source_file": ".claude/skills/fact-research/workflow-template.js",
       "source_location": "L141",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "fact_research_workflow_template",
-      "target": "fact_research_workflow_template_allscored",
-      "confidence_score": 1.0
+      "target": "fact_research_workflow_template_allscored"
     },
     {
       "relation": "contains",
@@ -20767,9 +20907,9 @@
       "source_file": ".claude/skills/fact-research/workflow-template.js",
       "source_location": "L15",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "fact_research_workflow_template",
-      "target": "fact_research_workflow_template_exclude",
-      "confidence_score": 1.0
+      "target": "fact_research_workflow_template_exclude"
     },
     {
       "relation": "contains",
@@ -20777,9 +20917,9 @@
       "source_file": ".claude/skills/fact-research/workflow-template.js",
       "source_location": "L18",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "fact_research_workflow_template",
-      "target": "fact_research_workflow_template_excludelist",
-      "confidence_score": 1.0
+      "target": "fact_research_workflow_template_excludelist"
     },
     {
       "relation": "contains",
@@ -20787,9 +20927,9 @@
       "source_file": ".claude/skills/fact-research/workflow-template.js",
       "source_location": "L33",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "fact_research_workflow_template",
-      "target": "fact_research_workflow_template_facts_schema",
-      "confidence_score": 1.0
+      "target": "fact_research_workflow_template_facts_schema"
     },
     {
       "relation": "contains",
@@ -20797,9 +20937,9 @@
       "source_file": ".claude/skills/fact-research/workflow-template.js",
       "source_location": "L76",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "fact_research_workflow_template",
-      "target": "fact_research_workflow_template_final_schema",
-      "confidence_score": 1.0
+      "target": "fact_research_workflow_template_final_schema"
     },
     {
       "relation": "contains",
@@ -20807,9 +20947,9 @@
       "source_file": ".claude/skills/fact-research/workflow-template.js",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "fact_research_workflow_template",
-      "target": "fact_research_workflow_template_meta",
-      "confidence_score": 1.0
+      "target": "fact_research_workflow_template_meta"
     },
     {
       "relation": "contains",
@@ -20817,9 +20957,9 @@
       "source_file": ".claude/skills/fact-research/workflow-template.js",
       "source_location": "L107",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "fact_research_workflow_template",
-      "target": "fact_research_workflow_template_researchprompt",
-      "confidence_score": 1.0
+      "target": "fact_research_workflow_template_researchprompt"
     },
     {
       "relation": "contains",
@@ -20827,9 +20967,9 @@
       "source_file": ".claude/skills/fact-research/workflow-template.js",
       "source_location": "L52",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "fact_research_workflow_template",
-      "target": "fact_research_workflow_template_scored_schema",
-      "confidence_score": 1.0
+      "target": "fact_research_workflow_template_scored_schema"
     },
     {
       "relation": "contains",
@@ -20837,9 +20977,9 @@
       "source_file": ".claude/skills/fact-research/workflow-template.js",
       "source_location": "L119",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "fact_research_workflow_template",
-      "target": "fact_research_workflow_template_scoreprompt",
-      "confidence_score": 1.0
+      "target": "fact_research_workflow_template_scoreprompt"
     },
     {
       "relation": "contains",
@@ -20847,9 +20987,9 @@
       "source_file": ".claude/skills/fact-research/workflow-template.js",
       "source_location": "L23",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "fact_research_workflow_template",
-      "target": "fact_research_workflow_template_topics",
-      "confidence_score": 1.0
+      "target": "fact_research_workflow_template_topics"
     },
     {
       "relation": "contains",
@@ -20857,9 +20997,9 @@
       "source_file": ".claude/skills/fact-research/workflow-template.js",
       "source_location": "L160",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "fact_research_workflow_template",
-      "target": "fact_research_workflow_template_total",
-      "confidence_score": 1.0
+      "target": "fact_research_workflow_template_total"
     },
     {
       "relation": "defines",
@@ -20887,9 +21027,9 @@
       "source_file": ".maestro/capture.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "maestro_capture",
-      "target": "users_sirelon_conductor_workspaces_marsroverphotos_stockholm_maestro_capture_sh__entry",
-      "confidence_score": 1.0
+      "target": "users_sirelon_conductor_workspaces_marsroverphotos_stockholm_maestro_capture_sh__entry"
     },
     {
       "relation": "calls",
@@ -20898,9 +21038,9 @@
       "source_location": "L36",
       "weight": 1.0,
       "context": "call",
+      "confidence_score": 1.0,
       "source": "users_sirelon_conductor_workspaces_marsroverphotos_stockholm_maestro_capture_sh__entry",
-      "target": "maestro_capture_run_flow",
-      "confidence_score": 1.0
+      "target": "maestro_capture_run_flow"
     },
     {
       "relation": "calls",
@@ -20909,9 +21049,9 @@
       "source_location": "L36",
       "weight": 1.0,
       "context": "call",
+      "confidence_score": 1.0,
       "source": "users_sirelon_conductor_workspaces_marsroverphotos_stockholm_maestro_capture_sh__entry",
-      "target": "maestro_capture_set_theme",
-      "confidence_score": 1.0
+      "target": "maestro_capture_set_theme"
     },
     {
       "relation": "contains",
@@ -29217,9 +29357,9 @@
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/releasenotes/Release.kt",
       "source_location": "L15",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "releasenotes_release",
-      "target": "releasenotes_release_change",
-      "confidence_score": 1.0
+      "target": "releasenotes_release_change"
     },
     {
       "relation": "contains",
@@ -29227,9 +29367,9 @@
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/releasenotes/Release.kt",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "releasenotes_release",
-      "target": "releasenotes_release_changetype",
-      "confidence_score": 1.0
+      "target": "releasenotes_release_changetype"
     },
     {
       "relation": "contains",
@@ -29237,9 +29377,9 @@
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/releasenotes/Release.kt",
       "source_location": "L10",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "releasenotes_release",
-      "target": "releasenotes_release_release",
-      "confidence_score": 1.0
+      "target": "releasenotes_release_release"
     },
     {
       "relation": "contains",
@@ -30128,9 +30268,9 @@
       "source_location": "L66",
       "weight": 1.0,
       "context": "field",
+      "confidence_score": 1.0,
       "source": "settings_appsettings_appsettings",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_domain_settings_appsettings_kt_string",
-      "confidence_score": 1.0
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_domain_settings_appsettings_kt_string"
     },
     {
       "relation": "references",
@@ -32755,9 +32895,9 @@
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppDestinations.kt",
       "source_location": "L73",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "navigation_appdestinations",
-      "target": "navigation_appdestinations_allversions",
-      "confidence_score": 1.0
+      "target": "navigation_appdestinations_allversions"
     },
     {
       "relation": "contains",
@@ -32788,6 +32928,16 @@
       "confidence_score": 1.0,
       "source": "navigation_appdestinations",
       "target": "navigation_appdestinations_favorite"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppDestinations.kt",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "navigation_appdestinations",
+      "target": "navigation_appdestinations_fullscreendestination",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -32885,9 +33035,9 @@
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppDestinations.kt",
       "source_location": "L69",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "navigation_appdestinations",
-      "target": "navigation_appdestinations_whatsnewdialog",
-      "confidence_score": 1.0
+      "target": "navigation_appdestinations_whatsnewdialog"
     },
     {
       "relation": "contains",
@@ -32895,9 +33045,9 @@
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppDestinations.kt",
       "source_location": "L77",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "navigation_appdestinations",
-      "target": "navigation_appdestinations_whatsnewstory",
-      "confidence_score": 1.0
+      "target": "navigation_appdestinations_whatsnewstory"
     },
     {
       "relation": "implements",
@@ -32925,9 +33075,9 @@
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppDestinations.kt",
       "source_location": "L73",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "navigation_appdestinations_allversions",
-      "target": "navigation_appdestinations_appdestination",
-      "confidence_score": 1.0
+      "target": "navigation_appdestinations_appdestination"
     },
     {
       "relation": "implements",
@@ -32958,6 +33108,16 @@
       "confidence_score": 1.0,
       "source": "navigation_appdestinations_favorite",
       "target": "navigation_appdestinations_appdestination"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppDestinations.kt",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "navigation_appdestinations_fullscreendestination",
+      "target": "navigation_appdestinations_appdestination",
+      "confidence_score": 1.0
     },
     {
       "relation": "implements",
@@ -33025,9 +33185,9 @@
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppDestinations.kt",
       "source_location": "L77",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "navigation_appdestinations_whatsnewstory",
-      "target": "navigation_appdestinations_appdestination",
-      "confidence_score": 1.0
+      "target": "navigation_appdestinations_appdestination"
     },
     {
       "relation": "implements",
@@ -33055,8 +33215,28 @@
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppDestinations.kt",
       "source_location": "L69",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "navigation_appdestinations_whatsnewdialog",
-      "target": "navigation_appdestinations_dialogdestination",
+      "target": "navigation_appdestinations_dialogdestination"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppDestinations.kt",
+      "source_location": "L36",
+      "weight": 1.0,
+      "source": "navigation_appdestinations_images",
+      "target": "navigation_appdestinations_fullscreendestination",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppDestinations.kt",
+      "source_location": "L84",
+      "weight": 1.0,
+      "source": "navigation_appdestinations_whatsnewstory",
+      "target": "navigation_appdestinations_fullscreendestination",
       "confidence_score": 1.0
     },
     {
@@ -34077,6 +34257,17 @@
     {
       "relation": "calls",
       "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/presentation/navigation/ScreenTrackingTest.kt",
+      "source_location": "L38",
+      "weight": 1.0,
+      "source": "navigation_screentrackingtest_screentrackingtest_the_release_story_carries_its_version",
+      "target": "navigation_screentracking_screenview"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/ScreenTracking.kt",
       "source_location": "L24",
@@ -34321,16 +34512,6 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/AboutScreen.kt",
-      "source_location": "L249",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "screens_aboutscreen",
-      "target": "screens_aboutscreen_settingssection"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/AboutScreen.kt",
       "source_location": "L353",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -34380,17 +34561,6 @@
       "confidence_score": 1.0,
       "source": "screens_aboutscreen_aboutcontent",
       "target": "screens_aboutscreen_hero"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/AboutScreen.kt",
-      "source_location": "L154",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "screens_aboutscreen_aboutcontent",
-      "target": "screens_aboutscreen_settingssection"
     },
     {
       "relation": "calls",
@@ -34478,7 +34648,7 @@
       "source_location": "L157",
       "weight": 1.0,
       "source": "screens_aboutscreen_aboutcontent",
-      "target": "ui_settingscomponents_settingsrow"
+      "target": "ui_approw_approw"
     },
     {
       "relation": "calls",
@@ -34489,7 +34659,18 @@
       "source_location": "L156",
       "weight": 1.0,
       "source": "screens_aboutscreen_aboutcontent",
-      "target": "ui_settingscomponents_settingsrowdivider"
+      "target": "ui_approw_approwdivider"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/AboutScreen.kt",
+      "source_location": "L154",
+      "weight": 1.0,
+      "source": "screens_aboutscreen_aboutcontent",
+      "target": "ui_approw_appsection"
     },
     {
       "relation": "calls",
@@ -34523,39 +34704,6 @@
       "confidence_score": 1.0,
       "source": "screens_aboutscreen_hero",
       "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_aboutscreen_kt_string"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/AboutScreen.kt",
-      "source_location": "L249",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "confidence_score": 1.0,
-      "source": "screens_aboutscreen_settingssection",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_aboutscreen_kt_string"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/AboutScreen.kt",
-      "source_location": "L253",
-      "weight": 1.0,
-      "source": "screens_aboutscreen_settingssection",
-      "target": "ui_appoutlinedcard_appoutlinedcard"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/AboutScreen.kt",
-      "source_location": "L252",
-      "weight": 1.0,
-      "source": "screens_aboutscreen_settingssection",
-      "target": "ui_settingscomponents_settingssectionlabel"
     },
     {
       "relation": "calls",
@@ -34655,6 +34803,17 @@
       "weight": 1.0,
       "source": "screens_aboutscreen_themerow",
       "target": "ui_segmentedcontrol_segmentedcontrol"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppRow.kt",
+      "source_location": "L124",
+      "weight": 1.0,
+      "source": "ui_approw_appsection",
+      "target": "screens_aboutscreen_footer"
     },
     {
       "relation": "contains",
@@ -37164,9 +37323,9 @@
       "source_location": "L238",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "screens_missioninfosections_roverimagecard",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_missioninfosections_kt_float",
-      "confidence_score": 1.0
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_missioninfosections_kt_float"
     },
     {
       "relation": "references",
@@ -40115,9 +40274,9 @@
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/AllVersionsScreen.kt",
       "source_location": "L25",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "whatsnew_allversionsscreen",
-      "target": "whatsnew_allversionsscreen_allversionsscreen",
-      "confidence_score": 1.0
+      "target": "whatsnew_allversionsscreen_allversionsscreen"
     },
     {
       "relation": "calls",
@@ -40136,10 +40295,21 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/AllVersionsScreen.kt",
-      "source_location": "L50",
+      "source_location": "L80",
       "weight": 1.0,
       "source": "whatsnew_allversionsscreen_allversionsscreen",
-      "target": "ui_whatsnewrow_releasecard"
+      "target": "whatsnew_whatsnewrow_releasecard"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/AllVersionsScreen.kt",
+      "source_location": "L54",
+      "weight": 1.0,
+      "source": "whatsnew_allversionsscreen_allversionsscreen",
+      "target": "windowinsets"
     },
     {
       "relation": "contains",
@@ -40147,9 +40317,9 @@
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewDialogScreen.kt",
       "source_location": "L31",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "whatsnew_whatsnewdialogscreen",
-      "target": "whatsnew_whatsnewdialogscreen_whatsnewdialogscreen",
-      "confidence_score": 1.0
+      "target": "whatsnew_whatsnewdialogscreen_whatsnewdialogscreen"
     },
     {
       "relation": "calls",
@@ -40179,10 +40349,10 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewDialogScreen.kt",
-      "source_location": "L66",
+      "source_location": "L65",
       "weight": 1.0,
       "source": "whatsnew_whatsnewdialogscreen_whatsnewdialogscreen",
-      "target": "ui_settingscomponents_settingsrowdivider"
+      "target": "ui_approw_approwdivider"
     },
     {
       "relation": "calls",
@@ -40190,10 +40360,182 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewDialogScreen.kt",
-      "source_location": "L67",
+      "source_location": "L66",
       "weight": 1.0,
       "source": "whatsnew_whatsnewdialogscreen_whatsnewdialogscreen",
-      "target": "ui_whatsnewrow_whatsnewrow"
+      "target": "whatsnew_whatsnewrow_whatsnewrow"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewRow.kt",
+      "source_location": "L55",
+      "weight": 1.0,
+      "source": "whatsnew_whatsnewrow",
+      "target": "whatsnew_whatsnewrow_releasecard",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewRow.kt",
+      "source_location": "L32",
+      "weight": 1.0,
+      "source": "whatsnew_whatsnewrow",
+      "target": "whatsnew_whatsnewrow_whatsnewrow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewRow.kt",
+      "source_location": "L124",
+      "weight": 1.0,
+      "source": "whatsnew_whatsnewrow_releasecard",
+      "target": "whatsnew_whatsnewrow_whatsnewrow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewRow.kt",
+      "source_location": "L32",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "whatsnew_whatsnewrow_whatsnewrow",
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewrow_kt_modifier",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewRow.kt",
+      "source_location": "L32",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "whatsnew_whatsnewrow_whatsnewrow",
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewrow_kt_release",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewRow.kt",
+      "source_location": "L32",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "whatsnew_whatsnewrow_whatsnewrow",
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewrow_kt_unit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewRow.kt",
+      "source_location": "L39",
+      "weight": 1.0,
+      "source": "whatsnew_whatsnewrow_whatsnewrow",
+      "target": "ui_approw_approw"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewRow.kt",
+      "source_location": "L55",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "whatsnew_whatsnewrow_releasecard",
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewrow_kt_release",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewRow.kt",
+      "source_location": "L55",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "whatsnew_whatsnewrow_releasecard",
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewrow_kt_modifier",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewRow.kt",
+      "source_location": "L88",
+      "weight": 1.0,
+      "source": "whatsnew_whatsnewrow_releasecard",
+      "target": "ui_approw_approwdivider"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewRow.kt",
+      "source_location": "L60",
+      "weight": 1.0,
+      "source": "whatsnew_whatsnewrow_releasecard",
+      "target": "ui_approw_appsection"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewRow.kt",
+      "source_location": "L79",
+      "weight": 1.0,
+      "source": "whatsnew_whatsnewrow_releasecard",
+      "target": "ui_badges_statusbadge"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewRow.kt",
+      "source_location": "L112",
+      "weight": 1.0,
+      "source": "whatsnew_whatsnewrow_releasecard",
+      "target": "ui_materialsymbolicon_materialsymbolicon"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewRow.kt",
+      "source_location": "L83",
+      "weight": 1.0,
+      "source": "whatsnew_whatsnewrow_releasecard",
+      "target": "utils_dateformatutils_formatdisplaydate"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
+      "source_location": "L65",
+      "weight": 1.0,
+      "source": "whatsnew_whatsnewstoryscreen",
+      "target": "whatsnew_whatsnewstoryscreen_exitlatch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
+      "source_location": "L292",
+      "weight": 1.0,
+      "source": "whatsnew_whatsnewstoryscreen",
+      "target": "whatsnew_whatsnewstoryscreen_invisibleclickable",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -40201,9 +40543,9 @@
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
       "source_location": "L249",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "whatsnew_whatsnewstoryscreen",
-      "target": "whatsnew_whatsnewstoryscreen_pageoffsetof",
-      "confidence_score": 1.0
+      "target": "whatsnew_whatsnewstoryscreen_pageoffsetof"
     },
     {
       "relation": "contains",
@@ -40211,9 +40553,9 @@
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
       "source_location": "L324",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "whatsnew_whatsnewstoryscreen",
-      "target": "whatsnew_whatsnewstoryscreen_storypage",
-      "confidence_score": 1.0
+      "target": "whatsnew_whatsnewstoryscreen_storypage"
     },
     {
       "relation": "contains",
@@ -40221,9 +40563,9 @@
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
       "source_location": "L310",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "whatsnew_whatsnewstoryscreen",
-      "target": "whatsnew_whatsnewstoryscreen_storyparallax",
-      "confidence_score": 1.0
+      "target": "whatsnew_whatsnewstoryscreen_storyparallax"
     },
     {
       "relation": "contains",
@@ -40231,9 +40573,9 @@
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
       "source_location": "L260",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "whatsnew_whatsnewstoryscreen",
-      "target": "whatsnew_whatsnewstoryscreen_storyprogressbar",
-      "confidence_score": 1.0
+      "target": "whatsnew_whatsnewstoryscreen_storyprogressbar"
     },
     {
       "relation": "contains",
@@ -40241,8 +40583,19 @@
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
       "source_location": "L68",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "whatsnew_whatsnewstoryscreen",
-      "target": "whatsnew_whatsnewstoryscreen_whatsnewstoryscreen",
+      "target": "whatsnew_whatsnewstoryscreen_whatsnewstoryscreen"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
+      "source_location": "L104",
+      "weight": 1.0,
+      "source": "whatsnew_whatsnewstoryscreen_whatsnewstoryscreen",
+      "target": "whatsnew_whatsnewstoryscreen_exitlatch",
       "confidence_score": 1.0
     },
     {
@@ -40252,9 +40605,9 @@
       "source_location": "L68",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "whatsnew_whatsnewstoryscreen_whatsnewstoryscreen",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewstoryscreen_kt_int",
-      "confidence_score": 1.0
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewstoryscreen_kt_int"
     },
     {
       "relation": "references",
@@ -40263,9 +40616,20 @@
       "source_location": "L68",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "whatsnew_whatsnewstoryscreen_whatsnewstoryscreen",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewstoryscreen_kt_string",
-      "confidence_score": 1.0
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewstoryscreen_kt_string"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
+      "source_location": "L158",
+      "weight": 1.0,
+      "source": "whatsnew_whatsnewstoryscreen_whatsnewstoryscreen",
+      "target": "theme_theme_marsroverphotostheme"
     },
     {
       "relation": "calls",
@@ -40294,11 +40658,22 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
-      "source_location": "L187",
+      "source_location": "L233",
       "weight": 1.0,
       "source": "whatsnew_whatsnewstoryscreen_whatsnewstoryscreen",
-      "target": "whatsnew_whatsnewstoryscreen_pageoffsetof",
+      "target": "whatsnew_whatsnewstoryscreen_invisibleclickable",
       "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
+      "source_location": "L187",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "whatsnew_whatsnewstoryscreen_whatsnewstoryscreen",
+      "target": "whatsnew_whatsnewstoryscreen_pageoffsetof"
     },
     {
       "relation": "calls",
@@ -40307,9 +40682,9 @@
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
       "source_location": "L185",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "whatsnew_whatsnewstoryscreen_whatsnewstoryscreen",
-      "target": "whatsnew_whatsnewstoryscreen_storypage",
-      "confidence_score": 1.0
+      "target": "whatsnew_whatsnewstoryscreen_storypage"
     },
     {
       "relation": "calls",
@@ -40318,8 +40693,19 @@
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
       "source_location": "L139",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "whatsnew_whatsnewstoryscreen_whatsnewstoryscreen",
-      "target": "whatsnew_whatsnewstoryscreen_storyprogressbar",
+      "target": "whatsnew_whatsnewstoryscreen_storyprogressbar"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
+      "source_location": "L292",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "whatsnew_whatsnewstoryscreen_invisibleclickable",
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewstoryscreen_kt_string",
       "confidence_score": 1.0
     },
     {
@@ -40329,8 +40715,52 @@
       "source_location": "L249",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "whatsnew_whatsnewstoryscreen_pageoffsetof",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewstoryscreen_kt_int",
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewstoryscreen_kt_int"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
+      "source_location": "L260",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "confidence_score": 1.0,
+      "source": "whatsnew_whatsnewstoryscreen_storyprogressbar",
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewstoryscreen_kt_int"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
+      "source_location": "L292",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "whatsnew_whatsnewstoryscreen_invisibleclickable",
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewstoryscreen_kt_boolean",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
+      "source_location": "L292",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "whatsnew_whatsnewstoryscreen_invisibleclickable",
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewstoryscreen_kt_modifier",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
+      "source_location": "L381",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "whatsnew_whatsnewstoryscreen_storypage",
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewstoryscreen_kt_modifier",
       "confidence_score": 1.0
     },
     {
@@ -40340,9 +40770,9 @@
       "source_location": "L260",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "whatsnew_whatsnewstoryscreen_storyprogressbar",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewstoryscreen_kt_int",
-      "confidence_score": 1.0
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewstoryscreen_kt_modifier"
     },
     {
       "relation": "references",
@@ -40351,9 +40781,9 @@
       "source_location": "L249",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "whatsnew_whatsnewstoryscreen_pageoffsetof",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewstoryscreen_kt_float",
-      "confidence_score": 1.0
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewstoryscreen_kt_float"
     },
     {
       "relation": "references",
@@ -40362,20 +40792,9 @@
       "source_location": "L310",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "whatsnew_whatsnewstoryscreen_storyparallax",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewstoryscreen_kt_float",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
-      "source_location": "L260",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "source": "whatsnew_whatsnewstoryscreen_storyprogressbar",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewstoryscreen_kt_modifier",
-      "confidence_score": 1.0
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewstoryscreen_kt_float"
     },
     {
       "relation": "calls",
@@ -40384,9 +40803,9 @@
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt",
       "source_location": "L340",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "whatsnew_whatsnewstoryscreen_storypage",
-      "target": "whatsnew_whatsnewstoryscreen_storyparallax",
-      "confidence_score": 1.0
+      "target": "whatsnew_whatsnewstoryscreen_storyparallax"
     },
     {
       "relation": "references",
@@ -40395,9 +40814,9 @@
       "source_location": "L324",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "whatsnew_whatsnewstoryscreen_storypage",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewstoryscreen_kt_release",
-      "confidence_score": 1.0
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_screens_whatsnew_whatsnewstoryscreen_kt_release"
     },
     {
       "relation": "calls",
@@ -41219,10 +41638,10 @@
       "context": "call",
       "confidence": "INFERRED",
       "confidence_score": 0.8,
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/SettingsComponents.kt",
-      "source_location": "L68",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppRow.kt",
+      "source_location": "L51",
       "weight": 1.0,
-      "source": "ui_settingscomponents_settingsrow",
+      "source": "ui_approw_approw",
       "target": "ui_appiconbox_appiconbox"
     },
     {
@@ -41305,11 +41724,195 @@
       "context": "call",
       "confidence": "INFERRED",
       "confidence_score": 0.8,
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/WhatsNewRow.kt",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppRow.kt",
+      "source_location": "L118",
+      "weight": 1.0,
+      "source": "ui_approw_appsection",
+      "target": "ui_appoutlinedcard_appoutlinedcard"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppRow.kt",
+      "source_location": "L31",
+      "weight": 1.0,
+      "source": "ui_approw",
+      "target": "ui_approw_approw",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppRow.kt",
+      "source_location": "L80",
+      "weight": 1.0,
+      "source": "ui_approw",
+      "target": "ui_approw_approwdivider",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppRow.kt",
+      "source_location": "L99",
+      "weight": 1.0,
+      "source": "ui_approw",
+      "target": "ui_approw_appsection",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppRow.kt",
+      "source_location": "L31",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "ui_approw_approw",
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_approw_kt_color",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppRow.kt",
+      "source_location": "L31",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "ui_approw_approw",
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_approw_kt_composable",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppRow.kt",
+      "source_location": "L31",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "ui_approw_approw",
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_approw_kt_materialsymbol",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppRow.kt",
+      "source_location": "L31",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "ui_approw_approw",
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_approw_kt_modifier",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppRow.kt",
+      "source_location": "L31",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "ui_approw_approw",
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_approw_kt_string",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppRow.kt",
+      "source_location": "L31",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "ui_approw_approw",
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_approw_kt_unit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppRow.kt",
       "source_location": "L69",
       "weight": 1.0,
-      "source": "ui_whatsnewrow_releasecard",
-      "target": "ui_appoutlinedcard_appoutlinedcard"
+      "source": "ui_approw_approw",
+      "target": "ui_materialsymbolicon_materialsymbolicon"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppRow.kt",
+      "source_location": "L99",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "ui_approw_appsection",
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_approw_kt_string",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppRow.kt",
+      "source_location": "L80",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "ui_approw_approwdivider",
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_approw_kt_modifier",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppRow.kt",
+      "source_location": "L99",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "ui_approw_appsection",
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_approw_kt_modifier",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppRow.kt",
+      "source_location": "L99",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "ui_approw_appsection",
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_approw_kt_unit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppRow.kt",
+      "source_location": "L99",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "ui_approw_appsection",
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_approw_kt_composable",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppRow.kt",
+      "source_location": "L123",
+      "weight": 1.0,
+      "source": "ui_approw_appsection",
+      "target": "ui_approw_approwdivider",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppRow.kt",
+      "source_location": "L117",
+      "weight": 1.0,
+      "source": "ui_approw_appsection",
+      "target": "ui_appsectionheader_appsectionlabel"
     },
     {
       "relation": "contains",
@@ -41732,17 +42335,6 @@
       "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_badges_kt_color"
     },
     {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/WhatsNewRow.kt",
-      "source_location": "L86",
-      "weight": 1.0,
-      "source": "ui_whatsnewrow_releasecard",
-      "target": "ui_badges_statusbadge"
-    },
-    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/CenteredComponents.kt",
@@ -41783,6 +42375,27 @@
       "confidence_score": 1.0,
       "source": "ui_centeredcomponents_centeredprogress",
       "target": "ui_centeredcomponents_centeredcolumn"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/ChangeTypeIcon.kt",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "ui_changetypeicon",
+      "target": "ui_changetypeicon_toicon",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/ChangeTypeIcon.kt",
+      "source_location": "L11",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "ui_changetypeicon_toicon",
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_changetypeicon_kt_materialsymbol",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -42397,39 +43010,6 @@
       "target": "ui_materialsymbolicon_materialsymbolsfontfamily"
     },
     {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/SettingsComponents.kt",
-      "source_location": "L86",
-      "weight": 1.0,
-      "source": "ui_settingscomponents_settingsrow",
-      "target": "ui_materialsymbolicon_materialsymbolicon"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/WhatsNewRow.kt",
-      "source_location": "L123",
-      "weight": 1.0,
-      "source": "ui_whatsnewrow_releasecard",
-      "target": "ui_materialsymbolicon_materialsymbolicon"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/WhatsNewRow.kt",
-      "source_location": "L48",
-      "weight": 1.0,
-      "source": "ui_whatsnewrow_whatsnewrow",
-      "target": "ui_materialsymbolicon_materialsymbolicon"
-    },
-    {
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/MaterialSymbolIcon.kt",
@@ -42848,157 +43428,6 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/SettingsComponents.kt",
-      "source_location": "L48",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "ui_settingscomponents",
-      "target": "ui_settingscomponents_settingsrow"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/SettingsComponents.kt",
-      "source_location": "L97",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "ui_settingscomponents",
-      "target": "ui_settingscomponents_settingsrowdivider"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/SettingsComponents.kt",
-      "source_location": "L31",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "ui_settingscomponents",
-      "target": "ui_settingscomponents_settingssectionlabel"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/SettingsComponents.kt",
-      "source_location": "L31",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "confidence_score": 1.0,
-      "source": "ui_settingscomponents_settingssectionlabel",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_settingscomponents_kt_modifier"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/SettingsComponents.kt",
-      "source_location": "L31",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "confidence_score": 1.0,
-      "source": "ui_settingscomponents_settingssectionlabel",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_settingscomponents_kt_string"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/SettingsComponents.kt",
-      "source_location": "L48",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "confidence_score": 1.0,
-      "source": "ui_settingscomponents_settingsrow",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_settingscomponents_kt_string"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/SettingsComponents.kt",
-      "source_location": "L48",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "confidence_score": 1.0,
-      "source": "ui_settingscomponents_settingsrow",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_settingscomponents_kt_modifier"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/SettingsComponents.kt",
-      "source_location": "L97",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "confidence_score": 1.0,
-      "source": "ui_settingscomponents_settingsrowdivider",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_settingscomponents_kt_modifier"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/SettingsComponents.kt",
-      "source_location": "L48",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "confidence_score": 1.0,
-      "source": "ui_settingscomponents_settingsrow",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_settingscomponents_kt_color"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/SettingsComponents.kt",
-      "source_location": "L48",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "confidence_score": 1.0,
-      "source": "ui_settingscomponents_settingsrow",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_settingscomponents_kt_composable"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/SettingsComponents.kt",
-      "source_location": "L48",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "confidence_score": 1.0,
-      "source": "ui_settingscomponents_settingsrow",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_settingscomponents_kt_materialsymbol"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/SettingsComponents.kt",
-      "source_location": "L48",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "confidence_score": 1.0,
-      "source": "ui_settingscomponents_settingsrow",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_settingscomponents_kt_unit"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/WhatsNewRow.kt",
-      "source_location": "L38",
-      "weight": 1.0,
-      "source": "ui_whatsnewrow_whatsnewrow",
-      "target": "ui_settingscomponents_settingsrow"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/WhatsNewRow.kt",
-      "source_location": "L96",
-      "weight": 1.0,
-      "source": "ui_whatsnewrow_releasecard",
-      "target": "ui_settingscomponents_settingsrowdivider"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/SharedPhotoTransition.kt",
       "source_location": "L86",
       "weight": 1.0,
@@ -43351,124 +43780,6 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/WhatsNewRow.kt",
-      "source_location": "L64",
-      "weight": 1.0,
-      "source": "ui_whatsnewrow",
-      "target": "ui_whatsnewrow_releasecard",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/WhatsNewRow.kt",
-      "source_location": "L21",
-      "weight": 1.0,
-      "source": "ui_whatsnewrow",
-      "target": "ui_whatsnewrow_toicon",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/WhatsNewRow.kt",
-      "source_location": "L31",
-      "weight": 1.0,
-      "source": "ui_whatsnewrow",
-      "target": "ui_whatsnewrow_whatsnewrow",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/WhatsNewRow.kt",
-      "source_location": "L21",
-      "weight": 1.0,
-      "context": "return_type",
-      "source": "ui_whatsnewrow_toicon",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_whatsnewrow_kt_materialsymbol",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/WhatsNewRow.kt",
-      "source_location": "L39",
-      "weight": 1.0,
-      "source": "ui_whatsnewrow_whatsnewrow",
-      "target": "ui_whatsnewrow_toicon",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/WhatsNewRow.kt",
-      "source_location": "L97",
-      "weight": 1.0,
-      "source": "ui_whatsnewrow_releasecard",
-      "target": "ui_whatsnewrow_whatsnewrow",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/WhatsNewRow.kt",
-      "source_location": "L31",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "source": "ui_whatsnewrow_whatsnewrow",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_whatsnewrow_kt_modifier",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/WhatsNewRow.kt",
-      "source_location": "L31",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "source": "ui_whatsnewrow_whatsnewrow",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_whatsnewrow_kt_release",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/WhatsNewRow.kt",
-      "source_location": "L31",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "source": "ui_whatsnewrow_whatsnewrow",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_whatsnewrow_kt_unit",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/WhatsNewRow.kt",
-      "source_location": "L64",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "source": "ui_whatsnewrow_releasecard",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_whatsnewrow_kt_release",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/WhatsNewRow.kt",
-      "source_location": "L64",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "source": "ui_whatsnewrow_releasecard",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_ui_whatsnewrow_kt_modifier",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/widgets.kt",
       "source_location": "L26",
       "weight": 1.0,
@@ -43667,9 +43978,9 @@
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/WhatsNewViewModel.kt",
       "source_location": "L19",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "viewmodels_whatsnewviewmodel_whatsnewviewmodel",
-      "target": "viewmodel",
-      "confidence_score": 1.0
+      "target": "viewmodel"
     },
     {
       "relation": "references",
@@ -46158,9 +46469,9 @@
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/WhatsNewViewModel.kt",
       "source_location": "L13",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "viewmodels_whatsnewviewmodel",
-      "target": "viewmodels_whatsnewviewmodel_whatsnewuistate",
-      "confidence_score": 1.0
+      "target": "viewmodels_whatsnewviewmodel_whatsnewuistate"
     },
     {
       "relation": "contains",
@@ -46168,9 +46479,9 @@
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/WhatsNewViewModel.kt",
       "source_location": "L19",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "viewmodels_whatsnewviewmodel",
-      "target": "viewmodels_whatsnewviewmodel_whatsnewviewmodel",
-      "confidence_score": 1.0
+      "target": "viewmodels_whatsnewviewmodel_whatsnewviewmodel"
     },
     {
       "relation": "references",
@@ -46179,20 +46490,9 @@
       "source_location": "L22",
       "weight": 1.0,
       "context": "generic_arg",
+      "confidence_score": 1.0,
       "source": "viewmodels_whatsnewviewmodel_whatsnewviewmodel",
-      "target": "viewmodels_whatsnewviewmodel_whatsnewuistate",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "context": "return_type",
-      "confidence": "EXTRACTED",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/WhatsNewViewModel.kt",
-      "source_location": "L24",
-      "weight": 1.0,
-      "source": "viewmodels_whatsnewviewmodel_whatsnewviewmodel_computeinitialstate",
-      "target": "viewmodels_whatsnewviewmodel_whatsnewuistate",
-      "confidence_score": 1.0
+      "target": "viewmodels_whatsnewviewmodel_whatsnewuistate"
     },
     {
       "relation": "references",
@@ -46201,19 +46501,9 @@
       "source_location": "L22",
       "weight": 1.0,
       "context": "field",
+      "confidence_score": 1.0,
       "source": "viewmodels_whatsnewviewmodel_whatsnewviewmodel",
-      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_whatsnewviewmodel_kt_stateflow",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "method",
-      "confidence": "EXTRACTED",
-      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/WhatsNewViewModel.kt",
-      "source_location": "L24",
-      "weight": 1.0,
-      "source": "viewmodels_whatsnewviewmodel_whatsnewviewmodel",
-      "target": "viewmodels_whatsnewviewmodel_whatsnewviewmodel_computeinitialstate",
-      "confidence_score": 1.0
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_whatsnewviewmodel_kt_stateflow"
     },
     {
       "relation": "method",
@@ -46221,8 +46511,61 @@
       "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/WhatsNewViewModel.kt",
       "source_location": "L43",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "viewmodels_whatsnewviewmodel_whatsnewviewmodel",
-      "target": "viewmodels_whatsnewviewmodel_whatsnewviewmodel_markseen",
+      "target": "viewmodels_whatsnewviewmodel_whatsnewviewmodel_markseen"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/WhatsNewViewModel.kt",
+      "source_location": "L29",
+      "weight": 1.0,
+      "source": "viewmodels_whatsnewviewmodel_whatsnewviewmodel",
+      "target": "viewmodels_whatsnewviewmodel_whatsnewviewmodel_releasefor",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/WhatsNewViewModel.kt",
+      "source_location": "L52",
+      "weight": 1.0,
+      "source": "viewmodels_whatsnewviewmodel_whatsnewviewmodel",
+      "target": "viewmodels_whatsnewviewmodel_whatsnewviewmodel_shouldshowdialog",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/WhatsNewViewModel.kt",
+      "source_location": "L29",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "viewmodels_whatsnewviewmodel_whatsnewviewmodel_releasefor",
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_whatsnewviewmodel_kt_release",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/WhatsNewViewModel.kt",
+      "source_location": "L29",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "viewmodels_whatsnewviewmodel_whatsnewviewmodel_releasefor",
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_whatsnewviewmodel_kt_string",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/WhatsNewViewModel.kt",
+      "source_location": "L52",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "viewmodels_whatsnewviewmodel_whatsnewviewmodel_shouldshowdialog",
+      "target": "shared_src_commonmain_kotlin_com_sirelon_marsroverphotos_presentation_viewmodels_whatsnewviewmodel_kt_boolean",
       "confidence_score": 1.0
     },
     {
@@ -50218,6 +50561,16 @@
       "target": "navigation_screentrackingtest_screentrackingtest_swiping_to_another_photo_does_not_count_as_a_new_screen_view"
     },
     {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/presentation/navigation/ScreenTrackingTest.kt",
+      "source_location": "L35",
+      "weight": 1.0,
+      "source": "navigation_screentrackingtest_screentrackingtest",
+      "target": "navigation_screentrackingtest_screentrackingtest_the_release_story_carries_its_version",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/RoversFilterTest.kt",
@@ -53064,132 +53417,12 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": ".claude/session-retro-whats-new.md",
-      "source_location": "L1",
-      "weight": 1.0,
-      "source": "claude_session_retro_whats_new",
-      "target": "claude_session_retro_whats_new_session_retrospective_what_s_new_feature",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": ".claude/session-retro-whats-new.md",
-      "source_location": "L17",
-      "weight": 1.0,
-      "source": "claude_session_retro_whats_new_session_retrospective_what_s_new_feature",
-      "target": "claude_session_retro_whats_new_mistakes_in_order",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": ".claude/session-retro-whats-new.md",
-      "source_location": "L166",
-      "weight": 1.0,
-      "source": "claude_session_retro_whats_new_session_retrospective_what_s_new_feature",
-      "target": "claude_session_retro_whats_new_what_should_become_permanent_guidance",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": ".claude/session-retro-whats-new.md",
-      "source_location": "L182",
-      "weight": 1.0,
-      "source": "claude_session_retro_whats_new_session_retrospective_what_s_new_feature",
-      "target": "claude_session_retro_whats_new_what_to_do_with_this_document",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": ".claude/session-retro-whats-new.md",
-      "source_location": "L11",
-      "weight": 1.0,
-      "source": "claude_session_retro_whats_new_session_retrospective_what_s_new_feature",
-      "target": "claude_session_retro_whats_new_what_we_built",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": ".claude/session-retro-whats-new.md",
-      "source_location": "L19",
-      "weight": 1.0,
-      "source": "claude_session_retro_whats_new_mistakes_in_order",
-      "target": "claude_session_retro_whats_new_1_ui_type_inside_a_domain_model",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": ".claude/session-retro-whats-new.md",
-      "source_location": "L33",
-      "weight": 1.0,
-      "source": "claude_session_retro_whats_new_mistakes_in_order",
-      "target": "claude_session_retro_whats_new_2_type_name_too_generic",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": ".claude/session-retro-whats-new.md",
-      "source_location": "L45",
-      "weight": 1.0,
-      "source": "claude_session_retro_whats_new_mistakes_in_order",
-      "target": "claude_session_retro_whats_new_3_hardcoded_color_literals_in_screen_code",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": ".claude/session-retro-whats-new.md",
-      "source_location": "L65",
-      "weight": 1.0,
-      "source": "claude_session_retro_whats_new_mistakes_in_order",
-      "target": "claude_session_retro_whats_new_4_no_viewmodel_at_all",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": ".claude/session-retro-whats-new.md",
-      "source_location": "L79",
-      "weight": 1.0,
-      "source": "claude_session_retro_whats_new_mistakes_in_order",
-      "target": "claude_session_retro_whats_new_5_viewmodel_with_plain_properties_instead_of_stateflow",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": ".claude/session-retro-whats-new.md",
-      "source_location": "L117",
-      "weight": 1.0,
-      "source": "claude_session_retro_whats_new_mistakes_in_order",
-      "target": "claude_session_retro_whats_new_6_business_logic_and_settings_injection_in_the_navigation_composable",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": ".claude/session-retro-whats-new.md",
-      "source_location": "L150",
-      "weight": 1.0,
-      "source": "claude_session_retro_whats_new_mistakes_in_order",
-      "target": "claude_session_retro_whats_new_7_duplicating_existing_ui_components_instead_of_reusing_them",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
       "source_file": ".claude/skills/fact-research/SKILL.md",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "fact_research_skill",
-      "target": "fact_research_skill_fact_research_pipeline",
-      "confidence_score": 1.0
+      "target": "fact_research_skill_fact_research_pipeline"
     },
     {
       "relation": "contains",
@@ -53197,9 +53430,9 @@
       "source_file": ".claude/skills/fact-research/SKILL.md",
       "source_location": "L28",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "fact_research_skill_fact_research_pipeline",
-      "target": "fact_research_skill_pipeline",
-      "confidence_score": 1.0
+      "target": "fact_research_skill_pipeline"
     },
     {
       "relation": "contains",
@@ -53207,9 +53440,9 @@
       "source_file": ".claude/skills/fact-research/SKILL.md",
       "source_location": "L52",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "fact_research_skill_fact_research_pipeline",
-      "target": "fact_research_skill_rules",
-      "confidence_score": 1.0
+      "target": "fact_research_skill_rules"
     },
     {
       "relation": "contains",
@@ -53217,9 +53450,9 @@
       "source_file": ".claude/skills/fact-research/SKILL.md",
       "source_location": "L10",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "fact_research_skill_fact_research_pipeline",
-      "target": "fact_research_skill_target_data",
-      "confidence_score": 1.0
+      "target": "fact_research_skill_target_data"
     },
     {
       "relation": "contains",
@@ -53227,9 +53460,9 @@
       "source_file": ".context/attachments/comments/14c8e90f-e5d7-4921-aa21-7050373770b3.md",
       "source_location": "L9",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "comments_14c8e90f_e5d7_4921_aa21_7050373770b3",
-      "target": "comments_14c8e90f_e5d7_4921_aa21_7050373770b3_comment",
-      "confidence_score": 1.0
+      "target": "comments_14c8e90f_e5d7_4921_aa21_7050373770b3_comment"
     },
     {
       "relation": "contains",
@@ -53237,9 +53470,9 @@
       "source_file": ".context/attachments/comments/151caa2b-685e-4064-b4bb-ccecaec21bb7.md",
       "source_location": "L9",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "comments_151caa2b_685e_4064_b4bb_ccecaec21bb7",
-      "target": "comments_151caa2b_685e_4064_b4bb_ccecaec21bb7_comment",
-      "confidence_score": 1.0
+      "target": "comments_151caa2b_685e_4064_b4bb_ccecaec21bb7_comment"
     },
     {
       "relation": "contains",
@@ -53247,8 +53480,18 @@
       "source_file": ".context/attachments/comments/35bb033e-2449-41b5-8f20-112ac4aab07b.md",
       "source_location": "L9",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "comments_35bb033e_2449_41b5_8f20_112ac4aab07b",
-      "target": "comments_35bb033e_2449_41b5_8f20_112ac4aab07b_comment",
+      "target": "comments_35bb033e_2449_41b5_8f20_112ac4aab07b_comment"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".context/attachments/comments/661710f7-c380-454b-ac18-4c3dcf484656.md",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "comments_661710f7_c380_454b_ac18_4c3dcf484656",
+      "target": "comments_661710f7_c380_454b_ac18_4c3dcf484656_comment",
       "confidence_score": 1.0
     },
     {
@@ -53257,9 +53500,9 @@
       "source_file": ".context/attachments/comments/69664dc4-a6f8-4b84-913e-304bae224fab.md",
       "source_location": "L9",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "comments_69664dc4_a6f8_4b84_913e_304bae224fab",
-      "target": "comments_69664dc4_a6f8_4b84_913e_304bae224fab_comment",
-      "confidence_score": 1.0
+      "target": "comments_69664dc4_a6f8_4b84_913e_304bae224fab_comment"
     },
     {
       "relation": "contains",
@@ -53267,8 +53510,18 @@
       "source_file": ".context/attachments/comments/79d35518-b249-4b67-8c33-6c6939f49f76.md",
       "source_location": "L9",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "comments_79d35518_b249_4b67_8c33_6c6939f49f76",
-      "target": "comments_79d35518_b249_4b67_8c33_6c6939f49f76_comment",
+      "target": "comments_79d35518_b249_4b67_8c33_6c6939f49f76_comment"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".context/attachments/comments/d9cff9ab-6f86-454e-9fd3-1fd15cddf98f.md",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "comments_d9cff9ab_6f86_454e_9fd3_1fd15cddf98f",
+      "target": "comments_d9cff9ab_6f86_454e_9fd3_1fd15cddf98f_comment",
       "confidence_score": 1.0
     },
     {
@@ -53277,9 +53530,9 @@
       "source_file": ".context/attachments/comments/e2bbf1b4-cad7-4b87-a374-8d6c9cb2ba70.md",
       "source_location": "L9",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "comments_e2bbf1b4_cad7_4b87_a374_8d6c9cb2ba70",
-      "target": "comments_e2bbf1b4_cad7_4b87_a374_8d6c9cb2ba70_comment",
-      "confidence_score": 1.0
+      "target": "comments_e2bbf1b4_cad7_4b87_a374_8d6c9cb2ba70_comment"
     },
     {
       "relation": "contains",
@@ -53287,9 +53540,9 @@
       "source_file": ".context/attachments/comments/e66287c6-2f55-4e7e-a0d4-42ce1d7467a1.md",
       "source_location": "L9",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "comments_e66287c6_2f55_4e7e_a0d4_42ce1d7467a1",
-      "target": "comments_e66287c6_2f55_4e7e_a0d4_42ce1d7467a1_comment",
-      "confidence_score": 1.0
+      "target": "comments_e66287c6_2f55_4e7e_a0d4_42ce1d7467a1_comment"
     },
     {
       "relation": "contains",
@@ -53360,6 +53613,16 @@
       "confidence_score": 1.0,
       "source": "agents",
       "target": "agents_repository_guidelines"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "AGENTS.md",
+      "source_location": "L45",
+      "weight": 1.0,
+      "source": "agents_repository_guidelines",
+      "target": "agents_architecture_layering",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -53445,6 +53708,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "AGENTS.md",
+      "source_location": "L69",
+      "weight": 1.0,
+      "source": "agents_repository_guidelines",
+      "target": "agents_strings_localization",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "AGENTS.md",
       "source_location": "L54",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -53496,6 +53769,16 @@
       "confidence_score": 1.0,
       "source": "claude",
       "target": "claude_graphify"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "CLAUDE.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "claude",
+      "target": "claude_project_guidance",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -53752,6 +54035,106 @@
       "confidence_score": 1.0,
       "source": "wasm_web_support_wasm_web_support",
       "target": "wasm_web_support_why_shared_web_support_is_disabled"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ARCHITECTURE.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "docs_architecture",
+      "target": "docs_architecture_architecture_mars_rover_photos",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ARCHITECTURE.md",
+      "source_location": "L92",
+      "weight": 1.0,
+      "source": "docs_architecture_architecture_mars_rover_photos",
+      "target": "docs_architecture_history",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ARCHITECTURE.md",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "docs_architecture_architecture_mars_rover_photos",
+      "target": "docs_architecture_layer_map",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ARCHITECTURE.md",
+      "source_location": "L26",
+      "weight": 1.0,
+      "source": "docs_architecture_architecture_mars_rover_photos",
+      "target": "docs_architecture_rules_prescriptive_follow_these",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ARCHITECTURE.md",
+      "source_location": "L80",
+      "weight": 1.0,
+      "source": "docs_architecture_architecture_mars_rover_photos",
+      "target": "docs_architecture_self_check_before_review",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ARCHITECTURE.md",
+      "source_location": "L28",
+      "weight": 1.0,
+      "source": "docs_architecture_rules_prescriptive_follow_these",
+      "target": "docs_architecture_domain_never_imports_presentation",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ARCHITECTURE.md",
+      "source_location": "L38",
+      "weight": 1.0,
+      "source": "docs_architecture_rules_prescriptive_follow_these",
+      "target": "docs_architecture_every_screen_that_shows_data_has_a_viewmodel",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ARCHITECTURE.md",
+      "source_location": "L60",
+      "weight": 1.0,
+      "source": "docs_architecture_rules_prescriptive_follow_these",
+      "target": "docs_architecture_navigation_routes_it_does_not_decide",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ARCHITECTURE.md",
+      "source_location": "L71",
+      "weight": 1.0,
+      "source": "docs_architecture_rules_prescriptive_follow_these",
+      "target": "docs_architecture_type_names_must_stand_alone",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ARCHITECTURE.md",
+      "source_location": "L47",
+      "weight": 1.0,
+      "source": "docs_architecture_rules_prescriptive_follow_these",
+      "target": "docs_architecture_viewmodel_state_is_observable_always",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -54241,5 +54624,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "3f1a22e36cf663639a03ebe1d436a5f81d05daea"
+  "built_at_commit": "0f5d3049d10944891000b223de38ef7997abbc14"
 }

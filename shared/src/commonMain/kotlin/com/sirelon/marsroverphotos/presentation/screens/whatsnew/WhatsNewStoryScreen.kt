@@ -5,7 +5,8 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,6 +26,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -33,92 +35,127 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.sp
 import com.sirelon.marsroverphotos.domain.releasenotes.Release
 import com.sirelon.marsroverphotos.presentation.navigation.LocalAppNavigator
 import com.sirelon.marsroverphotos.presentation.theme.AppMotion
 import com.sirelon.marsroverphotos.presentation.theme.AppSize
 import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
-import com.sirelon.marsroverphotos.presentation.theme.DarkColorPalette
+import com.sirelon.marsroverphotos.presentation.theme.AppTypography
+import com.sirelon.marsroverphotos.presentation.theme.MarsRoverPhotosTheme
 import com.sirelon.marsroverphotos.presentation.ui.AppButton
 import com.sirelon.marsroverphotos.presentation.ui.AppIconBox
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
+import com.sirelon.marsroverphotos.presentation.ui.setStatusBarAppearance
 import com.sirelon.marsroverphotos.presentation.ui.toIcon
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sirelon.marsroverphotos.presentation.viewmodels.WhatsNewViewModel
 import kotlin.math.abs
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
-private const val PAGE_DURATION_MS = 5_000
-
-/** How long the current segment takes to run out its remaining fill when the user skips ahead. */
-private const val CATCH_UP_MS = 250
-
-/** One-shot fade/scale of the whole story when the screen appears. */
-private const val SCREEN_ENTER_MS = 420
+/**
+ * One-shot latch guarding the story's single exit. Deliberately not snapshot state: it only has to
+ * stop a second [AppNavigator.goBack][com.sirelon.marsroverphotos.presentation.navigation.AppNavigator.goBack]
+ * in the same frame, and nothing renders from it.
+ */
+private class ExitLatch {
+    var fired = false
+}
 
 @Composable
 fun WhatsNewStoryScreen(version: String, startPage: Int) {
     val navigator = LocalAppNavigator.current
     val viewModel: WhatsNewViewModel = koinViewModel()
-    val state by viewModel.state.collectAsStateWithLifecycle()
-    val release = state.releases.firstOrNull { it.version == version } ?: return
+    // Resolved once per version rather than scanned on every recomposition, and outside the
+    // pager's invalidation path.
+    val release = remember(viewModel, version) { viewModel.releaseFor(version) } ?: return
     val changes = release.changes
+    // A release with no changes has no story: the pager would report 0 pages and every page-indexed
+    // read below would be out of bounds.
+    if (changes.isEmpty()) return
+
     val scope = rememberCoroutineScope()
-    val pagerState = rememberPagerState(initialPage = startPage) { changes.size }
+    // startPage arrives from a serialized back-stack key, so it can outlive the release it was saved
+    // against (a shorter changes list after an update). PagerState does not clamp initialPage until
+    // the layout phase, so it has to be clamped here, before anything indexes with it.
+    val firstPage = startPage.coerceIn(0, changes.lastIndex)
+    val pagerState = rememberPagerState(initialPage = firstPage) { changes.size }
     // Absolute position across the whole story: page index + that page's 0→1 fill. One value rather
     // than an (index, fraction) pair, so the bar can never draw a fresh segment with the previous
     // page's leftover fill for a frame before the reset lands.
-    val storyProgress = remember { Animatable(startPage.toFloat()) }
+    val storyProgress = remember { Animatable(firstPage.toFloat()) }
     val screenEnter = remember { Animatable(0f) }
+
+    // The story paints a forced-dark background under the status bar, so the system icons have to
+    // be light for the whole time it is up — otherwise a device on a light system theme draws dark
+    // icons on black. Same handling as the fullscreen photo viewer.
+    DisposableEffect(Unit) {
+        setStatusBarAppearance(lightIcons = true)
+        onDispose { setStatusBarAppearance(lightIcons = false) }
+    }
+
+    // The auto-advance timer, the forward tap zone and the "Done" button can all decide to leave on
+    // the last page, and a tap landing in the same frame the timer fires would otherwise pop two
+    // entries — silently dropping the Version History screen behind this one.
+    val exitLatch = remember { ExitLatch() }
+    fun exit() {
+        if (exitLatch.fired) return
+        exitLatch.fired = true
+        navigator.goBack()
+    }
 
     LaunchedEffect(Unit) {
         screenEnter.animateTo(
             targetValue = 1f,
-            animationSpec = tween(SCREEN_ENTER_MS, easing = AppMotion.Emphasized),
+            animationSpec = tween(AppMotion.StoryEnterMs, easing = AppMotion.Emphasized),
         )
     }
 
-    // Auto-advance: fill the target page's segment over PAGE_DURATION_MS, then move on.
+    // Auto-advance: fill the target page's segment over AppMotion.StoryPageMs, then move on.
     // snapshotFlow emits whenever targetPage changes; collectLatest cancels the in-progress block the
-    // moment the pager commits to a new page — same cancel-on-advance behaviour as the old
+    // moment the pager commits to a new page — same cancel-on-advance behaviour as an
     // LaunchedEffect(targetPage) key, but without invalidating WhatsNewStoryScreen's restart scope.
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.targetPage }.collectLatest { page ->
-            if (storyProgress.value < page) {
+            val position = storyProgress.value
+            when {
                 // Skipping ahead — run the segments we're leaving out to full instead of snapping them.
-                storyProgress.animateTo(
+                position < page -> storyProgress.animateTo(
                     targetValue = page.toFloat(),
-                    animationSpec = tween(CATCH_UP_MS, easing = AppMotion.Emphasized),
+                    animationSpec = tween(AppMotion.StoryCatchUpMs, easing = AppMotion.Emphasized),
                 )
-            } else {
                 // Going back — rewind straight to the start of the target segment.
-                storyProgress.snapTo(page.toFloat())
+                position >= page + 1f -> storyProgress.snapTo(page.toFloat())
+                // Already inside this segment: targetPage predicted a move mid-drag and the drag came
+                // back. Nothing was left, so the fill keeps running instead of visibly resetting to 0%.
+                else -> Unit
             }
+            // Resume from wherever the segment stands, at the same fill rate, so a reverted drag
+            // doesn't hand the page a fresh full-length timer.
+            val remaining = (page + 1f - storyProgress.value).coerceIn(0f, 1f)
             storyProgress.animateTo(
                 targetValue = page + 1f,
-                animationSpec = tween(durationMillis = PAGE_DURATION_MS, easing = LinearEasing),
+                animationSpec = tween(
+                    durationMillis = (AppMotion.StoryPageMs * remaining).toInt(),
+                    easing = LinearEasing,
+                ),
             )
             // Only auto-advance if the fill ran to completion (wasn't cut short by a tap or swipe).
             if (storyProgress.value >= page + 1f) {
                 val next = page + 1
                 if (next < changes.size) scope.launch { pagerState.animateScrollToPage(next) }
-                else navigator.goBack()
+                else exit()
             }
         }
     }
 
-    MaterialTheme(colorScheme = DarkColorPalette) {
+    // Forced dark, but through the app's theme entry point so the story still picks up dynamic
+    // color and the brand overrides every other surface gets. See docs/DESIGN_SYSTEM.md › Color.
+    MarsRoverPhotosTheme(darkTheme = true) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -152,7 +189,7 @@ fun WhatsNewStoryScreen(version: String, startPage: Int) {
                         .padding(horizontal = AppSpacing.sm),
                     horizontalArrangement = Arrangement.End,
                 ) {
-                    IconButton(onClick = { navigator.goBack() }) {
+                    IconButton(onClick = ::exit) {
                         MaterialSymbolIcon(
                             symbol = MaterialSymbol.Close,
                             contentDescription = "Close",
@@ -166,10 +203,7 @@ fun WhatsNewStoryScreen(version: String, startPage: Int) {
                     // so it stays put while the pages swipe over it.
                     Text(
                         text = release.version,
-                        style = MaterialTheme.typography.displayLarge.copy(
-                            fontSize = 96.sp,
-                            fontWeight = FontWeight.Bold,
-                        ),
+                        style = AppTypography.storyVersionGhost,
                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.04f),
                         textAlign = TextAlign.Center,
                         modifier = Modifier
@@ -179,7 +213,7 @@ fun WhatsNewStoryScreen(version: String, startPage: Int) {
                     )
 
                     // Pager — tap zones live inside each page so they're peers of the page content.
-                    // The pager only claims drag gestures; taps fall through to the page's pointerInput.
+                    // The pager only claims drag gestures; taps fall through to the page's zones.
                     HorizontalPager(
                         state = pagerState,
                         modifier = Modifier.fillMaxSize(),
@@ -190,32 +224,34 @@ fun WhatsNewStoryScreen(version: String, startPage: Int) {
                                 pageOffset = { pagerState.pageOffsetOf(page) },
                             )
 
-                            // 25% left → back, 75% right → forward
+                            // 25% left → back, 75% right → forward. clickable rather than a raw
+                            // detectTapGestures so the zones exist in the accessibility tree —
+                            // a screen reader has no other way to reach them. No indication: a
+                            // ripple over half the screen would read as a bug.
                             Row(modifier = Modifier.fillMaxSize()) {
                                 Box(
                                     modifier = Modifier
                                         .fillMaxHeight()
                                         .weight(0.25f)
-                                        .pointerInput(page) {
-                                            detectTapGestures {
-                                                val target = page - 1
-                                                if (target < 0) return@detectTapGestures
-                                                scope.launch { pagerState.animateScrollToPage(target) }
-                                            }
+                                        .invisibleClickable(
+                                            label = "Previous",
+                                            enabled = page > 0,
+                                        ) {
+                                            scope.launch { pagerState.animateScrollToPage(page - 1) }
                                         },
                                 )
                                 Box(
                                     modifier = Modifier
                                         .fillMaxHeight()
                                         .weight(0.75f)
-                                        .pointerInput(page) {
-                                            detectTapGestures {
-                                                val target = page + 1
-                                                if (target < changes.size) {
-                                                    scope.launch { pagerState.animateScrollToPage(target) }
-                                                } else {
-                                                    navigator.goBack()
-                                                }
+                                        .invisibleClickable(
+                                            label = if (page < changes.lastIndex) "Next" else "Close",
+                                        ) {
+                                            val target = page + 1
+                                            if (target < changes.size) {
+                                                scope.launch { pagerState.animateScrollToPage(target) }
+                                            } else {
+                                                exit()
                                             }
                                         },
                                 )
@@ -229,8 +265,8 @@ fun WhatsNewStoryScreen(version: String, startPage: Int) {
                 AppButton(
                     onClick = {
                         val page = pagerState.currentPage
-                        if (page == changes.size - 1) {
-                            navigator.goBack()
+                        if (page >= changes.lastIndex) {
+                            exit()
                         } else {
                             scope.launch { pagerState.animateScrollToPage(page + 1) }
                         }
@@ -240,14 +276,31 @@ fun WhatsNewStoryScreen(version: String, startPage: Int) {
                         .padding(horizontal = AppSpacing.xl)
                         .padding(bottom = AppSpacing.xl),
                 ) {
-                    val currentPage = pagerState.currentPage
-                    val isLast = currentPage == changes.size - 1
-                    Text(text = if (isLast) "Done" else (changes[currentPage].actionLabel ?: "Next"))
+                    // Compared rather than indexed: currentPage is the raw pager position, only
+                    // corrected to the real page range in the layout phase.
+                    Text(text = if (pagerState.currentPage >= changes.lastIndex) "Done" else "Next")
                 }
             }
         }
     }
 }
+
+/**
+ * A full-bleed tap target with no visual affordance, but with the semantics node an invisible
+ * [androidx.compose.foundation.gestures.detectTapGestures] region would not produce.
+ */
+@Composable
+private fun Modifier.invisibleClickable(
+    label: String,
+    enabled: Boolean = true,
+    onClick: () -> Unit,
+): Modifier = clickable(
+    interactionSource = remember { MutableInteractionSource() },
+    indication = null,
+    enabled = enabled,
+    onClickLabel = label,
+    onClick = onClick,
+)
 
 /** Signed distance of [page] from the settled position: 0 when centered, ±1 one page away. */
 private fun PagerState.pageOffsetOf(page: Int): Float =
@@ -326,9 +379,13 @@ private fun Modifier.storyParallax(
 }
 
 @Composable
-private fun StoryPage(change: Release.Change, pageOffset: () -> Float) {
+private fun StoryPage(
+    change: Release.Change,
+    pageOffset: () -> Float,
+    modifier: Modifier = Modifier,
+) {
     val colors = MaterialTheme.colorScheme
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -346,10 +403,7 @@ private fun StoryPage(change: Release.Change, pageOffset: () -> Float) {
             Spacer(modifier = Modifier.height(AppSpacing.xl))
             Text(
                 text = change.title,
-                style = MaterialTheme.typography.displaySmall.copy(
-                    fontSize = 38.sp,
-                    fontWeight = FontWeight.Bold,
-                ),
+                style = AppTypography.storyTitle,
                 color = colors.onBackground,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.storyParallax(pageOffset, depth = -1.35f),

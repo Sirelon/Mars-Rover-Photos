@@ -10,6 +10,13 @@ import kotlinx.serialization.Serializable
 sealed interface AppDestination : NavKey {
     sealed interface DialogDestination : AppDestination
 
+    /**
+     * A destination that owns the whole window: the nav bar/rail, ad slot, Ukraine banner and the
+     * status-bar inset all animate out while it is on top. Declaring the marker here is what
+     * registers a screen as fullscreen — [AppNavigation] has no per-destination list to update.
+     */
+    sealed interface FullscreenDestination : AppDestination
+
     @Serializable
     enum class ImagesSource {
         DIRECT_IDS,
@@ -37,7 +44,7 @@ sealed interface AppDestination : NavKey {
         val camera: String? = null,
         /** Active camera filters for [ImagesSource.ROVER_FEED] when opened from Photos. */
         val cameras: Set<String> = emptySet(),
-    ) : AppDestination
+    ) : FullscreenDestination
 
     @Serializable
     data object Favorite : AppDestination
@@ -75,5 +82,5 @@ sealed interface AppDestination : NavKey {
 
     /** Full-screen story-style pager for a single release. */
     @Serializable
-    data class WhatsNewStory(val version: String, val page: Int = 0) : AppDestination
+    data class WhatsNewStory(val version: String, val page: Int = 0) : FullscreenDestination
 }

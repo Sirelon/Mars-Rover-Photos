@@ -19,6 +19,5 @@ data class Release(
         val title: String,
         val summary: String,
         val detail: String? = null,
-        val actionLabel: String? = null,
     )
 }

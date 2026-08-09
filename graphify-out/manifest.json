@@ -370,8 +370,8 @@
     "semantic_hash": "8bf9d4c2552e8a04591264edc5ffdf4d"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppDestinations.kt": {
-    "mtime": 1786207162.7949493,
-    "ast_hash": "1a513a53e912551555617991734746ee",
+    "mtime": 1786269201.8560097,
+    "ast_hash": "fa39120c5b2d989155c4b5192bc635b1",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppNavEntryDecorators.kt": {
@@ -380,8 +380,8 @@
     "semantic_hash": "1646c24910389087121d919080b007a3"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppNavigation.kt": {
-    "mtime": 1786218536.5743613,
-    "ast_hash": "964bd077e60d2df1d28cc4ff6054bf3c",
+    "mtime": 1786269220.327939,
+    "ast_hash": "ed2ea0bbcf4fc8e0006bf4b921533d6a",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppNavigator.kt": {
@@ -415,8 +415,8 @@
     "semantic_hash": "2bb3271db541be16d9f0df476b928b0a"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/AboutScreen.kt": {
-    "mtime": 1786207367.5308015,
-    "ast_hash": "4c80522ebe7c8cb79f6e83d9e7e45d37",
+    "mtime": 1786269454.4707313,
+    "ast_hash": "9beb072090d74e63a0c05f203b0a2beb",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/EarthDatePickerScreen.kt": {
@@ -490,9 +490,9 @@
     "semantic_hash": "18c3876aa79c4318a12587da7e402937"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/theme/AppTypography.kt": {
-    "mtime": 1786204259.8885179,
-    "ast_hash": "76db7271513fdcf1a81c5f9a337bd060",
-    "semantic_hash": "76db7271513fdcf1a81c5f9a337bd060"
+    "mtime": 1786269339.303938,
+    "ast_hash": "1d39acba6b4f26c45fc2ac5b239bf052",
+    "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/theme/Theme.kt": {
     "mtime": 1786204259.8886447,
@@ -593,11 +593,6 @@
     "mtime": 1786204259.8912094,
     "ast_hash": "4cde88baf3936ae169fe276aaa97cd49",
     "semantic_hash": "4cde88baf3936ae169fe276aaa97cd49"
-  },
-  "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/SettingsComponents.kt": {
-    "mtime": 1786204259.8912957,
-    "ast_hash": "28c270e03b7caff543a7866deae4bb40",
-    "semantic_hash": "28c270e03b7caff543a7866deae4bb40"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/StatusBarAppearance.kt": {
     "mtime": 1786204259.8917224,
@@ -1090,8 +1085,8 @@
     "semantic_hash": "b75086f02d3c8592ea084b0d3077847e"
   },
   "AGENTS.md": {
-    "mtime": 1786219178.115028,
-    "ast_hash": "86abd7ea7c33bbe410987255d3e413c9",
+    "mtime": 1786268523.7574625,
+    "ast_hash": "70a851c30e716880ce09c15db5a338e3",
     "semantic_hash": ""
   },
   "DEEP_LINKING.md": {
@@ -1120,8 +1115,8 @@
     "semantic_hash": "2666db8b60cedc45fad0c0a8b4e0461e"
   },
   "docs/DESIGN_SYSTEM.md": {
-    "mtime": 1786219169.6625206,
-    "ast_hash": "f064633986b8328857399081fc125011",
+    "mtime": 1786269606.772571,
+    "ast_hash": "24b1e9d93baa5488549c496eba81842b",
     "semantic_hash": ""
   },
   "index.html": {
@@ -1140,8 +1135,8 @@
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1786204259.1142757,
-    "ast_hash": "82efb97a359f5c7290bf2513d14686be",
+    "mtime": 1786219898.5172162,
+    "ast_hash": "7a5fb85e8de9cbb9ca0c8c4f8af3aa4c",
     "semantic_hash": ""
   },
   "Design/alien_icon.png": {
@@ -1885,8 +1880,8 @@
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/theme/AppMotion.kt": {
-    "mtime": 1786204259.8882756,
-    "ast_hash": "43ddd7f705c5cc14ee7d30b150d1eb33",
+    "mtime": 1786269325.2668614,
+    "ast_hash": "a660840c16657f2f4e170624fdc2b452",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/SharedPhotoTransition.kt": {
@@ -1945,8 +1940,8 @@
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/ScreenTracking.kt": {
-    "mtime": 1786207350.4717696,
-    "ast_hash": "e71eb4c2edcb78086b4c5fcd47d38e2d",
+    "mtime": 1786269441.1584086,
+    "ast_hash": "4d0a16ac2f1ff4e5f07cffafa2febd49",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/ScrollRestoreConstants.kt": {
@@ -1955,8 +1950,8 @@
     "semantic_hash": ""
   },
   "shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/presentation/navigation/ScreenTrackingTest.kt": {
-    "mtime": 1786204259.8970194,
-    "ast_hash": "3bb37147c61976c0d91580e5b8f2e74a",
+    "mtime": 1786269451.2831388,
+    "ast_hash": "13cf8fd4a12b5d551d622436a781064a",
     "semantic_hash": ""
   },
   ".claude/skills/fact-research/workflow-template.js": {
@@ -1965,43 +1960,33 @@
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/releasenotes/Release.kt": {
-    "mtime": 1786217413.2422059,
-    "ast_hash": "45e27963db7fe4cff9f58dfef3381b88",
+    "mtime": 1786269654.3665633,
+    "ast_hash": "29ba1ca959ef6aed7ca4177b0ecb292d",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/releasenotes/ReleaseNotes.kt": {
-    "mtime": 1786217427.572378,
-    "ast_hash": "df6abb8d175e6c03e3120c3dac85513d",
+    "mtime": 1786267980.7566924,
+    "ast_hash": "0bd79714fa173d8ef5d08c991367ecbd",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/AllVersionsScreen.kt": {
-    "mtime": 1786218469.0741265,
-    "ast_hash": "e847285cc7a58ca8addd211f7df5b0c0",
+    "mtime": 1786269310.0180295,
+    "ast_hash": "fb608c638992089397aea3079b81c074",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewDialogScreen.kt": {
-    "mtime": 1786218527.9531546,
-    "ast_hash": "213eb1781c96f2a8b8ce891aaedb7a9f",
+    "mtime": 1786269275.0988727,
+    "ast_hash": "3394cb8c5857b33cc897593a1351328e",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt": {
-    "mtime": 1786219351.4648128,
-    "ast_hash": "0c7e62c5831b507e8e74affe241ec999",
-    "semantic_hash": ""
-  },
-  "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/WhatsNewRow.kt": {
-    "mtime": 1786218498.592127,
-    "ast_hash": "d7c24ffbe2ecaa89511ceea220e33798",
+    "mtime": 1786269660.273886,
+    "ast_hash": "f19b3b11813cd02e8adf473b96793b4d",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/WhatsNewViewModel.kt": {
-    "mtime": 1786218438.5466707,
-    "ast_hash": "44832e9283fafef36fc49c3253f05866",
-    "semantic_hash": ""
-  },
-  ".claude/session-retro-whats-new.md": {
-    "mtime": 1786218919.722114,
-    "ast_hash": "36bdb4e3c32ef4a29e8f90d652784f7a",
+    "mtime": 1786269188.469748,
+    "ast_hash": "22f101fceac8f41fa82e5eceec7d7b16",
     "semantic_hash": ""
   },
   ".claude/skills/fact-research/SKILL.md": {
@@ -2042,6 +2027,41 @@
   ".context/attachments/comments/e66287c6-2f55-4e7e-a0d4-42ce1d7467a1.md": {
     "mtime": 1786217047.487984,
     "ast_hash": "93b273fcf141e585160793de5482e6b4",
+    "semantic_hash": ""
+  },
+  "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewRow.kt": {
+    "mtime": 1786269261.087175,
+    "ast_hash": "8894007e05437b8c0e986b0a6e76adb1",
+    "semantic_hash": ""
+  },
+  "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppRow.kt": {
+    "mtime": 1786269318.8384569,
+    "ast_hash": "3c7a46c9c0d149fa8873138f3204cea7",
+    "semantic_hash": ""
+  },
+  "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/ChangeTypeIcon.kt": {
+    "mtime": 1786269243.0900986,
+    "ast_hash": "b6d2037875a55bb590a1878d9dbe726a",
+    "semantic_hash": ""
+  },
+  ".context/attachments/comments/661710f7-c380-454b-ac18-4c3dcf484656.md": {
+    "mtime": 1786219577.596751,
+    "ast_hash": "62e4a1c9fc3331602f7ba2815696a21b",
+    "semantic_hash": ""
+  },
+  ".context/attachments/comments/d9cff9ab-6f86-454e-9fd3-1fd15cddf98f.md": {
+    "mtime": 1786219541.8437567,
+    "ast_hash": "21db387c0b2e1e677b43c8d4bd40fab7",
+    "semantic_hash": ""
+  },
+  ".context/attachments/pSXz5O/pasted_text_2026-08-09_12-34-45.txt": {
+    "mtime": 1786268085.5265446,
+    "ast_hash": "33f8d7c4226bdb8b7962d02edc2fbcda",
+    "semantic_hash": ""
+  },
+  "docs/ARCHITECTURE.md": {
+    "mtime": 1786269548.0480165,
+    "ast_hash": "9a0052889a9db46493a5cad532c05f29",
     "semantic_hash": ""
   }
 }

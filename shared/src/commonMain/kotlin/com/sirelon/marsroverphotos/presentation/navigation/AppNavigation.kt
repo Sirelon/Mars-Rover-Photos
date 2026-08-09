@@ -162,8 +162,10 @@ fun AppNavigation(
     val dialogOverlaySceneStrategy = remember { DialogOverlaySceneStrategy<NavKey>() }
     val tracker: Tracker = koinInject()
     val whatsNewViewModel: WhatsNewViewModel = koinViewModel()
-    val isImages = chromeDestination is AppDestination.Images
-    val isFullscreen = isImages || chromeDestination is AppDestination.WhatsNewStory
+    // Screens self-register as fullscreen by implementing the marker interface, so a new one can't
+    // ship with the chrome still drawn over it (this flag drives chromeVisible, the status-bar
+    // inset animation and the Ukraine banner).
+    val isFullscreen = chromeDestination is AppDestination.FullscreenDestination
 
     // One screen_view observer for the whole app rather than a call per screen: whatever is on top
     // of the back stack (including the dialog destinations) is what the user is looking at.
@@ -173,8 +175,11 @@ fun AppNavigation(
     }
 
     LaunchedEffect(Unit) {
-        // ViewModel resolves "should show" once on creation (handles fresh-install vs update).
-        if (whatsNewViewModel.state.value.shouldShowDialog && deepLink == null) {
+        // Asked once per app start, and only on a plain launch: a cold start into a deep link is
+        // already showing the user what they asked for, so the dialog stays out of the way. The
+        // marker is only written on acknowledgement, so it simply comes back on the next plain
+        // launch rather than being lost.
+        if (deepLink == null && whatsNewViewModel.shouldShowDialog()) {
             navigator.navigate(AppDestination.WhatsNewDialog)
         }
     }
@@ -319,10 +324,14 @@ private fun AppDestination.topLevelDestination(): AppDestination {
 
         AppDestination.Favorite -> AppDestination.Favorite
         AppDestination.Popular -> AppDestination.Popular
-        AppDestination.About -> AppDestination.About
 
+        // Version History and the release stories are reached from the About tab's "What's New"
+        // row, so the highlight has to stay on About while the user is inside them.
+        AppDestination.About,
         AppDestination.AllVersions,
-        is AppDestination.WhatsNewStory,
+        is AppDestination.WhatsNewStory -> AppDestination.About
+
+        // Never reached: the dialog is a DialogDestination, which chromeDestination filters out.
         AppDestination.WhatsNewDialog -> AppDestination.Rovers
     }
 }
