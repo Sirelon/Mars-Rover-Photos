@@ -51,17 +51,16 @@ import com.sirelon.marsroverphotos.presentation.theme.activeStatusColor
 import com.sirelon.marsroverphotos.presentation.theme.primaryVariant
 import com.sirelon.marsroverphotos.presentation.ui.AppBadge
 import com.sirelon.marsroverphotos.presentation.ui.AppIconBox
-import com.sirelon.marsroverphotos.presentation.ui.AppOutlinedCard
 import com.sirelon.marsroverphotos.presentation.ui.BadgeRow
 import com.sirelon.marsroverphotos.presentation.ui.CardShape
 import com.sirelon.marsroverphotos.presentation.ui.MarsSnackbar
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.presentation.ui.SegmentedControl
-import com.sirelon.marsroverphotos.presentation.ui.SettingsRow
-import com.sirelon.marsroverphotos.presentation.ui.SettingsRowDivider
-import com.sirelon.marsroverphotos.presentation.ui.SettingsRowIndent
-import com.sirelon.marsroverphotos.presentation.ui.SettingsSectionLabel
+import com.sirelon.marsroverphotos.presentation.ui.AppRow
+import com.sirelon.marsroverphotos.presentation.ui.AppRowDivider
+import com.sirelon.marsroverphotos.presentation.ui.AppRowIndent
+import com.sirelon.marsroverphotos.presentation.ui.AppSection
 import com.sirelon.marsroverphotos.presentation.ui.StatusBadge
 import com.sirelon.marsroverphotos.presentation.ui.rememberPlatformUriHandler
 import com.sirelon.marsroverphotos.presentation.viewmodels.AboutViewModel
@@ -120,6 +119,7 @@ private fun AboutContent(
     val snackbarHostState = remember { SnackbarHostState() }
     val colors = MaterialTheme.colorScheme
     val live = activeStatusColor()
+    val navigator = LocalAppNavigator.current
 
     Box(modifier = Modifier.fillMaxSize().background(colors.background)) {
         Column(
@@ -151,10 +151,10 @@ private fun AboutContent(
             ) {
                 Blurb()
 
-                SettingsSection(label = "Appearance") {
+                AppSection(label = "Appearance") {
                     ThemeRow(currentTheme = currentTheme, onThemeChange = onThemeChange)
-                    SettingsRowDivider()
-                    SettingsRow(
+                    AppRowDivider()
+                    AppRow(
                         icon = MaterialSymbol.Info,
                         iconContainer = colors.secondaryContainer,
                         iconTint = colors.onSecondaryContainer,
@@ -166,8 +166,8 @@ private fun AboutContent(
                     )
                 }
 
-                SettingsSection(label = "Data") {
-                    SettingsRow(
+                AppSection(label = "Data") {
+                    AppRow(
                         icon = MaterialSymbol.Delete,
                         iconContainer = colors.error.copy(alpha = 0.16f),
                         iconTint = colors.error,
@@ -180,8 +180,19 @@ private fun AboutContent(
                     )
                 }
 
-                SettingsSection(label = "Connect") {
-                    SettingsRow(
+                AppSection(label = "Updates") {
+                    AppRow(
+                        icon = MaterialSymbol.Rocket,
+                        iconContainer = colors.secondaryContainer,
+                        iconTint = colors.onSecondaryContainer,
+                        label = "What's New",
+                        sub = "See what changed in past releases",
+                        onClick = { navigator.navigate(AppDestination.AllVersions) },
+                    )
+                }
+
+                AppSection(label = "Connect") {
+                    AppRow(
                         icon = MaterialSymbol.Public,
                         iconContainer = live.copy(alpha = 0.15f),
                         iconTint = live,
@@ -189,8 +200,8 @@ private fun AboutContent(
                         sub = "api.nasa.gov",
                         onClick = { uriHandler.openUri("https://api.nasa.gov/") }
                     )
-                    SettingsRowDivider()
-                    SettingsRow(
+                    AppRowDivider()
+                    AppRow(
                         icon = MaterialSymbol.Star,
                         iconContainer = colors.secondary.copy(alpha = 0.18f),
                         iconTint = colors.secondary,
@@ -209,8 +220,8 @@ private fun AboutContent(
                             }
                         }
                     )
-                    SettingsRowDivider()
-                    SettingsRow(
+                    AppRowDivider()
+                    AppRow(
                         icon = MaterialSymbol.Reviews,
                         iconContainer = colors.tertiary.copy(alpha = 0.16f),
                         iconTint = colors.tertiary,
@@ -221,8 +232,8 @@ private fun AboutContent(
                 }
 
                 if (onNavigateToAdmin != null) {
-                    SettingsSection(label = "Developer") {
-                        SettingsRow(
+                    AppSection(label = "Developer") {
+                        AppRow(
                             icon = MaterialSymbol.BugReport,
                             iconContainer = colors.errorContainer,
                             iconTint = colors.onErrorContainer,
@@ -242,15 +253,6 @@ private fun AboutContent(
             modifier = Modifier.align(Alignment.BottomCenter),
             actionClick = null
         )
-    }
-}
-
-/** Section label + grouped card — the About screen's grouped-settings glue. */
-@Composable
-private fun SettingsSection(label: String, content: @Composable () -> Unit) {
-    Column {
-        SettingsSectionLabel(text = label)
-        AppOutlinedCard { content() }
     }
 }
 
@@ -383,7 +385,7 @@ private fun ThemeRow(currentTheme: Theme, onThemeChange: (Theme) -> Unit) {
             }
         }
         // Indent to align under the label (icon-box + gap).
-        Row(modifier = Modifier.padding(start = SettingsRowIndent)) {
+        Row(modifier = Modifier.padding(start = AppRowIndent)) {
             SegmentedControl(
                 options = listOf(Theme.DARK, Theme.WHITE, Theme.SYSTEM),
                 selected = currentTheme,

@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 
 /**
  * Semantic typography shortcuts for the Mars Rover Photos design system.
@@ -87,4 +88,25 @@ object AppTypography {
     val appTitle: TextStyle
         @Composable @ReadOnlyComposable get() =
             MaterialTheme.typography.headlineSmall
+
+    /**
+     * What's New story — the oversized version number sitting as a near-transparent backdrop
+     * behind the pager (`displayLarge` scaled up to 96sp, bold). Deliberately larger than any
+     * scale slot: it is a graphic element, not readable copy, so it is named here rather than
+     * inlined as a `fontSize` override at the call site.
+     */
+    val storyVersionGhost: TextStyle
+        @Composable @ReadOnlyComposable get() =
+            MaterialTheme.typography.displayLarge.copy(
+                fontSize = 96.sp,
+                fontWeight = FontWeight.Bold,
+            )
+
+    /** What's New story — a page's headline (`displaySmall` at 38sp, bold). */
+    val storyTitle: TextStyle
+        @Composable @ReadOnlyComposable get() =
+            MaterialTheme.typography.displaySmall.copy(
+                fontSize = 38.sp,
+                fontWeight = FontWeight.Bold,
+            )
 }

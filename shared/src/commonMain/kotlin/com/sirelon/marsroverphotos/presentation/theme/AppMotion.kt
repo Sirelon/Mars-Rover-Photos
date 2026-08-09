@@ -31,6 +31,18 @@ object AppMotion {
      */
     const val SharedContainerMs = 400
 
+    /** 5s — What's New story: how long one page's progress segment takes to fill before advancing. */
+    const val StoryPageMs = 5_000
+
+    /**
+     * 250ms — What's New story: how long the current segment takes to run out its remaining fill
+     * when the user skips ahead, instead of snapping it.
+     */
+    const val StoryCatchUpMs = 250
+
+    /** 420ms — What's New story: one-shot fade/scale of the whole story when the screen appears. */
+    const val StoryEnterMs = 420
+
     /** Material 3 "emphasized" easing (reused from the segmented-control indicator). */
     val Emphasized = CubicBezierEasing(0.2f, 0f, 0f, 1f)
 

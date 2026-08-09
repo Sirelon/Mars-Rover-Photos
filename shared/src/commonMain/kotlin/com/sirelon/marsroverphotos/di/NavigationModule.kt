@@ -10,6 +10,7 @@ import androidx.navigation3.ui.NavDisplay
 import com.sirelon.marsroverphotos.presentation.navigation.AppDestination
 import com.sirelon.marsroverphotos.presentation.navigation.LocalAppNavigator
 import com.sirelon.marsroverphotos.presentation.theme.AppMotion
+import com.sirelon.marsroverphotos.presentation.navigation.DialogOverlaySceneStrategy
 import com.sirelon.marsroverphotos.presentation.screens.AboutScreen
 import com.sirelon.marsroverphotos.presentation.screens.AdminPhotosScreen
 import com.sirelon.marsroverphotos.presentation.screens.FavoriteScreen
@@ -18,6 +19,9 @@ import com.sirelon.marsroverphotos.presentation.screens.PopularScreen
 import com.sirelon.marsroverphotos.presentation.screens.RoverMissionInfoScreen
 import com.sirelon.marsroverphotos.presentation.screens.RoversScreen
 import com.sirelon.marsroverphotos.presentation.screens.UkraineScreen
+import com.sirelon.marsroverphotos.presentation.screens.whatsnew.AllVersionsScreen
+import com.sirelon.marsroverphotos.presentation.screens.whatsnew.WhatsNewDialogScreen
+import com.sirelon.marsroverphotos.presentation.screens.whatsnew.WhatsNewStoryScreen
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.dsl.module
 import org.koin.dsl.navigation3.navigation
@@ -125,5 +129,19 @@ val navigationModule = module {
     navigation<AppDestination.AdminPhotos> {
         val navigator = LocalAppNavigator.current
         AdminPhotosScreen(onBack = { navigator.goBack() })
+    }
+
+    navigation<AppDestination.WhatsNewDialog>(
+        metadata = DialogOverlaySceneStrategy.dialogOverlay(),
+    ) {
+        WhatsNewDialogScreen()
+    }
+
+    navigation<AppDestination.AllVersions> {
+        AllVersionsScreen()
+    }
+
+    navigation<AppDestination.WhatsNewStory> { destination ->
+        WhatsNewStoryScreen(version = destination.version, startPage = destination.page)
     }
 }

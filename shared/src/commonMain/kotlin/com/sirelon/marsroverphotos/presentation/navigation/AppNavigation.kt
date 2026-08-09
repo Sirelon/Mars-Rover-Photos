@@ -36,6 +36,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.sirelon.marsroverphotos.platform.BuildInfo
+import com.sirelon.marsroverphotos.presentation.viewmodels.WhatsNewViewModel
 import com.sirelon.marsroverphotos.platform.Tracker
 import com.sirelon.marsroverphotos.presentation.theme.AppMotion
 import com.sirelon.marsroverphotos.presentation.ui.AdSlot
@@ -160,13 +161,27 @@ fun AppNavigation(
     }
     val dialogOverlaySceneStrategy = remember { DialogOverlaySceneStrategy<NavKey>() }
     val tracker: Tracker = koinInject()
-    val isImages = chromeDestination is AppDestination.Images
+    val whatsNewViewModel: WhatsNewViewModel = koinViewModel()
+    // Screens self-register as fullscreen by implementing the marker interface, so a new one can't
+    // ship with the chrome still drawn over it (this flag drives chromeVisible, the status-bar
+    // inset animation and the Ukraine banner).
+    val isFullscreen = chromeDestination is AppDestination.FullscreenDestination
 
     // One screen_view observer for the whole app rather than a call per screen: whatever is on top
     // of the back stack (including the dialog destinations) is what the user is looking at.
     val screenView = remember(currentDestination) { currentDestination.toScreenView() }
     LaunchedEffect(screenView) {
         tracker.trackScreen(screenView.name, screenView.params)
+    }
+
+    LaunchedEffect(Unit) {
+        // Asked once per app start, and only on a plain launch: a cold start into a deep link is
+        // already showing the user what they asked for, so the dialog stays out of the way. The
+        // marker is only written on acknowledgement, so it simply comes back on the next plain
+        // launch rather than being lost.
+        if (deepLink == null && whatsNewViewModel.shouldShowDialog()) {
+            navigator.navigate(AppDestination.WhatsNewDialog)
+        }
     }
 
     LaunchedEffect(deepLink) {
@@ -250,13 +265,13 @@ fun AppNavigation(
                     navigator.selectTopLevel(destination)
                 },
                 resetScrollKey = chromeDestination,
-                chromeVisible = !isImages,
+                chromeVisible = !isFullscreen,
                 bottomChrome = { if (!BuildInfo.hideAds) AdSlot(modifier = Modifier.fillMaxWidth()) },
             ) {
                 val statusBarTop = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
                 val topPadding by animateDpAsState(
-                    targetValue = if (isImages) 0.dp else statusBarTop,
-                    animationSpec = tween(if (isImages) CHROME_HIDE_MS else CHROME_SHOW_MS),
+                    targetValue = if (isFullscreen) 0.dp else statusBarTop,
+                    animationSpec = tween(if (isFullscreen) CHROME_HIDE_MS else CHROME_SHOW_MS),
                     label = "statusBarPadding",
                 )
                 Column(
@@ -268,7 +283,7 @@ fun AppNavigation(
                         // there's no double inset after the chrome animates back in.
                         .consumeWindowInsets(PaddingValues(top = topPadding)),
                 ) {
-                    AnimatedVisibility(chromeDestination !is AppDestination.Ukraine && !isImages) {
+                    AnimatedVisibility(chromeDestination !is AppDestination.Ukraine && !isFullscreen) {
                         UkraineBanner(
                             modifier = Modifier.fillMaxWidth(),
                             onClick = {
@@ -309,7 +324,15 @@ private fun AppDestination.topLevelDestination(): AppDestination {
 
         AppDestination.Favorite -> AppDestination.Favorite
         AppDestination.Popular -> AppDestination.Popular
-        AppDestination.About -> AppDestination.About
+
+        // Version History and the release stories are reached from the About tab's "What's New"
+        // row, so the highlight has to stay on About while the user is inside them.
+        AppDestination.About,
+        AppDestination.AllVersions,
+        is AppDestination.WhatsNewStory -> AppDestination.About
+
+        // Never reached: the dialog is a DialogDestination, which chromeDestination filters out.
+        AppDestination.WhatsNewDialog -> AppDestination.Rovers
     }
 }
 
@@ -327,6 +350,9 @@ private val navBackStackConfiguration = SavedStateConfiguration {
             subclass(AppDestination.PhotosDateJumpPicker::class, AppDestination.PhotosDateJumpPicker.serializer())
             subclass(AppDestination.PhotosFilters::class, AppDestination.PhotosFilters.serializer())
             subclass(AppDestination.AdminPhotos::class, AppDestination.AdminPhotos.serializer())
+            subclass(AppDestination.WhatsNewDialog::class, AppDestination.WhatsNewDialog.serializer())
+            subclass(AppDestination.AllVersions::class, AppDestination.AllVersions.serializer())
+            subclass(AppDestination.WhatsNewStory::class, AppDestination.WhatsNewStory.serializer())
         }
     }
 }

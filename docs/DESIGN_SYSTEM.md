@@ -31,9 +31,29 @@ coral **accent/secondary** (`#FC6C4B`, "the Mars accent"). Light theme is white-
 - **Color** → always `MaterialTheme.colorScheme.*`. **No hardcoded theme colors.** The only allowed
   exceptions are documented per-theme helpers that fill a missing M3 slot (see Insights). Apply text
   color at the call site so light/dark both work.
+  - A screen that must stay dark regardless of theme (fullscreen story / viewer) is **not** an
+    exception — wrap its content in `MarsRoverPhotosTheme(darkTheme = true)` and keep reading
+    `MaterialTheme.colorScheme.*` inside (`screens/whatsnew/WhatsNewStoryScreen.kt`). Force the
+    *theme*, not the palette: a bare `MaterialTheme(colorScheme = DarkColorPalette)` skips
+    `withBrandOverrides` + dynamic color, so the screen drifts from every other surface on
+    Android 12+. A file-level `private val StoryBackground = Color(0xFF0A0908)` is the wrong
+    answer to this problem too.
+  - A forced-dark **fullscreen** screen also owns the system bars: pair it with
+    `DisposableEffect { setStatusBarAppearance(lightIcons = true); onDispose { …false } }`, or a
+    device on a light system theme draws dark status icons on your black background.
+  - Scrims painted **over photography** (`Color(0x7A000000)` in `PopularScreen`/`FavoriteScreen`) are
+    the standing literal exception: they darken an image for text legibility, not the theme.
+  - Draw lambdas (`Canvas`, `drawBehind`) don't run in composable scope — read the colors into locals
+    in the composable and capture them, rather than reaching for a constant.
 - **Motion (durations / easing / shared-element specs)** → `AppMotion` (`theme/AppMotion.kt`). No raw
   `tween(600)`/`spring()` in screens or nav specs — route through `AppMotion` so the cross-screen fade
   and the shared-element bounds share one timing curve. See **Motion** below.
+- **Reuse an existing token before adding one.** Scan the scale first; a new token is for when nothing
+  fits, not when nothing matches exactly — a 48dp travel distance that could be `AppSpacing.x3l` does
+  not need its own entry. Two things this rule does *not* ask for: don't reuse a token whose name
+  belongs to another component just because the number matches (`segmentedControlPadding` is a
+  segmented-control inset, not "3dp"), and don't reach for a spacing token to size a component. When
+  you do add one, name it for what it is app-wide, not for the screen that needed it first.
 
 ### Components
 - Reuse the `App*` family in `presentation/ui/` before writing new UI. If you need a variant, prefer a
@@ -62,6 +82,11 @@ coral **accent/secondary** (`#FC6C4B`, "the Mars accent"). Light theme is white-
 - Run `./gradlew detekt` before review; `./gradlew testDebugUnitTest` (JVM) and
   `:shared:desktopTest` run the shared logic tests. There is **no Compose UI-test infra** in `shared`
   yet — styling-only changes are verified by compile + visual smoke test, not unit tests.
+- **If a UI fix took more than a couple of rounds, write down what you learned** as a short note in
+  **Insights / gotchas** below — descriptive, not a new rule. Lead with the symptom as it was
+  reported ("laggy", "bounces back", "small pause"), then the cause, so the next reader matches on the
+  behavior they're seeing rather than on a diagnosis they don't have yet. One tight bullet each; the
+  goal is that the same trap costs one round next time, not four.
 
 ### Motion & shared-element transitions
 - **Tokens:** `AppMotion` (`theme/AppMotion.kt`) — `ScreenEnterMs`/`ScreenExitFadeMs` (standard slide
@@ -119,6 +144,26 @@ coral **accent/secondary** (`#FC6C4B`, "the Mars accent"). Light theme is white-
   when nothing renders (Play throttling), so any "rate" flow needs a guaranteed store-listing fallback;
   ensure each platform shell passes a store URL.
 
+**Driven progress / pager timers** — notes from four rounds on the What's New story bar
+(`screens/whatsnew/WhatsNewStoryScreen.kt`), each symptom looked like a different bug:
+
+- **"Laggy" usually means the animation is read in composition.** Reading `Animatable.value` where the
+  segments are *declared* recomposed the whole screen — pager and page content included — every frame,
+  plus a relayout per segment from `fillMaxWidth(fraction)`. Passing `() -> Float` and reading it inside
+  `Canvas`/`graphicsLayer` drops the frame cost to one repaint of the strip.
+- **"Bounces to the end, then back" = two values that disagree for one frame.** With `(index, fraction)`
+  as separate state, the index flips on settle while the fraction still holds the previous page's `1f`;
+  the reset lands a frame later. One continuous value over all segments (`2.4f` = segment 2, 40% full)
+  makes the desync unrepresentable.
+- **`settledPage` updates only *after* the slide finishes; `targetPage` at commit.** A per-page timer
+  keyed on `settledPage` idles for the whole scroll (reads as a pause between cards). Keyed on
+  `targetPage` it starts as the page starts moving. Corollary: run `animateScrollToPage` in
+  `rememberCoroutineScope`, not inside the effect keyed on `targetPage` — otherwise the scroll changes
+  the key and cancels itself mid-slide.
+- **Springs overshoot, and a clamped value renders overshoot as a dead stop.** For "run the rest of this
+  segment out" when the user skips ahead, a spring parks at 100% while it settles past 1f. A short tween
+  + `AppMotion.Emphasized` gives the decelerating feel without the stall.
+
 ---
 
 ## Component index
@@ -129,6 +174,7 @@ Stable design-system pieces (path = `shared/src/commonMain/kotlin/com/sirelon/ma
 | --- | --- | --- |
 | `AppCard` | `ui/AppCard.kt` | **Elevated** card (2dp), 16dp radius. Optional `onClick` makes it interactive: the card owns the `clickable` + a desktop **hover-lift** (`cardElevationResting`→`cardElevationHover` via `animateDpAsState`) internally — pass `onClick` rather than wrapping the card in your own `clickable`/elevation. Null `onClick` ⇒ non-interactive and honors the caller's `elevation` param (default resting; e.g. a 4dp header card). `AppFactCard` = secondaryContainer fact card. |
 | `AppOutlinedCard` | `ui/AppOutlinedCard.kt` | **Non-elevated** grouped card: `surfaceContainerHigh` fill + hairline outline + 16dp radius. Exports `CardShape`. Use for grouped lists/surfaces; not a flag on `AppCard`. |
+| `AppRow` / `AppRowDivider` / `AppSection` | `ui/AppRow.kt` | The list-row family (renamed from `Settings*`; they long outgrew settings). `AppRow` = leading `AppIconBox` + label + optional `sub`, with a trailing region that is either a custom `trailing` slot or — for a link row (non-null `onClick`, no `trailing`) — the app-wide chevron. **Don't hand-build that chevron**; pass `onClick` and let the row draw it. `AppRowDivider` = hairline inset past the icon-box. `AppSection` = optional `label` + an `AppOutlinedCard` of rows, with `header`/`footer` slots (a divider is inserted before `footer`) and an optional `onClick` that makes the whole card tappable (clipped to `CardShape` first, so the ripple follows the corners). Exports `AppRowIndent` for aligning content under a row's label. |
 | `AppIconBox` | `ui/AppIconBox.kt` | Tinted rounded container holding a `MaterialSymbol` (tinted container + icon). General — use anywhere a colored icon tile is needed. |
 | `AppMetricItem` | `ui/AppMetricItem.kt` | Inline icon + value + label trio in one `Row` (e.g. "🖼 134K photos"). Icon/label = `onSurfaceVariant`, value = `onSurface` (SemiBold `bodyMedium`); inline icon size. Repeats 3× in a rover row's metric strip; general anywhere a compact metric is needed. |
 | `AppBadge` / `StatusBadge` / `BadgeRow` | `ui/Badges.kt` | `AppBadge` = neutral outlined pill; `StatusBadge(label, color)` = colored dot + label (parameterized); `BadgeRow` = slot row composing them. |
@@ -147,15 +193,16 @@ Stable design-system pieces (path = `shared/src/commonMain/kotlin/com/sirelon/ma
 | `AppSpacing` | `theme/AppSpacing.kt` | 8dp-grid **spacing** tokens. |
 | `AppSize` | `theme/AppSize.kt` | Component **dimension/radius** tokens (icon/card/hero/content-width, etc.). |
 | `AppTypography` | `theme/AppTypography.kt` | Semantic type aliases. |
-| `AppMotion` | `theme/AppMotion.kt` | Motion **tokens**: durations (screen slide, shared container), `Emphasized` easing, `Photo`/`FavoriteBoundsTransform`. Route all transition timing through here. |
+| `AppMotion` | `theme/AppMotion.kt` | Motion **tokens**: durations (screen slide, shared container, story page/catch-up/enter), `Emphasized` easing, `Photo`/`FavoriteBoundsTransform`. Route all transition timing through here. |
 | `sharedPhoto` / `sharedFavorite` / `navFadeEnter` | `ui/SharedPhotoTransition.kt` | `Modifier` extensions for the photo grid/list ↔ viewer shared-element transition (keys, resize mode, bounds, overlay clip). Null-safe (no-op in previews). See **Motion**. |
 | `MarsRoverPhotosTheme` + palettes | `theme/Theme.kt` | Color schemes, brand overrides, dynamic color. |
 | `activeStatusColor()` | `theme/AppColors.kt` | Theme-aware "active / live / connected" green (`@Composable @ReadOnlyComposable`). Luminance-based: `#5BBF86` dark / `#2E9E63` light. Fills the **no-green-slot** gap (see Insights); use instead of a literal. Generalized out of the old AboutScreen-local `liveColor`. |
 
-> Settings-row primitives (`SettingsRow`, `SettingsSectionLabel`, `SettingsRowDivider`) live in
-> `ui/SettingsComponents.kt` and compose the general pieces above; they're list-row-shaped, so they
-> keep the `Settings*` name. The general building blocks (`AppIconBox`, `AppOutlinedCard`, badges) are
-> reusable beyond settings.
+> The row family (`AppRow`, `AppSection`, `AppRowDivider`) composes the general pieces above.
+> Feature-specific rows built on it — `WhatsNewRow` / `ReleaseCard`, which take domain types —
+> live with their screen (`screens/whatsnew/`), not in `ui/`: `ui/` holds general `App*` primitives.
+> Domain→UI mappings for those rows (`ChangeType.toIcon()`) stay in `ui/` — see
+> docs/ARCHITECTURE.md › Domain never imports presentation.
 
 **New `MaterialSymbol` glyphs (Rovers):** `Collections`, `Schedule`, `Event`, `Search` — added to the
 enum in `ui/MaterialSymbolIcon.kt` (the bundled full variable font renders them).
@@ -275,3 +322,20 @@ tokens rather than re-introducing literals:
   (`AppNavigation`) fades with the bounds via `AppMotion.SharedContainerMs`; extended the effect to
   Favorite/Popular (`MarsImageComposable`); added `~large`→`~orig` progressive loading
   (`nasaImageLargeUrl`). Reviewed by a 2-member committee before implementation.
+- 2026-08-08 — **What's New story screen motion.** Added the "driven progress / pager timers" notes to
+  Insights (draw-phase reads, one continuous progress value, `targetPage` vs `settledPage`, springs on
+  clamped values) — all four came from separate rounds on the same progress bar. Added
+  `AppSize.progressTrack`; the story content's swipe parallax reuses `AppSpacing.x3l` as its travel
+  base rather than introducing a token. Also spelled out the forced-dark-screen answer under **Color**
+  (a themed wrapper, not file-level color constants) after that screen first shipped with hardcoded
+  hex values.
+- 2026-08-09 — **What's New review pass.** Renamed `SettingsComponents.kt` → `ui/AppRow.kt` (no
+  `Settings*` symbol was left after the `App*` rename) and documented the row family, including
+  `AppSection`'s `header`/`footer`/`onClick` slots and `AppRowIndent`, in the component index.
+  Feature rows that take domain types (`WhatsNewRow`, `ReleaseCard`) moved out of `ui/` to
+  `screens/whatsnew/`. Tightened the forced-dark rule to `MarsRoverPhotosTheme(darkTheme = true)`
+  (the bare-palette form skips brand overrides + dynamic color) and added the matching status-bar
+  rule. New tokens: `AppMotion.StoryPageMs` / `StoryCatchUpMs` / `StoryEnterMs`,
+  `AppTypography.storyVersionGhost` / `storyTitle` — the story screen's raw `tween(...)` durations
+  and `fontSize = 96.sp` / `38.sp` overrides now resolve through tokens. `AppSection(onClick)` clips
+  to `CardShape` before `clickable` so the ripple follows the card's corners.

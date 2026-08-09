@@ -1,1972 +1,2067 @@
 {
   "shared/build.gradle.kts": {
-    "mtime": 1781256913.6933622,
+    "mtime": 1786204259.8370614,
     "ast_hash": "c8a21ba3527261d81dff35a45ce77a1d",
     "semantic_hash": "c8a21ba3527261d81dff35a45ce77a1d"
   },
   "shared/schemas/com.sirelon.marsroverphotos.data.database.AppDataBase/9.json": {
-    "mtime": 1777843400.6623309,
+    "mtime": 1786204259.837511,
     "ast_hash": "2e76b3d888bc85c178fa956b1763e3e5",
     "semantic_hash": "2e76b3d888bc85c178fa956b1763e3e5"
   },
   "shared/src/androidMain/kotlin/com/sirelon/marsroverphotos/di/PlatformModule.android.kt": {
-    "mtime": 1779459719.5275621,
+    "mtime": 1786204259.8379228,
     "ast_hash": "75beedb61f4efde8e836db295064b5a2",
     "semantic_hash": "75beedb61f4efde8e836db295064b5a2"
   },
   "shared/src/androidMain/kotlin/com/sirelon/marsroverphotos/platform/ActivityProvider.android.kt": {
-    "mtime": 1779397729.3570814,
+    "mtime": 1786204259.8380446,
     "ast_hash": "7218abecf12e10dda1e706ec0499b423",
     "semantic_hash": "7218abecf12e10dda1e706ec0499b423"
   },
   "shared/src/androidMain/kotlin/com/sirelon/marsroverphotos/platform/AndroidAdConsent.kt": {
-    "mtime": 1779459719.4511762,
+    "mtime": 1786204259.8381233,
     "ast_hash": "7ff18877e162064881275523a8fc6fbb",
     "semantic_hash": "7ff18877e162064881275523a8fc6fbb"
   },
   "shared/src/androidMain/kotlin/com/sirelon/marsroverphotos/platform/AppReview.android.kt": {
-    "mtime": 1780600150.7951558,
+    "mtime": 1786204259.8383627,
     "ast_hash": "3000fd711757c48d8e0226aa4a5157a6",
     "semantic_hash": "3000fd711757c48d8e0226aa4a5157a6"
   },
   "shared/src/androidMain/kotlin/com/sirelon/marsroverphotos/platform/DatabaseBuilder.android.kt": {
-    "mtime": 1781899476.351053,
+    "mtime": 1786204259.8384547,
     "ast_hash": "c6f1f65f0ae8f4c671a7c821752cb3d0",
     "semantic_hash": ""
   },
   "shared/src/androidMain/kotlin/com/sirelon/marsroverphotos/platform/FirebaseAnalytics.android.kt": {
-    "mtime": 1779263547.9631083,
+    "mtime": 1786204259.8385415,
     "ast_hash": "d61110ea684a95511ff347a241e41f18",
     "semantic_hash": "d61110ea684a95511ff347a241e41f18"
   },
   "shared/src/androidMain/kotlin/com/sirelon/marsroverphotos/platform/HttpClientEngine.android.kt": {
-    "mtime": 1777843400.6638248,
+    "mtime": 1786204259.8386264,
     "ast_hash": "67050bd8fb239f20c11bd31424d0041e",
     "semantic_hash": "67050bd8fb239f20c11bd31424d0041e"
   },
   "shared/src/androidMain/kotlin/com/sirelon/marsroverphotos/platform/ImageOperations.android.kt": {
-    "mtime": 1779263547.9636316,
+    "mtime": 1786204259.8387325,
     "ast_hash": "ca7dc78b7f6ca0c5219f841dbab1761b",
     "semantic_hash": "ca7dc78b7f6ca0c5219f841dbab1761b"
   },
   "shared/src/androidMain/kotlin/com/sirelon/marsroverphotos/platform/PlatformPreferences.android.kt": {
-    "mtime": 1777843400.6641676,
+    "mtime": 1786204259.8388236,
     "ast_hash": "b25315df3b2abd62c841498bad0fa570",
     "semantic_hash": "b25315df3b2abd62c841498bad0fa570"
   },
   "shared/src/androidMain/kotlin/com/sirelon/marsroverphotos/platform/RecordException.android.kt": {
-    "mtime": 1779263547.963774,
+    "mtime": 1786204259.8389,
     "ast_hash": "b99cd2bd05f2cf27cc554d32c4e396cf",
     "semantic_hash": "b99cd2bd05f2cf27cc554d32c4e396cf"
   },
   "shared/src/androidMain/kotlin/com/sirelon/marsroverphotos/presentation/theme/Theme.android.kt": {
-    "mtime": 1779832873.8252156,
+    "mtime": 1786204259.8390725,
     "ast_hash": "0168311ba02deede98bbaee51dca538c",
     "semantic_hash": "0168311ba02deede98bbaee51dca538c"
   },
   "shared/src/androidMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AdSlot.android.kt": {
-    "mtime": 1779459719.4516976,
+    "mtime": 1786204259.8392017,
     "ast_hash": "492eadd78de92c00344bbf3163f2d577",
     "semantic_hash": "492eadd78de92c00344bbf3163f2d577"
   },
   "shared/src/androidMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/PlatformUriHandler.android.kt": {
-    "mtime": 1777843400.6648128,
+    "mtime": 1786204259.839285,
     "ast_hash": "4c79628ea88f825165b3853e413fb845",
     "semantic_hash": "4c79628ea88f825165b3853e413fb845"
   },
   "shared/src/androidMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/StatusBarAppearance.android.kt": {
-    "mtime": 1779813146.7467387,
+    "mtime": 1786204259.8393614,
     "ast_hash": "2c055f7954267308a5435d6616b86fc6",
     "semantic_hash": "2c055f7954267308a5435d6616b86fc6"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/database/AppDataBase.kt": {
-    "mtime": 1781899476.351881,
+    "mtime": 1786204259.8699315,
     "ast_hash": "d7c4e030a72b869fb98f956b6bce4aa2",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/database/dao/FactDisplayDao.kt": {
-    "mtime": 1779267086.2814062,
+    "mtime": 1786204259.870079,
     "ast_hash": "61411ef4740a6e7494846df5ee327f29",
     "semantic_hash": "61411ef4740a6e7494846df5ee327f29"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/database/dao/ImagesDao.kt": {
-    "mtime": 1782929117.3753045,
+    "mtime": 1786204259.8716044,
     "ast_hash": "10f8d2185f09029ee25e7e0f9f0b2abe",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/database/dao/RoverDao.kt": {
-    "mtime": 1781204373.8305342,
+    "mtime": 1786204259.8717356,
     "ast_hash": "210659c1d5dd223fb00985f4aa62a339",
     "semantic_hash": "210659c1d5dd223fb00985f4aa62a339"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/database/entities/FactDisplay.kt": {
-    "mtime": 1779267086.2824955,
+    "mtime": 1786204259.8718917,
     "ast_hash": "ba85935dd063ffbf9dffb29ad276f8bc",
     "semantic_hash": "ba85935dd063ffbf9dffb29ad276f8bc"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/database/entities/MarsImage.kt": {
-    "mtime": 1781899476.3522944,
+    "mtime": 1786204259.8719807,
     "ast_hash": "00e448211caaf8e2ded2c2f5ff77a347",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/network/Mappers.kt": {
-    "mtime": 1781899476.3527756,
+    "mtime": 1786204259.872144,
     "ast_hash": "53792447a1c1c9d684677ea8abf4aa5e",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/network/NasaApi.kt": {
-    "mtime": 1781256913.6967962,
+    "mtime": 1786204259.8722382,
     "ast_hash": "c48cadb7d993ece7adcda486d4578bb8",
     "semantic_hash": "c48cadb7d993ece7adcda486d4578bb8"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/network/RestApi.kt": {
-    "mtime": 1786204530.1158795,
-    "ast_hash": "d1f4857caa8540a7c01f8f1a95c64833",
+    "mtime": 1786204259.8723335,
+    "ast_hash": "324134c91cd45bdebb7b1047e0957b73",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/network/models/NasaImagesModels.kt": {
-    "mtime": 1780501878.1658852,
+    "mtime": 1786204259.8724613,
     "ast_hash": "fda6d049d89e6fa24dd528d6610c4376",
     "semantic_hash": "fda6d049d89e6fa24dd528d6610c4376"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/network/models/PhotosResponse.kt": {
-    "mtime": 1781204373.831961,
+    "mtime": 1786204259.8725524,
     "ast_hash": "73c6573f41ed69f915e4524f804ea138",
     "semantic_hash": "73c6573f41ed69f915e4524f804ea138"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/paging/FeedMode.kt": {
-    "mtime": 1781256913.6984336,
+    "mtime": 1786204259.8726797,
     "ast_hash": "0ff7628963519ef30ad9acb81166aac1",
     "semantic_hash": "0ff7628963519ef30ad9acb81166aac1"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/paging/ImagesSearchPagingSource.kt": {
-    "mtime": 1781256913.6988232,
+    "mtime": 1786204259.872779,
     "ast_hash": "58c6eec956b92337d68d8adf09f3de2b",
     "semantic_hash": "58c6eec956b92337d68d8adf09f3de2b"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/paging/PopularRemoteMediator.kt": {
-    "mtime": 1782929117.3758519,
+    "mtime": 1786204259.8731973,
     "ast_hash": "46716ea2dc4122fa8e7dbe3da24eab8d",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/paging/RoverFeedPager.kt": {
-    "mtime": 1781899476.3539453,
+    "mtime": 1786204259.873364,
     "ast_hash": "cb165b13a0ed9c4d800052d811b2383a",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/paging/SolPagingSource.kt": {
-    "mtime": 1781256913.7010162,
+    "mtime": 1786204259.8734968,
     "ast_hash": "cda5baa7e0c7a83eb3dfe29a617dfc8e",
     "semantic_hash": "cda5baa7e0c7a83eb3dfe29a617dfc8e"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/repositories/FactsRepositoryImpl.kt": {
-    "mtime": 1777843400.6962118,
+    "mtime": 1786204259.8736382,
     "ast_hash": "cb320f28a972f13446e7a238ef9f33be",
     "semantic_hash": "cb320f28a972f13446e7a238ef9f33be"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/repositories/ImagesRepositoryImpl.kt": {
-    "mtime": 1782929117.3765838,
+    "mtime": 1786204259.874018,
     "ast_hash": "4724b1778b0f23d15c5136a20a591844",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/repositories/MissionRepositoryImpl.kt": {
-    "mtime": 1779263547.9655726,
+    "mtime": 1786204259.8741052,
     "ast_hash": "211ddb0128d588c0e71b922cea0a7114",
     "semantic_hash": "211ddb0128d588c0e71b922cea0a7114"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/repositories/PhotosRepositoryImpl.kt": {
-    "mtime": 1777843400.6964798,
+    "mtime": 1786204259.8741848,
     "ast_hash": "1143e8e242bf4485f000411faffeced0",
     "semantic_hash": "1143e8e242bf4485f000411faffeced0"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/repositories/RoversRepositoryImpl.kt": {
-    "mtime": 1786204539.269811,
-    "ast_hash": "aec28d69612eb4007525ac376b606394",
-    "semantic_hash": ""
+    "mtime": 1786204259.8743312,
+    "ast_hash": "8c393987fe67f3f8223d974c69b78175",
+    "semantic_hash": "8c393987fe67f3f8223d974c69b78175"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/di/DatabaseModule.kt": {
-    "mtime": 1777843400.6968086,
+    "mtime": 1786204259.8744757,
     "ast_hash": "347b94418efdf79c3209cb93d8308db0",
     "semantic_hash": "347b94418efdf79c3209cb93d8308db0"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/di/KoinInit.kt": {
-    "mtime": 1777845138.9242022,
+    "mtime": 1786204259.8745584,
     "ast_hash": "0744e01071af1d29b379ade6b6957b1f",
     "semantic_hash": "0744e01071af1d29b379ade6b6957b1f"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/di/NavigationModule.kt": {
-    "mtime": 1782744612.7302463,
-    "ast_hash": "294c9c8a367f3cc04939114ef0a4ef4b",
+    "mtime": 1786207284.604785,
+    "ast_hash": "54f75342ab77606429f0a08a230a84ab",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/di/NetworkModule.kt": {
-    "mtime": 1777843400.6970968,
+    "mtime": 1786204259.8747635,
     "ast_hash": "72a127a5019205518af6de6e45f2698c",
     "semantic_hash": "72a127a5019205518af6de6e45f2698c"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/di/RepositoryModule.kt": {
-    "mtime": 1781621537.659066,
+    "mtime": 1786204259.8748364,
     "ast_hash": "4e6e3e2404a92963d996756eab8e1692",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/di/ViewModelModule.kt": {
-    "mtime": 1781256913.8469696,
-    "ast_hash": "923e667354a2c369ad694ea9cdfab8f5",
-    "semantic_hash": "923e667354a2c369ad694ea9cdfab8f5"
+    "mtime": 1786217438.112818,
+    "ast_hash": "bb29270675c7f1ac7663e0f6070d8abf",
+    "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/models/EducationalFact.kt": {
-    "mtime": 1777843400.6975782,
+    "mtime": 1786204259.8751507,
     "ast_hash": "9a35b29024a4a3d4cafed82a81ad32cc",
     "semantic_hash": "9a35b29024a4a3d4cafed82a81ad32cc"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/models/FirebasePhoto.kt": {
-    "mtime": 1781899476.3545358,
+    "mtime": 1786204259.8753073,
     "ast_hash": "a03524ebc542d60d90229775704457de",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/models/MarsPhoto.kt": {
-    "mtime": 1781204373.8343124,
+    "mtime": 1786204259.8754022,
     "ast_hash": "12b0901bd39aa5d5f40ae1ea0fcb1c31",
     "semantic_hash": "12b0901bd39aa5d5f40ae1ea0fcb1c31"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/models/PhotosQueryRequest.kt": {
-    "mtime": 1777843400.6980114,
+    "mtime": 1786204259.875486,
     "ast_hash": "88246590d6f1bb8130ea52f38a2b6cfc",
     "semantic_hash": "88246590d6f1bb8130ea52f38a2b6cfc"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/models/Rover.kt": {
-    "mtime": 1782744612.7307718,
+    "mtime": 1786204259.875572,
     "ast_hash": "6d5b1649d8e265f95de79ee17776424b",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/models/RoverCamera.kt": {
-    "mtime": 1777843400.698302,
+    "mtime": 1786204259.875662,
     "ast_hash": "952fc7d753c06de384b5a392b921e320",
     "semantic_hash": "952fc7d753c06de384b5a392b921e320"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/models/RoverConstants.kt": {
-    "mtime": 1777843400.6984484,
+    "mtime": 1786204259.8757575,
     "ast_hash": "334f1632a706ac67d92375ea4f9d9815",
     "semantic_hash": "334f1632a706ac67d92375ea4f9d9815"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/models/mission/CameraSpec.kt": {
-    "mtime": 1777843400.6986449,
+    "mtime": 1786204259.8759003,
     "ast_hash": "53ef73fdca756518f539eef425a0c028",
     "semantic_hash": "53ef73fdca756518f539eef425a0c028"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/models/mission/RoverMissionData.kt": {
-    "mtime": 1782807438.316544,
+    "mtime": 1786204259.8763165,
     "ast_hash": "f958c216247ec2bee2d3ea26990a8a9e",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/models/mission/RoverMissionFacts.kt": {
-    "mtime": 1782744612.7311068,
+    "mtime": 1786204259.8764195,
     "ast_hash": "26c6dd0d57a6d84bcbd841f88629036e",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/repositories/FactsRepository.kt": {
-    "mtime": 1777843400.6991532,
+    "mtime": 1786204259.8765578,
     "ast_hash": "d3a1739f924c349a0fb60dc7f81f96be",
     "semantic_hash": "d3a1739f924c349a0fb60dc7f81f96be"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/repositories/ImagesRepository.kt": {
-    "mtime": 1782929117.3776228,
+    "mtime": 1786204259.8770292,
     "ast_hash": "9126c7d03dd550e6dc1e745185e4a041",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/repositories/MissionRepository.kt": {
-    "mtime": 1777843400.699431,
+    "mtime": 1786204259.877115,
     "ast_hash": "3339574614f7a698e9e94303982068af",
     "semantic_hash": "3339574614f7a698e9e94303982068af"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/repositories/PhotosRepository.kt": {
-    "mtime": 1777843400.6995769,
+    "mtime": 1786204259.8771944,
     "ast_hash": "afb9989bbfdf86ccaaed65f5011133b0",
     "semantic_hash": "afb9989bbfdf86ccaaed65f5011133b0"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/repositories/RoversRepository.kt": {
-    "mtime": 1777843400.6997,
+    "mtime": 1786204259.8772798,
     "ast_hash": "af4091e861f6c89bd652bb67cc26faf1",
     "semantic_hash": "af4091e861f6c89bd652bb67cc26faf1"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/settings/AppSettings.kt": {
-    "mtime": 1780347122.1326675,
-    "ast_hash": "d09d92d00668bb282a220a9b54afa6ca",
-    "semantic_hash": "d09d92d00668bb282a220a9b54afa6ca"
+    "mtime": 1786207138.8830123,
+    "ast_hash": "2fbd34303d4ce35d84ba4d94f9fb2430",
+    "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/platform/AppReview.kt": {
-    "mtime": 1779397721.36941,
+    "mtime": 1786204259.877531,
     "ast_hash": "8280a34a71e63ebff494e3fcf1511c5b",
     "semantic_hash": "8280a34a71e63ebff494e3fcf1511c5b"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/platform/BuildInfo.kt": {
-    "mtime": 1781899478.3807306,
+    "mtime": 1786204259.8778062,
     "ast_hash": "b86cc35b7b5245252b85fec9a84726bb",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/platform/DatabaseBuilder.kt": {
-    "mtime": 1781899476.3549185,
+    "mtime": 1786204259.8779082,
     "ast_hash": "c81acd94a45a2a2fe93b3d47e4c5a7ee",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/platform/FirebaseAnalytics.kt": {
-    "mtime": 1777843400.7002041,
+    "mtime": 1786204259.877991,
     "ast_hash": "b4a525ce63a33917f120eb23d494da02",
     "semantic_hash": "b4a525ce63a33917f120eb23d494da02"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/platform/FirebasePhotosImpl.kt": {
-    "mtime": 1782929117.3781571,
+    "mtime": 1786204259.8785076,
     "ast_hash": "f59f5e8db5a67a850e181e9d0bea9ab1",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/platform/FirebaseTracker.kt": {
-    "mtime": 1786191387.3861527,
+    "mtime": 1786204259.878788,
     "ast_hash": "cd190d87972efae39c4566497813e940",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/platform/HttpClientEngine.kt": {
-    "mtime": 1777843400.7003324,
+    "mtime": 1786204259.8788772,
     "ast_hash": "72dc54faa7ecd9d62bcb8f1b9266d4cc",
     "semantic_hash": "72dc54faa7ecd9d62bcb8f1b9266d4cc"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/platform/IFirebasePhotos.kt": {
-    "mtime": 1782929117.378659,
+    "mtime": 1786204259.8794544,
     "ast_hash": "6d1697eb290581681a31ba045df202f0",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/platform/ImageOperations.kt": {
-    "mtime": 1777843400.7006075,
+    "mtime": 1786204259.8795784,
     "ast_hash": "99692b70bdfc49054aadc681414062ec",
     "semantic_hash": "99692b70bdfc49054aadc681414062ec"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/platform/PlatformPreferences.kt": {
-    "mtime": 1777843400.700734,
+    "mtime": 1786204259.8796973,
     "ast_hash": "819d9877c050b64747f0bd8d96bcedfb",
     "semantic_hash": "819d9877c050b64747f0bd8d96bcedfb"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/platform/RecordException.kt": {
-    "mtime": 1779263547.9665048,
+    "mtime": 1786204259.879781,
     "ast_hash": "18f6cfcff207180abb40ef45f7f450c4",
     "semantic_hash": "18f6cfcff207180abb40ef45f7f450c4"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/platform/Tracker.kt": {
-    "mtime": 1786191387.3877645,
+    "mtime": 1786204259.8801713,
     "ast_hash": "21b6aa0862db3220818a1f5b92dc8015",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/App.kt": {
-    "mtime": 1781625516.6224256,
+    "mtime": 1786204259.8803291,
     "ast_hash": "eb5e40a83a3588235473f1b1c0fa0b0e",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/di/AppModule.kt": {
-    "mtime": 1777843400.7010791,
+    "mtime": 1786204259.8804574,
     "ast_hash": "683423156f68c031468cb7c468a70ca4",
     "semantic_hash": "683423156f68c031468cb7c468a70ca4"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/models/GridItem.kt": {
-    "mtime": 1780325529.2028482,
+    "mtime": 1786204259.880607,
     "ast_hash": "8bf9d4c2552e8a04591264edc5ffdf4d",
     "semantic_hash": "8bf9d4c2552e8a04591264edc5ffdf4d"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppDestinations.kt": {
-    "mtime": 1781256913.847955,
-    "ast_hash": "357ed7143f070b5afbc24564f69cad50",
-    "semantic_hash": "357ed7143f070b5afbc24564f69cad50"
+    "mtime": 1786269201.8560097,
+    "ast_hash": "fa39120c5b2d989155c4b5192bc635b1",
+    "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppNavEntryDecorators.kt": {
-    "mtime": 1780325529.2035341,
+    "mtime": 1786204259.8808303,
     "ast_hash": "1646c24910389087121d919080b007a3",
     "semantic_hash": "1646c24910389087121d919080b007a3"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppNavigation.kt": {
-    "mtime": 1786191387.3888087,
-    "ast_hash": "6fb0a9f82494839f654eb283daaa264d",
+    "mtime": 1786269220.327939,
+    "ast_hash": "ed2ea0bbcf4fc8e0006bf4b921533d6a",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/AppNavigator.kt": {
-    "mtime": 1782744612.7327023,
+    "mtime": 1786204259.8816755,
     "ast_hash": "f63d63c7b62464e97d53f07171da42cc",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/DeepLink.kt": {
-    "mtime": 1779385467.2791972,
+    "mtime": 1786204259.881783,
     "ast_hash": "0491a4381437fbd324ce490096757db8",
     "semantic_hash": "0491a4381437fbd324ce490096757db8"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/DialogOverlaySceneStrategy.kt": {
-    "mtime": 1780325529.2042916,
+    "mtime": 1786204259.8818903,
     "ast_hash": "1768d915912007bf9f3e016e1501c1ae",
     "semantic_hash": "1768d915912007bf9f3e016e1501c1ae"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/LocalAboutCallbacks.kt": {
-    "mtime": 1779263547.9672446,
+    "mtime": 1786204259.8819866,
     "ast_hash": "343834d5112a43260a66892ad157759d",
     "semantic_hash": "343834d5112a43260a66892ad157759d"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/MarsBottomBar.kt": {
-    "mtime": 1781276054.0703607,
+    "mtime": 1786204259.8821285,
     "ast_hash": "133b39fe8047b3fc7f62e59b833dcb62",
     "semantic_hash": "133b39fe8047b3fc7f62e59b833dcb62"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/SharedViewModelStoreNavEntryDecorator.kt": {
-    "mtime": 1780325529.2044587,
+    "mtime": 1786204259.8826427,
     "ast_hash": "2bb3271db541be16d9f0df476b928b0a",
     "semantic_hash": "2bb3271db541be16d9f0df476b928b0a"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/AboutScreen.kt": {
-    "mtime": 1781256913.8486059,
-    "ast_hash": "9ab4a45647a8fc42d5f440b03044d926",
-    "semantic_hash": "9ab4a45647a8fc42d5f440b03044d926"
+    "mtime": 1786269454.4707313,
+    "ast_hash": "9beb072090d74e63a0c05f203b0a2beb",
+    "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/EarthDatePickerScreen.kt": {
-    "mtime": 1780325529.205164,
+    "mtime": 1786204259.8832104,
     "ast_hash": "5dfb50519744dc32d1131eeffe529e79",
     "semantic_hash": "5dfb50519744dc32d1131eeffe529e79"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/FavoriteScreen.kt": {
-    "mtime": 1782929117.3795938,
+    "mtime": 1786204259.8835611,
     "ast_hash": "a525fc295b0a38ab14b918859b500232",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/ImagesScreen.kt": {
-    "mtime": 1786191387.3912299,
+    "mtime": 1786204259.8840125,
     "ast_hash": "71cad7758e6002d48866916b230ac6a6",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/PhotoInfoBottomSheet.kt": {
-    "mtime": 1780501878.1702056,
+    "mtime": 1786204259.885204,
     "ast_hash": "96f8d28379814271759112c8a102b1a2",
     "semantic_hash": "96f8d28379814271759112c8a102b1a2"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/PhotosFiltersScreen.kt": {
-    "mtime": 1781204373.837927,
+    "mtime": 1786204259.885312,
     "ast_hash": "3a4019d7c0b23718209573574a1b020a",
     "semantic_hash": "3a4019d7c0b23718209573574a1b020a"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/PhotosScreen.kt": {
-    "mtime": 1782929117.380258,
+    "mtime": 1786204259.8859992,
     "ast_hash": "f176766155b444232dbeacebdd47efb6",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/PopularScreen.kt": {
-    "mtime": 1782929117.380736,
+    "mtime": 1786204259.886324,
     "ast_hash": "10bdc745662aab34b4c31255c8aad825",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/RoverMissionInfoScreen.kt": {
-    "mtime": 1782807438.3223944,
+    "mtime": 1786204259.886858,
     "ast_hash": "09ef39d0d5baa428722ca718b7c5292d",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/RoversScreen.kt": {
-    "mtime": 1781899478.3821795,
+    "mtime": 1786204259.8872142,
     "ast_hash": "9f47dffebdb5fa27835af65e1375d49c",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/SolPickerScreen.kt": {
-    "mtime": 1780325529.208156,
+    "mtime": 1786204259.8876956,
     "ast_hash": "570c25245a24f68c063def6235bc3582",
     "semantic_hash": "570c25245a24f68c063def6235bc3582"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/UkraineScreen.kt": {
-    "mtime": 1780345709.5088434,
+    "mtime": 1786204259.8877902,
     "ast_hash": "15ff9df0820175f032ca4f682ab228cd",
     "semantic_hash": "15ff9df0820175f032ca4f682ab228cd"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/theme/AppColors.kt": {
-    "mtime": 1780905231.498274,
+    "mtime": 1786204259.8879325,
     "ast_hash": "7ba6764e3a8717e57475b2be515cd562",
     "semantic_hash": "7ba6764e3a8717e57475b2be515cd562"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/theme/AppSize.kt": {
-    "mtime": 1780905231.4986148,
-    "ast_hash": "eba05b7773bc1bd270784faadeb89a66",
-    "semantic_hash": "eba05b7773bc1bd270784faadeb89a66"
+    "mtime": 1786217532.7111933,
+    "ast_hash": "0cde55cc70a25008bdcb45b91ba349b8",
+    "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/theme/AppSpacing.kt": {
-    "mtime": 1780345709.509099,
+    "mtime": 1786204259.8884401,
     "ast_hash": "18c3876aa79c4318a12587da7e402937",
     "semantic_hash": "18c3876aa79c4318a12587da7e402937"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/theme/AppTypography.kt": {
-    "mtime": 1780345709.5093744,
-    "ast_hash": "76db7271513fdcf1a81c5f9a337bd060",
-    "semantic_hash": "76db7271513fdcf1a81c5f9a337bd060"
+    "mtime": 1786269339.303938,
+    "ast_hash": "1d39acba6b4f26c45fc2ac5b239bf052",
+    "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/theme/Theme.kt": {
-    "mtime": 1780779643.3411503,
+    "mtime": 1786204259.8886447,
     "ast_hash": "30f57973bfea9866e42b8b63f6f8c37d",
     "semantic_hash": "30f57973bfea9866e42b8b63f6f8c37d"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AdSlot.kt": {
-    "mtime": 1779263547.9681551,
+    "mtime": 1786204259.888803,
     "ast_hash": "a5878f6f46a2914742f74f0293a86f09",
     "semantic_hash": "a5878f6f46a2914742f74f0293a86f09"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppButton.kt": {
-    "mtime": 1780325529.209124,
+    "mtime": 1786204259.888904,
     "ast_hash": "02335d5d0d1c6aaac6674172b7fc95f0",
     "semantic_hash": "02335d5d0d1c6aaac6674172b7fc95f0"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppCard.kt": {
-    "mtime": 1780905231.499068,
+    "mtime": 1786204259.8889897,
     "ast_hash": "faa9cc20f231cd2622a5e08ac78bc97d",
     "semantic_hash": "faa9cc20f231cd2622a5e08ac78bc97d"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppChip.kt": {
-    "mtime": 1780345709.509871,
+    "mtime": 1786204259.889068,
     "ast_hash": "94b68915d41d49ed17d6c710970ace0f",
     "semantic_hash": "94b68915d41d49ed17d6c710970ace0f"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppEmptyState.kt": {
-    "mtime": 1780345709.5102081,
+    "mtime": 1786204259.889176,
     "ast_hash": "c921c714451444c1c308ec7298f417d0",
     "semantic_hash": "c921c714451444c1c308ec7298f417d0"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppFloatingActionButton.kt": {
-    "mtime": 1780325529.2094533,
+    "mtime": 1786204259.8892517,
     "ast_hash": "67653a304a67a9da9838ea1a3963463f",
     "semantic_hash": "67653a304a67a9da9838ea1a3963463f"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppIconBox.kt": {
-    "mtime": 1780600150.7970698,
+    "mtime": 1786204259.8893287,
     "ast_hash": "21de8b76aa435c58d16c922f9049425b",
     "semantic_hash": "21de8b76aa435c58d16c922f9049425b"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppMetricItem.kt": {
-    "mtime": 1780905231.499293,
+    "mtime": 1786204259.889406,
     "ast_hash": "f2dacb3ca6e426e660d1e622c3e8dbb5",
     "semantic_hash": "f2dacb3ca6e426e660d1e622c3e8dbb5"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppOutlinedCard.kt": {
-    "mtime": 1780600150.7975678,
+    "mtime": 1786204259.8894815,
     "ast_hash": "879498867d2d75ac8e45adf9dd35beec",
     "semantic_hash": "879498867d2d75ac8e45adf9dd35beec"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppTopBar.kt": {
-    "mtime": 1780328983.46657,
+    "mtime": 1786204259.8900754,
     "ast_hash": "c18d5fadf561fde224992db175135038",
     "semantic_hash": "c18d5fadf561fde224992db175135038"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/Badges.kt": {
-    "mtime": 1780600150.7979379,
+    "mtime": 1786204259.8901806,
     "ast_hash": "07a0025b876f912527bbfe5a9fd4d625",
     "semantic_hash": "07a0025b876f912527bbfe5a9fd4d625"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/CenteredComponents.kt": {
-    "mtime": 1777843400.7025416,
+    "mtime": 1786204259.8902962,
     "ast_hash": "05040802b2f153617429893af0bdcb38",
     "semantic_hash": "05040802b2f153617429893af0bdcb38"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/MarsImage.kt": {
-    "mtime": 1782929117.3816612,
+    "mtime": 1786204259.890701,
     "ast_hash": "3f0db2c3dc66d7c0a0d462e412bf548b",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/MaterialSymbolIcon.kt": {
-    "mtime": 1781256913.8488944,
-    "ast_hash": "33aa3f38494bb3b69be6ccd4254713aa",
-    "semantic_hash": "33aa3f38494bb3b69be6ccd4254713aa"
+    "mtime": 1786207132.568048,
+    "ast_hash": "980a2af41fcfc04ef8437b374bde3fa6",
+    "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/PlatformDatePicker.kt": {
-    "mtime": 1779816004.0929554,
+    "mtime": 1786204259.8908734,
     "ast_hash": "4179b03b826c92ad5c6c4625587e744c",
     "semantic_hash": "4179b03b826c92ad5c6c4625587e744c"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/PlatformUriHandler.kt": {
-    "mtime": 1777843400.7032542,
+    "mtime": 1786204259.8909492,
     "ast_hash": "dfda62cb5be6da5533dc3e6bc53ac2a1",
     "semantic_hash": "dfda62cb5be6da5533dc3e6bc53ac2a1"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/RoverBlurb.kt": {
-    "mtime": 1780905231.4999256,
+    "mtime": 1786204259.8910239,
     "ast_hash": "10c272199d1b2bfdacd2ed626fef31b5",
     "semantic_hash": "10c272199d1b2bfdacd2ed626fef31b5"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/RoverPainter.kt": {
-    "mtime": 1779267086.2881513,
+    "mtime": 1786204259.8911157,
     "ast_hash": "413e4e91958e2a17d3e3be140d9db4c6",
     "semantic_hash": "413e4e91958e2a17d3e3be140d9db4c6"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/SegmentedControl.kt": {
-    "mtime": 1780602845.1826882,
+    "mtime": 1786204259.8912094,
     "ast_hash": "4cde88baf3936ae169fe276aaa97cd49",
     "semantic_hash": "4cde88baf3936ae169fe276aaa97cd49"
   },
-  "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/SettingsComponents.kt": {
-    "mtime": 1780600150.7996526,
-    "ast_hash": "28c270e03b7caff543a7866deae4bb40",
-    "semantic_hash": "28c270e03b7caff543a7866deae4bb40"
-  },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/StatusBarAppearance.kt": {
-    "mtime": 1779813126.5949287,
+    "mtime": 1786204259.8917224,
     "ast_hash": "31b449c334e9b1dc117393111b254edf",
     "semantic_hash": "31b449c334e9b1dc117393111b254edf"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/UkraineBanner.kt": {
-    "mtime": 1779468899.5357645,
+    "mtime": 1786204259.8918056,
     "ast_hash": "bbcb955dfc6a213203eb27669412b613",
     "semantic_hash": "bbcb955dfc6a213203eb27669412b613"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/widgets.kt": {
-    "mtime": 1780345709.5112839,
+    "mtime": 1786204259.8918927,
     "ast_hash": "e379a8ebd30841c977408f2950ff9c55",
     "semantic_hash": "e379a8ebd30841c977408f2950ff9c55"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/AboutViewModel.kt": {
-    "mtime": 1779263547.9687393,
+    "mtime": 1786204259.8920627,
     "ast_hash": "75865cdd61f5b77f7b16e8fe6349ad3a",
     "semantic_hash": "75865cdd61f5b77f7b16e8fe6349ad3a"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/FavoriteImagesViewModel.kt": {
-    "mtime": 1786191387.3922052,
+    "mtime": 1786204259.8926747,
     "ast_hash": "282147c7c1943f5e5735960fbf1f6cb9",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/ImageViewModel.kt": {
-    "mtime": 1786191387.3932967,
+    "mtime": 1786204259.8929622,
     "ast_hash": "20aa71d361a3b6826019e2e9b296eb1a",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/PhotosViewModel.kt": {
-    "mtime": 1786191387.3944647,
+    "mtime": 1786204259.8932679,
     "ast_hash": "7ff4144a3c87e3114c3b813b6001a3c8",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/PopularPhotosViewModel.kt": {
-    "mtime": 1786191387.3951228,
+    "mtime": 1786204259.8935657,
     "ast_hash": "fc9f827925c252aa3050e3c5a2d7f9f5",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/RoverMissionInfoViewModel.kt": {
-    "mtime": 1782807438.3285325,
+    "mtime": 1786204259.8939385,
     "ast_hash": "87da6aed7f2f0d8f56db7f34ea5e3c12",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/RoversViewModel.kt": {
-    "mtime": 1780905231.5002246,
+    "mtime": 1786204259.8940454,
     "ast_hash": "ae0432e75ff690a6e011dd1090bed414",
     "semantic_hash": "ae0432e75ff690a6e011dd1090bed414"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/utils/DateFormatUtils.kt": {
-    "mtime": 1779811636.7136712,
+    "mtime": 1786204259.8941839,
     "ast_hash": "685f867b46453541dac010c0e59ee8c7",
     "semantic_hash": "685f867b46453541dac010c0e59ee8c7"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/utils/Logger.kt": {
-    "mtime": 1777843400.7045207,
+    "mtime": 1786204259.8942668,
     "ast_hash": "b6c1931fcf07d6af47707362707c1bd3",
     "semantic_hash": "b6c1931fcf07d6af47707362707c1bd3"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/utils/MissionInfoUtils.kt": {
-    "mtime": 1782807438.3290555,
+    "mtime": 1786204259.8945227,
     "ast_hash": "3fd8b44be32392dd51eca7ac64f8720c",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/utils/NumberFormat.kt": {
-    "mtime": 1780905231.500545,
+    "mtime": 1786204259.8946927,
     "ast_hash": "7ba4f28b410cbe19d32c131bb74e0914",
     "semantic_hash": "7ba4f28b410cbe19d32c131bb74e0914"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/utils/RandomGenerator.kt": {
-    "mtime": 1777843400.704779,
+    "mtime": 1786204259.894772,
     "ast_hash": "e6bf419ce3914b65e700081b88a17ce2",
     "semantic_hash": "e6bf419ce3914b65e700081b88a17ce2"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/utils/RoverDateUtil.kt": {
-    "mtime": 1779267086.2888699,
+    "mtime": 1786204259.8948548,
     "ast_hash": "90084c4607c9bbdc345fde158811723c",
     "semantic_hash": "90084c4607c9bbdc345fde158811723c"
   },
   "shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/data/network/MslCameraMappingTest.kt": {
-    "mtime": 1781899476.3559093,
+    "mtime": 1786204259.8954465,
     "ast_hash": "1ad98b9f704c37a784b61850518064d5",
     "semantic_hash": ""
   },
   "shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/data/network/NasaImageOrigUrlTest.kt": {
-    "mtime": 1781204374.1735153,
+    "mtime": 1786204259.8955474,
     "ast_hash": "02b913aa7ecc8182b728daa3f4052315",
     "semantic_hash": "02b913aa7ecc8182b728daa3f4052315"
   },
   "shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/data/network/NasaImageSmallUrlTest.kt": {
-    "mtime": 1781899476.3563159,
+    "mtime": 1786204259.8956378,
     "ast_hash": "bdacf367dbd629a6c844259f5cb5fddb",
     "semantic_hash": ""
   },
   "shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/data/paging/Fakes.kt": {
-    "mtime": 1785782377.6846054,
+    "mtime": 1786204259.8960114,
     "ast_hash": "9741dcc462d359fab97881ecf064b1f6",
     "semantic_hash": ""
   },
   "shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/data/paging/ImagesSearchPagingSourceTest.kt": {
-    "mtime": 1781256913.7061124,
+    "mtime": 1786204259.8961773,
     "ast_hash": "0b6016e7aae624f0dae7489379fb28fb",
     "semantic_hash": "0b6016e7aae624f0dae7489379fb28fb"
   },
   "shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/data/paging/RoverFeedModeTest.kt": {
-    "mtime": 1780501878.1746373,
+    "mtime": 1786204259.8963137,
     "ast_hash": "a366cc8f16f28df87021285417ee8703",
     "semantic_hash": "a366cc8f16f28df87021285417ee8703"
   },
   "shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/data/paging/SolPagingSourceTest.kt": {
-    "mtime": 1781256913.7072854,
+    "mtime": 1786204259.8965223,
     "ast_hash": "711a0286aa5a1ae9f1c7acddc20a3324",
     "semantic_hash": "711a0286aa5a1ae9f1c7acddc20a3324"
   },
   "shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/RoversFilterTest.kt": {
-    "mtime": 1780905231.5009475,
+    "mtime": 1786204259.8971636,
     "ast_hash": "c35f6c4652d34b9f738875b292ae8abb",
     "semantic_hash": "c35f6c4652d34b9f738875b292ae8abb"
   },
   "shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/utils/MissionInfoUtilsTest.kt": {
-    "mtime": 1786191387.3972363,
+    "mtime": 1786204259.8975747,
     "ast_hash": "340a83fc3dbd8f81bdb6acc9e39fe0c3",
     "semantic_hash": ""
   },
   "shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/utils/NumberFormatTest.kt": {
-    "mtime": 1780905231.5012343,
+    "mtime": 1786204259.897654,
     "ast_hash": "8289cc9feb4eed635ba45e93c9861b51",
     "semantic_hash": "8289cc9feb4eed635ba45e93c9861b51"
   },
   "shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/utils/RoverDateUtilTest.kt": {
-    "mtime": 1780501878.1749344,
+    "mtime": 1786204259.8977277,
     "ast_hash": "a50d31e9fc64df0eacf8e0cb9eea62cc",
     "semantic_hash": "a50d31e9fc64df0eacf8e0cb9eea62cc"
   },
   "shared/src/desktopMain/kotlin/com/sirelon/marsroverphotos/di/KoinInit.desktop.kt": {
-    "mtime": 1782929117.3843753,
+    "mtime": 1786204259.8984044,
     "ast_hash": "f4780bd6e6627dc240c209e855d84baa",
     "semantic_hash": ""
   },
   "shared/src/desktopMain/kotlin/com/sirelon/marsroverphotos/di/PlatformModule.desktop.kt": {
-    "mtime": 1779459719.530332,
+    "mtime": 1786204259.8984935,
     "ast_hash": "494131c0479d169f812d495bee785eae",
     "semantic_hash": "494131c0479d169f812d495bee785eae"
   },
   "shared/src/desktopMain/kotlin/com/sirelon/marsroverphotos/platform/DatabaseBuilder.desktop.kt": {
-    "mtime": 1781899476.3569212,
+    "mtime": 1786204259.8986223,
     "ast_hash": "13781328e5c1bf786c04ed567ea8ec65",
     "semantic_hash": ""
   },
   "shared/src/desktopMain/kotlin/com/sirelon/marsroverphotos/platform/DesktopTracker.kt": {
-    "mtime": 1786191387.3985183,
+    "mtime": 1786204259.8990626,
     "ast_hash": "77fe9f6d7b63156190eef43f3567d279",
     "semantic_hash": ""
   },
   "shared/src/desktopMain/kotlin/com/sirelon/marsroverphotos/platform/FirebaseAnalytics.desktop.kt": {
-    "mtime": 1777843400.7062874,
+    "mtime": 1786204259.8991492,
     "ast_hash": "de255c9990cc0bb80d05a06c954a7359",
     "semantic_hash": "de255c9990cc0bb80d05a06c954a7359"
   },
   "shared/src/desktopMain/kotlin/com/sirelon/marsroverphotos/platform/HttpClientEngine.desktop.kt": {
-    "mtime": 1777843400.7065659,
+    "mtime": 1786204259.8992233,
     "ast_hash": "95642af330712920a2cdd7b633fa55c8",
     "semantic_hash": "95642af330712920a2cdd7b633fa55c8"
   },
   "shared/src/desktopMain/kotlin/com/sirelon/marsroverphotos/platform/ImageOperations.desktop.kt": {
-    "mtime": 1777843400.7067099,
+    "mtime": 1786204259.8992994,
     "ast_hash": "8ef2cb26f4f4d18364d02317bc6b5045",
     "semantic_hash": "8ef2cb26f4f4d18364d02317bc6b5045"
   },
   "shared/src/desktopMain/kotlin/com/sirelon/marsroverphotos/platform/PlatformPreferences.desktop.kt": {
-    "mtime": 1777843400.7068596,
+    "mtime": 1786204259.8993688,
     "ast_hash": "f5cf00aeed7b735e6030c44a84cd0dfe",
     "semantic_hash": "f5cf00aeed7b735e6030c44a84cd0dfe"
   },
   "shared/src/desktopMain/kotlin/com/sirelon/marsroverphotos/platform/RecordException.desktop.kt": {
-    "mtime": 1779263547.9694376,
+    "mtime": 1786204259.8994417,
     "ast_hash": "1b9a5ba0b130ce3605f14867e18d2eaa",
     "semantic_hash": "1b9a5ba0b130ce3605f14867e18d2eaa"
   },
   "shared/src/desktopMain/kotlin/com/sirelon/marsroverphotos/presentation/theme/Theme.desktop.kt": {
-    "mtime": 1779832873.8413131,
+    "mtime": 1786204259.8996239,
     "ast_hash": "84e4149bb84082411f920a90f6115533",
     "semantic_hash": "84e4149bb84082411f920a90f6115533"
   },
   "shared/src/desktopMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AdSlot.desktop.kt": {
-    "mtime": 1779263547.9696012,
+    "mtime": 1786204259.8997548,
     "ast_hash": "5e2ab4c642b02c0746e84781434a275e",
     "semantic_hash": "5e2ab4c642b02c0746e84781434a275e"
   },
   "shared/src/desktopMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/PlatformUriHandler.desktop.kt": {
-    "mtime": 1777843400.7075684,
+    "mtime": 1786204259.8998287,
     "ast_hash": "35c3b58c13907d0452899a5c06afbb08",
     "semantic_hash": "35c3b58c13907d0452899a5c06afbb08"
   },
   "shared/src/desktopMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/StatusBarAppearance.desktop.kt": {
-    "mtime": 1779813150.577867,
+    "mtime": 1786204259.899918,
     "ast_hash": "0500c7059aabef81a37378664a750d69",
     "semantic_hash": "0500c7059aabef81a37378664a750d69"
   },
   "shared/src/iosMain/kotlin/Main.ios.kt": {
-    "mtime": 1782748757.8842452,
+    "mtime": 1786204259.90041,
     "ast_hash": "09230180d3bcd8318c65383464154804",
     "semantic_hash": ""
   },
   "shared/src/iosMain/kotlin/com/sirelon/marsroverphotos/di/KoinInitIos.kt": {
-    "mtime": 1781256913.8491879,
+    "mtime": 1786204259.900726,
     "ast_hash": "bf41e4fdb36f0bbd3685b194e27c46c8",
     "semantic_hash": "bf41e4fdb36f0bbd3685b194e27c46c8"
   },
   "shared/src/iosMain/kotlin/com/sirelon/marsroverphotos/di/PlatformModule.ios.kt": {
-    "mtime": 1779696032.8374832,
+    "mtime": 1786204259.9009445,
     "ast_hash": "3f8715583c851a03a1e9cb01ba91ed18",
     "semantic_hash": "3f8715583c851a03a1e9cb01ba91ed18"
   },
   "shared/src/iosMain/kotlin/com/sirelon/marsroverphotos/platform/AppReview.ios.kt": {
-    "mtime": 1779696032.8378158,
+    "mtime": 1786204259.9011774,
     "ast_hash": "79792187e416b5c400e86e1599232d7e",
     "semantic_hash": "79792187e416b5c400e86e1599232d7e"
   },
   "shared/src/iosMain/kotlin/com/sirelon/marsroverphotos/platform/DatabaseBuilder.ios.kt": {
-    "mtime": 1781899476.3572636,
+    "mtime": 1786204259.9012861,
     "ast_hash": "e6ec8007f8e40649f15bf0079d93bf4a",
     "semantic_hash": ""
   },
   "shared/src/iosMain/kotlin/com/sirelon/marsroverphotos/platform/FirebaseAnalytics.ios.kt": {
-    "mtime": 1779263547.9705465,
+    "mtime": 1786204259.9013731,
     "ast_hash": "afc2f8944667f2f02e05b7c4989c9428",
     "semantic_hash": "afc2f8944667f2f02e05b7c4989c9428"
   },
   "shared/src/iosMain/kotlin/com/sirelon/marsroverphotos/platform/HttpClientEngine.ios.kt": {
-    "mtime": 1777843400.709763,
+    "mtime": 1786204259.901485,
     "ast_hash": "dae4021ac35ae96b960ee62df7abbb20",
     "semantic_hash": "dae4021ac35ae96b960ee62df7abbb20"
   },
   "shared/src/iosMain/kotlin/com/sirelon/marsroverphotos/platform/ImageOperations.ios.kt": {
-    "mtime": 1779390273.3483825,
+    "mtime": 1786204259.9016201,
     "ast_hash": "908507d67e236e40d83d88399d171614",
     "semantic_hash": "908507d67e236e40d83d88399d171614"
   },
   "shared/src/iosMain/kotlin/com/sirelon/marsroverphotos/platform/IosAdSlot.kt": {
-    "mtime": 1779459719.460238,
+    "mtime": 1786204259.901694,
     "ast_hash": "bc0e86a5f1ee5219aa4d81307ee0eaa4",
     "semantic_hash": "bc0e86a5f1ee5219aa4d81307ee0eaa4"
   },
   "shared/src/iosMain/kotlin/com/sirelon/marsroverphotos/platform/PlatformPreferences.ios.kt": {
-    "mtime": 1777843400.7100444,
+    "mtime": 1786204259.9017763,
     "ast_hash": "30eaa0c0b6c968e93398a9eba8b7017c",
     "semantic_hash": "30eaa0c0b6c968e93398a9eba8b7017c"
   },
   "shared/src/iosMain/kotlin/com/sirelon/marsroverphotos/platform/RecordException.ios.kt": {
-    "mtime": 1779263547.9707868,
+    "mtime": 1786204259.90186,
     "ast_hash": "b99cd2bd05f2cf27cc554d32c4e396cf",
     "semantic_hash": "b99cd2bd05f2cf27cc554d32c4e396cf"
   },
   "shared/src/iosMain/kotlin/com/sirelon/marsroverphotos/presentation/theme/Theme.ios.kt": {
-    "mtime": 1779832873.8417025,
+    "mtime": 1786204259.9020214,
     "ast_hash": "3e3609d945a7743ba8c972b3541e91b7",
     "semantic_hash": "3e3609d945a7743ba8c972b3541e91b7"
   },
   "shared/src/iosMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AdSlot.ios.kt": {
-    "mtime": 1779820060.639871,
+    "mtime": 1786204259.902163,
     "ast_hash": "8ca14e8458a8918d1ba791c24e0dccd1",
     "semantic_hash": "8ca14e8458a8918d1ba791c24e0dccd1"
   },
   "shared/src/iosMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/PlatformUriHandler.ios.kt": {
-    "mtime": 1779809800.7072227,
+    "mtime": 1786204259.9022584,
     "ast_hash": "f6235591d4d0e57c1a8e80fe3ea2588a",
     "semantic_hash": "f6235591d4d0e57c1a8e80fe3ea2588a"
   },
   "shared/src/iosMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/StatusBarAppearance.ios.kt": {
-    "mtime": 1779813134.3890586,
+    "mtime": 1786204259.9023366,
     "ast_hash": "a693fdf73f700b05f28ba9fe7cb9cf85",
     "semantic_hash": "a693fdf73f700b05f28ba9fe7cb9cf85"
   },
   "androidApp/build.gradle.kts": {
-    "mtime": 1781204614.928546,
+    "mtime": 1786204259.7254293,
     "ast_hash": "8755bbca14b312e185f8654f2674edbf",
     "semantic_hash": "8755bbca14b312e185f8654f2674edbf"
   },
   "androidApp/google-services.json": {
-    "mtime": 1779284163.560329,
+    "mtime": 1786204259.7256942,
     "ast_hash": "c45f1c6ff19a8eab5e97da65462971fc",
     "semantic_hash": "c45f1c6ff19a8eab5e97da65462971fc"
   },
   "androidApp/src/main/kotlin/com/sirelon/marsroverphotos/MainActivity.kt": {
-    "mtime": 1781899478.379472,
+    "mtime": 1786204259.7268279,
     "ast_hash": "c7ea154a11f42a225a7744abb7daf3c3",
     "semantic_hash": ""
   },
   "androidApp/src/main/kotlin/com/sirelon/marsroverphotos/MarsRoverApplication.kt": {
-    "mtime": 1780326302.9940772,
+    "mtime": 1786204259.7269316,
     "ast_hash": "8deed4177a4e626fa731807c5e7d8a4e",
     "semantic_hash": "8deed4177a4e626fa731807c5e7d8a4e"
   },
   "androidApp/src/main/kotlin/com/sirelon/marsroverphotos/gdpr/GdprHelper.kt": {
-    "mtime": 1782928833.5260677,
+    "mtime": 1786204259.7272673,
     "ast_hash": "f2e5e40d5b8d69e0dc817cad0a50549d",
     "semantic_hash": ""
   },
   "androidApp/src/main/kotlin/com/sirelon/marsroverphotos/widget/MarsPhotoWidget.kt": {
-    "mtime": 1779385467.273756,
+    "mtime": 1786204259.7274218,
     "ast_hash": "480303ea3a4585c0f0fd2b62340e30b0",
     "semantic_hash": "480303ea3a4585c0f0fd2b62340e30b0"
   },
   "androidApp/src/main/kotlin/com/sirelon/marsroverphotos/widget/MarsPhotoWidgetConfigActivity.kt": {
-    "mtime": 1781204374.1894944,
+    "mtime": 1786204259.727518,
     "ast_hash": "ba399ae601e0c463443ff18c474817fe",
     "semantic_hash": "ba399ae601e0c463443ff18c474817fe"
   },
   "androidApp/src/main/kotlin/com/sirelon/marsroverphotos/widget/MarsPhotoWidgetReceiver.kt": {
-    "mtime": 1779385467.2744603,
+    "mtime": 1786204259.7276256,
     "ast_hash": "32f058cf6806dbb3509179f75ce52562",
     "semantic_hash": "32f058cf6806dbb3509179f75ce52562"
   },
   "androidApp/src/main/kotlin/com/sirelon/marsroverphotos/widget/MarsPhotoWidgetWorker.kt": {
-    "mtime": 1781899476.3498363,
+    "mtime": 1786204259.7277327,
     "ast_hash": "050a1c54a7ed5686cc0f54a4c442f32b",
     "semantic_hash": ""
   },
   "iosApp/iosApp/Assets.xcassets/AccentColor.colorset/Contents.json": {
-    "mtime": 1779397387.6294026,
+    "mtime": 1786204259.8279266,
     "ast_hash": "00fb402cee946d8fb8e3a0786ff9d18d",
     "semantic_hash": "00fb402cee946d8fb8e3a0786ff9d18d"
   },
   "iosApp/iosApp/Assets.xcassets/AppIcon.appiconset/Contents.json": {
-    "mtime": 1779397105.311328,
+    "mtime": 1786204259.828047,
     "ast_hash": "a45bc9b51d220b4e8e78a5cb9d96f08b",
     "semantic_hash": "a45bc9b51d220b4e8e78a5cb9d96f08b"
   },
   "iosApp/iosApp/Assets.xcassets/Contents.json": {
-    "mtime": 1779397159.8900678,
+    "mtime": 1786204259.8337533,
     "ast_hash": "ee613c71a35a7100f8a141a67180f5a7",
     "semantic_hash": "ee613c71a35a7100f8a141a67180f5a7"
   },
   "iosApp/iosApp/Assets.xcassets/SplashBackground.colorset/Contents.json": {
-    "mtime": 1779397664.8852272,
+    "mtime": 1786204259.8339489,
     "ast_hash": "1b618a315070ec9d87bccba2d624d927",
     "semantic_hash": "1b618a315070ec9d87bccba2d624d927"
   },
   "iosApp/iosApp/Assets.xcassets/SplashIcon.imageset/Contents.json": {
-    "mtime": 1779397664.9833863,
+    "mtime": 1786204259.8340917,
     "ast_hash": "648a7fad3fa339289714ea10be7d8f43",
     "semantic_hash": "648a7fad3fa339289714ea10be7d8f43"
   },
   "iosApp/iosApp/BannerAdFactory.swift": {
-    "mtime": 1779813021.4059286,
+    "mtime": 1786204259.8349311,
     "ast_hash": "e64a7748653645b95b9e95607ac4d003",
     "semantic_hash": "e64a7748653645b95b9e95607ac4d003"
   },
   "iosApp/iosApp/ContentView.swift": {
-    "mtime": 1779809800.705604,
+    "mtime": 1786204259.8351686,
     "ast_hash": "41d6154d79aa67d3df79e9594f6918f0",
     "semantic_hash": "41d6154d79aa67d3df79e9594f6918f0"
   },
   "iosApp/iosApp/MarsRoverApp.swift": {
-    "mtime": 1781899478.3802872,
+    "mtime": 1786204259.8356302,
     "ast_hash": "2961ab620e6cff9b1a97198d8cf9129d",
     "semantic_hash": ""
   },
   "webApp/build.gradle.kts": {
-    "mtime": 1780411993.613853,
+    "mtime": 1786204259.9024572,
     "ast_hash": "265ffc769427bb9a9c915af511245f72",
     "semantic_hash": "265ffc769427bb9a9c915af511245f72"
   },
   "webApp/src/wasmJsMain/kotlin/com/sirelon/marsroverphotos/web/Main.kt": {
-    "mtime": 1780411993.61421,
+    "mtime": 1786204259.9028573,
     "ast_hash": "c0b83eecfbf13bcd6374a5e52ff1ef92",
     "semantic_hash": "c0b83eecfbf13bcd6374a5e52ff1ef92"
   },
   "desktopApp/build.gradle.kts": {
-    "mtime": 1782744612.7260377,
+    "mtime": 1786204259.8095639,
     "ast_hash": "8166ce11972d73a30ad3205428c85a99",
     "semantic_hash": ""
   },
   "desktopApp/src/jvmMain/kotlin/com/sirelon/marsroverphotos/desktop/Main.kt": {
-    "mtime": 1779397681.9707732,
+    "mtime": 1786204259.809962,
     "ast_hash": "7776b95308b302e60a48c0e1b4a83cb5",
     "semantic_hash": "7776b95308b302e60a48c0e1b4a83cb5"
   },
   "shared/compose-stability-config.txt": {
-    "mtime": 1777843400.6620498,
+    "mtime": 1786204259.837151,
     "ast_hash": "e6241a6b654e7c51e50581946370452d",
     "semantic_hash": "e6241a6b654e7c51e50581946370452d"
   },
   "iosApp/README.md": {
-    "mtime": 1781204373.8132563,
+    "mtime": 1786204259.825779,
     "ast_hash": "9179040c5f5559f13470c8be1439af90",
     "semantic_hash": "9179040c5f5559f13470c8be1439af90"
   },
   "iosApp/SETUP.md": {
-    "mtime": 1780905231.5243204,
+    "mtime": 1786204259.8258526,
     "ast_hash": "bec00b4f60d5bdfbe6d9167af7c09412",
     "semantic_hash": "bec00b4f60d5bdfbe6d9167af7c09412"
   },
   "webApp/src/wasmJsMain/resources/index.html": {
-    "mtime": 1780411993.614616,
+    "mtime": 1786204259.9067733,
     "ast_hash": "eea92479a911d3112269779c8750623e",
     "semantic_hash": "eea92479a911d3112269779c8750623e"
   },
   ".claude/settings.json": {
-    "mtime": 1781258266.3930447,
+    "mtime": 1786204259.111555,
     "ast_hash": "c41ca49c6b64b7fc3891aa0a349ba491",
     "semantic_hash": "c41ca49c6b64b7fc3891aa0a349ba491"
   },
   ".vscode/settings.json": {
-    "mtime": 1775063545.4421077,
+    "mtime": 1786204259.1140804,
     "ast_hash": "c3bb1928ff8e97ef58cd813de69066b5",
     "semantic_hash": "c3bb1928ff8e97ef58cd813de69066b5"
   },
   "build.gradle.kts": {
-    "mtime": 1780783312.6265392,
+    "mtime": 1786204259.8081496,
     "ast_hash": "69ba1081b1f1010ac00c61df237c3058",
     "semantic_hash": "69ba1081b1f1010ac00c61df237c3058"
   },
   "buildSrc/build.gradle.kts": {
-    "mtime": 1780605655.8170197,
+    "mtime": 1786204259.8082736,
     "ast_hash": "68fa6e4dcc330d2e41cb0f2fef117293",
     "semantic_hash": "68fa6e4dcc330d2e41cb0f2fef117293"
   },
   "buildSrc/src/main/kotlin/AppVersion.kt": {
-    "mtime": 1782748757.8812995,
+    "mtime": 1786204259.8086874,
     "ast_hash": "715a69e75926993bf07a793c43cd4083",
     "semantic_hash": ""
   },
   "gradle/versioning.gradle.kts": {
-    "mtime": 1780783297.7973962,
+    "mtime": 1786204259.8150172,
     "ast_hash": "b98f90397916f6cc7bef6f62c8ed3fa3",
     "semantic_hash": "b98f90397916f6cc7bef6f62c8ed3fa3"
   },
   "gradlew": {
-    "mtime": 1782745482.3791163,
+    "mtime": 1786204259.8165123,
     "ast_hash": "a43be8432bac3ffd05b3769aa42fe996",
     "semantic_hash": ""
   },
   "settings.gradle.kts": {
-    "mtime": 1780411993.611435,
+    "mtime": 1786204259.8369024,
     "ast_hash": "8f809ad9c51ad9301a737351bce0c654",
     "semantic_hash": "8f809ad9c51ad9301a737351bce0c654"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/AdminPhotosScreen.kt": {
-    "mtime": 1781256957.936714,
+    "mtime": 1786204259.8829606,
     "ast_hash": "141fcc7d690b7360b72cc4f34468456d",
     "semantic_hash": "141fcc7d690b7360b72cc4f34468456d"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/DateJumpPickerScreen.kt": {
-    "mtime": 1781256913.7013729,
+    "mtime": 1786204259.8830967,
     "ast_hash": "33615bfb88b88f7b6267f3b5383925e6",
     "semantic_hash": "33615bfb88b88f7b6267f3b5383925e6"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppSolEarthCard.kt": {
-    "mtime": 1781204373.8397703,
+    "mtime": 1786204259.8899746,
     "ast_hash": "56deeaf12436ab3a8b43865f8928afd7",
     "semantic_hash": "56deeaf12436ab3a8b43865f8928afd7"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/LikeHeart.kt": {
-    "mtime": 1781204373.840303,
+    "mtime": 1786204259.8903768,
     "ast_hash": "315178717ee772030ca1e9b07214d9a9",
     "semantic_hash": "315178717ee772030ca1e9b07214d9a9"
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/AdminPhotosViewModel.kt": {
-    "mtime": 1782929117.382364,
+    "mtime": 1786204259.8924136,
     "ast_hash": "59f320a85535e8c3f216ee0aa30ab05d",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/utils/NasaImageUrl.kt": {
-    "mtime": 1781552036.7068987,
+    "mtime": 1786204259.8946128,
     "ast_hash": "4af59bf4e0f5d281470b971f646ac49f",
     "semantic_hash": ""
   },
   "shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/data/paging/SolPagingSourcePagerTest.kt": {
-    "mtime": 1781256913.7065377,
+    "mtime": 1786204259.896399,
     "ast_hash": "3adce92da622ce74c5b7abb32637963c",
     "semantic_hash": "3adce92da622ce74c5b7abb32637963c"
   },
   ".claude/MAESTRO_NAVIGATION_NOTES.md": {
-    "mtime": 1779393989.0750165,
+    "mtime": 1786204259.1113043,
     "ast_hash": "b89e951edbc0c78e82f7d2a37f73c2a4",
     "semantic_hash": "b89e951edbc0c78e82f7d2a37f73c2a4"
   },
   ".claude/VISUAL_AUDIT.md": {
-    "mtime": 1779393936.7946808,
+    "mtime": 1786204259.1114619,
     "ast_hash": "78832addda1437d653afd6bf1e09af89",
     "semantic_hash": "78832addda1437d653afd6bf1e09af89"
   },
   ".github/workflows/ci.yml": {
-    "mtime": 1780414347.089005,
+    "mtime": 1786204259.1125128,
     "ast_hash": "b75086f02d3c8592ea084b0d3077847e",
     "semantic_hash": "b75086f02d3c8592ea084b0d3077847e"
   },
   "AGENTS.md": {
-    "mtime": 1781256913.6914692,
-    "ast_hash": "494da7630ba02388c048bd60a87a3170",
-    "semantic_hash": "494da7630ba02388c048bd60a87a3170"
+    "mtime": 1786268523.7574625,
+    "ast_hash": "70a851c30e716880ce09c15db5a338e3",
+    "semantic_hash": ""
   },
   "DEEP_LINKING.md": {
-    "mtime": 1780905231.523529,
+    "mtime": 1786204259.1143649,
     "ast_hash": "1842505db96c2674df0f0e1550545b88",
     "semantic_hash": "1842505db96c2674df0f0e1550545b88"
   },
   "README.md": {
-    "mtime": 1780852285.892255,
+    "mtime": 1786204259.7246857,
     "ast_hash": "92998848b2b51a0f55ee8f953da6814b",
     "semantic_hash": "92998848b2b51a0f55ee8f953da6814b"
   },
   "WASM_WEB_SUPPORT.md": {
-    "mtime": 1780905231.5236802,
+    "mtime": 1786204259.7249055,
     "ast_hash": "b703ad24d2ec35df5879434149577d0e",
     "semantic_hash": "b703ad24d2ec35df5879434149577d0e"
   },
   "_config.yml": {
-    "mtime": 1755802803.647098,
+    "mtime": 1786204259.7249796,
     "ast_hash": "d88166bbeaf9421921db9fb119080112",
     "semantic_hash": "d88166bbeaf9421921db9fb119080112"
   },
   "config/detekt/detekt.yml": {
-    "mtime": 1775063852.8359854,
+    "mtime": 1786204259.8093011,
     "ast_hash": "2666db8b60cedc45fad0c0a8b4e0461e",
     "semantic_hash": "2666db8b60cedc45fad0c0a8b4e0461e"
   },
   "docs/DESIGN_SYSTEM.md": {
-    "mtime": 1781552748.5297754,
-    "ast_hash": "8118064dc791f1e6b1f58833544945fa",
+    "mtime": 1786269606.772571,
+    "ast_hash": "24b1e9d93baa5488549c496eba81842b",
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1781899476.3684871,
+    "mtime": 1786204259.825483,
     "ast_hash": "503662aeaf7ee0aa6472458149958f47",
     "semantic_hash": ""
   },
   ".github/dependabot.yml": {
-    "mtime": 1781260806.3397698,
+    "mtime": 1786204259.1123815,
     "ast_hash": "86b678f30c02b427a6d85dc752a01da2",
     "semantic_hash": ""
   },
   ".github/workflows/dependabot-androidx-notes.yml": {
-    "mtime": 1781277839.3178546,
+    "mtime": 1786204259.112619,
     "ast_hash": "4e4697aa917926764d45a27ac8a6e229",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1781258266.3922281,
-    "ast_hash": "82efb97a359f5c7290bf2513d14686be",
+    "mtime": 1786219898.5172162,
+    "ast_hash": "7a5fb85e8de9cbb9ca0c8c4f8af3aa4c",
     "semantic_hash": ""
   },
   "Design/alien_icon.png": {
-    "mtime": 1755802803.0982783,
+    "mtime": 1786204259.1148317,
     "ast_hash": "3a8fde3623993d992c711ca97a6e67af",
     "semantic_hash": ""
   },
   "Design/huawei/Phone Screenshot 1.png": {
-    "mtime": 1755802803.099493,
+    "mtime": 1786204259.1163957,
     "ast_hash": "5b77515e6a8575464d287aace391c49f",
     "semantic_hash": ""
   },
   "Design/huawei/Phone Screenshot 2.png": {
-    "mtime": 1755802803.1003783,
+    "mtime": 1786204259.1171649,
     "ast_hash": "8faaad9b24198341df805012e4b62ce7",
     "semantic_hash": ""
   },
   "Design/huawei/Phone Screenshot 3.png": {
-    "mtime": 1755802803.1014898,
+    "mtime": 1786204259.1184137,
     "ast_hash": "e4fc93b551a022a0954f37a8925fcfb5",
     "semantic_hash": ""
   },
   "Design/huawei/Phone Screenshot 4.png": {
-    "mtime": 1755802803.102909,
+    "mtime": 1786204259.1197648,
     "ast_hash": "4f44b389cb29d7929acccf4cb809d0cc",
     "semantic_hash": ""
   },
   "Design/huawei/Phone Screenshot 5.png": {
-    "mtime": 1755802803.1039774,
+    "mtime": 1786204259.1208093,
     "ast_hash": "a17f02c7001889ea4f3c8ddf7f40e81e",
     "semantic_hash": ""
   },
   "Design/huawei/Phone Screenshot 6.png": {
-    "mtime": 1755802803.1049404,
+    "mtime": 1786204259.1215081,
     "ast_hash": "cb8682c425f4516df1cc531e21da386e",
     "semantic_hash": ""
   },
   "Design/huawei/Phone Screenshot 7.png": {
-    "mtime": 1755802803.1055348,
+    "mtime": 1786204259.1220055,
     "ast_hash": "c2a6b344fe1654782e1af9696b6371cf",
     "semantic_hash": ""
   },
   "Design/huawei/Phone Screenshot 8.png": {
-    "mtime": 1755802803.106153,
+    "mtime": 1786204259.1227129,
     "ast_hash": "90d67ba591ecdf2a961caf338e74e2d9",
     "semantic_hash": ""
   },
   "Design/ic_logo.png": {
-    "mtime": 1755802803.1063025,
+    "mtime": 1786204259.1230798,
     "ast_hash": "97a182182b868a8e7747621af8bc05ad",
     "semantic_hash": ""
   },
   "Design/ic_logo_new.png": {
-    "mtime": 1755802803.1065218,
+    "mtime": 1786204259.123967,
     "ast_hash": "71f28c1ecf5f7f28e98f03c4dec0553a",
     "semantic_hash": ""
   },
   "Design/ic_logo_new_512.png": {
-    "mtime": 1755802803.107341,
+    "mtime": 1786204259.1255727,
     "ast_hash": "9e728167e27a61efc5bc13c32b7fb29a",
     "semantic_hash": ""
   },
   "Design/img_logo.png": {
-    "mtime": 1755802803.1076832,
+    "mtime": 1786204259.1261122,
     "ast_hash": "984a442a6dbb95b50fd272dc17dea4f8",
     "semantic_hash": ""
   },
   "Design/publish 3/1_white.png": {
-    "mtime": 1755802803.1135871,
+    "mtime": 1786204259.1306956,
     "ast_hash": "acb03d92f7834478bebf1e213b79e157",
     "semantic_hash": ""
   },
   "Design/publish 3/2_white.png": {
-    "mtime": 1755802803.1213076,
+    "mtime": 1786204259.1369653,
     "ast_hash": "51ca48843ef24b9e1008048d21e3bbe9",
     "semantic_hash": ""
   },
   "Design/publish 3/3.png": {
-    "mtime": 1755802803.130272,
+    "mtime": 1786204259.1451662,
     "ast_hash": "fa61ded972c741bc331fddf54adcb10e",
     "semantic_hash": ""
   },
   "Design/publish 3/Screenshot_20210907_222006.png": {
-    "mtime": 1755802803.1417027,
+    "mtime": 1786204259.155348,
     "ast_hash": "a816253119dc1a7fd3fe440eced4e747",
     "semantic_hash": ""
   },
   "Design/publish 3/Screenshot_20210907_222120.png": {
-    "mtime": 1755802803.1537473,
+    "mtime": 1786204259.1658087,
     "ast_hash": "1b13a5926421ba903e096f39b629eeb3",
     "semantic_hash": ""
   },
   "Design/publish 3/Screenshot_20210907_222211.png": {
-    "mtime": 1755802803.158794,
+    "mtime": 1786204259.1695654,
     "ast_hash": "5a10115bd1a54539cde2b8c09718e3c2",
     "semantic_hash": ""
   },
   "Design/publish 3/Screenshot_20210907_222427.png": {
-    "mtime": 1755802803.1624703,
+    "mtime": 1786204259.1728826,
     "ast_hash": "0e342edd8dc0f8efdf1af364b12d9aca",
     "semantic_hash": ""
   },
   "Design/publish 3/Screenshot_20210907_222501.png": {
-    "mtime": 1755802803.169393,
+    "mtime": 1786204259.1814518,
     "ast_hash": "05aa3b68d8727cab133d9423b0678187",
     "semantic_hash": ""
   },
   "Design/publish 3/Screenshot_20210907_222531.png": {
-    "mtime": 1755802803.1799412,
+    "mtime": 1786204259.1904242,
     "ast_hash": "8f09a9dc623754c181f4e420bc2256f5",
     "semantic_hash": ""
   },
   "Design/publish 3/Screenshot_20210907_222719.png": {
-    "mtime": 1755802803.1811562,
+    "mtime": 1786204259.1919806,
     "ast_hash": "f44abc0fadd545316b6184969aac651a",
     "semantic_hash": ""
   },
   "Design/publish 3/Screenshot_20210907_222749.png": {
-    "mtime": 1755802803.1917827,
+    "mtime": 1786204259.2005634,
     "ast_hash": "413f3f63e384fce06597a103ab97b97b",
     "semantic_hash": ""
   },
   "Design/publish 3/Screenshot_20210907_222802.png": {
-    "mtime": 1755802803.198307,
+    "mtime": 1786204259.206064,
     "ast_hash": "e59083d231a12d4c621a828188c5459d",
     "semantic_hash": ""
   },
   "Design/publish 3/Screenshot_20210907_222841.png": {
-    "mtime": 1755802803.207848,
+    "mtime": 1786204259.215153,
     "ast_hash": "48962262407556529534ebbc1d8f5cbb",
     "semantic_hash": ""
   },
   "Design/publish 3/Screenshot_20210907_222902.png": {
-    "mtime": 1755802803.216162,
+    "mtime": 1786204259.2232594,
     "ast_hash": "04b635348978eb9dc01cc337f75d9dd0",
     "semantic_hash": ""
   },
   "Design/publish 3/Screenshot_20210907_222930.png": {
-    "mtime": 1755802803.2236562,
+    "mtime": 1786204259.2307336,
     "ast_hash": "34f6adf253c41e618b8c0774f0ea01b8",
     "semantic_hash": ""
   },
   "Design/publish 3/Screenshot_20210907_222945.png": {
-    "mtime": 1755802803.231706,
+    "mtime": 1786204259.2380962,
     "ast_hash": "6f9d05341c413cfa1702a3579379b87a",
     "semantic_hash": ""
   },
   "Design/publish 3/Screenshot_20210907_222959.png": {
-    "mtime": 1755802803.2358124,
+    "mtime": 1786204259.2417383,
     "ast_hash": "0e54ae644bae5b22180007616280746d",
     "semantic_hash": ""
   },
   "Design/publish 3/Screenshot_20210907_223023.png": {
-    "mtime": 1755802803.243546,
+    "mtime": 1786204259.2496488,
     "ast_hash": "54a1668e23ded1b603559c51c6f98af6",
     "semantic_hash": ""
   },
   "Design/publish 3/Screenshot_20210907_223046.png": {
-    "mtime": 1755802803.2468765,
+    "mtime": 1786204259.2532105,
     "ast_hash": "7f1ca329e1182960ff83ab7c9030e1c0",
     "semantic_hash": ""
   },
   "Design/publish 3/app-screenshots 4/10-inch Tablet Screenshot 1.jpg": {
-    "mtime": 1755802803.2521472,
+    "mtime": 1786204259.2578719,
     "ast_hash": "7767724585342dd13144c822bf7d044f",
     "semantic_hash": ""
   },
   "Design/publish 3/app-screenshots 4/10-inch Tablet Screenshot 10.jpg": {
-    "mtime": 1755802803.2547696,
+    "mtime": 1786204259.2602735,
     "ast_hash": "b80afe7e2a341eb612a16ee8e87561f7",
     "semantic_hash": ""
   },
   "Design/publish 3/app-screenshots 4/10-inch Tablet Screenshot 2.jpg": {
-    "mtime": 1755802803.2603679,
+    "mtime": 1786204259.2651563,
     "ast_hash": "f005aa9e01075979ffc7934bc05cd440",
     "semantic_hash": ""
   },
   "Design/publish 3/app-screenshots 4/10-inch Tablet Screenshot 3.jpg": {
-    "mtime": 1755802803.2679129,
+    "mtime": 1786204259.2729635,
     "ast_hash": "5045eb266f6a6a2fe0e067c85422f8e8",
     "semantic_hash": ""
   },
   "Design/publish 3/app-screenshots 4/10-inch Tablet Screenshot 4.jpg": {
-    "mtime": 1755802803.2766225,
+    "mtime": 1786204259.2806509,
     "ast_hash": "bc742b31d85fce9b5a6207c8543ba122",
     "semantic_hash": ""
   },
   "Design/publish 3/app-screenshots 4/10-inch Tablet Screenshot 5.jpg": {
-    "mtime": 1755802803.2891672,
+    "mtime": 1786204259.2918417,
     "ast_hash": "25186fe9f07c57ed561dbac7301f4b36",
     "semantic_hash": ""
   },
   "Design/publish 3/app-screenshots 4/10-inch Tablet Screenshot 6.jpg": {
-    "mtime": 1755802803.2942429,
+    "mtime": 1786204259.296883,
     "ast_hash": "9f5c5b3a629d99a752f3a82cd483f0f2",
     "semantic_hash": ""
   },
   "Design/publish 3/app-screenshots 4/10-inch Tablet Screenshot 7.jpg": {
-    "mtime": 1755802803.2964091,
+    "mtime": 1786204259.3028953,
     "ast_hash": "2577d541d2b75aaa3b45c1b132fcecd5",
     "semantic_hash": ""
   },
   "Design/publish 3/app-screenshots 4/10-inch Tablet Screenshot 8.jpg": {
-    "mtime": 1755802803.3010955,
+    "mtime": 1786204259.3065453,
     "ast_hash": "ee53985aed21123f1ea0a2bbee7fb666",
     "semantic_hash": ""
   },
   "Design/publish 3/app-screenshots 4/10-inch Tablet Screenshot 9.jpg": {
-    "mtime": 1755802803.3069851,
+    "mtime": 1786204259.3121884,
     "ast_hash": "9dc0a53d7d20897faf10c9714517529e",
     "semantic_hash": ""
   },
   "Design/publish 3/app-screenshots 4/7-inch Tablet Screenshot 1.jpg": {
-    "mtime": 1755802803.3108609,
+    "mtime": 1786204259.318384,
     "ast_hash": "0b7d1717e698b9c0cbaf39c30e8ea6f3",
     "semantic_hash": ""
   },
   "Design/publish 3/app-screenshots 4/7-inch Tablet Screenshot 10.jpg": {
-    "mtime": 1755802803.312449,
+    "mtime": 1786204259.3204098,
     "ast_hash": "6fcc6a0ea6e9bf8cfbae78217a8a5ca9",
     "semantic_hash": ""
   },
   "Design/publish 3/app-screenshots 4/7-inch Tablet Screenshot 2.jpg": {
-    "mtime": 1755802803.3169193,
+    "mtime": 1786204259.3247418,
     "ast_hash": "796244f041cc323255d92bc13a77d63e",
     "semantic_hash": ""
   },
   "Design/publish 3/app-screenshots 4/7-inch Tablet Screenshot 3.jpg": {
-    "mtime": 1755802803.3235617,
+    "mtime": 1786204259.3341832,
     "ast_hash": "55dd19e9d4fce001615ded8840e250ba",
     "semantic_hash": ""
   },
   "Design/publish 3/app-screenshots 4/7-inch Tablet Screenshot 4.jpg": {
-    "mtime": 1755802803.328604,
+    "mtime": 1786204259.3465753,
     "ast_hash": "88203ee38d8dde5310dcbd0e5d33178e",
     "semantic_hash": ""
   },
   "Design/publish 3/app-screenshots 4/7-inch Tablet Screenshot 5.jpg": {
-    "mtime": 1755802803.336444,
+    "mtime": 1786204259.3549137,
     "ast_hash": "8bb37dc128395d383ac707c6eb16d959",
     "semantic_hash": ""
   },
   "Design/publish 3/app-screenshots 4/7-inch Tablet Screenshot 6.jpg": {
-    "mtime": 1755802803.3399086,
+    "mtime": 1786204259.359445,
     "ast_hash": "25bf246fe15646972b90450bdd5aa90b",
     "semantic_hash": ""
   },
   "Design/publish 3/app-screenshots 4/7-inch Tablet Screenshot 7.jpg": {
-    "mtime": 1755802803.3415675,
+    "mtime": 1786204259.3616712,
     "ast_hash": "b35346c6c158399e34c403623234d65f",
     "semantic_hash": ""
   },
   "Design/publish 3/app-screenshots 4/7-inch Tablet Screenshot 8.jpg": {
-    "mtime": 1755802803.3455946,
+    "mtime": 1786204259.3662398,
     "ast_hash": "a6d8dd973ce34bd48c4330bea1c037a9",
     "semantic_hash": ""
   },
   "Design/publish 3/app-screenshots 4/7-inch Tablet Screenshot 9.jpg": {
-    "mtime": 1755802803.349158,
+    "mtime": 1786204259.3698158,
     "ast_hash": "17d2249be8e013d7287ee3ed5bef4579",
     "semantic_hash": ""
   },
   "Design/publish 3/app-screenshots 4/Phone Screenshot 1.jpg": {
-    "mtime": 1755802803.3539994,
+    "mtime": 1786204259.374639,
     "ast_hash": "6bc18dc9b51a543120d6633cd688008a",
     "semantic_hash": ""
   },
   "Design/publish 3/app-screenshots 4/Phone Screenshot 10.jpg": {
-    "mtime": 1755802803.3560784,
+    "mtime": 1786204259.3760738,
     "ast_hash": "f6e6bc357f6d21cb1a1dfb73c501c6f2",
     "semantic_hash": ""
   },
   "Design/publish 3/app-screenshots 4/Phone Screenshot 2.jpg": {
-    "mtime": 1755802803.3620462,
+    "mtime": 1786204259.3808725,
     "ast_hash": "5aee7bc04b3894dc8ea9e5ee0ea0dcd3",
     "semantic_hash": ""
   },
   "Design/publish 3/app-screenshots 4/Phone Screenshot 3.jpg": {
-    "mtime": 1755802803.3683503,
+    "mtime": 1786204259.3872955,
     "ast_hash": "16730822b484e93f37bd1a193628b6b6",
     "semantic_hash": ""
   },
   "Design/publish 3/app-screenshots 4/Phone Screenshot 4.jpg": {
-    "mtime": 1755802803.376259,
+    "mtime": 1786204259.3956537,
     "ast_hash": "2d338a101f0eedc18b563982aeb4eda3",
     "semantic_hash": ""
   },
   "Design/publish 3/app-screenshots 4/Phone Screenshot 5.jpg": {
-    "mtime": 1755802803.3812025,
+    "mtime": 1786204259.404272,
     "ast_hash": "7d1342f48814df9469e8b3e3723be841",
     "semantic_hash": ""
   },
   "Design/publish 3/app-screenshots 4/Phone Screenshot 6.jpg": {
-    "mtime": 1755802803.3864598,
+    "mtime": 1786204259.4077542,
     "ast_hash": "a0231edca166ed64543b3c02de2fa80a",
     "semantic_hash": ""
   },
   "Design/publish 3/app-screenshots 4/Phone Screenshot 7.jpg": {
-    "mtime": 1755802803.3880844,
+    "mtime": 1786204259.4101677,
     "ast_hash": "48ff146625ec1c4c6db07c1050c344e1",
     "semantic_hash": ""
   },
   "Design/publish 3/app-screenshots 4/Phone Screenshot 8.jpg": {
-    "mtime": 1755802803.3923907,
+    "mtime": 1786204259.4144423,
     "ast_hash": "224a295e483e68943577381b928b15fb",
     "semantic_hash": ""
   },
   "Design/publish 3/app-screenshots 4/Phone Screenshot 9.jpg": {
-    "mtime": 1755802803.396818,
+    "mtime": 1786204259.4187667,
     "ast_hash": "b383ef446195aa9f723964f2fa3f8745",
     "semantic_hash": ""
   },
   "Design/publish/feature_graphics.jpg": {
-    "mtime": 1755802803.3978267,
+    "mtime": 1786204259.4210348,
     "ast_hash": "7c54b5d3cf6a88c9e9cb125c40316829",
     "semantic_hash": ""
   },
   "Design/publish/hi_res_icon.png": {
-    "mtime": 1781204373.7910404,
+    "mtime": 1786204259.4217265,
     "ast_hash": "f705924d698b4ace3da25a9fcea970c7",
     "semantic_hash": ""
   },
   "Design/publish/hi_res_icon_114.png": {
-    "mtime": 1781204373.7922318,
+    "mtime": 1786204259.4219167,
     "ast_hash": "6e0070ff2307f60c23298a954d6c290d",
     "semantic_hash": ""
   },
   "Design/publish/new/screen_1.png": {
-    "mtime": 1755802803.4036841,
+    "mtime": 1786204259.430788,
     "ast_hash": "9e10fa2bfa2eaaada0e88a54b66904d4",
     "semantic_hash": ""
   },
   "Design/publish/new_24_03/banner.png": {
-    "mtime": 1755802803.407578,
+    "mtime": 1786204259.4355485,
     "ast_hash": "ddb6df72d06e5852a9da08c7bda58b3e",
     "semantic_hash": ""
   },
   "Design/publish/new_24_03/screen_1.png": {
-    "mtime": 1755802803.4116344,
+    "mtime": 1786204259.4388556,
     "ast_hash": "0d7f4ad06933445db8fe4346f5dd5fcd",
     "semantic_hash": ""
   },
   "Design/publish/new_24_03/screen_2.png": {
-    "mtime": 1755802803.4165325,
+    "mtime": 1786204259.443448,
     "ast_hash": "7cd8033187d9b5cb68561ccb150ba6a7",
     "semantic_hash": ""
   },
   "Design/publish/new_24_03/screen_3.png": {
-    "mtime": 1755802803.4200337,
+    "mtime": 1786204259.4476166,
     "ast_hash": "98a8501154fe5906cac3ecc5fc0e77cf",
     "semantic_hash": ""
   },
   "Design/publish/new_24_03/screen_4.png": {
-    "mtime": 1755802803.428021,
+    "mtime": 1786204259.4575925,
     "ast_hash": "b66cd6d6c31405f800ed9b11deb4d680",
     "semantic_hash": ""
   },
   "Design/publish/new_24_03/screen_5.png": {
-    "mtime": 1755802803.434548,
+    "mtime": 1786204259.4649935,
     "ast_hash": "632bcd5fba487bfccdc7217b6316fa97",
     "semantic_hash": ""
   },
   "Design/publish/new_24_03/screen_6.png": {
-    "mtime": 1755802803.4351816,
+    "mtime": 1786204259.4667487,
     "ast_hash": "ebdf67e1ce17f85f1a8e536820c58189",
     "semantic_hash": ""
   },
   "Design/publish/new_24_03/tablet/1.png": {
-    "mtime": 1755802803.4483006,
+    "mtime": 1786204259.4811738,
     "ast_hash": "32ba6f6f63b60e12733172d87cf0f81f",
     "semantic_hash": ""
   },
   "Design/publish/new_24_03/tablet/2.png": {
-    "mtime": 1755802803.4725924,
+    "mtime": 1786204259.5098574,
     "ast_hash": "fe4b6edb0a0db455f6cc2155ff415d0a",
     "semantic_hash": ""
   },
   "Design/publish/new_24_03/tablet/3.png": {
-    "mtime": 1755802803.4732563,
+    "mtime": 1786204259.5195274,
     "ast_hash": "efc40ff589cc72ab07369d5c7ecca356",
     "semantic_hash": ""
   },
   "Design/publish/new_24_03/tablet/4.png": {
-    "mtime": 1755802803.4846323,
+    "mtime": 1786204259.5314777,
     "ast_hash": "8e7dbcbcf61e22cdb6a4cb5857ef1ac3",
     "semantic_hash": ""
   },
   "Design/publish/new_24_03/tablet/5.png": {
-    "mtime": 1755802803.5078168,
+    "mtime": 1786204259.5575182,
     "ast_hash": "3fb23da4670b90261312733a2aa9a70a",
     "semantic_hash": ""
   },
   "Design/publish/screen_1.png": {
-    "mtime": 1755802803.5183508,
+    "mtime": 1786204259.569435,
     "ast_hash": "a51b98c13af9a0a700c50c8faaf4b008",
     "semantic_hash": ""
   },
   "Design/publish/screen_2.png": {
-    "mtime": 1755802803.5198855,
+    "mtime": 1786204259.5717058,
     "ast_hash": "41fc93700d1febc6841fe197fd285312",
     "semantic_hash": ""
   },
   "Design/publish/screen_3.png": {
-    "mtime": 1755802803.5244572,
+    "mtime": 1786204259.5756774,
     "ast_hash": "bfa9561d6d6a4a2ad93ea7962f8a6c12",
     "semantic_hash": ""
   },
   "Design/publish/screen_4.png": {
-    "mtime": 1755802803.5268822,
+    "mtime": 1786204259.5782268,
     "ast_hash": "1882a806bcd6388d8a8919670d7e755d",
     "semantic_hash": ""
   },
   "Design/publish/screen_5.png": {
-    "mtime": 1755802803.5347888,
+    "mtime": 1786204259.5919998,
     "ast_hash": "3f5dc6fad639fb1af02976a2dc9668b1",
     "semantic_hash": ""
   },
   "Design/publish/screen_6.png": {
-    "mtime": 1755802803.5398903,
+    "mtime": 1786204259.5964103,
     "ast_hash": "091c34e8a4faeac7a00cfd99c1ac33f5",
     "semantic_hash": ""
   },
   "Design/publish/screen_tablet_1.png": {
-    "mtime": 1755802803.5548055,
+    "mtime": 1786204259.6134722,
     "ast_hash": "f49c695437c674dd345268c0311abefc",
     "semantic_hash": ""
   },
   "Design/publish/screen_tablet_2.png": {
-    "mtime": 1755802803.5559182,
+    "mtime": 1786204259.6150053,
     "ast_hash": "cc97d026ded9294b60c83a2d9102b9a2",
     "semantic_hash": ""
   },
   "Design/publish/screen_tablet_3.png": {
-    "mtime": 1755802803.5610948,
+    "mtime": 1786204259.625034,
     "ast_hash": "1e91b50d3346adbfb7369ce1f7d01724",
     "semantic_hash": ""
   },
   "Design/publish/screen_tablet_4.png": {
-    "mtime": 1755802803.564949,
+    "mtime": 1786204259.6318533,
     "ast_hash": "21ea5ca6d034ddf98068bcc23039f981",
     "semantic_hash": ""
   },
   "Design/publish/screen_tablet_5.png": {
-    "mtime": 1755802803.5994358,
+    "mtime": 1786204259.6709297,
     "ast_hash": "2da4dd34df70a2448d8f4949ec41d3c5",
     "semantic_hash": ""
   },
   "Design/publish_2/device-2021-04-11-142134.png": {
-    "mtime": 1755802803.6031249,
+    "mtime": 1786204259.6775842,
     "ast_hash": "eeabe94afbd7b8ea3b8200a3305d4ad5",
     "semantic_hash": ""
   },
   "Design/publish_2/device-2021-04-11-142231.png": {
-    "mtime": 1755802803.6104243,
+    "mtime": 1786204259.6843054,
     "ast_hash": "985a5bd4e517a5f7f75a4403c3664431",
     "semantic_hash": ""
   },
   "Design/publish_2/device-2021-04-11-142320.png": {
-    "mtime": 1755802803.6197627,
+    "mtime": 1786204259.6931627,
     "ast_hash": "b2622ab46f96f12954fd1da18ef2fc47",
     "semantic_hash": ""
   },
   "Design/publish_2/device-2021-04-11-142357.png": {
-    "mtime": 1755802803.6301243,
+    "mtime": 1786204259.7028563,
     "ast_hash": "03e719dd1999f251bc7a29544af3b571",
     "semantic_hash": ""
   },
   "Design/publish_2/device-2021-04-11-142416.png": {
-    "mtime": 1755802803.6362786,
+    "mtime": 1786204259.7116783,
     "ast_hash": "a6e8ed15fe80abdbcae444452427288d",
     "semantic_hash": ""
   },
   "Design/publish_2/device-2021-04-11-142442.png": {
-    "mtime": 1755802803.6422992,
+    "mtime": 1786204259.7177336,
     "ast_hash": "af4f3efc70b78a8a445356d65277b300",
     "semantic_hash": ""
   },
   "Design/publish_2/device-2021-04-11-142503.png": {
-    "mtime": 1755802803.6431448,
+    "mtime": 1786204259.7186084,
     "ast_hash": "801819b69b6ff59ec226125a314551ff",
     "semantic_hash": ""
   },
   "Design/publish_2/device-2021-04-11-145730.png": {
-    "mtime": 1755802803.6468878,
+    "mtime": 1786204259.7221243,
     "ast_hash": "089e1c66d8db4f7cb1cb6d23d8078a64",
     "semantic_hash": ""
   },
   "androidApp/src/main/res/mipmap-hdpi/ic_launcher.png": {
-    "mtime": 1781204373.7934513,
+    "mtime": 1786204259.8021083,
     "ast_hash": "51a55e482fa0518e873031468c398fa1",
     "semantic_hash": ""
   },
   "androidApp/src/main/res/mipmap-hdpi/ic_launcher_background.png": {
-    "mtime": 1781204373.794197,
+    "mtime": 1786204259.802308,
     "ast_hash": "1da2b1ed07369a692167be21739b2b88",
     "semantic_hash": ""
   },
   "androidApp/src/main/res/mipmap-hdpi/ic_launcher_foreground.png": {
-    "mtime": 1781204373.79504,
+    "mtime": 1786204259.8025026,
     "ast_hash": "878848f8ff6364803c523d4d7f9e760c",
     "semantic_hash": ""
   },
   "androidApp/src/main/res/mipmap-hdpi/ic_launcher_round.png": {
-    "mtime": 1781204373.7957768,
+    "mtime": 1786204259.8027713,
     "ast_hash": "51a55e482fa0518e873031468c398fa1",
     "semantic_hash": ""
   },
   "androidApp/src/main/res/mipmap-mdpi/ic_launcher.png": {
-    "mtime": 1781204373.796449,
+    "mtime": 1786204259.80296,
     "ast_hash": "4d2a3115a0483237d62811a9757de2db",
     "semantic_hash": ""
   },
   "androidApp/src/main/res/mipmap-mdpi/ic_launcher_background.png": {
-    "mtime": 1781204373.797457,
+    "mtime": 1786204259.8030636,
     "ast_hash": "27633a6f65e6b9b72c578e643c870e22",
     "semantic_hash": ""
   },
   "androidApp/src/main/res/mipmap-mdpi/ic_launcher_foreground.png": {
-    "mtime": 1781204373.801376,
+    "mtime": 1786204259.8032525,
     "ast_hash": "e2691b86820760fa2b7844a73c2244c5",
     "semantic_hash": ""
   },
   "androidApp/src/main/res/mipmap-mdpi/ic_launcher_round.png": {
-    "mtime": 1781204373.8019183,
+    "mtime": 1786204259.8033857,
     "ast_hash": "4d2a3115a0483237d62811a9757de2db",
     "semantic_hash": ""
   },
   "androidApp/src/main/res/mipmap-xhdpi/ic_launcher.png": {
-    "mtime": 1781204373.8025193,
+    "mtime": 1786204259.8035464,
     "ast_hash": "0816de2cd9d76dfcb68224c9d46fac2c",
     "semantic_hash": ""
   },
   "androidApp/src/main/res/mipmap-xhdpi/ic_launcher_background.png": {
-    "mtime": 1781204373.803369,
+    "mtime": 1786204259.803684,
     "ast_hash": "30de00dd525e103b02720788ffe6092b",
     "semantic_hash": ""
   },
   "androidApp/src/main/res/mipmap-xhdpi/ic_launcher_foreground.png": {
-    "mtime": 1781204373.8042693,
+    "mtime": 1786204259.803882,
     "ast_hash": "8c183ca06e1ae5d69fa9d462849fcae9",
     "semantic_hash": ""
   },
   "androidApp/src/main/res/mipmap-xhdpi/ic_launcher_round.png": {
-    "mtime": 1781204373.8048007,
+    "mtime": 1786204259.8042219,
     "ast_hash": "649e6b8b17c140fb1061a55175aa467e",
     "semantic_hash": ""
   },
   "androidApp/src/main/res/mipmap-xxhdpi/ic_launcher.png": {
-    "mtime": 1781204373.8055701,
+    "mtime": 1786204259.8044136,
     "ast_hash": "d11171b653fd73da86a734a8fe3e3afc",
     "semantic_hash": ""
   },
   "androidApp/src/main/res/mipmap-xxhdpi/ic_launcher_background.png": {
-    "mtime": 1781204373.806284,
+    "mtime": 1786204259.805129,
     "ast_hash": "b7c55f521c6cbe32f337db32b38af512",
     "semantic_hash": ""
   },
   "androidApp/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.png": {
-    "mtime": 1781204373.8072805,
+    "mtime": 1786204259.8053849,
     "ast_hash": "3b783e66e1ddf048cdd46c3a10901cc7",
     "semantic_hash": ""
   },
   "androidApp/src/main/res/mipmap-xxhdpi/ic_launcher_round.png": {
-    "mtime": 1781204373.8081686,
+    "mtime": 1786204259.805542,
     "ast_hash": "d11171b653fd73da86a734a8fe3e3afc",
     "semantic_hash": ""
   },
   "androidApp/src/main/res/mipmap-xxxhdpi/ic_launcher.png": {
-    "mtime": 1781204373.8092995,
+    "mtime": 1786204259.8062177,
     "ast_hash": "b021f044dda6bd3291bb1366a601553e",
     "semantic_hash": ""
   },
   "androidApp/src/main/res/mipmap-xxxhdpi/ic_launcher_background.png": {
-    "mtime": 1781204373.8104,
+    "mtime": 1786204259.8064969,
     "ast_hash": "899b6260a5def200c227779600b687bc",
     "semantic_hash": ""
   },
   "androidApp/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png": {
-    "mtime": 1781204373.8115647,
+    "mtime": 1786204259.8070385,
     "ast_hash": "92c86a386cee6d18841efeca7e2d0ff6",
     "semantic_hash": ""
   },
   "androidApp/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png": {
-    "mtime": 1781204373.811878,
+    "mtime": 1786204259.807218,
     "ast_hash": "b021f044dda6bd3291bb1366a601553e",
     "semantic_hash": ""
   },
   "desktopApp/src/jvmMain/resources/icon.png": {
-    "mtime": 1779397508.4162,
+    "mtime": 1786204259.813104,
     "ast_hash": "71f28c1ecf5f7f28e98f03c4dec0553a",
     "semantic_hash": ""
   },
   "google_play_icon.png": {
-    "mtime": 1755802803.74901,
+    "mtime": 1786204259.8140566,
     "ast_hash": "db9b21a1c41f3dcd9731e1e7acfdbb57",
     "semantic_hash": ""
   },
   "ic_rovers.png": {
-    "mtime": 1755802803.7498317,
+    "mtime": 1786204259.8253744,
     "ast_hash": "d01d59486ca0d64767c411a73f135b8f",
     "semantic_hash": ""
   },
   "iosApp/iosApp/Assets.xcassets/AppIcon.appiconset/Icon-1024.png": {
-    "mtime": 1781204373.8157744,
+    "mtime": 1786204259.8301551,
     "ast_hash": "24e58ccf0d5b5d25f212afffa17d823a",
     "semantic_hash": ""
   },
   "iosApp/iosApp/Assets.xcassets/AppIcon.appiconset/Icon-20.png": {
-    "mtime": 1781204373.8164291,
+    "mtime": 1786204259.830604,
     "ast_hash": "b0d57ef70569ea2195c73cc5198a80e4",
     "semantic_hash": ""
   },
   "iosApp/iosApp/Assets.xcassets/AppIcon.appiconset/Icon-20@2x.png": {
-    "mtime": 1781204373.8170176,
+    "mtime": 1786204259.830697,
     "ast_hash": "1fbe8d6476f0015b907fccaaabdc780f",
     "semantic_hash": ""
   },
   "iosApp/iosApp/Assets.xcassets/AppIcon.appiconset/Icon-20@3x.png": {
-    "mtime": 1781204373.8179176,
+    "mtime": 1786204259.8308327,
     "ast_hash": "e4bf4cf2d78ffdc4c78de3840270a9d4",
     "semantic_hash": ""
   },
   "iosApp/iosApp/Assets.xcassets/AppIcon.appiconset/Icon-29.png": {
-    "mtime": 1781204373.818418,
+    "mtime": 1786204259.8310754,
     "ast_hash": "188dc4fd5ccacf754ab7e0b5d0108784",
     "semantic_hash": ""
   },
   "iosApp/iosApp/Assets.xcassets/AppIcon.appiconset/Icon-29@2x.png": {
-    "mtime": 1781204373.8191223,
+    "mtime": 1786204259.8312426,
     "ast_hash": "f314794584c50e38c6b9168f282b7801",
     "semantic_hash": ""
   },
   "iosApp/iosApp/Assets.xcassets/AppIcon.appiconset/Icon-29@3x.png": {
-    "mtime": 1781204373.8197727,
+    "mtime": 1786204259.8316286,
     "ast_hash": "f5c96785163f73ab322db1f888e0300a",
     "semantic_hash": ""
   },
   "iosApp/iosApp/Assets.xcassets/AppIcon.appiconset/Icon-40.png": {
-    "mtime": 1781204373.8200934,
+    "mtime": 1786204259.8317394,
     "ast_hash": "1fbe8d6476f0015b907fccaaabdc780f",
     "semantic_hash": ""
   },
   "iosApp/iosApp/Assets.xcassets/AppIcon.appiconset/Icon-40@2x.png": {
-    "mtime": 1781204373.8206,
+    "mtime": 1786204259.8318644,
     "ast_hash": "ec5c9c42cc6b16d386f56628acad20ea",
     "semantic_hash": ""
   },
   "iosApp/iosApp/Assets.xcassets/AppIcon.appiconset/Icon-40@3x.png": {
-    "mtime": 1781204373.8215573,
+    "mtime": 1786204259.8320508,
     "ast_hash": "d6f2c5a78dbcdf3bf65afdb5b4361d1b",
     "semantic_hash": ""
   },
   "iosApp/iosApp/Assets.xcassets/AppIcon.appiconset/Icon-60@2x.png": {
-    "mtime": 1781204373.8218088,
+    "mtime": 1786204259.8321865,
     "ast_hash": "d6f2c5a78dbcdf3bf65afdb5b4361d1b",
     "semantic_hash": ""
   },
   "iosApp/iosApp/Assets.xcassets/AppIcon.appiconset/Icon-60@3x.png": {
-    "mtime": 1781204373.822668,
+    "mtime": 1786204259.8324769,
     "ast_hash": "87cbb5067b863ce020ebaab2279ecc97",
     "semantic_hash": ""
   },
   "iosApp/iosApp/Assets.xcassets/AppIcon.appiconset/Icon-76.png": {
-    "mtime": 1781204373.8236814,
+    "mtime": 1786204259.8327658,
     "ast_hash": "1abe449f5c877d7d6cbffd4048083e99",
     "semantic_hash": ""
   },
   "iosApp/iosApp/Assets.xcassets/AppIcon.appiconset/Icon-76@2x.png": {
-    "mtime": 1781204373.8248477,
+    "mtime": 1786204259.832978,
     "ast_hash": "56a04f81ee53d51cb2b6305fac73bd73",
     "semantic_hash": ""
   },
   "iosApp/iosApp/Assets.xcassets/AppIcon.appiconset/Icon-83.5@2x.png": {
-    "mtime": 1781204373.8256593,
+    "mtime": 1786204259.833433,
     "ast_hash": "5d86c9140c929baf16c2e0b7ada3eb7b",
     "semantic_hash": ""
   },
   "iosApp/iosApp/Assets.xcassets/SplashIcon.imageset/splash_icon_1x.png": {
-    "mtime": 1781204373.8265288,
+    "mtime": 1786204259.8342347,
     "ast_hash": "eda54792fc8d04b49be10a94a4662a46",
     "semantic_hash": ""
   },
   "iosApp/iosApp/Assets.xcassets/SplashIcon.imageset/splash_icon_2x.png": {
-    "mtime": 1781204373.828393,
+    "mtime": 1786204259.8345997,
     "ast_hash": "92813def4ec7aad6b7bb4dce54d8b82c",
     "semantic_hash": ""
   },
   "iosApp/iosApp/Assets.xcassets/SplashIcon.imageset/splash_icon_3x.png": {
-    "mtime": 1781204373.8292565,
+    "mtime": 1786204259.8348331,
     "ast_hash": "08b8d397074d5206c426e17b848358e1",
     "semantic_hash": ""
   },
   "mission_info_2.png": {
-    "mtime": 1779393373.6769996,
+    "mtime": 1786204259.836791,
     "ast_hash": "9d9bd3440387b9c228d6556010e1cc77",
     "semantic_hash": ""
   },
   "shared/src/commonMain/composeResources/drawable/alien_icon.png": {
-    "mtime": 1779263547.9642708,
+    "mtime": 1786204259.8398552,
     "ast_hash": "7e1e56653e7b2c60a8f70b4260699725",
     "semantic_hash": ""
   },
   "shared/src/commonMain/composeResources/drawable/img_curiosity.webp": {
-    "mtime": 1779263547.964498,
+    "mtime": 1786204259.8405182,
     "ast_hash": "b1fc23aab2f9eec795502ba91714360e",
     "semantic_hash": ""
   },
   "shared/src/commonMain/composeResources/drawable/img_insight.webp": {
-    "mtime": 1779263547.964591,
+    "mtime": 1786204259.8406618,
     "ast_hash": "a5c000e7dcf76efeb82cec97b889a6d6",
     "semantic_hash": ""
   },
   "shared/src/commonMain/composeResources/drawable/img_opportunity.webp": {
-    "mtime": 1779263547.9646754,
+    "mtime": 1786204259.8409276,
     "ast_hash": "e50103b0dc44cf55163415bb5f7b0634",
     "semantic_hash": ""
   },
   "shared/src/commonMain/composeResources/drawable/img_perseverance.webp": {
-    "mtime": 1779263547.9648967,
+    "mtime": 1786204259.841209,
     "ast_hash": "3c73d31766a0e27c6a692a464b737346",
     "semantic_hash": ""
   },
   "shared/src/commonMain/composeResources/drawable/img_placeholder.jpg": {
-    "mtime": 1779263547.9650812,
+    "mtime": 1786204259.8413918,
     "ast_hash": "e743557500daa19474e5bdd278994bd3",
     "semantic_hash": ""
   },
   "shared/src/commonMain/composeResources/drawable/img_spirit.webp": {
-    "mtime": 1779263547.9652424,
+    "mtime": 1786204259.8415198,
     "ast_hash": "1e403d9950be8bef199b0c6624b91de4",
     "semantic_hash": ""
   },
   "webApp/src/wasmJsMain/resources/apple-touch-icon.png": {
-    "mtime": 1779397512.3228521,
+    "mtime": 1786204259.906129,
     "ast_hash": "6296528dace22d4d2b3d61c801533b39",
     "semantic_hash": ""
   },
   "webApp/src/wasmJsMain/resources/icon-192.png": {
-    "mtime": 1779397512.3446681,
+    "mtime": 1786204259.906525,
     "ast_hash": "64e858db8ce6534759f28e69b6df69ce",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/theme/AppMotion.kt": {
-    "mtime": 1782744612.7373478,
-    "ast_hash": "43ddd7f705c5cc14ee7d30b150d1eb33",
+    "mtime": 1786269325.2668614,
+    "ast_hash": "a660840c16657f2f4e170624fdc2b452",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/SharedPhotoTransition.kt": {
-    "mtime": 1782744612.7381713,
+    "mtime": 1786204259.8916216,
     "ast_hash": "b5e51b865b4ef352fc51b34e73dd3c2d",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/data/LastViewedPhotoStore.kt": {
-    "mtime": 1781621491.066798,
+    "mtime": 1786204259.869796,
     "ast_hash": "7bfe2fb6079de9cdb8058e5efbf74afc",
     "semantic_hash": ""
   },
+  ".context/todos.md": {
+    "mtime": 1786204260.0491931,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
   "RELEASE_NOTES_v4.0.0.md": {
-    "mtime": 1781627561.4015625,
+    "mtime": 1786204259.7248013,
     "ast_hash": "aa557d0a62982ccf3084211d5158fd2c",
     "semantic_hash": ""
   },
   "iosApp/APP_STORE_PRIVACY_CHECKLIST.md": {
-    "mtime": 1781708570.3575835,
+    "mtime": 1786204259.825617,
     "ast_hash": "0e587a61cd267dc7d416eb773f283dfc",
     "semantic_hash": ""
   },
   ".maestro/capture.sh": {
-    "mtime": 1781899478.4024122,
+    "mtime": 1786204259.1137156,
     "ast_hash": "5fedb231fbf3bfada2606f7990f4cfde",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/MissionInfoExpandedLayout.kt": {
-    "mtime": 1782807438.3188813,
+    "mtime": 1786204259.8844457,
     "ast_hash": "04c583c79ec4873921f939e892358b27",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/MissionInfoSections.kt": {
-    "mtime": 1782807438.3205848,
+    "mtime": 1786204259.8847702,
     "ast_hash": "e1a6938425e4e6486f8aded4b840580f",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppSectionHeader.kt": {
-    "mtime": 1782807438.3258767,
+    "mtime": 1786204259.8898745,
     "ast_hash": "574bf9f0ca8df2a71acc692885f09769",
     "semantic_hash": ""
   },
   ".maestro/README.md": {
-    "mtime": 1781899478.4021087,
+    "mtime": 1786204259.1134381,
     "ast_hash": "94e62968cb53b7eee4e63694a94191c5",
     "semantic_hash": ""
   },
   ".maestro/store-screenshots.yaml": {
-    "mtime": 1781899478.402604,
+    "mtime": 1786204259.113953,
     "ast_hash": "8a0b0cf27160b46590f1b8cfdab6a66e",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/ScreenTracking.kt": {
-    "mtime": 1786191387.3892708,
-    "ast_hash": "c0f8599dd97a8ea643bde714c0713c2d",
+    "mtime": 1786269441.1584086,
+    "ast_hash": "4d0a16ac2f1ff4e5f07cffafa2febd49",
     "semantic_hash": ""
   },
   "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/ScrollRestoreConstants.kt": {
-    "mtime": 1782929117.3811457,
+    "mtime": 1786204259.8875992,
     "ast_hash": "9af28994fc71ff4cccdc373f371f7390",
     "semantic_hash": ""
   },
   "shared/src/commonTest/kotlin/com/sirelon/marsroverphotos/presentation/navigation/ScreenTrackingTest.kt": {
-    "mtime": 1786191387.3963828,
-    "ast_hash": "3bb37147c61976c0d91580e5b8f2e74a",
-    "semantic_hash": ""
-  },
-  ".claude/settings.local.json": {
-    "mtime": 1786183579.502412,
-    "ast_hash": "cbc264a2a1a506652cc3c3153bdf3895",
+    "mtime": 1786269451.2831388,
+    "ast_hash": "13cf8fd4a12b5d551d622436a781064a",
     "semantic_hash": ""
   },
   ".claude/skills/fact-research/workflow-template.js": {
-    "mtime": 1786194664.673225,
+    "mtime": 1786204259.1122556,
     "ast_hash": "33ee1706aed15db2cff5521ce15b7c6c",
     "semantic_hash": ""
   },
+  "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/releasenotes/Release.kt": {
+    "mtime": 1786269654.3665633,
+    "ast_hash": "29ba1ca959ef6aed7ca4177b0ecb292d",
+    "semantic_hash": ""
+  },
+  "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/releasenotes/ReleaseNotes.kt": {
+    "mtime": 1786267980.7566924,
+    "ast_hash": "0bd79714fa173d8ef5d08c991367ecbd",
+    "semantic_hash": ""
+  },
+  "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/AllVersionsScreen.kt": {
+    "mtime": 1786269310.0180295,
+    "ast_hash": "fb608c638992089397aea3079b81c074",
+    "semantic_hash": ""
+  },
+  "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewDialogScreen.kt": {
+    "mtime": 1786269275.0988727,
+    "ast_hash": "3394cb8c5857b33cc897593a1351328e",
+    "semantic_hash": ""
+  },
+  "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewStoryScreen.kt": {
+    "mtime": 1786269660.273886,
+    "ast_hash": "f19b3b11813cd02e8adf473b96793b4d",
+    "semantic_hash": ""
+  },
+  "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/viewmodels/WhatsNewViewModel.kt": {
+    "mtime": 1786269188.469748,
+    "ast_hash": "22f101fceac8f41fa82e5eceec7d7b16",
+    "semantic_hash": ""
+  },
   ".claude/skills/fact-research/SKILL.md": {
-    "mtime": 1786194630.490917,
+    "mtime": 1786204259.1119316,
     "ast_hash": "aeb0e5cee4ebcda2b8e3a3fd06deb269",
+    "semantic_hash": ""
+  },
+  ".context/attachments/comments/14c8e90f-e5d7-4921-aa21-7050373770b3.md": {
+    "mtime": 1786217993.9570925,
+    "ast_hash": "d1cedee5bd04e324f3d77e2403fd955e",
+    "semantic_hash": ""
+  },
+  ".context/attachments/comments/151caa2b-685e-4064-b4bb-ccecaec21bb7.md": {
+    "mtime": 1786218184.6637688,
+    "ast_hash": "b4754eb9ebdea524869ef768cd6abb45",
+    "semantic_hash": ""
+  },
+  ".context/attachments/comments/35bb033e-2449-41b5-8f20-112ac4aab07b.md": {
+    "mtime": 1786219512.2911131,
+    "ast_hash": "9a68d4ad647b408b06e3649bb9de4dbb",
+    "semantic_hash": ""
+  },
+  ".context/attachments/comments/69664dc4-a6f8-4b84-913e-304bae224fab.md": {
+    "mtime": 1786217215.5920677,
+    "ast_hash": "c888d4230131b00ef262c2e10c8863b2",
+    "semantic_hash": ""
+  },
+  ".context/attachments/comments/79d35518-b249-4b67-8c33-6c6939f49f76.md": {
+    "mtime": 1786217880.7807891,
+    "ast_hash": "d761f8bd95aafe836ec96ca968d7f86f",
+    "semantic_hash": ""
+  },
+  ".context/attachments/comments/e2bbf1b4-cad7-4b87-a374-8d6c9cb2ba70.md": {
+    "mtime": 1786217248.1467006,
+    "ast_hash": "527d231d4e7166fc33e97e7954099998",
+    "semantic_hash": ""
+  },
+  ".context/attachments/comments/e66287c6-2f55-4e7e-a0d4-42ce1d7467a1.md": {
+    "mtime": 1786217047.487984,
+    "ast_hash": "93b273fcf141e585160793de5482e6b4",
+    "semantic_hash": ""
+  },
+  "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/screens/whatsnew/WhatsNewRow.kt": {
+    "mtime": 1786269261.087175,
+    "ast_hash": "8894007e05437b8c0e986b0a6e76adb1",
+    "semantic_hash": ""
+  },
+  "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/AppRow.kt": {
+    "mtime": 1786269318.8384569,
+    "ast_hash": "3c7a46c9c0d149fa8873138f3204cea7",
+    "semantic_hash": ""
+  },
+  "shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/ui/ChangeTypeIcon.kt": {
+    "mtime": 1786269243.0900986,
+    "ast_hash": "b6d2037875a55bb590a1878d9dbe726a",
+    "semantic_hash": ""
+  },
+  ".context/attachments/comments/661710f7-c380-454b-ac18-4c3dcf484656.md": {
+    "mtime": 1786219577.596751,
+    "ast_hash": "62e4a1c9fc3331602f7ba2815696a21b",
+    "semantic_hash": ""
+  },
+  ".context/attachments/comments/d9cff9ab-6f86-454e-9fd3-1fd15cddf98f.md": {
+    "mtime": 1786219541.8437567,
+    "ast_hash": "21db387c0b2e1e677b43c8d4bd40fab7",
+    "semantic_hash": ""
+  },
+  ".context/attachments/pSXz5O/pasted_text_2026-08-09_12-34-45.txt": {
+    "mtime": 1786268085.5265446,
+    "ast_hash": "33f8d7c4226bdb8b7962d02edc2fbcda",
+    "semantic_hash": ""
+  },
+  "docs/ARCHITECTURE.md": {
+    "mtime": 1786269548.0480165,
+    "ast_hash": "9a0052889a9db46493a5cad532c05f29",
     "semantic_hash": ""
   }
 }

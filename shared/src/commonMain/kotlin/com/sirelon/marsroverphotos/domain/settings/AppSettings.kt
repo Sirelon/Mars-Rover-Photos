@@ -18,6 +18,7 @@ class AppSettings(
         const val KEY_GRID_VIEW = "gridView"
         const val KEY_SHOW_FACTS = "showFacts"
         const val KEY_SHOW_CAMERA_NAME = "showCameraName"
+        const val KEY_LAST_SEEN_VERSION = "lastSeenVersion"
     }
 
     private val _showFactsFlow = MutableStateFlow(preferences.getBoolean(KEY_SHOW_FACTS, true))
@@ -61,6 +62,10 @@ class AppSettings(
             preferences.setBoolean(KEY_GRID_VIEW, value)
             _gridViewFlow.value = value
         }
+
+    var lastSeenVersion: String?
+        get() = preferences.getString(KEY_LAST_SEEN_VERSION, "").takeIf { it.isNotEmpty() }
+        set(value) { preferences.setString(KEY_LAST_SEEN_VERSION, value.orEmpty()) }
 
     /**
      * App theme preference.
