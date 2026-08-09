@@ -26,10 +26,16 @@ import kotlinx.serialization.json.Json
 class RestApi {
 
     private val _perseveranceTotalImages = MutableStateFlow<Long?>(null)
-    val perseveranceTotalImages = _perseveranceTotalImages.filterNotNull().distinctUntilChanged()
 
-    private val _insightTotalImages = MutableStateFlow<Long?>(null)
-    val insightTotalImages = _insightTotalImages.filterNotNull().distinctUntilChanged()
+    /**
+     * Mission-wide Perseverance photo count.
+     *
+     * Only fed by UNFILTERED requests. The raw-image feeds return `total_images`/`total` for the
+     * *current query*, so a sol- or camera-filtered request reports that slice's count — publishing
+     * it here would overwrite the rover's mission total with a per-sol number and make the
+     * "Total Photos" stat flip on every page load (SIR-80).
+     */
+    val perseveranceTotalImages = _perseveranceTotalImages.filterNotNull().distinctUntilChanged()
 
     @OptIn(ExperimentalSerializationApi::class)
     private val json = Json {
@@ -80,9 +86,9 @@ class RestApi {
             }
 
             INSIGHT_ID -> {
-                val response = nasaApi.getRawImages("insight", from = "$sol:sol", to = "$sol:sol")
-                response.total?.let { _insightTotalImages.value = it }
-                response.list.mapToUi(query.roverId)
+                // `response.total` is the count for THIS sol only — not the mission total.
+                nasaApi.getRawImages("insight", from = "$sol:sol", to = "$sol:sol")
+                    .list.mapToUi(query.roverId)
             }
 
             CURIOSITY_ID -> {
@@ -95,8 +101,9 @@ class RestApi {
     }
 
     private suspend fun loadPerseverance(query: PhotosQueryRequest): List<MarsImage> {
+        // `response.totalImages` counts only the photos matching this sol/camera query, so it is
+        // deliberately NOT published to [perseveranceTotalImages].
         val response = nasaApi.getPerseveranceRawImages(sol = "${query.sol}:sol:in")
-        _perseveranceTotalImages.value = response.totalImages
         return response.photos.preveranceToUI(query.roverId)
     }
 
