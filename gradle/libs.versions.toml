@@ -55,7 +55,7 @@ navigation-compose = "2.9.2"
 
 # GitLive Firebase KMP SDK
 # https://github.com/GitLiveApp/firebase-kotlin-sdk/releases
-gitliveFirebase = "2.5.0"
+gitliveFirebase = "2.6.0"
 
 # Firebase
 # https://firebase.google.com/support/release-notes/android
