@@ -64,6 +64,9 @@ enum class MaterialSymbol(val iconName: String) {
     ManageSearch("manage_search"),
     Devices("devices"),
     CloudOff("cloud_off"),
+    Explore("explore"),
+    Palette("palette"),
+    Widgets("widgets"),
 }
 
 /**

@@ -15,4 +15,14 @@ fun ChangeType.toIcon(): MaterialSymbol = when (this) {
     ChangeType.FAVORITES -> MaterialSymbol.Favorite
     ChangeType.POPULAR -> MaterialSymbol.LocalFireDepartment
     ChangeType.REDESIGN -> MaterialSymbol.Star
+    ChangeType.BROWSING -> MaterialSymbol.Tune
+    ChangeType.BUG_FIX -> MaterialSymbol.BugReport
+    ChangeType.FACTS -> MaterialSymbol.Info
+    ChangeType.NAVIGATION -> MaterialSymbol.Explore
+    ChangeType.NEW_ROVER -> MaterialSymbol.FlightLand
+    ChangeType.PHOTO_VIEWER -> MaterialSymbol.ViewCarousel
+    ChangeType.SAVE_PHOTO -> MaterialSymbol.Save
+    ChangeType.THEMING -> MaterialSymbol.Palette
+    ChangeType.UKRAINE -> MaterialSymbol.Flag
+    ChangeType.WIDGET -> MaterialSymbol.Widgets
 }

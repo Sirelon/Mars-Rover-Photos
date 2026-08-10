@@ -6,6 +6,8 @@ import kotlinx.datetime.LocalDate
 enum class ChangeType {
     MISSION_INFO, MULTIPLATFORM, OFFLINE_CACHE,
     FAVORITES, POPULAR, REDESIGN,
+    BROWSING, BUG_FIX, FACTS, NAVIGATION, NEW_ROVER,
+    PHOTO_VIEWER, SAVE_PHOTO, THEMING, UKRAINE, WIDGET,
 }
 
 data class Release(
