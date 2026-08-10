@@ -42,7 +42,7 @@ kotlinx-datetime = "0.8.0"
 # https://github.com/Kotlin/kotlinx.coroutines
 kotlinx-coroutines = "1.11.0"
 # https://github.com/ktorio/ktor/releases
-ktor = "3.5.1"
+ktor = "3.5.2"
 # https://github.com/touchlab/Kermit
 kermit = "2.1.0"
 # https://github.com/InsertKoinIO/koin
