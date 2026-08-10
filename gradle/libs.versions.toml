@@ -5,6 +5,7 @@ androidGradlePlugin = "9.3.1"
 ksp = "2.3.10"
 
 # Compose Multiplatform
+# https://github.com/JetBrains/compose-multiplatform/releases
 compose-multiplatform = "1.12.0-alpha02"
 
 # AndroidX
@@ -42,7 +43,7 @@ kotlinx-datetime = "0.8.0"
 # https://github.com/Kotlin/kotlinx.coroutines
 kotlinx-coroutines = "1.11.0"
 # https://github.com/ktorio/ktor/releases
-ktor = "3.5.1"
+ktor = "3.5.2"
 # https://github.com/touchlab/Kermit
 kermit = "2.1.0"
 # https://github.com/InsertKoinIO/koin
@@ -53,6 +54,7 @@ koin-compose = "4.2.2"
 navigation-compose = "2.9.2"
 
 # GitLive Firebase KMP SDK
+# https://github.com/GitLiveApp/firebase-kotlin-sdk/releases
 gitliveFirebase = "2.5.0"
 
 # Firebase
@@ -74,7 +76,7 @@ zoomable = "2.13.0"
 playReview = "2.0.2"
 
 # Navigation 3
-navigation3 = "1.1.4"
+navigation3 = "1.1.5"
 lifecycle-navigation3 = "2.11.0"
 
 [libraries]
