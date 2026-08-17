@@ -12,7 +12,7 @@ compose-multiplatform = "1.12.0-alpha02"
 # https://developer.android.com/jetpack/androidx/releases/activity
 activityCompose = "1.13.0"
 # https://developer.android.com/jetpack/androidx/releases/appcompat
-appcompat = "1.7.1"
+appcompat = "1.8.0"
 ktx = "1.19.0"
 # https://developer.android.com/jetpack/androidx/releases/lifecycle
 lifecycle = "2.11.0"
