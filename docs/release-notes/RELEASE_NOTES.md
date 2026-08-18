@@ -1,7 +1,8 @@
 # Release notes — review document
 
 Proposed user-facing copy for the What's New screen, newest release first.
-Dates come from [VERSIONS.md](VERSIONS.md). Source evidence is in [raw/](raw/).
+Dates come from [VERSIONS.md](VERSIONS.md). Findings were derived from each release's commit
+range; the raw per-release JSON is scratch and is not kept in the repo.
 
 **What is included.** Every raw finding marked `user_impact: "major"`, with the `minor` items that
 hang off it through `related_to` merged in. Plus, in seven releases, one **umbrella** entry
@@ -13,7 +14,10 @@ in scope; nothing was cut by date.
 [EDITORIAL_NOTES.md](EDITORIAL_NOTES.md).
 Entries marked ⚠️ rest on a medium-confidence finding and need a human check.
 
-22 releases with notes · 31 changes · 7 umbrellas · 9 new `ChangeType` constants proposed.
+24 releases with notes · 35 changes · 7 umbrellas · 11 new `ChangeType` constants.
+
+Two entries were authored by hand rather than produced by the pipeline: **2.4.0** (Stand with
+Ukraine, §1) and **1.0.0** (the initial release, §8).
 
 ---
 
@@ -282,10 +286,34 @@ Entries marked ⚠️ rest on a medium-confidence finding and need a human check
 
 ## Releases with no user-facing notes
 
-23 of the 45 versions in VERSIONS.md, broken down by reason in
-[EDITORIAL_NOTES.md](EDITORIAL_NOTES.md) §3: 1.0, 1.0.1, 1.1, 1.2.1, 1.2.2, 1.2.3, 1.4.1, 1.4.3,
-1.4.4, 1.4.5, 1.5.0, 1.5.1, 2.1.0, 2.2.0, 2.4.0, 2.4.1, 2.4.2, 2.4.3, 2.4.4, 2.5.0, 2.5.1, 2.5.2,
-4.0.0.
+21 of the 45 versions in VERSIONS.md, broken down by reason in
+[EDITORIAL_NOTES.md](EDITORIAL_NOTES.md) §3: 1.0.1, 1.1, 1.2.1, 1.2.2, 1.2.3, 1.4.1, 1.4.3, 1.4.4,
+1.4.5, 1.5.0, 1.5.1, 2.1.0, 2.2.0, 2.4.1, 2.4.2, 2.4.3, 2.4.4, 2.5.0, 2.5.1, 2.5.2, 4.0.0.
+
+`2.4.0` is no longer dropped — it ships the Stand with Ukraine entry by user override (§1).
+`1.0` is no longer dropped either — it ships as **1.0.0**, authored by hand (§8).
+
+## 1.0.0 — 2016-11-04
+
+**Hello, Mars** · `INITIAL_RELEASE` *(new type)*
+- summary: The first release
+- detail: Browse real photos taken on the surface of Mars by NASA's rovers. Pick Curiosity, Opportunity or Spirit and scroll through what it saw, day by day.
+- 📷 The rover list showing Curiosity, Opportunity and Spirit.
+
+**Full-Screen Photos** · `PHOTO_VIEWER`
+- summary: Tap any photo, then pinch to zoom
+- detail: Open a photo to fill the screen and pinch to zoom right in on the rocks, dust and rover tracks.
+- 📷 A Mars surface photo zoomed in, full screen.
+
+**Save and Share** · `SAVE_PHOTO`
+- summary: Keep a photo, or send it to someone
+- detail: Save any Mars photo to your device, or share it straight from the viewer.
+- 📷 The viewer with the save and share actions visible.
+
+- ⚠️ **Authored by hand, not by the pipeline.** See EDITORIAL_NOTES §8 — including why the date is
+  2016-11-04 and not the 2017-03-05 that VERSIONS.md records for version `1.0`.
+
+---
 
 **4.0.0 is a recorded decision, not an oversight.** It contains exactly one user-facing item — a
 `minor` widget fix — so it cannot support an umbrella, and the list therefore steps 3.0.0 → 5.0.0.

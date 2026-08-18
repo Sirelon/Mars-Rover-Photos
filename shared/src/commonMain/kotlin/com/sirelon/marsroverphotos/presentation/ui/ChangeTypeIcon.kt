@@ -18,6 +18,7 @@ fun ChangeType.toIcon(): MaterialSymbol = when (this) {
     ChangeType.BROWSING -> MaterialSymbol.Tune
     ChangeType.BUG_FIX -> MaterialSymbol.BugReport
     ChangeType.FACTS -> MaterialSymbol.Info
+    ChangeType.INITIAL_RELEASE -> MaterialSymbol.Rocket
     ChangeType.NAVIGATION -> MaterialSymbol.Explore
     ChangeType.NEW_ROVER -> MaterialSymbol.FlightLand
     ChangeType.PHOTO_VIEWER -> MaterialSymbol.ViewCarousel

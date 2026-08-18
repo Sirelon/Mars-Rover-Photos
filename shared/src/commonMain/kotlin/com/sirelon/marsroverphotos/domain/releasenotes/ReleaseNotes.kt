@@ -377,4 +377,31 @@ val RELEASES: ImmutableList<Release> = persistentListOf(
             ),
         ),
     ),
+    Release(
+        version = "1.0.0",
+        date = LocalDate(2016, 11, 4),
+        changes = persistentListOf(
+            Release.Change(
+                id = "first_release",
+                type = ChangeType.INITIAL_RELEASE,
+                title = "Hello, Mars",
+                summary = "The first release",
+                detail = "Browse real photos taken on the surface of Mars by NASA's rovers. Pick Curiosity, Opportunity or Spirit and scroll through what it saw, day by day.",
+            ),
+            Release.Change(
+                id = "full_screen_zoom",
+                type = ChangeType.PHOTO_VIEWER,
+                title = "Full-Screen Photos",
+                summary = "Tap any photo, then pinch to zoom",
+                detail = "Open a photo to fill the screen and pinch to zoom right in on the rocks, dust and rover tracks.",
+            ),
+            Release.Change(
+                id = "save_and_share",
+                type = ChangeType.SAVE_PHOTO,
+                title = "Save and Share",
+                summary = "Keep a photo, or send it to someone",
+                detail = "Save any Mars photo to your device, or share it straight from the viewer.",
+            ),
+        ),
+    ),
 )

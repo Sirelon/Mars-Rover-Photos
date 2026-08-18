@@ -106,6 +106,18 @@ them, then:
 
 The range that shipped in version N is `<release commit of N-1>..<release commit of N>`.
 
+**The first version is a special case — the pipeline cannot cover it.** It has no previous release
+to diff against, so no evidence pack and no findings are produced, and it silently falls out of
+scope. Two consequences:
+
+- Its **entry must be authored by hand**, from the file tree at its last commit
+  (`git ls-tree -r <sha>`, plus its `strings.xml`) rather than from a range diff. Without this the
+  history opens on whatever the second release was — here, a crash fix.
+- Its **date is unreliable.** "Keep the last commit carrying each versionName" misfires on the root
+  version, which often lingers on a stale branch long after launch: `1.0` dated to 2017-03-05, four
+  months after the app actually shipped. Look for real ship evidence instead — store screenshots, a
+  `publish` branch merge, signing config — and treat the result as inferred until confirmed.
+
 ## Step 3 — evidence packs (bash, free)
 
 Precompute per range so agents don't burn tokens rediscovering it:

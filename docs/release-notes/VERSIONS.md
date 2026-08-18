@@ -62,9 +62,18 @@ Ordering key is **versionCode** (monotonic for Play), not versionName.
 - versionName went *backwards* while code advanced at 1.3.0->1.2.4 and 3.0.0->2.5.3, caused by
   development on `master` while the `publish` branch carried the released version.
 - Codes 2, 4, 29, 44, 49 never appear in history (skipped or never committed).
+- **`1.0`'s date above (2017-03-05) is an artefact, not a release date.** The rule "keep the last
+  commit carrying each versionName" misfires on the very first version: `1.0` was still set on a
+  stale branch months after launch ("Update ALL libraries"). The actual initial release is
+  **2016-11-04** — `versionCode 1` ran from the first commit (2016-10-31) to `4675e437`
+  (2016-11-08), and `7c3fd999` added six Play Store screenshots on 2016-11-04, merged as PR #1 from
+  the `publish` branch. The What's New screen therefore shows this release as **1.0.0, 2016-11-04**.
+  Any future run of the pipeline should treat the first version's date as needing a manual check.
+
 ## Tags
 
-44 annotated tags were created locally on the release commits above. **None have been pushed.**
+44 annotated tags were created on the release commits above and **pushed to `origin`**
+(2026-08-10), alongside the pre-existing `4.0.0` — 45 tags total on the remote.
 
 - **`4.0.0` is the one exception and is intentionally left alone.** It points at `6240b293`, not at
   the bump commit `58eca016`. Both commits genuinely carry version 4.0.0 (the bump was 18 commits
@@ -76,4 +85,5 @@ Ordering key is **versionCode** (monotonic for Play), not versionName.
   from tag positions — see the guard in `.claude/skills/release-notes/SKILL.md` (Case B). Any
   future run reaches the same boundaries regardless of where this tag sits.
 
-Decided 2026-08-09. Do not re-litigate without a reason to touch the published tag.
+Decided 2026-08-09. Do not re-litigate without a reason to touch the published tag — and note it
+is now published, so changing it would mean rewriting a remote tag.

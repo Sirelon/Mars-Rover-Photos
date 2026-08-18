@@ -1,10 +1,13 @@
 # Editorial notes
 
-Decisions behind [RELEASE_NOTES.md](RELEASE_NOTES.md) and
-[ReleaseNotes.kt.proposed](ReleaseNotes.kt.proposed), and the open items that need your call.
+Decisions behind [RELEASE_NOTES.md](RELEASE_NOTES.md) and the shipped `RELEASES` list in
+`shared/.../domain/releasenotes/ReleaseNotes.kt`, plus the open items that need your call.
 
-**Result:** 45 versions in VERSIONS.md → 22 releases with user-facing notes → 31 changes,
-of which 7 are umbrellas. 9 new `ChangeType` constants proposed. `OFFLINE_CACHE` is still unused.
+**Result:** 45 versions in VERSIONS.md → 24 releases with user-facing notes → 35 changes,
+of which 7 are umbrellas. 11 new `ChangeType` constants. `OFFLINE_CACHE` is still unused.
+
+Two entries were authored by hand rather than produced by the pipeline: **2.4.0** (§1) and
+**1.0.0** (§8). Both are marked as such wherever they appear.
 
 Three editorial rules produced this cut:
 
@@ -16,7 +19,9 @@ Three editorial rules produced this cut:
    stronger won and the loser is recorded in §4.
 3. **Silence on monetisation.** No ad change is written up in either direction.
 
-No standalone `minor` appears on its own. Everything dropped is still in `raw/*.json`.
+No standalone `minor` appears on its own, except where a hand-authored entry overrides that
+(§1, §8). The raw per-release findings are scratch and are not kept in the repo; the evidence
+behind any entry is the diff of its release's commit range.
 
 ---
 
@@ -57,7 +62,7 @@ Still absent and worth knowing:
 Each new constant costs an icon mapping in `ChangeTypeIcon.kt`, whose `when` is exhaustive over
 the enum, so this is as short as the copy allows.
 
-**9 new constants:**
+**11 new constants** (9 from the pipeline, plus `UKRAINE` §1 and `INITIAL_RELEASE` §8):
 
 | Constant | Uses | Covers | Used by |
 |---|---:|---|---|
@@ -91,9 +96,10 @@ lone `minor`, and 5.0.0's progressive loading and larger image cache are absorbe
 
 **Maintenance only (6):** 1.0.1, 1.4.3, 1.4.5, 1.5.1, 2.1.0, 2.4.4.
 
-**No raw record (1):** **1.0** (2017-03-05, version code 1) has no file in `raw/`. A plain "First
-release — browse photos from NASA's Mars rovers" entry would be reasonable and would fill the
-oldest slot, but I will not write copy without evidence. Say the word.
+~~**No raw record (1):** 1.0~~ — **RESOLVED: now ships as 1.0.0, authored by hand (§8).** It had no
+raw record because the pipeline needs a previous release to diff against and 1.0 is the root of
+history. Its copy was written from the verified tree at `4675e437`, and its date corrected from the
+artefactual 2017-03-05 to **2016-11-04**. See §8.
 
 **Nothing at all after the `invisible` filter (2):** 1.2.1, 2.4.3.
 
@@ -122,7 +128,7 @@ layout rework).
 
 ## 4. The seven umbrellas, and what each absorbed
 
-Raw titles as they appear in `raw/*.json`.
+Raw finding titles, as reconstructed by the archaeologist for each release.
 
 **5.0.0 — "Seamless Photos"** (`PHOTO_VIEWER`), 8 minors:
 Shared-element photo transition extended to Favorite and Popular · Favorite and Popular screens
@@ -240,3 +246,41 @@ purple theme) were deliberately left out of the umbrellas they could have padded
    ever used as stable keys for "already seen" state.
 6. **Sol wording.** Copy uses "sol", "day" and "Martian day" depending on what reads better. Tell
    me if there is a house rule and I will normalise.
+
+
+## 8. 1.0.0 — the initial release, authored by hand
+
+Added manually at the user's request, **not** produced by the pipeline. The oldest entry used to be
+1.1.1 "Crash Fix", which made the app's history open on a bug fix instead of its launch.
+
+**Why there was no 1.0 entry to begin with.** The pipeline needs a *previous* release to diff
+against, and 1.0 has none — it is the root of history. So no evidence pack and no raw findings were
+ever produced for it, and it fell out of scope automatically rather than by an editorial decision.
+
+**Why the date is 2016-11-04, not the 2017-03-05 in VERSIONS.md.** That 2017 date is an artefact:
+the discovery step keeps the *last* commit carrying each versionName, and `1.0` was still set on a
+stale branch months later ("Update ALL libraries"). It is not a release date. The evidence for
+2016-11-04:
+
+- `versionCode 1` / `versionName "1.0"` from the first project commit (2016-10-31) through
+  `4675e437` (2016-11-08); `a182243b` then renames to 1.1 and `fbdb0ed0` bumps the code to 3.
+- `7c3fd999` (2016-11-04) adds six Play Store screenshots under `Design/publish/`, merged the same
+  day as PR #1 from the `publish` branch — the store listing going up.
+
+2016-11-04 is therefore the best-evidenced ship date, and it avoids colliding with 1.1 on
+2016-11-08. **It is inferred, not confirmed** — if the real Play Console date is known, prefer it.
+
+**What shipped, verified in the tree at `4675e437`:**
+
+| Entry | Evidence |
+|---|---|
+| Hello, Mars | `RoversActivity` + `PhotosActivity`; Curiosity, Opportunity and Spirit; NASA API via Retrofit |
+| Full-Screen Photos | `ImageActivity` using `PhotoViewAttacher` for pinch-zoom |
+| Save and Share | `strings.xml` `save`/`share`; `ShareActionProvider`; commit "Image saving and sharing" |
+
+**Omitted:** ads shipped in 1.0 (`AdsDelegateAdapter`, `ad_*` strings) and are left out under the
+same monetisation rule applied everywhere else (§6). The About screen existed but is too thin to
+mention.
+
+**New `ChangeType`:** `INITIAL_RELEASE`, mapped to `MaterialSymbol.Rocket`. It shares that icon with
+`MISSION_INFO`, which is harmless — the two never appear in the same release.
