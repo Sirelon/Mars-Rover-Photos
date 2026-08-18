@@ -16,6 +16,11 @@ Entries marked ⚠️ rest on a medium-confidence finding and need a human check
 
 24 releases with notes · 35 changes · 7 umbrellas · 11 new `ChangeType` constants.
 
+> **The shipped list has 14 cards, not 24.** Fourteen thin releases were merged into five denser
+> cards after this document was written; all 35 changes were kept. The sections below are still
+> organised by the version each change *shipped in*, which is the useful view for verifying
+> evidence. For which card each now appears on, see **EDITORIAL_NOTES.md §9**.
+
 Two entries were authored by hand rather than produced by the pipeline: **2.4.0** (Stand with
 Ukraine, §1) and **1.0.0** (the initial release, §8).
 

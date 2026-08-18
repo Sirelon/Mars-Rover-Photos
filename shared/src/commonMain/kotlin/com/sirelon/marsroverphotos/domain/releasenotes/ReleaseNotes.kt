@@ -13,6 +13,11 @@ import kotlinx.datetime.LocalDate
 //
 // Regenerate with the `release-notes` skill. Releases with nothing user-facing are omitted by
 // design — do not add an entry to fill a gap.
+//
+// SOME CARDS DELIBERATELY COMBINE SEVERAL VERSIONS, so a change may appear under a later version
+// than the one it shipped in — Popular Photos is listed under 1.4.0 but shipped in 1.3.0. This is
+// intentional: thin single-change releases were merged into denser cards. Do NOT "correct" a
+// change back to its original version; the mapping is in docs/release-notes/EDITORIAL_NOTES.md §9.
 
 val RELEASES: ImmutableList<Release> = persistentListOf(
     Release(
@@ -126,12 +131,6 @@ val RELEASES: ImmutableList<Release> = persistentListOf(
                 summary = "The date and sol pickers reach today",
                 detail = "Each rover's mission details are refreshed from NASA when the app starts. The sol slider and date picker now cover everything a rover has sent, instead of stopping at a date frozen years earlier.",
             ),
-        ),
-    ),
-    Release(
-        version = "2.3.1",
-        date = LocalDate(2022, 2, 16),
-        changes = persistentListOf(
             Release.Change(
                 id = "cleaner_cards",
                 type = ChangeType.REDESIGN,
@@ -139,12 +138,6 @@ val RELEASES: ImmutableList<Release> = persistentListOf(
                 summary = "Less clutter on cards and while swiping",
                 detail = "Counters that would have read zero are hidden, so a card only shows numbers that mean something. Swiping past the first or last photo no longer stretches the screen, and About leads with a single logo instead of a row of rover thumbnails.",
             ),
-        ),
-    ),
-    Release(
-        version = "2.3.0",
-        date = LocalDate(2021, 9, 7),
-        changes = persistentListOf(
             Release.Change(
                 id = "pick_a_theme",
                 type = ChangeType.THEMING,
@@ -165,12 +158,6 @@ val RELEASES: ImmutableList<Release> = persistentListOf(
                 summary = "Keep a photo, in a steadier viewer",
                 detail = "A save button in the fullscreen viewer downloads the picture to your device, confirms when it is done, and offers a shortcut to view it. The viewer around it is steadier too: liking a photo no longer snaps you back to the first image, and double-tapping to zoom out re-centres the picture instead of leaving it shifted.",
             ),
-        ),
-    ),
-    Release(
-        version = "2.0.0",
-        date = LocalDate(2021, 5, 12),
-        changes = persistentListOf(
             Release.Change(
                 id = "zoom_and_swipe",
                 type = ChangeType.PHOTO_VIEWER,
@@ -178,12 +165,6 @@ val RELEASES: ImmutableList<Release> = persistentListOf(
                 summary = "Pinch, double-tap and fling through photos",
                 detail = "The fullscreen viewer was rebuilt: pinch to zoom, double-tap to snap in, drag around a zoomed photo, and fling to the next one. You can mark a photo as a favorite without leaving it, and a photo that comes up empty now retries instead of staying blank.",
             ),
-        ),
-    ),
-    Release(
-        version = "1.7.2",
-        date = LocalDate(2021, 4, 4),
-        changes = persistentListOf(
             Release.Change(
                 id = "photos_in_one_shell",
                 type = ChangeType.NAVIGATION,
@@ -218,12 +199,6 @@ val RELEASES: ImmutableList<Release> = persistentListOf(
                 summary = "Changing the day reliably reloads photos",
                 detail = "Switching to another sol now always fetches that day's pictures. Perseverance in particular used to ask for a computed date range that could return the wrong photos or none at all.",
             ),
-        ),
-    ),
-    Release(
-        version = "1.7.0",
-        date = LocalDate(2021, 2, 22),
-        changes = persistentListOf(
             Release.Change(
                 id = "perseverance",
                 type = ChangeType.NEW_ROVER,
@@ -238,12 +213,6 @@ val RELEASES: ImmutableList<Release> = persistentListOf(
                 summary = "Popular entries load with all their details",
                 detail = "Some photos on the Popular screen could come through with no image, name or date. Each entry is now read out field by field, so it arrives complete.",
             ),
-        ),
-    ),
-    Release(
-        version = "1.6.1",
-        date = LocalDate(2021, 2, 21),
-        changes = persistentListOf(
             Release.Change(
                 id = "steady_lists",
                 type = ChangeType.BUG_FIX,
@@ -264,12 +233,6 @@ val RELEASES: ImmutableList<Release> = persistentListOf(
                 summary = "Tapping a popular photo opens it fullscreen",
                 detail = "Photos on the Popular screen used to do nothing when tapped. They now open in the same fullscreen viewer as everywhere else, and you can swipe on through the rest.",
             ),
-        ),
-    ),
-    Release(
-        version = "1.5.2",
-        date = LocalDate(2020, 8, 30),
-        changes = persistentListOf(
             Release.Change(
                 id = "favorites",
                 type = ChangeType.FAVORITES,
@@ -277,12 +240,6 @@ val RELEASES: ImmutableList<Release> = persistentListOf(
                 summary = "Save your best shots to revisit later",
                 detail = "Tap the heart while viewing a photo to keep it. A tile on the home screen opens everything you have saved, using your most recent favorite as its cover, and you can remove a photo straight from that list.",
             ),
-        ),
-    ),
-    Release(
-        version = "1.4.2",
-        date = LocalDate(2019, 4, 3),
-        changes = persistentListOf(
             Release.Change(
                 id = "live_rover_stats",
                 type = ChangeType.MISSION_INFO,
@@ -303,12 +260,6 @@ val RELEASES: ImmutableList<Release> = persistentListOf(
                 summary = "New colors, new type, smoother moves",
                 detail = "The app moved to a blue and orange palette with a single typeface across every screen, dialogs and date pickers included, and margins were tightened so more of the screen belongs to the photos. Tapping a picture animates the thumbnail into the fullscreen view instead of cutting to it, and a day with no photos shows a proper empty screen rather than a blank list.",
             ),
-        ),
-    ),
-    Release(
-        version = "1.3.1",
-        date = LocalDate(2019, 2, 25),
-        changes = persistentListOf(
             Release.Change(
                 id = "insight",
                 type = ChangeType.NEW_ROVER,
@@ -316,12 +267,6 @@ val RELEASES: ImmutableList<Release> = persistentListOf(
                 summary = "NASA's InSight lander joins the list",
                 detail = "InSight sits alongside Curiosity, Opportunity and Spirit and opens a set of its surface images. Its mission numbers on the card are still placeholders for now.",
             ),
-        ),
-    ),
-    Release(
-        version = "1.3.0",
-        date = LocalDate(2018, 9, 2),
-        changes = persistentListOf(
             Release.Change(
                 id = "popular",
                 type = ChangeType.POPULAR,

@@ -3,7 +3,8 @@
 Decisions behind [RELEASE_NOTES.md](RELEASE_NOTES.md) and the shipped `RELEASES` list in
 `shared/.../domain/releasenotes/ReleaseNotes.kt`, plus the open items that need your call.
 
-**Result:** 45 versions in VERSIONS.md → 24 releases with user-facing notes → 35 changes,
+**Result:** 45 versions in VERSIONS.md → 24 releases with user-facing notes → **merged down to 14
+cards** (§9) → 35 changes,
 of which 7 are umbrellas. 11 new `ChangeType` constants. `OFFLINE_CACHE` is still unused.
 
 Two entries were authored by hand rather than produced by the pipeline: **2.4.0** (§1) and
@@ -284,3 +285,57 @@ mention.
 
 **New `ChangeType`:** `INITIAL_RELEASE`, mapped to `MaterialSymbol.Rocket`. It shares that icon with
 `MISSION_INFO`, which is harmless — the two never appear in the same release.
+
+
+## 9. Merged cards — several versions per card
+
+At the user's request (2026-08-10), fourteen thin releases were folded into five denser cards. No
+copy was dropped: **24 cards → 14 cards, all 35 changes kept.** The goal was cards worth reading —
+a single-change card saying "Steady Lists" is not.
+
+**Each card keeps the newest version and date of its group.** So a change can appear under a later
+version than the one it actually shipped in.
+
+| Card | Absorbs | Changes, and where each shipped |
+|---|---|---|
+| **2.3.2** · 2022-09-03 | 2.3.1, 2.3.0 | Newer Photos ← 2.3.2 · Cleaner Cards ← 2.3.1 · Pick A Theme ← 2.3.0 |
+| **2.1.1** · 2021-07-25 | 2.0.0, 1.7.2 | Save Photos ← 2.1.1 · Zoom And Swipe ← 2.0.0 · One Screen, Blurred Backdrop ← 1.7.2 |
+| **1.7.1** · 2021-02-26 | 1.7.0, 1.6.1 | Bottom Bar, Day Filter ← 1.7.1 · Perseverance, Popular Fixed ← 1.7.0 · Steady Lists ← 1.6.1 |
+| **1.6.0** · 2020-09-06 | 1.5.2, 1.4.2 | Popular Opens ← 1.6.0 · Favorites ← 1.5.2 · Live Stats ← 1.4.2 |
+| **1.4.0** · 2019-04-03 | 1.3.1, 1.3.0 | Fresh Look ← 1.4.0 · InSight ← 1.3.1 · Popular Photos ← 1.3.0 |
+
+### This is deliberate misattribution — do not "fix" it
+
+The whole reason this pipeline exists is that the old hardcoded list credited features to versions
+they never shipped in (a fictional 4.2.0 holding Popular Photos, six years late). The merges
+reintroduce that shape **on purpose**, so the distinction matters:
+
+- **Wrong before:** Popular Photos under 4.2.0 (2024) — a version that never existed, no evidence.
+- **Intentional now:** Popular Photos under the 1.4.0 card — 1.4.0 is real, shipped 2019-04-03, and
+  the card openly represents the 1.3.0 → 1.4.0 span.
+
+A future reader who moves a change back to its original version will silently undo this. The table
+above is the record; `ReleaseNotes.kt`'s header comment points here.
+
+### Date stretch introduced
+
+Because each card takes its newest date, the oldest change on a card predates the card's date:
+
+| Card | Oldest change | Actually shipped | Stretch |
+|---|---|---|---|
+| 1.6.0 · 2020-09-06 | Live Stats | 2019-04-03 (1.4.2) | **17 months** |
+| 1.4.0 · 2019-04-03 | Popular Photos | 2018-09-02 (1.3.0) | 7 months |
+| 1.7.1 · 2021-02-26 | Steady Lists | 2021-02-21 (1.6.1) | 5 days |
+| 2.1.1 · 2021-07-25 | One Screen | 2021-04-04 (1.7.2) | ~4 months |
+| 2.3.2 · 2022-09-03 | Pick A Theme | 2021-09-07 (2.3.0) | ~12 months |
+
+The 1.6.0 card is the worst: it groups a 2019 change with two from 2020. Acceptable for a What's New
+screen, where users read features rather than audit dates — but if that ever matters, split 1.4.2
+back out.
+
+### Not merged
+
+Four single-change cards were left alone because they were not in scope: **2.4.5** (New Look),
+**2.4.0** (Stand with Ukraine), **1.2.0** (Swipe Through), **1.1.1** (Crash Fix). 1.1.1 is the
+weakest remaining card — a lone crash fix sitting between 1.2.0 and the 1.0.0 launch — and is the
+obvious next merge candidate if you want one.

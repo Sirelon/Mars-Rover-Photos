@@ -171,6 +171,12 @@ One agent, **model: opus**, reads all `raw/*.json` and produces user-facing copy
 - `ChangeType` is a fixed enum — map onto existing values, or **propose** new ones for the user to
   approve. Never invent an enum constant silently.
 - May suggest a screenshot per entry.
+- **Consider merging thin releases into denser cards.** A card carrying one small change ("Steady
+  Lists") is not worth reading. Consecutive thin releases can be folded into one card that keeps
+  the newest version and date of the group. Propose this; do not do it unasked.
+  If you do merge, record the mapping — a change then sits under a later version than it shipped
+  in, which is indistinguishable from the misattribution bug this pipeline exists to fix, and a
+  future reader will otherwise "correct" it back.
 
 ## Step 6 — apply, verify, clean up
 
