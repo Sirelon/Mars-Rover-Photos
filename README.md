@@ -1,14 +1,21 @@
 # Mars Rover Photos
-Application for showing mars photos.
 
-Inspired by https://medium.com/@juanchosaravia/learn-kotlin-while-developing-an-android-app-introduction-567e21ff9664#.ohqmn7cmd 
+Compose Multiplatform app for browsing Mars rover imagery on Android, iOS, and desktop.
+The shared Kotlin module provides the app's data, navigation, view models, and Compose UI; platform
+modules host it for each target.
 
-API provided by https://api.nasa.gov/api.html#MarsPhotos
+Photo feeds use NASA Mars imagery sources. Curiosity, Perseverance, and InSight use the Mars raw-image
+service; Spirit and Opportunity use the curated NASA Images library.
 
-## Language
-Developed on powerfull Language Kotlin https://kotlinlang.org/. 
+## Development
 
-## Application
-The application (the source is in the repository) has been published onto Google Play:
+Read [AGENTS.md](AGENTS.md) for the module layout, build and test commands, versioning workflow, and
+links to the architecture and design-system guidance.
 
-[![Get it on Google Play](https://github.com/Sirelon/Mars-Rover-Photos/blob/master/google_play_icon.png)](http://play.google.com/store/apps/details?id=com.sirelon.marsroverphotos)
+The experimental `webApp/` module is not wired to the shared application yet; see
+[WASM_WEB_SUPPORT.md](WASM_WEB_SUPPORT.md).
+
+## Deep links
+
+The app supports `marsrover://` rover and photo links. See [DEEP_LINKING.md](DEEP_LINKING.md) for the
+supported URLs and platform behavior.
