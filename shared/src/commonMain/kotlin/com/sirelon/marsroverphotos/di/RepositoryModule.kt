@@ -5,10 +5,12 @@ import com.sirelon.marsroverphotos.data.paging.RoverFeedPager
 import com.sirelon.marsroverphotos.data.repositories.FactsRepositoryImpl
 import com.sirelon.marsroverphotos.data.repositories.ImagesRepositoryImpl
 import com.sirelon.marsroverphotos.data.repositories.PhotosRepositoryImpl
+import com.sirelon.marsroverphotos.data.repositories.ReleaseNotesRepositoryImpl
 import com.sirelon.marsroverphotos.data.repositories.RoversRepositoryImpl
 import com.sirelon.marsroverphotos.domain.repositories.FactsRepository
 import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
 import com.sirelon.marsroverphotos.domain.repositories.PhotosRepository
+import com.sirelon.marsroverphotos.domain.repositories.ReleaseNotesRepository
 import com.sirelon.marsroverphotos.domain.repositories.RoversRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -65,6 +67,11 @@ val repositoryModule = module {
             firebasePhotos = get(),
             factDisplayDao = get()
         )
+    }
+
+    // Caches for the process — see the class KDoc on why one instance matters here.
+    single<ReleaseNotesRepository> {
+        ReleaseNotesRepositoryImpl()
     }
 
     // MissionRepository is expect/actual, provided by platform module

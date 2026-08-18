@@ -1,6 +1,7 @@
 package com.sirelon.marsroverphotos.presentation.screens.whatsnew
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -27,7 +28,9 @@ import com.sirelon.marsroverphotos.presentation.navigation.AppDestination
 import com.sirelon.marsroverphotos.presentation.navigation.LocalAppNavigator
 import com.sirelon.marsroverphotos.presentation.theme.AppSize
 import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
+import com.sirelon.marsroverphotos.presentation.ui.AppEmptyState
 import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
+import com.sirelon.marsroverphotos.presentation.ui.CenteredProgress
 import com.sirelon.marsroverphotos.presentation.viewmodels.WhatsNewViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -62,25 +65,37 @@ fun AllVersionsScreen() {
     ) { innerPadding ->
         // padding before verticalScroll: the top-bar inset is a fixed viewport edge, so it must not
         // scroll away underneath the bar with the content.
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Column(
-                modifier = contentWidth
-                    .padding(horizontal = AppSpacing.lg)
-                    .padding(bottom = AppSpacing.xxl),
-                verticalArrangement = Arrangement.spacedBy(AppSpacing.xl),
+        when {
+            state.isLoading -> Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+                CenteredProgress()
+            }
+
+            // The notes come from Firestore, so an empty list means the fetch failed or nothing is
+            // published yet — neither is an error worth a dialog, but the screen must say something.
+            state.releases.isEmpty() -> Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+                AppEmptyState(title = "No release notes yet")
+            }
+
+            else -> Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Spacer(modifier = Modifier.height(AppSpacing.md))
-                state.releases.forEach { release ->
-                    ReleaseCard(
-                        release = release,
-                        onOpen = { navigator.navigate(AppDestination.WhatsNewStory(release.version, page = 0)) },
-                    )
+                Column(
+                    modifier = contentWidth
+                        .padding(horizontal = AppSpacing.lg)
+                        .padding(bottom = AppSpacing.xxl),
+                    verticalArrangement = Arrangement.spacedBy(AppSpacing.xl),
+                ) {
+                    Spacer(modifier = Modifier.height(AppSpacing.md))
+                    state.releases.forEach { release ->
+                        ReleaseCard(
+                            release = release,
+                            onOpen = { navigator.navigate(AppDestination.WhatsNewStory(release.version, page = 0)) },
+                        )
+                    }
                 }
             }
         }

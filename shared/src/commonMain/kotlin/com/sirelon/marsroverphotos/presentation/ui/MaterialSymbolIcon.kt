@@ -70,6 +70,23 @@ enum class MaterialSymbol(val iconName: String) {
 }
 
 /**
+ * Resolves a Material Symbols ligature name (`"rocket_launch"`) to a known [MaterialSymbol].
+ *
+ * Returns [default] when the name is null, blank, or not one this build knows about. Content that
+ * names its own icon — release notes, fetched from Firestore — can reference any symbol on
+ * fonts.google.com/icons, including ones absent from [MaterialSymbol]. Passing such a name straight
+ * to the font is not an option: an unknown ligature renders as its *literal text*, and glyph
+ * availability cannot be queried, so this whitelist is what keeps `"rocket_lanuch"` from shipping as
+ * visible garbage. Adding a symbol to [MaterialSymbol] is a one-line change in the next build.
+ */
+fun materialSymbolOrDefault(
+    iconName: String?,
+    default: MaterialSymbol = MaterialSymbol.Star,
+): MaterialSymbol = MaterialSymbol.entries
+    .firstOrNull { it.iconName.equals(iconName, ignoreCase = true) }
+    ?: default
+
+/**
  * Displays a Material Symbol icon using the Material Symbols font.
  *
  * The icon is rendered using font ligatures - the [symbol] name is converted
