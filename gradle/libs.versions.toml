@@ -6,24 +6,26 @@ ksp = "2.3.10"
 
 # Compose Multiplatform
 # https://github.com/JetBrains/compose-multiplatform/releases
-compose-multiplatform = "1.12.0-alpha02"
+compose-multiplatform = "1.12.0-rc01"
+# Compose Multiplatform material3 ships on its own, slower version line than the core artifacts
+compose-mp-material3 = "1.12.0-alpha03"
 
 # AndroidX
 # https://developer.android.com/jetpack/androidx/releases/activity
 activityCompose = "1.13.0"
 # https://developer.android.com/jetpack/androidx/releases/appcompat
-appcompat = "1.7.1"
+appcompat = "1.8.0"
 ktx = "1.19.0"
 # https://developer.android.com/jetpack/androidx/releases/lifecycle
 lifecycle = "2.11.0"
 # https://developer.android.com/jetpack/androidx/releases/compose
-compose = "1.11.4"
+compose = "1.12.0"
 # https://developer.android.com/jetpack/androidx/releases/compose-material3
-compose-material3 = "1.5.0-alpha25"
+compose-material3 = "1.5.0-alpha26"
 # https://developer.android.com/jetpack/androidx/releases/glance
 glance = "1.3.0-alpha02"
 # https://developer.android.com/jetpack/androidx/releases/paging
-paging = "3.5.0"
+paging = "3.5.1"
 # https://developer.android.com/jetpack/androidx/releases/room3
 room = "3.0.1"
 # https://developer.android.com/jetpack/androidx/releases/work
@@ -55,7 +57,7 @@ navigation-compose = "2.9.2"
 
 # GitLive Firebase KMP SDK
 # https://github.com/GitLiveApp/firebase-kotlin-sdk/releases
-gitliveFirebase = "2.5.0"
+gitliveFirebase = "3.0.0-alpha01"
 
 # Firebase
 # https://firebase.google.com/support/release-notes/android
@@ -76,7 +78,7 @@ zoomable = "2.13.0"
 playReview = "2.0.2"
 
 # Navigation 3
-navigation3 = "1.1.5"
+navigation3 = "1.1.6"
 lifecycle-navigation3 = "2.11.0"
 
 [libraries]
@@ -96,8 +98,8 @@ androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", versi
 # Compose Multiplatform (KMP) — direct coordinates replacing deprecated compose.XXX shorthands
 compose-mp-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-multiplatform" }
 compose-mp-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-multiplatform" }
-compose-mp-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "compose-multiplatform" }
-compose-mp-material3-adaptive-nav-suite = { module = "org.jetbrains.compose.material3:material3-adaptive-navigation-suite", version.ref = "compose-multiplatform" }
+compose-mp-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "compose-mp-material3" }
+compose-mp-material3-adaptive-nav-suite = { module = "org.jetbrains.compose.material3:material3-adaptive-navigation-suite", version.ref = "compose-mp-material3" }
 compose-mp-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-multiplatform" }
 compose-mp-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose-multiplatform" }
 compose-mp-components-ui-tooling-preview = { module = "org.jetbrains.compose.components:components-ui-tooling-preview", version.ref = "compose-multiplatform" }
