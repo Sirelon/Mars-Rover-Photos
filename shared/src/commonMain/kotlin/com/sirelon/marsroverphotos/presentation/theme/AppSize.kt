@@ -64,6 +64,9 @@ object AppSize {
     /** 3dp — story-screen segmented progress track height. */
     val progressTrack: Dp = 3.dp
 
+    /** 180dp — story-screen feature image height. */
+    val storyImage: Dp = 180.dp
+
     /** 840dp — max settings-content width; the column caps and centers only in the EXPANDED width class. */
     val contentMaxWidth: Dp = 840.dp
 

@@ -31,8 +31,8 @@ object AppMotion {
      */
     const val SharedContainerMs = 400
 
-    /** 5s — What's New story: how long one page's progress segment takes to fill before advancing. */
-    const val StoryPageMs = 5_000
+    /** 10s — What's New story: how long one page's progress segment takes to fill before advancing. */
+    const val StoryPageMs = 10_000
 
     /**
      * 250ms — What's New story: how long the current segment takes to run out its remaining fill
