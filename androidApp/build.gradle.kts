@@ -38,7 +38,7 @@ android {
 
     defaultConfig {
         applicationId = "com.sirelon.marsroverphotos"
-        minSdk = 23
+        minSdk = 24
         targetSdk = 36
         versionCode = AppVersion.code
         versionName = AppVersion.name
@@ -61,12 +61,6 @@ android {
         }
         debug {
             // Debug configuration
-        }
-    }
-
-    configurations {
-        all {
-            exclude(group = "com.google.guava", module = "listenablefuture")
         }
     }
 
@@ -134,6 +128,9 @@ androidComponents {
 dependencies {
     // Shared KMP module
     implementation(project(":shared"))
+
+    // Resolves the ListenableFuture duplicate-class clash — see the catalog entry for why.
+    implementation(libs.guava.listenablefuture.empty)
 
     // Android-specific dependencies
     implementation(libs.androidx.activity.compose)
