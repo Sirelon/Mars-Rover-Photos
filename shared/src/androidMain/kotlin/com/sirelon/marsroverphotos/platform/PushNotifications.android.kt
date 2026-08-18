@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import androidx.activity.ComponentActivity
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationManagerCompat
@@ -77,10 +78,14 @@ class AndroidPushNotifications(
             // registered outside the Activity's lifecycle-aware overload so it must be released
             // by hand once the result lands.
             val key = "$REGISTRY_KEY_PREFIX${requestCounter++}"
-            val launcher = activity.activityResultRegistry.register(
+            var launcher: ActivityResultLauncher<String>? = null
+            launcher = activity.activityResultRegistry.register(
                 key,
                 ActivityResultContracts.RequestPermission(),
             ) { isGranted ->
+                // Registered outside the lifecycle-aware overload, so the registry holds this
+                // callback until it is released by hand — on the result path as well as cancellation.
+                launcher?.unregister()
                 if (continuation.isActive) continuation.resume(isGranted)
             }
             continuation.invokeOnCancellation { launcher.unregister() }

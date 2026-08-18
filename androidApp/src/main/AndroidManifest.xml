@@ -47,6 +47,18 @@
                     android:host="photo"
                     android:pathPattern="/.*" />
 
+            </intent-filter>
+
+            <!--
+                whatsnew needs its own filter. Android pools the <data> attributes of a filter
+                rather than pairing them per tag, so the "/.*" above would apply here too and the
+                path-less marsrover://whatsnew would never match.
+            -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
                 <!-- marsrover://whatsnew and marsrover://whatsnew/{version} -->
                 <data
                     android:scheme="marsrover"

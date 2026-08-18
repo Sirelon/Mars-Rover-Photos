@@ -47,7 +47,15 @@ class AboutViewModel(
 
     fun refreshPushStatus() {
         viewModelScope.launch {
-            _pushStatus.value = pushNotifications.permissionStatus()
+            val status = pushNotifications.permissionStatus()
+            _pushStatus.value = status
+            // Permission can be revoked from system settings without the app being told. Drop the
+            // stale opt-in so the launch-time re-subscribe stops renewing a subscription the OS
+            // will never display.
+            if (status == PushPermissionStatus.Denied && appSettings.notificationsEnabled) {
+                appSettings.notificationsEnabled = false
+                pushNotifications.setSubscribed(false)
+            }
         }
     }
 

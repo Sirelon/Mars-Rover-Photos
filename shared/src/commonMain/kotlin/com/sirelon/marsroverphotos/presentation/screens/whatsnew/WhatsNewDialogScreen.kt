@@ -90,6 +90,9 @@ fun WhatsNewDialogScreen() {
                         label = "Mars Updates",
                         sub = "Get told about new photos and releases",
                         trailing = {
+                            // Always unchecked: the row only exists while permission is
+                            // undecided, and enablePushNotifications() clears showPushOptIn
+                            // before it awaits the OS, so the whole row leaves on the same tap.
                             Switch(
                                 checked = false,
                                 onCheckedChange = { viewModel.enablePushNotifications() },

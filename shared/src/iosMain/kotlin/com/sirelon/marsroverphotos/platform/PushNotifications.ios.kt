@@ -89,7 +89,7 @@ class IosPushNotifications : PushNotifications {
 
     override fun openSystemSettings() {
         val url = NSURL.URLWithString(UIApplicationOpenSettingsURLString) ?: return
-        UIApplication.sharedApplication.openURL(url)
+        UIApplication.sharedApplication.openURL(url, options = emptyMap<Any?, Any>(), completionHandler = null)
     }
 
     private companion object {
