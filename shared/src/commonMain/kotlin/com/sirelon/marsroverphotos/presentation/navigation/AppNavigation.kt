@@ -201,6 +201,17 @@ fun AppNavigation(
                     selectedId = target.id
                 )
             )
+
+            // A push can name a version this build ships no notes for (an older install being
+            // told about a newer release); the full list is the honest landing spot for that.
+            is DeepLink.WhatsNew -> {
+                val release = target.version?.let { whatsNewViewModel.releaseFor(it) }
+                if (release != null) {
+                    navigator.navigate(AppDestination.WhatsNewStory(release.version))
+                } else {
+                    navigator.navigate(AppDestination.AllVersions)
+                }
+            }
         }
         onDeepLinkConsumed?.invoke()
     }

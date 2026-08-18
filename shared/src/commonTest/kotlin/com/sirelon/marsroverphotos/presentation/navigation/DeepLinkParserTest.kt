@@ -44,6 +44,17 @@ class DeepLinkParserTest {
     }
 
     @Test
+    fun whatsNew_withVersion_parsesVersion() {
+        assertEquals(DeepLink.WhatsNew("4.2.0"), parseDeepLink("marsrover://whatsnew/4.2.0"))
+    }
+
+    @Test
+    fun whatsNew_withoutVersion_parsesToNullVersion() {
+        assertEquals(DeepLink.WhatsNew(null), parseDeepLink("marsrover://whatsnew"))
+        assertEquals(DeepLink.WhatsNew(null), parseDeepLink("marsrover://whatsnew/"))
+    }
+
+    @Test
     fun nonNumericId_returnsNull() {
         assertNull(parseDeepLink("marsrover://rover/curiosity"))
         assertNull(parseDeepLink("https://marsroverphotos.app/photo/abc"))

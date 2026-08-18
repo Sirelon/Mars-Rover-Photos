@@ -1,12 +1,70 @@
 import SwiftUI
 import shared
 import FirebaseCore
+import FirebaseMessaging
 import AppTrackingTransparency
 import GoogleMobileAds
 import UserMessagingPlatform
+import UserNotifications
+
+/// Owns the notification plumbing that has to exist from the first instant of launch.
+///
+/// This can't live in a Koin singleton on the Kotlin side: those are created lazily, so the
+/// delegate would first exist when some screen injected it — long after a notification that
+/// cold-launched the app had already been delivered and dropped.
+final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
+
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+    ) -> Bool {
+        UNUserNotificationCenter.current().delegate = self
+        return true
+    }
+
+    /// Hands FCM the APNs token explicitly. Firebase's app-delegate proxy relies on swizzling the
+    /// delegate class, which is not something a SwiftUI-lifecycle app can depend on — and when it
+    /// misses, subscription and sends both report success while nothing is ever delivered.
+    func application(
+        _ application: UIApplication,
+        didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
+    ) {
+        Messaging.messaging().apnsToken = deviceToken
+    }
+
+    func application(
+        _ application: UIApplication,
+        didFailToRegisterForRemoteNotificationsWithError error: Error
+    ) {
+        NSLog("APNs registration failed: \(error.localizedDescription)")
+    }
+
+    /// Matches Android: a push that arrives while the app is open is not shown. Someone already
+    /// browsing Mars photos does not need to be told there are Mars photos.
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        completionHandler([])
+    }
+
+    /// Routes a tap through the same deep-link path as `marsrover://` URLs opened from anywhere else.
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
+        if let link = response.notification.request.content.userInfo["link"] as? String {
+            Main_iosKt.pushDeepLink(urlString: link)
+        }
+        completionHandler()
+    }
+}
 
 @main
 struct MarsRoverApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @Environment(\.scenePhase) private var scenePhase
     @State private var didBootstrapAds = false
 

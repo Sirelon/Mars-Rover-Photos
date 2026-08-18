@@ -98,9 +98,9 @@ class MainActivity : ComponentActivity() {
     /**
      * Resolves a launch [Intent] into a [DeepLink], if it carries one.
      *
-     * Two sources: the home-screen widget's image extra, and the VIEW-intent URI declared by the
-     * manifest's intent filters. URI forms are parsed by the shared [parseDeepLink] so Android and
-     * iOS stay in step.
+     * Three sources: the home-screen widget's image extra, a notification tap's link extra, and
+     * the VIEW-intent URI declared by the manifest's intent filters. URI forms are parsed by the
+     * shared [parseDeepLink] so Android and iOS stay in step.
      */
     private fun handleDeepLink(intent: Intent?) {
         if (intent == null) return
@@ -113,7 +113,10 @@ class MainActivity : ComponentActivity() {
             return
         }
 
-        val uri = intent.data?.toString()
+        // FCM hands a notification's data payload over as intent extras on tap. Messages composed
+        // in the Firebase console can only set data, so the link arrives here rather than as an
+        // intent URI.
+        val uri = intent.getStringExtra(NotificationLinkExtra) ?: intent.data?.toString()
         if (uri == null) {
             Logger.d(TAG) { "No deep link data" }
             return
@@ -130,5 +133,8 @@ class MainActivity : ComponentActivity() {
 
     private companion object {
         const val TAG = "MainActivity"
+
+        /** Key FCM gives a notification's `data.link` value once it becomes an intent extra. */
+        const val NotificationLinkExtra = "link"
     }
 }

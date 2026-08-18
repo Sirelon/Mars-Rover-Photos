@@ -14,6 +14,8 @@ private const val WEB_HOST = "marsroverphotos.app"
  * ```
  * marsrover://rover/{roverId}
  * marsrover://photo/{photoId}
+ * marsrover://whatsnew
+ * marsrover://whatsnew/{version}
  * https://marsroverphotos.app/rover/{roverId}
  * https://marsroverphotos.app/photo/{photoId}
  * ```
@@ -54,6 +56,8 @@ fun parseDeepLink(uri: String): DeepLink? {
     return when (kind) {
         "rover" -> id?.toLongOrNull()?.let { DeepLink.Rover(it) }
         "photo" -> id?.toLongOrNull()?.let { DeepLink.Photo(it) }
+        // The only form whose id is optional — a bare marsrover://whatsnew opens the version list.
+        "whatsnew" -> DeepLink.WhatsNew(id)
         else -> null
     }
 }

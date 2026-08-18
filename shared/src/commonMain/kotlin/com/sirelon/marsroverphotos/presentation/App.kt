@@ -5,6 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Modifier
@@ -17,6 +18,7 @@ import com.sirelon.marsroverphotos.presentation.navigation.AboutCallbacks
 import com.sirelon.marsroverphotos.presentation.navigation.AppNavigation
 import com.sirelon.marsroverphotos.presentation.navigation.DeepLink
 import com.sirelon.marsroverphotos.presentation.navigation.LocalAboutCallbacks
+import com.sirelon.marsroverphotos.platform.PushNotifications
 import com.sirelon.marsroverphotos.presentation.theme.MarsRoverPhotosTheme
 import com.sirelon.marsroverphotos.presentation.theme.isSystemInDarkTheme
 import com.sirelon.marsroverphotos.presentation.theme.supportsDynamicColor
@@ -50,6 +52,16 @@ fun App(
     }
 
     val appSettings: AppSettings = koinInject()
+    val pushNotifications: PushNotifications = koinInject()
+
+    // Re-assert the topic subscription on every launch. It is idempotent, and it repairs the one
+    // case the toggle alone cannot: an iOS install restored from a device backup brings the
+    // "enabled" preference back while the APNs token and its topic mapping do not come with it,
+    // leaving the setting on and nothing arriving.
+    LaunchedEffect(Unit) {
+        if (appSettings.notificationsEnabled) pushNotifications.setSubscribed(true)
+    }
+
     val theme by appSettings.themeFlow.collectAsStateWithLifecycle()
     val systemDarkTheme = isSystemInDarkTheme()
     val dynamicColor = supportsDynamicColor()

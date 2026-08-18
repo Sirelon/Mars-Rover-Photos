@@ -19,6 +19,7 @@
 		BA22781C2FBE0E6B00AF0A32 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = BA22781B2FBE0E6B00AF0A32 /* FirebaseFirestore */; };
 		BA22781E2FBE0E6B00AF0A32 /* FirebasePerformance in Frameworks */ = {isa = PBXBuildFile; productRef = BA22781D2FBE0E6B00AF0A32 /* FirebasePerformance */; };
 		BA2278202FBE0E6B00AF0A32 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = BA22781F2FBE0E6B00AF0A32 /* FirebaseStorage */; };
+		BA2278242FBE0E6B00AF0A32 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = BA2278232FBE0E6B00AF0A32 /* FirebaseMessaging */; };
 		BA2278222FBE0E6B00AF0A32 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BA2278212FBE0E6B00AF0A32 /* Assets.xcassets */; };
 		BAA1110001000000A0000011 /* BannerAdFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA1110001000000A0000010 /* BannerAdFactory.swift */; };
 		BAA1110002000000A0000014 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = BAA1110002000000A0000013 /* GoogleMobileAds */; };
@@ -64,6 +65,7 @@
 				BA22781A2FBE0E6B00AF0A32 /* FirebaseCrashlytics in Frameworks */,
 				BA2278182FBE0E6B00AF0A32 /* FirebaseCore in Frameworks */,
 				BA2278202FBE0E6B00AF0A32 /* FirebaseStorage in Frameworks */,
+				BA2278242FBE0E6B00AF0A32 /* FirebaseMessaging in Frameworks */,
 				9E2B4A282B8F3D0100C4A5E2 /* shared.xcframework in Frameworks */,
 				BA22781C2FBE0E6B00AF0A32 /* FirebaseFirestore in Frameworks */,
 				BAA1110002000000A0000014 /* GoogleMobileAds in Frameworks */,
@@ -132,6 +134,7 @@
 				BA22781B2FBE0E6B00AF0A32 /* FirebaseFirestore */,
 				BA22781D2FBE0E6B00AF0A32 /* FirebasePerformance */,
 				BA22781F2FBE0E6B00AF0A32 /* FirebaseStorage */,
+				BA2278232FBE0E6B00AF0A32 /* FirebaseMessaging */,
 				BAA1110002000000A0000013 /* GoogleMobileAds */,
 				BAA1110003000000A0000016 /* GoogleUserMessagingPlatform */,
 			);
@@ -489,6 +492,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = BA2278122FBE0E6B00AF0A32 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseStorage;
+		};
+		BA2278232FBE0E6B00AF0A32 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BA2278122FBE0E6B00AF0A32 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
 		};
 		BAA1110002000000A0000013 /* GoogleMobileAds */ = {
 			isa = XCSwiftPackageProductDependency;

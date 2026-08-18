@@ -19,7 +19,12 @@ class AppSettings(
         const val KEY_SHOW_FACTS = "showFacts"
         const val KEY_SHOW_CAMERA_NAME = "showCameraName"
         const val KEY_LAST_SEEN_VERSION = "lastSeenVersion"
+        const val KEY_NOTIFICATIONS_ENABLED = "notificationsEnabled"
     }
+
+    private val _notificationsEnabledFlow =
+        MutableStateFlow(preferences.getBoolean(KEY_NOTIFICATIONS_ENABLED, false))
+    val notificationsEnabledFlow: StateFlow<Boolean> = _notificationsEnabledFlow.asStateFlow()
 
     private val _showFactsFlow = MutableStateFlow(preferences.getBoolean(KEY_SHOW_FACTS, true))
     val showFactsFlow: StateFlow<Boolean> = _showFactsFlow.asStateFlow()
@@ -61,6 +66,20 @@ class AppSettings(
         set(value) {
             preferences.setBoolean(KEY_GRID_VIEW, value)
             _gridViewFlow.value = value
+        }
+
+    /**
+     * Whether the user has opted in to push notifications.
+     *
+     * Tracks the user's *intent*, which is not the same as OS authorization — permission can be
+     * revoked in system settings without the app being told. Read it together with
+     * [com.sirelon.marsroverphotos.platform.PushNotifications.permissionStatus] rather than alone.
+     */
+    var notificationsEnabled: Boolean
+        get() = preferences.getBoolean(KEY_NOTIFICATIONS_ENABLED, false)
+        set(value) {
+            preferences.setBoolean(KEY_NOTIFICATIONS_ENABLED, value)
+            _notificationsEnabledFlow.value = value
         }
 
     var lastSeenVersion: String?
