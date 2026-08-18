@@ -22,6 +22,7 @@ import com.sirelon.marsroverphotos.platform.ActivityProvider
 import com.sirelon.marsroverphotos.platform.BuildInfo
 import com.sirelon.marsroverphotos.presentation.App
 import com.sirelon.marsroverphotos.presentation.navigation.DeepLink
+import com.sirelon.marsroverphotos.presentation.navigation.parseDeepLink
 import com.sirelon.marsroverphotos.utils.Logger
 import com.sirelon.marsroverphotos.widget.WidgetExtraImageId
 
@@ -95,92 +96,39 @@ class MainActivity : ComponentActivity() {
     }
 
     /**
-     * Handle deep link URIs.
-     * Supports:
-     * - marsrover://rover/{roverId}
-     * - marsrover://photo/{photoId}
-     * - https://marsroverphotos.app/rover/{roverId}
-     * - https://marsroverphotos.app/photo/{photoId}
+     * Resolves a launch [Intent] into a [DeepLink], if it carries one.
+     *
+     * Two sources: the home-screen widget's image extra, and the VIEW-intent URI declared by the
+     * manifest's intent filters. URI forms are parsed by the shared [parseDeepLink] so Android and
+     * iOS stay in step.
      */
     private fun handleDeepLink(intent: Intent?) {
-        // Check for widget photo extra first
-        val widgetImageId = intent?.getStringExtra(WidgetExtraImageId)
+        if (intent == null) return
+
+        // Widget taps carry an image id rather than a URI — no public URI form exists for them.
+        val widgetImageId = intent.getStringExtra(WidgetExtraImageId)
         if (!widgetImageId.isNullOrBlank()) {
-            Logger.d("MainActivity") { "Widget deep link received: $widgetImageId" }
+            Logger.d(TAG) { "Widget deep link received: $widgetImageId" }
             pendingDeepLink = DeepLink.Image(widgetImageId)
             return
         }
 
-        val data: Uri? = intent?.data
-        if (data == null) {
-            Logger.d("MainActivity") { "No deep link data" }
+        val uri = intent.data?.toString()
+        if (uri == null) {
+            Logger.d(TAG) { "No deep link data" }
             return
         }
 
-        Logger.d("MainActivity") { "Deep link received: $data" }
-
-        val host = data.host ?: return
-        val pathSegments = data.pathSegments
-
-        when (host) {
-            "rover" -> {
-                // marsrover://rover/{roverId}
-                val roverId = pathSegments.firstOrNull()
-                if (roverId != null && roverId.toLongOrNull() != null) {
-                    val id = roverId.toLong()
-                    Logger.d("MainActivity") { "Navigate to rover: $roverId" }
-                    pendingDeepLink = DeepLink.Rover(id)
-                } else {
-                    Logger.w("MainActivity") { "Invalid rover ID in deep link: $roverId" }
-                }
-            }
-            "photo" -> {
-                // marsrover://photo/{photoId}
-                val photoId = pathSegments.firstOrNull()
-                if (photoId != null && photoId.toLongOrNull() != null) {
-                    val id = photoId.toLong()
-                    Logger.d("MainActivity") { "Navigate to photo: $photoId" }
-                    pendingDeepLink = DeepLink.Photo(id)
-                } else {
-                    Logger.w("MainActivity") { "Invalid photo ID in deep link: $photoId" }
-                }
-            }
-            "marsroverphotos.app" -> {
-                // https://marsroverphotos.app/rover/{roverId} or /photo/{photoId}
-                if (pathSegments.size >= 2) {
-                    val type = pathSegments[0] // "rover" or "photo"
-                    val id = pathSegments[1]
-
-                    when (type) {
-                        "rover" -> {
-                            if (id.toLongOrNull() != null) {
-                                val roverId = id.toLong()
-                                Logger.d("MainActivity") { "Navigate to rover (web): $id" }
-                                pendingDeepLink = DeepLink.Rover(roverId)
-                            } else {
-                                Logger.w("MainActivity") { "Invalid rover ID in web deep link: $id" }
-                            }
-                        }
-                        "photo" -> {
-                            if (id.toLongOrNull() != null) {
-                                val photoId = id.toLong()
-                                Logger.d("MainActivity") { "Navigate to photo (web): $id" }
-                                pendingDeepLink = DeepLink.Photo(photoId)
-                            } else {
-                                Logger.w("MainActivity") { "Invalid photo ID in web deep link: $id" }
-                            }
-                        }
-                        else -> {
-                            Logger.w("MainActivity") { "Unknown deep link type: $type" }
-                        }
-                    }
-                } else {
-                    Logger.w("MainActivity") { "Invalid web deep link path: ${data.path}" }
-                }
-            }
-            else -> {
-                Logger.w("MainActivity") { "Unknown deep link host: $host" }
-            }
+        val parsed = parseDeepLink(uri)
+        if (parsed == null) {
+            Logger.w(TAG) { "Unrecognised deep link: $uri" }
+            return
         }
+        Logger.d(TAG) { "Deep link received: $uri" }
+        pendingDeepLink = parsed
+    }
+
+    private companion object {
+        const val TAG = "MainActivity"
     }
 }
