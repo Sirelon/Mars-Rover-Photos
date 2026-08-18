@@ -3,8 +3,8 @@
 Decisions behind [RELEASE_NOTES.md](RELEASE_NOTES.md) and the shipped `RELEASES` list in
 `shared/.../domain/releasenotes/ReleaseNotes.kt`, plus the open items that need your call.
 
-**Result:** 45 versions in VERSIONS.md → 24 releases with user-facing notes → **merged down to 14
-cards** (§9) → 35 changes,
+**Result:** 45 versions in VERSIONS.md → 24 releases with user-facing notes → **merged down to 13
+cards** (§9), each ordered by importance to the user (§10) → 35 changes,
 of which 7 are umbrellas. 11 new `ChangeType` constants. `OFFLINE_CACHE` is still unused.
 
 Two entries were authored by hand rather than produced by the pipeline: **2.4.0** (§1) and
@@ -303,6 +303,7 @@ version than the one it actually shipped in.
 | **1.7.1** · 2021-02-26 | 1.7.0, 1.6.1 | Bottom Bar, Day Filter ← 1.7.1 · Perseverance, Popular Fixed ← 1.7.0 · Steady Lists ← 1.6.1 |
 | **1.6.0** · 2020-09-06 | 1.5.2, 1.4.2 | Popular Opens ← 1.6.0 · Favorites ← 1.5.2 · Live Stats ← 1.4.2 |
 | **1.4.0** · 2019-04-03 | 1.3.1, 1.3.0 | Fresh Look ← 1.4.0 · InSight ← 1.3.1 · Popular Photos ← 1.3.0 |
+| **1.2.0** · 2016-11-17 | 1.1.1 | Swipe Through ← 1.2.0 · Crash Fix ← 1.1.1 |
 
 ### This is deliberate misattribution — do not "fix" it
 
@@ -335,7 +336,42 @@ back out.
 
 ### Not merged
 
-Four single-change cards were left alone because they were not in scope: **2.4.5** (New Look),
-**2.4.0** (Stand with Ukraine), **1.2.0** (Swipe Through), **1.1.1** (Crash Fix). 1.1.1 is the
-weakest remaining card — a lone crash fix sitting between 1.2.0 and the 1.0.0 launch — and is the
-obvious next merge candidate if you want one.
+Two single-change cards remain, both deliberately: **2.4.5** (New Look) and **2.4.0** (Stand with
+Ukraine). 1.1.1 was subsequently folded into 1.2.0, bringing the total to **13 cards**.
+
+
+## 10. Ordering within a card — by importance, not by date
+
+The first cut ordered each card's changes reverse-chronologically. That is wrong: it put
+**Perseverance third of five** on the 1.7.1 card. A new rover arriving at Mars happens a handful of
+times a decade; it cannot sit below a filter fix.
+
+Changes are now ranked:
+
+1. **A new rover or lander joining the app** — and the app's own first release. Always first.
+2. **A new capability** — something the user could not do at all before.
+3. **Restored access** — content or a feature that was unreachable now works.
+4. **A visible improvement** to something that already worked.
+5. **Fixes.**
+
+What moved:
+
+| Card | Now leads with | Was | Why |
+|---|---|---|---|
+| **1.7.1** | Perseverance | Bottom Bar | New rover. Was 3rd of 5. |
+| **1.4.0** | InSight | Fresh Look | New lander. Was 2nd of 3. |
+| **1.6.0** | Favorites | Popular Opens | A whole new feature outranks a tap-target fix. |
+| **2.3.2** | Pick A Theme | Newer Photos | Light/dark is a new capability; the others are a fix and polish. |
+| **2.1.1** | Save Photos → One Screen | Save Photos → Zoom And Swipe | The navigation overhaul outranks viewer polish. |
+| **2.5.3** | Mission Info → Home Widget | Mission Info → Did You Know | A home-screen widget is a bigger capability than inline trivia. |
+
+Unchanged because already correct: 5.0.0, 3.0.0, 2.4.5, 2.4.0, 1.2.4, 1.0.0.
+
+**Judgement calls worth revisiting:**
+
+- **3.0.0 leads with "All Your Devices" rather than "Photos Restored."** For an existing Android
+  user, three rovers becoming browsable again is the bigger deal — their photos were completely
+  unreachable. New platforms won because they are as rare as a new rover and admit users who could
+  not run the app at all. Swap if you disagree.
+- **1.2.4 leads with "Sharing Works," a fix, above "Crisper Photos."** Restored function beats
+  polish (tier 3 over tier 4), even though the raw finding sits in `fixes`.

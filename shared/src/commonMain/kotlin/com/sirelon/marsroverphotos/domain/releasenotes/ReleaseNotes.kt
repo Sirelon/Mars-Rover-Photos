@@ -79,18 +79,18 @@ val RELEASES: ImmutableList<Release> = persistentListOf(
                 detail = "An info button on any rover card opens a dedicated screen: the mission timeline, total photos and days active, the rover's cameras, and what it was sent to Mars to do. Fun facts about each mission are there too.",
             ),
             Release.Change(
-                id = "did_you_know",
-                type = ChangeType.FACTS,
-                title = "Did You Know",
-                summary = "Learn something while you scroll",
-                detail = "A fact card appears every so often as you browse a rover's photos, with a short piece of Mars or mission trivia. If you would rather just see photos, switch them off in About.",
-            ),
-            Release.Change(
                 id = "home_widget",
                 type = ChangeType.WIDGET,
                 title = "Home Widget",
                 summary = "The latest Mars photo on your home screen",
                 detail = "Add the Mars Photo widget, pick a rover, and its newest picture sits on your home screen and refreshes on its own. Tap the widget to open that photo in the app.",
+            ),
+            Release.Change(
+                id = "did_you_know",
+                type = ChangeType.FACTS,
+                title = "Did You Know",
+                summary = "Learn something while you scroll",
+                detail = "A fact card appears every so often as you browse a rover's photos, with a short piece of Mars or mission trivia. If you would rather just see photos, switch them off in About.",
             ),
         ),
     ),
@@ -125,6 +125,13 @@ val RELEASES: ImmutableList<Release> = persistentListOf(
         date = LocalDate(2022, 9, 3),
         changes = persistentListOf(
             Release.Change(
+                id = "pick_a_theme",
+                type = ChangeType.THEMING,
+                title = "Pick A Theme",
+                summary = "Light, dark, or whatever your phone is doing",
+                detail = "About now offers White, Dark and System. Choose one and the whole app changes immediately and stays that way next time you open it. The screen was reorganised to make room, and now leads with the rovers themselves.",
+            ),
+            Release.Change(
                 id = "reach_newer_photos",
                 type = ChangeType.BUG_FIX,
                 title = "Newer Photos",
@@ -137,13 +144,6 @@ val RELEASES: ImmutableList<Release> = persistentListOf(
                 title = "Cleaner Cards",
                 summary = "Less clutter on cards and while swiping",
                 detail = "Counters that would have read zero are hidden, so a card only shows numbers that mean something. Swiping past the first or last photo no longer stretches the screen, and About leads with a single logo instead of a row of rover thumbnails.",
-            ),
-            Release.Change(
-                id = "pick_a_theme",
-                type = ChangeType.THEMING,
-                title = "Pick A Theme",
-                summary = "Light, dark, or whatever your phone is doing",
-                detail = "About now offers White, Dark and System. Choose one and the whole app changes immediately and stays that way next time you open it. The screen was reorganised to make room, and now leads with the rovers themselves.",
             ),
         ),
     ),
@@ -159,18 +159,18 @@ val RELEASES: ImmutableList<Release> = persistentListOf(
                 detail = "A save button in the fullscreen viewer downloads the picture to your device, confirms when it is done, and offers a shortcut to view it. The viewer around it is steadier too: liking a photo no longer snaps you back to the first image, and double-tapping to zoom out re-centres the picture instead of leaving it shifted.",
             ),
             Release.Change(
-                id = "zoom_and_swipe",
-                type = ChangeType.PHOTO_VIEWER,
-                title = "Zoom And Swipe",
-                summary = "Pinch, double-tap and fling through photos",
-                detail = "The fullscreen viewer was rebuilt: pinch to zoom, double-tap to snap in, drag around a zoomed photo, and fling to the next one. You can mark a photo as a favorite without leaving it, and a photo that comes up empty now retries instead of staying blank.",
-            ),
-            Release.Change(
                 id = "photos_in_one_shell",
                 type = ChangeType.NAVIGATION,
                 title = "One Screen",
                 summary = "Rovers, Favorites and Popular live in one place",
                 detail = "Tapping a rover or switching tabs now opens inside the same screen, with the bottom bar always in reach. A rover's photos gained a sol and Earth-date picker with a slider, a shuffle button, and a tap-to-retry message when a day has nothing.",
+            ),
+            Release.Change(
+                id = "zoom_and_swipe",
+                type = ChangeType.PHOTO_VIEWER,
+                title = "Zoom And Swipe",
+                summary = "Pinch, double-tap and fling through photos",
+                detail = "The fullscreen viewer was rebuilt: pinch to zoom, double-tap to snap in, drag around a zoomed photo, and fling to the next one. You can mark a photo as a favorite without leaving it, and a photo that comes up empty now retries instead of staying blank.",
             ),
             Release.Change(
                 id = "blurred_backdrop",
@@ -186,6 +186,13 @@ val RELEASES: ImmutableList<Release> = persistentListOf(
         date = LocalDate(2021, 2, 26),
         changes = persistentListOf(
             Release.Change(
+                id = "perseverance",
+                type = ChangeType.NEW_ROVER,
+                title = "Perseverance",
+                summary = "NASA's newest rover joins the list",
+                detail = "Perseverance landed in February 2021 and now sits in the rover list alongside Curiosity, Opportunity, Spirit and InSight. Pick it to browse its photos like any other mission.",
+            ),
+            Release.Change(
                 id = "bottom_navigation",
                 type = ChangeType.NAVIGATION,
                 title = "Bottom Bar",
@@ -200,11 +207,11 @@ val RELEASES: ImmutableList<Release> = persistentListOf(
                 detail = "Switching to another sol now always fetches that day's pictures. Perseverance in particular used to ask for a computed date range that could return the wrong photos or none at all.",
             ),
             Release.Change(
-                id = "perseverance",
-                type = ChangeType.NEW_ROVER,
-                title = "Perseverance",
-                summary = "NASA's newest rover joins the list",
-                detail = "Perseverance landed in February 2021 and now sits in the rover list alongside Curiosity, Opportunity, Spirit and InSight. Pick it to browse its photos like any other mission.",
+                id = "steady_lists",
+                type = ChangeType.BUG_FIX,
+                title = "Steady Lists",
+                summary = "Every row shows its own photo",
+                detail = "Rows in the photo grid, the rover list, Favorites and Popular were reading their contents from the wrong place, which could show another row's picture or close the app. Each row now draws itself correctly.",
             ),
             Release.Change(
                 id = "popular_entries_fix",
@@ -213,26 +220,12 @@ val RELEASES: ImmutableList<Release> = persistentListOf(
                 summary = "Popular entries load with all their details",
                 detail = "Some photos on the Popular screen could come through with no image, name or date. Each entry is now read out field by field, so it arrives complete.",
             ),
-            Release.Change(
-                id = "steady_lists",
-                type = ChangeType.BUG_FIX,
-                title = "Steady Lists",
-                summary = "Every row shows its own photo",
-                detail = "Rows in the photo grid, the rover list, Favorites and Popular were reading their contents from the wrong place, which could show another row's picture or close the app. Each row now draws itself correctly.",
-            ),
         ),
     ),
     Release(
         version = "1.6.0",
         date = LocalDate(2020, 9, 6),
         changes = persistentListOf(
-            Release.Change(
-                id = "popular_opens_viewer",
-                type = ChangeType.POPULAR,
-                title = "Popular Opens",
-                summary = "Tapping a popular photo opens it fullscreen",
-                detail = "Photos on the Popular screen used to do nothing when tapped. They now open in the same fullscreen viewer as everywhere else, and you can swipe on through the rest.",
-            ),
             Release.Change(
                 id = "favorites",
                 type = ChangeType.FAVORITES,
@@ -247,19 +240,19 @@ val RELEASES: ImmutableList<Release> = persistentListOf(
                 summary = "Rover cards show real mission numbers",
                 detail = "Landing and launch dates, the latest day and the total photo count were stuck at the values the app shipped with, or showed a bare 0. They now update from NASA.",
             ),
+            Release.Change(
+                id = "popular_opens_viewer",
+                type = ChangeType.POPULAR,
+                title = "Popular Opens",
+                summary = "Tapping a popular photo opens it fullscreen",
+                detail = "Photos on the Popular screen used to do nothing when tapped. They now open in the same fullscreen viewer as everywhere else, and you can swipe on through the rest.",
+            ),
         ),
     ),
     Release(
         version = "1.4.0",
         date = LocalDate(2019, 4, 3),
         changes = persistentListOf(
-            Release.Change(
-                id = "fresh_look_140",
-                type = ChangeType.REDESIGN,
-                title = "Fresh Look",
-                summary = "New colors, new type, smoother moves",
-                detail = "The app moved to a blue and orange palette with a single typeface across every screen, dialogs and date pickers included, and margins were tightened so more of the screen belongs to the photos. Tapping a picture animates the thumbnail into the fullscreen view instead of cutting to it, and a day with no photos shows a proper empty screen rather than a blank list.",
-            ),
             Release.Change(
                 id = "insight",
                 type = ChangeType.NEW_ROVER,
@@ -273,6 +266,13 @@ val RELEASES: ImmutableList<Release> = persistentListOf(
                 title = "Popular Photos",
                 summary = "Community-curated highlights from each mission",
                 detail = "A card at the top of the rover list opens Most Popular Mars Photos: the images people view, save, zoom into and share the most, each showing its counts. More load as you keep scrolling.",
+            ),
+            Release.Change(
+                id = "fresh_look_140",
+                type = ChangeType.REDESIGN,
+                title = "Fresh Look",
+                summary = "New colors, new type, smoother moves",
+                detail = "The app moved to a blue and orange palette with a single typeface across every screen, dialogs and date pickers included, and margins were tightened so more of the screen belongs to the photos. Tapping a picture animates the thumbnail into the fullscreen view instead of cutting to it, and a day with no photos shows a proper empty screen rather than a blank list.",
             ),
         ),
     ),
@@ -307,12 +307,6 @@ val RELEASES: ImmutableList<Release> = persistentListOf(
                 summary = "Open one photo and keep going",
                 detail = "Tapping a picture opens a swipeable, pinch-zoomable gallery built from the grid you were browsing, starting on the photo you tapped. If you had filtered to one camera, swiping stays within that camera.",
             ),
-        ),
-    ),
-    Release(
-        version = "1.1.1",
-        date = LocalDate(2016, 11, 10),
-        changes = persistentListOf(
             Release.Change(
                 id = "old_android_crash_fix",
                 type = ChangeType.BUG_FIX,

@@ -171,6 +171,15 @@ One agent, **model: opus**, reads all `raw/*.json` and produces user-facing copy
 - `ChangeType` is a fixed enum — map onto existing values, or **propose** new ones for the user to
   approve. Never invent an enum constant silently.
 - May suggest a screenshot per entry.
+- **Order changes within a card by importance to the user, not by date.** Reverse-chronological
+  ordering is wrong and buries headlines — it once put Perseverance third of five. Rank:
+
+  1. **A new rover or lander joining the app** — this happens a handful of times a decade. Also the
+     app's own first release. Always first, whatever else is in the card.
+  2. **A new capability** — something the user could not do at all before.
+  3. **Restored access** — content or a feature that was unreachable now works.
+  4. **A visible improvement** to something that already worked.
+  5. **Fixes.**
 - **Consider merging thin releases into denser cards.** A card carrying one small change ("Steady
   Lists") is not worth reading. Consecutive thin releases can be folded into one card that keeps
   the newest version and date of the group. Propose this; do not do it unasked.
