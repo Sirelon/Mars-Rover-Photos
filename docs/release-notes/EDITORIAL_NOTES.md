@@ -1,7 +1,12 @@
 # Editorial notes
 
-Decisions behind [RELEASE_NOTES.md](RELEASE_NOTES.md) and the shipped `RELEASES` list in
-`shared/.../domain/releasenotes/ReleaseNotes.kt`, plus the open items that need your call.
+Decisions behind [RELEASE_NOTES.md](RELEASE_NOTES.md) and the published notes in
+`scripts/release-notes.json`, plus the open items that need your call.
+
+The notes are reconstructed from git history — **not** from commit messages, which are unreliable in
+this repo (the v1.3.0 release commit is titled "Update gradle" but shipped Popular Photos). Every
+entry was derived from the diff of its release's commit range. Regenerate with the `release-notes`
+skill; releases with nothing user-facing are omitted by design, so do not add an entry to fill a gap.
 
 **Result:** 45 versions in VERSIONS.md → 24 releases with user-facing notes → **merged down to 13
 cards** (§9), each ordered by importance to the user (§10) → 35 changes,
@@ -60,8 +65,13 @@ Still absent and worth knowing:
 
 ## 2. Final `ChangeType` list
 
-Each new constant costs an icon mapping in `ChangeTypeIcon.kt`, whose `when` is exhaustive over
-the enum, so this is as short as the copy allows.
+> Historical. The `ChangeType` enum and its `ChangeTypeIcon.kt` mapping are gone: a change now names
+> its icon directly with a Material Symbols ligature in `scripts/release-notes.json`. The constant
+> names below survive only as the record of how these 35 changes were grouped — the icon each one
+> resolved to is what got carried over.
+
+Each new constant cost an icon mapping in an exhaustive `when`, so this list is as short as the copy
+allows.
 
 **11 new constants** (9 from the pipeline, plus `UKRAINE` §1 and `INITIAL_RELEASE` §8):
 
@@ -316,7 +326,8 @@ reintroduce that shape **on purpose**, so the distinction matters:
   the card openly represents the 1.3.0 → 1.4.0 span.
 
 A future reader who moves a change back to its original version will silently undo this. The table
-above is the record; `ReleaseNotes.kt`'s header comment points here.
+above is the record — the authoritative one, since `scripts/release-notes.json` carries no commentary
+and the Firestore documents carry less.
 
 ### Date stretch introduced
 

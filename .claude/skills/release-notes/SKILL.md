@@ -1,6 +1,6 @@
 ---
 name: release-notes
-description: Generate release notes for this app from git history via a release-archaeologist agent fan-out, then an editorial pass that produces user-facing copy for the What's New screen. Use when the user wants release notes, a changelog, "what shipped in version X", to backfill version history, or to update ReleaseNotes.kt after a release. Handles both incremental (since last tag) and full-history bootstrap.
+description: Generate release notes for this app from git history via a release-archaeologist agent fan-out, then an editorial pass that produces user-facing copy for the What's New screen. Use when the user wants release notes, a changelog, "what shipped in version X", to backfill version history, or to publish notes after a release. Handles both incremental (since last tag) and full-history bootstrap.
 ---
 
 # Release notes pipeline
@@ -8,8 +8,10 @@ description: Generate release notes for this app from git history via a release-
 Recovers what actually shipped in each release **from the code**, not from commit messages, and
 turns it into user-facing copy for the app's What's New screen.
 
-Target data model: `shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/domain/releasenotes/ReleaseNotes.kt`
-(`Release` / `Release.Change` / `ChangeType`). UI lives in `presentation/screens/whatsnew/`.
+Target: `scripts/release-notes.json`, published to the `release-notes` Firestore collection with
+`node scripts/publish-release-notes.mjs`. The app fetches it at launch — nothing is compiled in, so
+notes for a shipped version can still be written or fixed. Shape mirrors `Release` / `Release.Change`
+in `domain/releasenotes/Release.kt`; UI lives in `presentation/screens/whatsnew/`.
 
 ## Where output goes
 
@@ -20,7 +22,7 @@ Target data model: `shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/dom
 
 **Throwaway** — `.claude/tmp/release-notes/` (gitignored, see `.gitignore`):
 - `raw/<version>.json` — one release-archaeologist's findings per file
-- `ReleaseNotes.kt.proposed` — staging copy, deleted once applied to the real file
+- `release-notes.json.proposed` — staging copy, deleted once merged into `scripts/release-notes.json`
 
 **Never commit the raw JSON.** It is intermediate scratch: bulky, one file per release, superseded
 the moment the editorial pass runs, and it goes stale the instant anyone re-runs the pipeline. The
@@ -31,7 +33,7 @@ Evidence packs are scratch too: `/tmp/release-packs/*.txt` and `/tmp/ranges.tsv`
 with the Step 3 bash rather than keeping them.
 
 Because the raw JSON is disposable, **nothing durable may reference it by path.** Do not cite
-`raw/<version>.json` in `ReleaseNotes.kt`, in committed docs, or in a commit message — those
+`raw/<version>.json` in `scripts/release-notes.json`, in committed docs, or in a commit message — those
 references dangle the moment the folder is cleaned.
 
 ## RULE 0 — commit messages are not evidence
@@ -163,13 +165,16 @@ Also validate every file parses — a killed agent can leave a truncated write:
 ## Step 5 — editorial pass
 
 One agent, **model: opus**, reads all `raw/*.json` and produces user-facing copy matching
-`Release.Change` (`id`, `type`, `title`, `summary`, `detail`).
+`Release.Change` (`id`, `icon`, `title`, `summary`, `detail`, optional `imageUrl`).
 
 - Drop `maintenance_only` releases entirely — do not pad them.
 - Filter on `user_impact`; `invisible` never reaches a user.
 - Merge entries linked by `related_to` into one user-facing item.
-- `ChangeType` is a fixed enum — map onto existing values, or **propose** new ones for the user to
-  approve. Never invent an enum constant silently.
+- `icon` is a Material Symbols ligature name from fonts.google.com/icons (`"rocket_launch"`,
+  `"bug_report"`). Prefer one already in the `MaterialSymbol` enum in
+  `presentation/ui/MaterialSymbolIcon.kt` — the app falls back to a default symbol for any name it
+  does not know, and the publish script warns about those. Adding an entry to that enum is the fix;
+  verify the ligature is a real Material Symbol first.
 - May suggest a screenshot per entry.
 - **Order changes within a card by importance to the user, not by date.** Reverse-chronological
   ordering is wrong and buries headlines — it once put Perseverance third of five. Rank:
@@ -187,24 +192,24 @@ One agent, **model: opus**, reads all `raw/*.json` and produces user-facing copy
   in, which is indistinguishable from the misattribution bug this pipeline exists to fix, and a
   future reader will otherwise "correct" it back.
 
-## Step 6 — apply, verify, clean up
+## Step 6 — apply, verify, publish, clean up
 
-Three coupled edits — do all three or the build breaks:
+1. Merge the staged proposal into `scripts/release-notes.json` — newest release first, `active: true`.
+   Editing an existing entry is a legitimate fix; the app reads Firestore, so corrections reach users
+   who already updated.
+2. Add any icon ligature the notes use that `MaterialSymbol` lacks
+   (`presentation/ui/MaterialSymbolIcon.kt`). Nothing forces this at compile time any more — an
+   unknown name renders the default symbol — so the publish script's warnings are the check.
 
-1. Add the approved constants to `ChangeType` in `domain/releasenotes/Release.kt`.
-2. Map every one in `presentation/ui/ChangeTypeIcon.kt`. That `when` is **exhaustive**, so the
-   project will not compile until each has an icon — a useful forcing function, not a nuisance.
-   Icons must be existing `MaterialSymbol` entries; the enum is fixed, so add new ligature names to
-   `MaterialSymbolIcon.kt` if nothing fits (verify the name is a real Material Symbol).
-3. Replace `RELEASES` in `domain/releasenotes/ReleaseNotes.kt` from the staged proposal, swapping
-   the proposal banner for a provenance comment.
-
-Verify before any commit:
+Verify, then publish:
 
 ```bash
-./gradlew :shared:compileAndroidMain   # fast compile check
-./gradlew detekt :shared:desktopTest   # lint + shared tests
+node scripts/publish-release-notes.mjs --dry-run   # counts + icon warnings, writes nothing
+./gradlew detekt :shared:desktopTest               # only needed if you touched Kotlin
+node scripts/publish-release-notes.mjs            # one atomic commit of every release
 ```
+
+Publishing is what ships the notes. A release left unpublished shows no What's New dialog at all.
 
 Then delete the scratch — `.claude/tmp/release-notes/`, `/tmp/release-packs/`, `/tmp/ranges.tsv`.
 Keep only the three committed docs. Re-running the pipeline regenerates everything else.
@@ -217,5 +222,6 @@ Keep only the three committed docs. Re-running the pipeline regenerates everythi
   Out: `index.html` (marketing site), `docs/`, `.maestro/`, `graphify-out/`, CI, markdown.
   App Store metadata (privacy manifest, SKAdNetwork) is `internal`.
 - **Never push tags.** Creating local tags is fine; pushing needs explicit user permission.
-- Existing entries in `ReleaseNotes.kt` have been wrong before — it once declared a version
-  `4.2.0` that never shipped, with misdated features. Verify against `VERSIONS.md`, don't trust it.
+- Existing entries in `scripts/release-notes.json` have been wrong before — the list once declared a
+  version `4.2.0` that never shipped, with misdated features. Verify against `VERSIONS.md`, don't
+  trust it. The same goes for what is already live in Firestore.

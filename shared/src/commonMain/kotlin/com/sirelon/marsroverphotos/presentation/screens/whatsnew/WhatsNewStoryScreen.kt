@@ -62,7 +62,9 @@ import com.sirelon.marsroverphotos.presentation.ui.AppIconBox
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.presentation.ui.setStatusBarAppearance
-import com.sirelon.marsroverphotos.presentation.ui.toIcon
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.sirelon.marsroverphotos.presentation.ui.CenteredProgress
+import com.sirelon.marsroverphotos.presentation.ui.materialSymbolOrDefault
 import androidx.compose.runtime.snapshotFlow
 import coil3.compose.AsyncImage
 import com.sirelon.marsroverphotos.presentation.viewmodels.WhatsNewViewModel
@@ -86,9 +88,24 @@ private class ExitLatch {
 fun WhatsNewStoryScreen(version: String, startPage: Int) {
     val navigator = LocalAppNavigator.current
     val viewModel: WhatsNewViewModel = koinViewModel()
-    // Resolved once per version rather than scanned on every recomposition, and outside the
-    // pager's invalidation path.
-    val release = remember(viewModel, version) { viewModel.releaseFor(version) } ?: return
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    // Keyed on the loaded list, not on the ViewModel: the notes arrive from Firestore after the
+    // first composition, and a key that never changes would freeze this at the pre-load null and
+    // leave the story permanently blank.
+    val release = remember(state.releases, version) {
+        state.releases.firstOrNull { it.version == version }
+    }
+    if (release == null) {
+        // Still fetching, or the notes carry nothing for this version — which a restored back-stack
+        // entry or an unpublished release can both produce, so it has to lead somewhere rather than
+        // sit on an empty screen.
+        if (state.isLoading) {
+            CenteredProgress()
+        } else {
+            LaunchedEffect(version) { navigator.goBack() }
+        }
+        return
+    }
     val changes = release.changes
     // A release with no changes has no story: the pager would report 0 pages and every page-indexed
     // read below would be out of bounds.
@@ -494,7 +511,7 @@ private fun StoryPage(
                 Spacer(modifier = Modifier.height(AppSpacing.xl))
             }
             AppIconBox(
-                symbol = change.type.toIcon(),
+                symbol = materialSymbolOrDefault(change.icon),
                 container = colors.onBackground.copy(alpha = 0.15f),
                 tint = colors.onBackground,
                 modifier = Modifier.storyParallax(pageOffset, depth = -0.65f),

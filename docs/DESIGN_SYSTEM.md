@@ -213,6 +213,7 @@ Stable design-system pieces (path = `shared/src/commonMain/kotlin/com/sirelon/ma
 | `AppChip` | `ui/AppChip.kt` | secondaryContainer assist chip. |
 | `AppButton` / `AppOutlinedButton` | `ui/AppButton.kt` | Brand buttons. |
 | `MaterialSymbolIcon` + `MaterialSymbol` | `ui/MaterialSymbolIcon.kt` | Icon font; add glyphs to the enum. Default size `AppSize.iconDefault` (24dp). |
+| `materialSymbolOrDefault()` | `ui/MaterialSymbolIcon.kt` | Resolves a ligature name (`"rocket_launch"`) to a `MaterialSymbol`, falling back to a default. For content that names its own icon — release notes, fetched from Firestore. Never pass a raw name to the font: an unknown ligature renders as literal text. |
 | `AppTopBar` | `ui/AppTopBar.kt` | Shared top app bar with optional subtitle, back handling, and custom nav/action slots. |
 | `AppEmptyState` | `ui/AppEmptyState.kt` | Shared empty/error state with optional alien mascot and action slot. |
 | `AppFloatingActionButton` | `ui/AppFloatingActionButton.kt` | Branded FAB that defaults to the Mars accent (`colorScheme.secondary`). |
@@ -232,8 +233,8 @@ Stable design-system pieces (path = `shared/src/commonMain/kotlin/com/sirelon/ma
 > The row family (`AppRow`, `AppSection`, `AppRowDivider`) composes the general pieces above.
 > Feature-specific rows built on it — `WhatsNewRow` / `ReleaseCard`, which take domain types —
 > live with their screen (`screens/whatsnew/`), not in `ui/`: `ui/` holds general `App*` primitives.
-> Domain→UI mappings for those rows (`ChangeType.toIcon()`) stay in `ui/` — see
-> docs/ARCHITECTURE.md › Domain never imports presentation.
+> Domain→UI mappings for those rows (`materialSymbolOrDefault()`, which resolves the icon name a
+> release note carries) stay in `ui/` — see docs/ARCHITECTURE.md › Domain never imports presentation.
 
 **New `MaterialSymbol` glyphs (Rovers):** `Collections`, `Schedule`, `Event`, `Search` — added to the
 enum in `ui/MaterialSymbolIcon.kt` (the bundled full variable font renders them).

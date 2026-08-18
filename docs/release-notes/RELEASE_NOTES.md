@@ -10,11 +10,11 @@ hang off it through `related_to` merged in. Plus, in seven releases, one **umbre
 umbrella per release. No standalone `minor` item appears on its own. The full 1.0 → 5.0.0 span is
 in scope; nothing was cut by date.
 
-`ChangeType` values marked **(new)** do not exist yet — see
-[EDITORIAL_NOTES.md](EDITORIAL_NOTES.md).
+Change types below were a fixed enum when this document was written; each now maps to a Material
+Symbols icon name in `scripts/release-notes.json` — see [EDITORIAL_NOTES.md](EDITORIAL_NOTES.md).
 Entries marked ⚠️ rest on a medium-confidence finding and need a human check.
 
-24 releases with notes · 35 changes · 7 umbrellas · 11 new `ChangeType` constants.
+24 releases with notes · 35 changes · 7 umbrellas.
 
 > **The shipped list has 13 cards, not 24.** Fourteen thin releases were merged into five denser
 > cards after this document was written; all 35 changes were kept. The sections below are still
