@@ -2,11 +2,13 @@ package com.sirelon.marsroverphotos.presentation.screens.whatsnew
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animate
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,15 +30,26 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.sirelon.marsroverphotos.domain.releasenotes.Release
 import com.sirelon.marsroverphotos.presentation.navigation.LocalAppNavigator
 import com.sirelon.marsroverphotos.presentation.theme.AppMotion
@@ -51,8 +64,11 @@ import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.presentation.ui.setStatusBarAppearance
 import com.sirelon.marsroverphotos.presentation.ui.toIcon
 import androidx.compose.runtime.snapshotFlow
+import coil3.compose.AsyncImage
 import com.sirelon.marsroverphotos.presentation.viewmodels.WhatsNewViewModel
 import kotlin.math.abs
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
@@ -89,6 +105,9 @@ fun WhatsNewStoryScreen(version: String, startPage: Int) {
     // page's leftover fill for a frame before the reset lands.
     val storyProgress = remember { Animatable(firstPage.toFloat()) }
     val screenEnter = remember { Animatable(0f) }
+    var isPaused by remember { mutableStateOf(false) }
+    var dismissOffset by remember { mutableFloatStateOf(0f) }
+    val dismissThresholdPx = with(LocalDensity.current) { 120.dp.toPx() }
 
     // The story paints a forced-dark background under the status bar, so the system icons have to
     // be light for the whole time it is up — otherwise a device on a light system theme draws dark
@@ -120,7 +139,10 @@ fun WhatsNewStoryScreen(version: String, startPage: Int) {
     // moment the pager commits to a new page — same cancel-on-advance behaviour as an
     // LaunchedEffect(targetPage) key, but without invalidating WhatsNewStoryScreen's restart scope.
     LaunchedEffect(pagerState) {
-        snapshotFlow { pagerState.targetPage }.collectLatest { page ->
+        snapshotFlow { pagerState.targetPage to isPaused }.collectLatest { (page, paused) ->
+            if (paused) {
+                awaitCancellation()
+            }
             val position = storyProgress.value
             when {
                 // Skipping ahead — run the segments we're leaving out to full instead of snapping them.
@@ -159,7 +181,47 @@ fun WhatsNewStoryScreen(version: String, startPage: Int) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
+                .graphicsLayer {
+                    translationY = dismissOffset
+                    val progress = (dismissOffset / dismissThresholdPx).coerceIn(0f, 1f)
+                    alpha = 1f - progress * 0.4f
+                }
+                .background(MaterialTheme.colorScheme.background)
+                .pointerInput(Unit) {
+                    var springJob: Job? = null
+                    detectVerticalDragGestures(
+                        onDragStart = { springJob?.cancel() },
+                        onVerticalDrag = { _, delta ->
+                            dismissOffset = (dismissOffset + delta).coerceAtLeast(0f)
+                        },
+                        onDragEnd = {
+                            if (dismissOffset > dismissThresholdPx) {
+                                exit()
+                            } else if (dismissOffset > 0f) {
+                                val startOffset = dismissOffset
+                                springJob = scope.launch {
+                                    animate(
+                                        initialValue = startOffset,
+                                        targetValue = 0f,
+                                        animationSpec = spring(),
+                                    ) { value, _ -> dismissOffset = value }
+                                }
+                            }
+                        },
+                        onDragCancel = {
+                            if (dismissOffset > 0f) {
+                                val startOffset = dismissOffset
+                                springJob = scope.launch {
+                                    animate(
+                                        initialValue = startOffset,
+                                        targetValue = 0f,
+                                        animationSpec = spring(),
+                                    ) { value, _ -> dismissOffset = value }
+                                }
+                            }
+                        },
+                    )
+                },
         ) {
             Column(
                 modifier = Modifier
@@ -224,35 +286,76 @@ fun WhatsNewStoryScreen(version: String, startPage: Int) {
                                 pageOffset = { pagerState.pageOffsetOf(page) },
                             )
 
-                            // 25% left → back, 75% right → forward. clickable rather than a raw
-                            // detectTapGestures so the zones exist in the accessibility tree —
-                            // a screen reader has no other way to reach them. No indication: a
-                            // ripple over half the screen would read as a bug.
+                            // 25% left → back, 75% right → forward.
+                            // semantics provides the accessibility node; detectTapGestures handles
+                            // both pause-on-hold and tap-to-navigate in one gesture handler.
+                            // onLongPress={} arms the platform long-press timer (~500ms) so holds
+                            // longer than that don't fire onTap — the user gets a clean pause with
+                            // no accidental navigation on release.
                             Row(modifier = Modifier.fillMaxSize()) {
                                 Box(
                                     modifier = Modifier
                                         .fillMaxHeight()
                                         .weight(0.25f)
-                                        .invisibleClickable(
-                                            label = "Previous",
-                                            enabled = page > 0,
-                                        ) {
-                                            scope.launch { pagerState.animateScrollToPage(page - 1) }
+                                        .semantics {
+                                            if (page > 0) {
+                                                onClick(label = "Previous") {
+                                                    scope.launch { pagerState.animateScrollToPage(page - 1) }
+                                                    true
+                                                }
+                                            }
+                                        }
+                                        .pointerInput(page) {
+                                            if (page > 0) {
+                                                detectTapGestures(
+                                                    onPress = { _ ->
+                                                        try {
+                                                            isPaused = true
+                                                            tryAwaitRelease()
+                                                        } finally {
+                                                            isPaused = false
+                                                        }
+                                                    },
+                                                    onLongPress = {},
+                                                    onTap = {
+                                                        scope.launch { pagerState.animateScrollToPage(page - 1) }
+                                                    },
+                                                )
+                                            }
                                         },
                                 )
                                 Box(
                                     modifier = Modifier
                                         .fillMaxHeight()
                                         .weight(0.75f)
-                                        .invisibleClickable(
-                                            label = if (page < changes.lastIndex) "Next" else "Close",
-                                        ) {
-                                            val target = page + 1
-                                            if (target < changes.size) {
-                                                scope.launch { pagerState.animateScrollToPage(target) }
-                                            } else {
-                                                exit()
+                                        .semantics {
+                                            onClick(label = if (page < changes.lastIndex) "Next" else "Close") {
+                                                val target = page + 1
+                                                if (target < changes.size) scope.launch { pagerState.animateScrollToPage(target) }
+                                                else exit()
+                                                true
                                             }
+                                        }
+                                        .pointerInput(page) {
+                                            detectTapGestures(
+                                                onPress = { _ ->
+                                                    try {
+                                                        isPaused = true
+                                                        tryAwaitRelease()
+                                                    } finally {
+                                                        isPaused = false
+                                                    }
+                                                },
+                                                onLongPress = {},
+                                                onTap = {
+                                                    val target = page + 1
+                                                    if (target < changes.size) {
+                                                        scope.launch { pagerState.animateScrollToPage(target) }
+                                                    } else {
+                                                        exit()
+                                                    }
+                                                },
+                                            )
                                         },
                                 )
                             }
@@ -285,23 +388,6 @@ fun WhatsNewStoryScreen(version: String, startPage: Int) {
     }
 }
 
-/**
- * A full-bleed tap target with no visual affordance, but with the semantics node an invisible
- * [androidx.compose.foundation.gestures.detectTapGestures] region would not produce.
- */
-@Composable
-private fun Modifier.invisibleClickable(
-    label: String,
-    enabled: Boolean = true,
-    onClick: () -> Unit,
-): Modifier = clickable(
-    interactionSource = remember { MutableInteractionSource() },
-    indication = null,
-    enabled = enabled,
-    onClickLabel = label,
-    onClick = onClick,
-)
-
 /** Signed distance of [page] from the settled position: 0 when centered, ±1 one page away. */
 private fun PagerState.pageOffsetOf(page: Int): Float =
     (currentPage - page) + currentPageOffsetFraction
@@ -311,7 +397,7 @@ private fun PagerState.pageOffsetOf(page: Int): Float =
  *
  * [progress] is an absolute position over all [count] segments (2.4f = segment 2 filled 40%), and a
  * lambda on purpose: reading the running [Animatable] here instead of in the caller's composition
- * keeps the 5s fill in the draw phase, so a frame costs one repaint of this thin strip rather than a
+ * keeps the 10s fill in the draw phase, so a frame costs one repaint of this thin strip rather than a
  * recomposition + relayout of the pager and its page.
  */
 @Composable
@@ -394,6 +480,19 @@ private fun StoryPage(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
+            if (change.imageUrl != null) {
+                AsyncImage(
+                    model = change.imageUrl,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(AppSize.storyImage)
+                        .clip(MaterialTheme.shapes.large)
+                        .storyParallax(pageOffset, depth = -0.5f),
+                )
+                Spacer(modifier = Modifier.height(AppSpacing.xl))
+            }
             AppIconBox(
                 symbol = change.type.toIcon(),
                 container = colors.onBackground.copy(alpha = 0.15f),
