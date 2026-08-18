@@ -30,6 +30,7 @@ val RELEASES: ImmutableList<Release> = persistentListOf(
                 title = "Mission Info",
                 summary = "A richer look at every rover's mission",
                 detail = "Mission Info now opens with a full-width hero image, a scrollable mission timeline, and cameras you can expand one at a time. A Browse Photos button takes you straight into that rover's feed, and the fun fact changes each time you visit. On a wide window the whole screen splits into two panels.",
+                imageUrl = "https://images-assets.nasa.gov/image/PIA25681/PIA25681~medium.jpg",
             ),
             Release.Change(
                 id = "seamless_photo_transitions",
@@ -57,6 +58,7 @@ val RELEASES: ImmutableList<Release> = persistentListOf(
                 title = "Photos Restored",
                 summary = "Curiosity, Spirit and Opportunity are browsable again",
                 detail = "The NASA feed those three rovers relied on stopped answering, which left their photos completely unreachable. They now come straight from NASA's own image archives: Curiosity keeps day-by-day and camera browsing, while Spirit and Opportunity are browsed page by page. One picker handles jumping to a date or to a page, whichever the rover supports.",
+                imageUrl = "https://images-assets.nasa.gov/image/PIA23240/PIA23240~medium.jpg",
             ),
             Release.Change(
                 id = "camera_filters",
@@ -77,6 +79,7 @@ val RELEASES: ImmutableList<Release> = persistentListOf(
                 title = "Mission Info",
                 summary = "Explore each rover's full mission profile",
                 detail = "An info button on any rover card opens a dedicated screen: the mission timeline, total photos and days active, the rover's cameras, and what it was sent to Mars to do. Fun facts about each mission are there too.",
+                imageUrl = "https://images-assets.nasa.gov/image/PIA23624/PIA23624~medium.jpg",
             ),
             Release.Change(
                 id = "home_widget",
@@ -191,6 +194,7 @@ val RELEASES: ImmutableList<Release> = persistentListOf(
                 title = "Perseverance",
                 summary = "NASA's newest rover joins the list",
                 detail = "Perseverance landed in February 2021 and now sits in the rover list alongside Curiosity, Opportunity, Spirit and InSight. Pick it to browse its photos like any other mission.",
+                imageUrl = "https://images-assets.nasa.gov/image/PIA24542/PIA24542~medium.jpg",
             ),
             Release.Change(
                 id = "bottom_navigation",
@@ -259,6 +263,7 @@ val RELEASES: ImmutableList<Release> = persistentListOf(
                 title = "InSight",
                 summary = "NASA's InSight lander joins the list",
                 detail = "InSight sits alongside Curiosity, Opportunity and Spirit and opens a set of its surface images. Its mission numbers on the card are still placeholders for now.",
+                imageUrl = "https://images-assets.nasa.gov/image/PIA22876/PIA22876~medium.jpg",
             ),
             Release.Change(
                 id = "popular",
@@ -326,6 +331,7 @@ val RELEASES: ImmutableList<Release> = persistentListOf(
                 title = "Hello, Mars",
                 summary = "The first release",
                 detail = "Browse real photos taken on the surface of Mars by NASA's rovers. Pick Curiosity, Opportunity or Spirit and scroll through what it saw, day by day.",
+                imageUrl = "https://images-assets.nasa.gov/image/PIA20840/PIA20840~medium.jpg",
             ),
             Release.Change(
                 id = "full_screen_zoom",
@@ -333,6 +339,7 @@ val RELEASES: ImmutableList<Release> = persistentListOf(
                 title = "Full-Screen Photos",
                 summary = "Tap any photo, then pinch to zoom",
                 detail = "Open a photo to fill the screen and pinch to zoom right in on the rocks, dust and rover tracks.",
+                imageUrl = "https://images-assets.nasa.gov/image/PIA19808/PIA19808~medium.jpg",
             ),
             Release.Change(
                 id = "save_and_share",
