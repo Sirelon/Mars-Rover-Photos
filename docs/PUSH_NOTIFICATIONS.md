@@ -57,11 +57,15 @@ Both steps are required before **any** iOS notification is delivered:
 2. **Push Notifications capability** — enable it for the app identifier in the Apple Developer
    portal so the `aps-environment` entitlement signs.
 
-`iosApp.entitlements` sets `aps-environment` to `production`, so devices register with the
-production APNs servers on every build, debug included. A token-based `.p8` key authenticates
-against both environments, so nothing extra is needed to send. If a local device build ever fails
-signing with an entitlement/profile mismatch, the cause is a development provisioning profile
-disagreeing with this value.
+`iosApp.entitlements` sets `aps-environment` to `production`, but under automatic signing the
+provisioning profile wins: a Debug build against a development profile ships a binary signed with
+`development`, and only a distribution profile yields `production`. So the file's value is what
+archives use, not what every build uses — verify with
+`codesign -d --entitlements :- <path>/iosApp.app | plutil -extract aps-environment raw -o - -`
+rather than reading the file.
+
+Either way the send side needs no change: a token-based `.p8` key authenticates against both APNs
+environments, and the Firebase SDK reports which one the device registered with.
 
 Android needs no equivalent step; `androidApp/google-services.json` is committed.
 
