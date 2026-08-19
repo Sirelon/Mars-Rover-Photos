@@ -51,10 +51,17 @@ class AndroidPushNotifications(
         ) == PackageManager.PERMISSION_GRANTED
 
         return when {
-            granted -> PushPermissionStatus.Granted
+            granted -> {
+                // Record the marker on the way past. Permission can be granted without this app
+                // ever prompting — pre-granted by the system, or switched on in system settings —
+                // and without noting that, a later revoke would read back as NotDetermined and
+                // leave the row showing an enabled switch that can never deliver.
+                preferences.setBoolean(KEY_PERMISSION_ASKED, true)
+                PushPermissionStatus.Granted
+            }
             // checkSelfPermission reports DENIED both before the first ask and after a refusal,
-            // and the OS exposes nothing to tell them apart — so the marker below is what
-            // distinguishes "can still prompt" from "prompt is spent".
+            // and the OS exposes nothing to tell them apart — so the marker is what distinguishes
+            // "can still prompt" from "prompt is spent".
             preferences.getBoolean(KEY_PERMISSION_ASKED, false) -> PushPermissionStatus.Denied
             else -> PushPermissionStatus.NotDetermined
         }
