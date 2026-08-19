@@ -145,6 +145,9 @@ fastlane/README.md
 *.ipa
 *.dSYM.zip
 
+# Debug build label — written by agents to identify parallel debug builds; never committed
+androidApp/src/main/assets/debug_label.txt
+
 # Claude Code session artifacts
 .claude/tmp/
 
