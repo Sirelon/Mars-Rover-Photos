@@ -108,6 +108,19 @@ role on the project.
 Android works on an emulator with Play Services. **iOS remote push cannot be tested on the
 simulator** — it never registers with APNs, so a real device is required.
 
+**Background the app before sending.** A push that arrives while the app is frontmost is suppressed
+by design, so a foreground test looks exactly like a delivery failure and proves nothing. On a
+connected device, foregrounding another app is enough:
+
+```bash
+xcrun devicectl device process launch --device <udid> com.apple.Preferences
+```
+
+Two more measurements that look like failures but aren't: FCM returns `200` with a message ID even
+when the topic has no subscribers, and Apple's Push Notifications console only counts pushes that
+reached APNs — so both read as "fine" / "zero" when a subscription was never established. Check its
+**Delivery Log** tab, and set the date range to include today.
+
 Before the first send on a new device, confirm the token round-trip. Debug builds log
 `FCM registration token: …` on subscribe (`AndroidPushNotifications` / `IosPushNotifications`); on
 Android, `adb logcat -s AndroidPushNotifications`. If it logs `No FCM registration token yet`, the

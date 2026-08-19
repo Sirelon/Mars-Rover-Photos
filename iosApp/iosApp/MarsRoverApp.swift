@@ -12,13 +12,14 @@ import UserNotifications
 /// This can't live in a Koin singleton on the Kotlin side: those are created lazily, so the
 /// delegate would first exist when some screen injected it — long after a notification that
 /// cold-launched the app had already been delivered and dropped.
-final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
+final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate, MessagingDelegate {
 
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
         UNUserNotificationCenter.current().delegate = self
+        Messaging.messaging().delegate = self
 
         // APNs issues a device token only in response to registerForRemoteNotifications, and the
         // token does not survive the process — so an already-authorized user has to re-register on
@@ -50,6 +51,15 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
         didFailToRegisterForRemoteNotificationsWithError error: Error
     ) {
         NSLog("APNs registration failed: \(error.localizedDescription)")
+    }
+
+    /// The only safe moment to subscribe to a topic. Asking FCM for a token before APNs has issued
+    /// its device token fails outright ("No APNS token specified before fetching FCM Token") rather
+    /// than waiting, so the app cannot subscribe from the opt-in tap or from launch — both run
+    /// while APNs registration is still in flight. This also fires on token rotation.
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        guard fcmToken != nil else { return }
+        Main_iosKt.onFcmRegistrationTokenAvailable()
     }
 
     /// Matches Android: a push that arrives while the app is open is not shown. Someone already

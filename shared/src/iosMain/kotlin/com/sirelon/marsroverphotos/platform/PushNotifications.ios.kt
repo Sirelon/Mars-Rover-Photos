@@ -74,33 +74,27 @@ class IosPushNotifications : PushNotifications {
     }
 
     /**
-     * Note the GitLive wrapper exposes `subscribeToTopic` as a plain non-suspending call whose
-     * result is discarded, so a failure here is silent — the catch only covers Firebase not being
-     * initialised. Firebase queues a topic operation until an APNs token exists, and the
-     * per-launch re-subscribe in `App.kt` retries regardless.
+     * Call this only once FCM holds a registration token, which in practice means from the app
+     * delegate's `didReceiveRegistrationToken` — see `onFcmRegistrationTokenAvailable` in
+     * `Main.ios.kt`. Calling it earlier is not merely racy, it fails outright (see below).
      */
     override suspend fun setSubscribed(subscribed: Boolean) {
         try {
             if (subscribed) {
+                // getToken() does not wait for APNs — it fails with FCM error 505, "No APNS token
+                // specified before fetching FCM Token", whenever the device token has not arrived
+                // yet. That is why neither the opt-in tap nor app launch can drive the
+                // subscription: both run while APNs registration is still in flight.
+                val token = Firebase.messaging.getToken()
+                if (BuildInfo.isDebug) Logger.d(TAG) { "FCM registration token: $token" }
                 Firebase.messaging.subscribeToTopic(MarsUpdatesTopic)
-                logRegistrationToken()
             } else {
                 Firebase.messaging.unsubscribeFromTopic(MarsUpdatesTopic)
             }
         } catch (e: Exception) {
+            // Reached when there is still no APNs token. Recovery is the delegate callback, which
+            // fires as soon as one exists — not a retry from here.
             Logger.w(TAG) { "Topic subscribed=$subscribed failed: ${e.message}" }
-        }
-    }
-
-    /** Debug-only: the token is what `docs/PUSH_NOTIFICATIONS.md` says to check before a first send. */
-    private suspend fun logRegistrationToken() {
-        if (!BuildInfo.isDebug) return
-        try {
-            val token = Firebase.messaging.getToken()
-            Logger.d(TAG) { "FCM registration token: $token" }
-        } catch (e: Exception) {
-            // Expected until APNs has issued a device token.
-            Logger.w(TAG) { "No FCM registration token yet: ${e.message}" }
         }
     }
 
