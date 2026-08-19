@@ -57,6 +57,12 @@ Both steps are required before **any** iOS notification is delivered:
 2. **Push Notifications capability** — enable it for the app identifier in the Apple Developer
    portal so the `aps-environment` entitlement signs.
 
+`iosApp.entitlements` sets `aps-environment` to `production`, so devices register with the
+production APNs servers on every build, debug included. A token-based `.p8` key authenticates
+against both environments, so nothing extra is needed to send. If a local device build ever fails
+signing with an entitlement/profile mismatch, the cause is a development provisioning profile
+disagreeing with this value.
+
 Android needs no equivalent step; `androidApp/google-services.json` is committed.
 
 **Play Console → Data safety** must declare *Device or other IDs* — the FCM registration token
