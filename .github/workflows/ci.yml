@@ -20,6 +20,8 @@ jobs:
   build:
     name: Build, Test & Lint
     runs-on: macos-latest
+    permissions:
+      contents: write  # required for Gradle dependency graph submission
 
     steps:
       - name: Checkout
@@ -34,15 +36,10 @@ jobs:
       - name: Write local.properties
         run: echo "sdk.dir=$ANDROID_HOME" > local.properties
 
-      - name: Cache Gradle caches
-        uses: actions/cache@v4
+      - name: Setup Gradle (with dependency graph submission)
+        uses: gradle/actions/setup-gradle@v4
         with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts', 'gradle/libs.versions.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+          dependency-graph: generate-and-submit
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
