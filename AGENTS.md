@@ -39,6 +39,21 @@ The app version lives in **one place**: `buildSrc/src/main/kotlin/AppVersion.kt`
 
 Never hand-edit the version in `project.pbxproj` — it is overwritten on the next sync/bump.
 
+## Release notes
+The What's New screens read the `release-notes` Firestore collection, not the app binary, so a
+version's notes can be written or corrected after that build is already on people's phones.
+
+`scripts/release-notes.json` is the authored source of truth (git-reviewed, one entry per release);
+`node scripts/publish-release-notes.mjs` pushes it to Firestore in a single atomic commit and is
+idempotent. Add `--dry-run` to inspect the payload first. It authenticates with Application Default
+Credentials, so `gcloud auth application-default login` must have been run.
+
+Publishing is a step of its own: `bumpVersion` does not do it, and a build whose version has no
+published release shows no What's New dialog at all. Each change names its icon with a Material
+Symbols ligature (`"rocket_launch"`); the script warns for any name missing from the `MaterialSymbol`
+enum, which would silently render the default symbol. Regenerate the JSON with the `release-notes`
+skill.
+
 ## Coding Style & Naming Conventions
 Kotlin files use four-space indentation, `val` first, and explicit visibility for public APIs. Compose functions and classes stay in PascalCase, constants in `UPPER_SNAKE_CASE`, and extension files match their receiver (`ImageRequestExt.kt`). Keep packages cohesive; add a `feature/*` subpackage for new screens. Run `./gradlew detekt` before review instead of hand-tuning formatting.
 
@@ -77,8 +92,9 @@ for reviews and new code:
 - `strings.xml` is still fine to use, and existing `stringResource(Res.string.…)` call sites should stay
   as they are — don't churn them either direction. Reach for a resource when the same copy is genuinely
   shared across several call sites; inline it when it isn't.
-- The same applies to English-language copy on a domain model (`Release.Change.title/summary/detail` in
-  `domain/releasenotes/`). What `domain/` must not hold is a **Compose/UI type** — see the
+- The same applies to English-language copy on a domain model (`Release.Change.title/summary/detail`
+  in `domain/releasenotes/`, filled from Firestore). What `domain/` must not hold is a **Compose/UI
+  type** — see the
   domain-never-imports-presentation rule in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). A `String` is
   not that.
 - Plural/count copy may be built inline (`"$n change${if (n != 1) "s" else ""}"`); no plural resource

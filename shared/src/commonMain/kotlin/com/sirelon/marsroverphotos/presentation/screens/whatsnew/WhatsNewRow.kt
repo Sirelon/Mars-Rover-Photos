@@ -20,7 +20,7 @@ import com.sirelon.marsroverphotos.presentation.ui.AppSection
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.presentation.ui.StatusBadge
-import com.sirelon.marsroverphotos.presentation.ui.toIcon
+import com.sirelon.marsroverphotos.presentation.ui.materialSymbolOrDefault
 import com.sirelon.marsroverphotos.utils.formatDisplayDate
 
 /**
@@ -37,7 +37,7 @@ fun WhatsNewRow(
 ) {
     val colors = MaterialTheme.colorScheme
     AppRow(
-        icon = change.type.toIcon(),
+        icon = materialSymbolOrDefault(change.icon),
         iconContainer = colors.primaryContainer,
         iconTint = colors.onPrimaryContainer,
         label = change.title,

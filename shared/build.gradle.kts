@@ -23,7 +23,7 @@ kotlin {
     android {
         namespace = "com.sirelon.marsroverphotos.shared"
         compileSdk = 37
-        minSdk = 23
+        minSdk = 24
     }
 
     // iOS targets — XCFramework bundles both slices so Xcode picks the right one

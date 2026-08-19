@@ -123,6 +123,9 @@ firebase-analytics-versioned = { module = "com.google.firebase:firebase-analytic
 firebase-crashlytics-versioned = { module = "com.google.firebase:firebase-crashlytics", version.ref = "firebaseCrashlyticsVersion" }
 firebase-firestore-versioned = { module = "com.google.firebase:firebase-firestore", version.ref = "firebaseFirestoreVersion" }
 firebase-messaging-versioned = { module = "com.google.firebase:firebase-messaging", version.ref = "firebaseMessagingVersion" }
+# Empty artifact Guava publishes so its ListenableFuture wins over the `listenablefuture:1.0` stub
+# that androidx.concurrent pulls in. Both declare the same class, which fails duplicate-class checks.
+guava-listenablefuture-empty = { module = "com.google.guava:listenablefuture", version = "9999.0-empty-to-avoid-conflict-with-guava" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 kotlin-test-annotations-common = { module = "org.jetbrains.kotlin:kotlin-test-annotations-common", version.ref = "kotlin" }

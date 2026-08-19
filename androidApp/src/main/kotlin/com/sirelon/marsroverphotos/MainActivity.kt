@@ -61,6 +61,10 @@ class MainActivity : ComponentActivity() {
         // to somewhere the user has already moved on from.
         if (savedInstanceState == null) handleDeepLink(intent)
 
+        val debugLabel = if (BuildConfig.DEBUG) {
+            try { assets.open("debug_label.txt").bufferedReader().readText().trim() } catch (_: Exception) { "" }
+        } else ""
+
         setContent {
             // Expose Compose testTags as resource-ids so UI-test tooling (Maestro) can target
             // elements by id. Propagates to all descendants; negligible runtime cost.
@@ -71,7 +75,8 @@ class MainActivity : ComponentActivity() {
                     onDeepLinkConsumed = { pendingDeepLink = null },
                     onRateApp = ::openStoreListing,
                     appVersion = BuildConfig.VERSION_NAME,
-                    rateAppUrl = "https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}"
+                    rateAppUrl = "https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}",
+                    debugLabel = debugLabel
                 )
             }
         }

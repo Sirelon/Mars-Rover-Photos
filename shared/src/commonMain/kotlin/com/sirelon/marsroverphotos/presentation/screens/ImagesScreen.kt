@@ -1,6 +1,14 @@
 package com.sirelon.marsroverphotos.presentation.screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.DeferredAnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.MutableTransform
+import androidx.compose.animation.core.DeferredTransitionState
+import androidx.compose.animation.core.ExperimentalDeferredTransitionApi
+import androidx.compose.animation.core.animate
+import androidx.compose.animation.core.rememberTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -33,21 +41,25 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigationevent.DirectNavigationEventInput
@@ -58,6 +70,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.presentation.navigation.AppDestination
+import com.sirelon.marsroverphotos.presentation.theme.AppMotion
 import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
 import com.sirelon.marsroverphotos.presentation.ui.AppButton
 import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
@@ -81,6 +94,8 @@ import com.sirelon.marsroverphotos.shared.resources.images_empty_btn
 import com.sirelon.marsroverphotos.shared.resources.images_empty_title
 import com.sirelon.marsroverphotos.utils.nasaImageLargeUrl
 import com.sirelon.marsroverphotos.utils.nasaImageOrigUrl
+import kotlin.math.roundToInt
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.engawapg.lib.zoomable.ScrollGesturePropagation
@@ -92,6 +107,17 @@ import org.koin.compose.viewmodel.koinViewModel
 
 /** Scale past which a photo counts as zoomed in — drives both the full-res swap and the Scale event. */
 private const val ZOOM_THRESHOLD = 1.1f
+
+/**
+ * How far down the viewer content follows the finger, and how much it shrinks, at full
+ * drag-to-dismiss progress. Small on purpose: the content only hints that the gesture landed —
+ * the shared-element flight does the real travel once the pop starts.
+ */
+private const val DISMISS_TRAVEL_FRACTION = 0.12f
+private const val DISMISS_SCALE_DROP = 0.08f
+
+/** Spring-back when a dismiss drag is released short of the threshold. */
+private const val DISMISS_SETTLE_MS = 220
 
 /**
  * Fullscreen image viewer — horizontal pager with pinch-to-zoom, save, share, info sheet.
@@ -235,7 +261,7 @@ private fun ImagesEmptyStatePreview() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalDeferredTransitionApi::class)
 @Composable
 private fun ImagesPagerContent(
     uiEvent: UiEvent?,
@@ -304,32 +330,77 @@ private fun ImagesPagerContent(
         onDispose { navEventDispatcher?.removeInput(backInput) }
     }
 
+    // The same drag also opens a deferred phase on a locally owned transition. NavDisplay still
+    // owns the pop; this transition exists only to carry the manual transform, which the photo's
+    // sharedBounds picks up through the transform modifier local. That keeps the shared element
+    // attached to the content the finger is moving, so the fly-out starts from where the photo
+    // actually is instead of snapping back to its untransformed bounds first.
+    val dismissState = remember { DeferredTransitionState(true) }
+    val dismissTransition = rememberTransition(dismissState)
+    var dismissProgress by remember { mutableFloatStateOf(0f) }
+    val dismissTransform = remember {
+        MutableTransform().apply {
+            update { fullSize ->
+                // dismissProgress is read here, in the layout phase, so scrubbing the gesture
+                // never recomposes the pager.
+                val progress = dismissProgress
+                offset = IntOffset(
+                    x = 0,
+                    y = (progress * fullSize.height * DISMISS_TRAVEL_FRACTION).roundToInt(),
+                )
+                scale = 1f - progress * DISMISS_SCALE_DROP
+                transformOrigin = TransformOrigin.Center
+            }
+        }
+    }
+    val settleScope = rememberCoroutineScope()
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .pointerInput(isCurrentPageZoomed) {
                 if (isCurrentPageZoomed) return@pointerInput
-                // The gesture only scrubs the predictive pop transition — no content
-                // translation, so the shared element flies from its true bounds on release
-                // (translating the content made it jump at the start of the fly-out).
                 // Deliberate thresholds keep a quick flick from slamming the transition.
                 val dismissThresholdPx = size.height * 0.18f
                 val fullProgressPx = size.height * 0.4f
                 var dragOffset = 0f
                 var backDispatched = false
+                var settleJob: Job? = null
+
+                // Runs the content back to rest when a drag is released short of the threshold,
+                // then closes the deferred phase.
+                fun settleBack() {
+                    settleJob = settleScope.launch {
+                        animate(
+                            initialValue = dismissProgress,
+                            targetValue = 0f,
+                            animationSpec = tween(DISMISS_SETTLE_MS, easing = AppMotion.Emphasized),
+                        ) { value, _ -> dismissProgress = value }
+                        dismissState.animateTo(true)
+                    }
+                }
+
                 detectVerticalDragGestures(
-                    onDragStart = { dragOffset = 0f },
+                    onDragStart = {
+                        settleJob?.cancel()
+                        dragOffset = 0f
+                    },
                     onDragEnd = {
                         if (dragOffset > dismissThresholdPx) {
+                            // Leave the deferred phase open: the content holds its dragged
+                            // position while NavDisplay pops and the shared element flies from
+                            // there. The screen is disposed a moment later either way.
                             if (backDispatched) backInput.backCompleted() else onBack()
-                        } else if (backDispatched) {
-                            backInput.backCancelled()
+                        } else {
+                            if (backDispatched) backInput.backCancelled()
+                            settleBack()
                         }
                         backDispatched = false
                         dragOffset = 0f
                     },
                     onDragCancel = {
                         if (backDispatched) backInput.backCancelled()
+                        settleBack()
                         backDispatched = false
                         dragOffset = 0f
                     },
@@ -338,18 +409,16 @@ private fun ImagesPagerContent(
                         if (dragAmount > 0f || dragOffset > 0f) {
                             change.consume()
                             dragOffset = (dragOffset + dragAmount).coerceAtLeast(0f)
+                            val progress = (dragOffset / fullProgressPx).coerceIn(0f, 1f)
+                            if (dismissProgress == 0f && progress > 0f) dismissState.defer(false)
+                            dismissProgress = progress
                             if (navEventDispatcher != null) {
                                 if (!backDispatched && dragOffset > 0f) {
                                     backDispatched = true
                                     backInput.backStarted(NavigationEvent())
                                 }
                                 if (backDispatched) {
-                                    backInput.backProgressed(
-                                        NavigationEvent(
-                                            progress = (dragOffset / fullProgressPx)
-                                                .coerceIn(0f, 1f),
-                                        )
-                                    )
+                                    backInput.backProgressed(NavigationEvent(progress = progress))
                                 }
                             }
                         }
@@ -357,17 +426,27 @@ private fun ImagesPagerContent(
                 )
             }
     ) {
-        ImagesPager(
-            pagerState = pagerState,
-            pagingItems = pagingItems,
-            hideUi = hideUi,
-            favoriteOverrides = favoriteOverrides,
-            favoriteFlies = favoriteFlies,
-            onTap = onTap,
-            onFavoriteClick = onFavoriteClick,
-            onZoomed = onZoomed,
-            onScaleChange = { page, scale -> pageScales[page] = scale },
-        )
+        // The viewer never leaves through this transition — NavDisplay's pop owns that — so
+        // there is nothing to enter or exit. Only the deferred transform is in play.
+        dismissTransition.DeferredAnimatedVisibility(
+            visible = { it },
+            modifier = Modifier.fillMaxSize(),
+            enter = EnterTransition.None,
+            exit = ExitTransition.None,
+            mutableTransform = dismissTransform,
+        ) {
+            ImagesPager(
+                pagerState = pagerState,
+                pagingItems = pagingItems,
+                hideUi = hideUi,
+                favoriteOverrides = favoriteOverrides,
+                favoriteFlies = favoriteFlies,
+                onTap = onTap,
+                onFavoriteClick = onFavoriteClick,
+                onZoomed = onZoomed,
+                onScaleChange = { page, scale -> pageScales[page] = scale },
+            )
+        }
 
         OnEvent(uiEvent = uiEvent)
 

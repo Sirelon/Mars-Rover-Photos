@@ -3,21 +3,23 @@ package com.sirelon.marsroverphotos.domain.releasenotes
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.datetime.LocalDate
 
-enum class ChangeType {
-    MISSION_INFO, MULTIPLATFORM, OFFLINE_CACHE,
-    FAVORITES, POPULAR, REDESIGN,
-    BROWSING, BUG_FIX, FACTS, INITIAL_RELEASE, NAVIGATION,
-    NEW_ROVER, PHOTO_VIEWER, SAVE_PHOTO, THEMING, UKRAINE, WIDGET,
-}
-
 data class Release(
     val version: String,
     val date: LocalDate,
     val changes: ImmutableList<Change>,
 ) {
+    /**
+     * One user-facing entry in a release.
+     *
+     * [icon] is a Material Symbols ligature name (`"rocket_launch"`, `"bug_report"`) as published on
+     * fonts.google.com/icons, kept as a plain [String] so `domain/` stays free of Compose-facing
+     * types. The UI resolves it with `materialSymbolOrDefault`, which falls back to a default symbol
+     * for a name this build does not know — notes are authored remotely, so an icon name can arrive
+     * that this version of the app has never heard of.
+     */
     data class Change(
         val id: String,
-        val type: ChangeType,
+        val icon: String,
         val title: String,
         val summary: String,
         val detail: String? = null,

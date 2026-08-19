@@ -1,24 +1,35 @@
 package com.sirelon.marsroverphotos.presentation
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.input.pointer.pointerInput
 import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
 import coil3.memory.MemoryCache
 import com.sirelon.marsroverphotos.domain.settings.AppSettings
 import com.sirelon.marsroverphotos.domain.settings.Theme
+import com.sirelon.marsroverphotos.platform.BuildInfo
 import com.sirelon.marsroverphotos.presentation.navigation.AboutCallbacks
 import com.sirelon.marsroverphotos.presentation.navigation.AppNavigation
 import com.sirelon.marsroverphotos.presentation.navigation.DeepLink
 import com.sirelon.marsroverphotos.presentation.navigation.LocalAboutCallbacks
 import com.sirelon.marsroverphotos.platform.PushNotifications
+import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
 import com.sirelon.marsroverphotos.presentation.theme.MarsRoverPhotosTheme
 import com.sirelon.marsroverphotos.presentation.theme.isSystemInDarkTheme
 import com.sirelon.marsroverphotos.presentation.theme.supportsDynamicColor
@@ -34,7 +45,8 @@ fun App(
     onDeepLinkConsumed: (() -> Unit)? = null,
     onRateApp: () -> Unit = {},
     appVersion: String = "",
-    rateAppUrl: String = ""
+    rateAppUrl: String = "",
+    debugLabel: String = ""
 ) {
     // Keep the in-memory image cache large enough that the fullscreen viewer's big bitmaps don't
     // evict the list/grid thumbnails. The list screens are disposed while the viewer is on top (a
@@ -81,17 +93,25 @@ fun App(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            CompositionLocalProvider(
-                LocalAboutCallbacks provides AboutCallbacks(
-                    onRateApp = onRateApp,
-                    appVersion = appVersion,
-                    rateAppUrl = rateAppUrl
-                )
-            ) {
-                AppContent(
-                    deepLink = deepLink,
-                    onDeepLinkConsumed = onDeepLinkConsumed
-                )
+            Box(modifier = Modifier.fillMaxSize()) {
+                CompositionLocalProvider(
+                    LocalAboutCallbacks provides AboutCallbacks(
+                        onRateApp = onRateApp,
+                        appVersion = appVersion,
+                        rateAppUrl = rateAppUrl
+                    )
+                ) {
+                    AppContent(
+                        deepLink = deepLink,
+                        onDeepLinkConsumed = onDeepLinkConsumed
+                    )
+                }
+                if (BuildInfo.isDebug && debugLabel.isNotBlank()) {
+                    DebugBuildLabel(
+                        label = debugLabel,
+                        modifier = Modifier.align(Alignment.TopEnd)
+                    )
+                }
             }
         }
     }
@@ -106,5 +126,24 @@ private fun AppContent(
         modifier = Modifier.fillMaxSize(),
         deepLink = deepLink,
         onDeepLinkConsumed = onDeepLinkConsumed
+    )
+}
+
+@Composable
+private fun DebugBuildLabel(label: String, modifier: Modifier = Modifier) {
+    val bgColor = MaterialTheme.colorScheme.errorContainer
+    val textColor = MaterialTheme.colorScheme.onErrorContainer
+    Text(
+        text = label,
+        style = MaterialTheme.typography.labelSmall,
+        color = textColor,
+        maxLines = 1,
+        modifier = modifier
+            .statusBarsPadding()
+            .padding(end = AppSpacing.sm, top = AppSpacing.xs)
+            .pointerInput(Unit) {}
+            .clip(CircleShape)
+            .drawBehind { drawRect(bgColor.copy(alpha = 0.9f)) }
+            .padding(horizontal = AppSpacing.sm, vertical = AppSpacing.xs)
     )
 }
