@@ -19,6 +19,19 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
         UNUserNotificationCenter.current().delegate = self
+
+        // APNs issues a device token only in response to registerForRemoteNotifications, and the
+        // token does not survive the process — so an already-authorized user has to re-register on
+        // every launch. Skipping this would leave Messaging.apnsToken nil from the second launch
+        // onward, which is also what repairs a token lost to a backup restore or reinstall.
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            switch settings.authorizationStatus {
+            case .authorized, .provisional, .ephemeral:
+                DispatchQueue.main.async { application.registerForRemoteNotifications() }
+            default:
+                break
+            }
+        }
         return true
     }
 

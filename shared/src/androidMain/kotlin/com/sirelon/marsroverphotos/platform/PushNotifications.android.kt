@@ -95,17 +95,34 @@ class AndroidPushNotifications(
         return if (granted) PushPermissionStatus.Granted else PushPermissionStatus.Denied
     }
 
+    /**
+     * Note the GitLive wrapper exposes `subscribeToTopic` as a plain non-suspending call that
+     * discards the underlying `Task`, so a network or Play Services failure is silent — the catch
+     * here only covers Firebase not being initialised. The per-launch re-subscribe in `App.kt` is
+     * what actually makes an offline attempt eventually stick.
+     */
     override suspend fun setSubscribed(subscribed: Boolean) {
         if (subscribed) ensureChannelExists()
         try {
             if (subscribed) {
                 Firebase.messaging.subscribeToTopic(MarsUpdatesTopic)
+                logRegistrationToken()
             } else {
                 Firebase.messaging.unsubscribeFromTopic(MarsUpdatesTopic)
             }
         } catch (e: Exception) {
-            // Play Services missing or offline. The startup re-subscribe covers the next launch.
             Logger.w(TAG) { "Topic subscribed=$subscribed failed: ${e.message}" }
+        }
+    }
+
+    /** Debug-only: the token is what `docs/PUSH_NOTIFICATIONS.md` says to check before a first send. */
+    private suspend fun logRegistrationToken() {
+        if (!BuildInfo.isDebug) return
+        try {
+            val token = Firebase.messaging.getToken()
+            Logger.d(TAG) { "FCM registration token: $token" }
+        } catch (e: Exception) {
+            Logger.w(TAG) { "No FCM registration token yet: ${e.message}" }
         }
     }
 

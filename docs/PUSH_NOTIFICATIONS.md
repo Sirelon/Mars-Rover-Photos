@@ -98,10 +98,16 @@ role on the project.
 Android works on an emulator with Play Services. **iOS remote push cannot be tested on the
 simulator** — it never registers with APNs, so a real device is required.
 
-Before the first send on a new device, confirm the token round-trip: the app logs the FCM token
-after subscribing, and `Messaging.messaging().apnsToken` must be non-nil. Without that check, a
-failed delivery is indistinguishable between a missing APNs key, a missing entitlement, and a token
-that never reached FCM.
+Before the first send on a new device, confirm the token round-trip. Debug builds log
+`FCM registration token: …` on subscribe (`AndroidPushNotifications` / `IosPushNotifications`); on
+Android, `adb logcat -s AndroidPushNotifications`. If it logs `No FCM registration token yet`, the
+device has no APNs/registration token and nothing will be delivered. Without that check, a failed
+delivery is indistinguishable between a missing APNs key, a missing entitlement, and a token that
+never reached FCM.
+
+Note the GitLive wrapper discards the result of `subscribeToTopic`, so a failed subscription is not
+observable in-app. `App.kt` re-subscribes on every launch, which is what makes an attempt made
+offline eventually stick.
 
 ## Troubleshooting
 

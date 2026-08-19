@@ -25,8 +25,9 @@
     <string name="favorite_empty_title">No favourite photos yet. \nYou can save any photos which you like. \nJust mark them as "favourite".</string>
 
     <!-- Notifications -->
+    <!-- Read by AndroidManifest's default_notification_channel_id; the channel itself is created
+         in AndroidPushNotifications, which must use the same id. -->
     <string name="notification_channel_id" translatable="false">mars_updates</string>
-    <string name="notification_channel_name">Mars Updates</string>
 
     <!-- Navigation labels -->
     <string name="nav_rovers">Rovers</string>

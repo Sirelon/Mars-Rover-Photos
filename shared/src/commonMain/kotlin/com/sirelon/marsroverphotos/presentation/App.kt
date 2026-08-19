@@ -54,10 +54,11 @@ fun App(
     val appSettings: AppSettings = koinInject()
     val pushNotifications: PushNotifications = koinInject()
 
-    // Re-assert the topic subscription on every launch. It is idempotent, and it repairs the one
-    // case the toggle alone cannot: an iOS install restored from a device backup brings the
-    // "enabled" preference back while the APNs token and its topic mapping do not come with it,
-    // leaving the setting on and nothing arriving.
+    // Re-assert the topic subscription on every launch. Topic membership is tied to the FCM
+    // registration token, which a reinstall or a restore-from-backup replaces while the "enabled"
+    // preference comes back — so without this the setting reads on and nothing ever arrives.
+    // Idempotent, and it pairs with the per-launch APNs re-registration in the iOS app delegate:
+    // that supplies the token this subscription needs.
     LaunchedEffect(Unit) {
         if (appSettings.notificationsEnabled) pushNotifications.setSubscribed(true)
     }

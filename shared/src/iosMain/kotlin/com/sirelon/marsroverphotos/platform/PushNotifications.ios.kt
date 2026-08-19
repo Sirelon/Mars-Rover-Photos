@@ -73,17 +73,34 @@ class IosPushNotifications : PushNotifications {
         return if (granted) PushPermissionStatus.Granted else PushPermissionStatus.Denied
     }
 
+    /**
+     * Note the GitLive wrapper exposes `subscribeToTopic` as a plain non-suspending call whose
+     * result is discarded, so a failure here is silent — the catch only covers Firebase not being
+     * initialised. Firebase queues a topic operation until an APNs token exists, and the
+     * per-launch re-subscribe in `App.kt` retries regardless.
+     */
     override suspend fun setSubscribed(subscribed: Boolean) {
         try {
             if (subscribed) {
                 Firebase.messaging.subscribeToTopic(MarsUpdatesTopic)
+                logRegistrationToken()
             } else {
                 Firebase.messaging.unsubscribeFromTopic(MarsUpdatesTopic)
             }
         } catch (e: Exception) {
-            // Typically "no APNs token yet". Firebase retries pending topic operations once the
-            // token lands, and the startup re-subscribe covers the next launch regardless.
             Logger.w(TAG) { "Topic subscribed=$subscribed failed: ${e.message}" }
+        }
+    }
+
+    /** Debug-only: the token is what `docs/PUSH_NOTIFICATIONS.md` says to check before a first send. */
+    private suspend fun logRegistrationToken() {
+        if (!BuildInfo.isDebug) return
+        try {
+            val token = Firebase.messaging.getToken()
+            Logger.d(TAG) { "FCM registration token: $token" }
+        } catch (e: Exception) {
+            // Expected until APNs has issued a device token.
+            Logger.w(TAG) { "No FCM registration token yet: ${e.message}" }
         }
     }
 

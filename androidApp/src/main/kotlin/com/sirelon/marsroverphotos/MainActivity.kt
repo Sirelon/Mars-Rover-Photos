@@ -56,8 +56,10 @@ class MainActivity : ComponentActivity() {
 
         gdprHelper.init()
 
-        // Handle deep link if present
-        handleDeepLink(intent)
+        // Only on a fresh start. On Activity recreation (rotation isn't in configChanges) Nav3
+        // restores the back stack, so re-reading the launch intent would navigate a second time
+        // to somewhere the user has already moved on from.
+        if (savedInstanceState == null) handleDeepLink(intent)
 
         setContent {
             // Expose Compose testTags as resource-ids so UI-test tooling (Maestro) can target
@@ -87,6 +89,9 @@ class MainActivity : ComponentActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        // Replace the intent this Activity was started with, so a later recreation doesn't fall
+        // back to the stale launch intent.
+        setIntent(intent)
         handleDeepLink(intent)
     }
 
