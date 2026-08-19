@@ -2,7 +2,7 @@
 # Core
 kotlin = "2.4.10"
 androidGradlePlugin = "9.3.1"
-ksp = "2.3.10"
+ksp = "2.3.11"
 
 # Compose Multiplatform
 # https://github.com/JetBrains/compose-multiplatform/releases
