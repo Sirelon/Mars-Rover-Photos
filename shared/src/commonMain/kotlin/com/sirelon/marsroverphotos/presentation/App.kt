@@ -10,6 +10,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
@@ -27,6 +28,7 @@ import com.sirelon.marsroverphotos.presentation.navigation.AboutCallbacks
 import com.sirelon.marsroverphotos.presentation.navigation.AppNavigation
 import com.sirelon.marsroverphotos.presentation.navigation.DeepLink
 import com.sirelon.marsroverphotos.presentation.navigation.LocalAboutCallbacks
+import com.sirelon.marsroverphotos.platform.PushNotifications
 import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
 import com.sirelon.marsroverphotos.presentation.theme.MarsRoverPhotosTheme
 import com.sirelon.marsroverphotos.presentation.theme.isSystemInDarkTheme
@@ -62,6 +64,17 @@ fun App(
     }
 
     val appSettings: AppSettings = koinInject()
+    val pushNotifications: PushNotifications = koinInject()
+
+    // Re-assert the topic subscription on every launch. Topic membership is tied to the FCM
+    // registration token, which a reinstall or a restore-from-backup replaces while the "enabled"
+    // preference comes back — so without this the setting reads on and nothing ever arrives.
+    // Idempotent, and it pairs with the per-launch APNs re-registration in the iOS app delegate:
+    // that supplies the token this subscription needs.
+    LaunchedEffect(Unit) {
+        if (appSettings.notificationsEnabled) pushNotifications.setSubscribed(true)
+    }
+
     val theme by appSettings.themeFlow.collectAsStateWithLifecycle()
     val systemDarkTheme = isSystemInDarkTheme()
     val dynamicColor = supportsDynamicColor()

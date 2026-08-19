@@ -61,7 +61,21 @@ Build the XCFramework manually first:
 
 ### SPM packages do not resolve
 
-In Xcode, run `File -> Packages -> Resolve Package Versions`.
+In Xcode, run `File -> Packages -> Resolve Package Versions`, or from the command line:
+
+```bash
+xcodebuild -resolvePackageDependencies -project iosApp/iosApp.xcodeproj -scheme iosApp
+```
+
+### `error: Synthetic project regenerated`
+
+Emitted by `:shared:generateSyntheticLinkageSwiftPMImportProjectForEmbedAndSignLinkage` after a new
+GitLive dependency is added to `iosMain`: the plugin rewrites
+`iosApp/KotlinMultiplatformLinkedPackage` to add a subpackage for it, and the build stops until
+packages are resolved again. Resolve as above, then rebuild.
+
+That directory is **tracked**, so commit the regenerated `Package.swift` and new `subpackages/`
+entry along with the Gradle change — otherwise the iOS build fails for everyone else.
 
 ### `GoogleService-Info.plist` missing
 

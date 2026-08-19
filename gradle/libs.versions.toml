@@ -65,6 +65,9 @@ firebaseBom = "34.17.0"
 firebaseAnalyticsVersion = "23.2.0"
 firebaseCrashlyticsVersion = "20.1.0"
 firebaseFirestoreVersion = "26.5.0"
+# Matches firebase-bom 34.17.0. The GitLive Android artifact depends on firebase-messaging with no
+# version of its own, so the shared module has to supply one.
+firebaseMessagingVersion = "25.1.1"
 
 # Testing
 
@@ -113,10 +116,13 @@ firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 gitlive-firebase-analytics = { module = "dev.gitlive:firebase-analytics", version.ref = "gitliveFirebase" }
 gitlive-firebase-crashlytics = { module = "dev.gitlive:firebase-crashlytics", version.ref = "gitliveFirebase" }
 gitlive-firebase-firestore = { module = "dev.gitlive:firebase-firestore", version.ref = "gitliveFirebase" }
+# Cloud Messaging — Android + iOS source sets only; the JVM actual throws NotImplementedError.
+gitlive-firebase-messaging = { module = "dev.gitlive:firebase-messaging", version.ref = "gitliveFirebase" }
 # Firebase with explicit versions (for shared module without BOM)
 firebase-analytics-versioned = { module = "com.google.firebase:firebase-analytics", version.ref = "firebaseAnalyticsVersion" }
 firebase-crashlytics-versioned = { module = "com.google.firebase:firebase-crashlytics", version.ref = "firebaseCrashlyticsVersion" }
 firebase-firestore-versioned = { module = "com.google.firebase:firebase-firestore", version.ref = "firebaseFirestoreVersion" }
+firebase-messaging-versioned = { module = "com.google.firebase:firebase-messaging", version.ref = "firebaseMessagingVersion" }
 # Empty artifact Guava publishes so its ListenableFuture wins over the `listenablefuture:1.0` stub
 # that androidx.concurrent pulls in. Both declare the same class, which fails duplicate-class checks.
 guava-listenablefuture-empty = { module = "com.google.guava:listenablefuture", version = "9999.0-empty-to-avoid-conflict-with-guava" }

@@ -130,10 +130,14 @@ kotlin {
             implementation(libs.firebase.analytics.versioned)
             implementation(libs.firebase.crashlytics.versioned)
             implementation(libs.firebase.firestore.versioned)
+            implementation(libs.firebase.messaging.versioned)
 
             // GitLive Firebase KMP (analytics + crashlytics — Android + iOS only)
             implementation(libs.gitlive.firebase.analytics)
             implementation(libs.gitlive.firebase.crashlytics)
+            // Cloud Messaging stays out of commonMain: its JVM actual throws NotImplementedError,
+            // so Desktop must reach PushNotifications through NoOpPushNotifications instead.
+            implementation(libs.gitlive.firebase.messaging)
 
             // AndroidX
             implementation(libs.androidx.ktx)
@@ -152,6 +156,8 @@ kotlin {
             // GitLive Firebase KMP (analytics + crashlytics — Android + iOS only)
             implementation(libs.gitlive.firebase.analytics)
             implementation(libs.gitlive.firebase.crashlytics)
+            // Requires the FirebaseMessaging SPM product on the iOS app target — see iosApp/SETUP.md.
+            implementation(libs.gitlive.firebase.messaging)
         }
 
         // Desktop-specific dependencies

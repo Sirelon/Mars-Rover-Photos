@@ -19,7 +19,13 @@ class AppSettings(
         const val KEY_SHOW_FACTS = "showFacts"
         const val KEY_SHOW_CAMERA_NAME = "showCameraName"
         const val KEY_LAST_SEEN_VERSION = "lastSeenVersion"
+        const val KEY_NOTIFICATIONS_ENABLED = "notificationsEnabled"
+        const val KEY_NOTIFICATION_OPT_IN_PENDING = "notificationOptInPending"
     }
+
+    private val _notificationsEnabledFlow =
+        MutableStateFlow(preferences.getBoolean(KEY_NOTIFICATIONS_ENABLED, false))
+    val notificationsEnabledFlow: StateFlow<Boolean> = _notificationsEnabledFlow.asStateFlow()
 
     private val _showFactsFlow = MutableStateFlow(preferences.getBoolean(KEY_SHOW_FACTS, true))
     val showFactsFlow: StateFlow<Boolean> = _showFactsFlow.asStateFlow()
@@ -62,6 +68,32 @@ class AppSettings(
             preferences.setBoolean(KEY_GRID_VIEW, value)
             _gridViewFlow.value = value
         }
+
+    /**
+     * Whether the user has opted in to push notifications.
+     *
+     * Tracks the user's *intent*, which is not the same as OS authorization — permission can be
+     * revoked in system settings without the app being told. Read it together with
+     * [com.sirelon.marsroverphotos.platform.PushNotifications.permissionStatus] rather than alone.
+     */
+    var notificationsEnabled: Boolean
+        get() = preferences.getBoolean(KEY_NOTIFICATIONS_ENABLED, false)
+        set(value) {
+            preferences.setBoolean(KEY_NOTIFICATIONS_ENABLED, value)
+            _notificationsEnabledFlow.value = value
+        }
+
+    /**
+     * Set while an opt-in is waiting on the OS permission dialog, cleared once the answer is known.
+     *
+     * The dialog outlives the Activity — rotation recreates it, and the system can kill the process
+     * outright — either of which drops the result callback after the user has already granted
+     * permission. Finding this still set alongside a granted status is what tells an interrupted
+     * opt-in apart from a deliberate opt-out, which otherwise look identical.
+     */
+    var notificationOptInPending: Boolean
+        get() = preferences.getBoolean(KEY_NOTIFICATION_OPT_IN_PENDING, false)
+        set(value) = preferences.setBoolean(KEY_NOTIFICATION_OPT_IN_PENDING, value)
 
     var lastSeenVersion: String?
         get() = preferences.getString(KEY_LAST_SEEN_VERSION, "").takeIf { it.isNotEmpty() }

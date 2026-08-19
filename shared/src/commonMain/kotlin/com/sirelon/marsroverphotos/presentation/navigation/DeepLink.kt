@@ -8,4 +8,10 @@ sealed class DeepLink {
     data class Photo(val id: Long) : DeepLink()
     /** Navigate directly to an image by its String ID (e.g. from the home-screen widget). */
     data class Image(val id: String) : DeepLink()
+
+    /**
+     * Open the release notes: the story view for [version], or the full version list when
+     * [version] is null or this build ships no notes for it.
+     */
+    data class WhatsNew(val version: String? = null) : DeepLink()
 }

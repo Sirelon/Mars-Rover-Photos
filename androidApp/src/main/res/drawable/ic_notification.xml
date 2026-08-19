@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Status-bar notification icon. Android renders only the alpha channel of this drawable, so it
+    must stay a flat silhouette on a transparent background — any filled backdrop shows up as a
+    white square in the status bar.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Camera head, mast and chassis. -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M9,4 H15 V6 H9 Z M11,6 H13 V11 H11 Z M4,11 H20 V16 H4 Z" />
+    <!-- Wheels. -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M7,16 A2,2 0 1,0 7,20 A2,2 0 1,0 7,16 Z M17,16 A2,2 0 1,0 17,20 A2,2 0 1,0 17,16 Z" />
+</vector>

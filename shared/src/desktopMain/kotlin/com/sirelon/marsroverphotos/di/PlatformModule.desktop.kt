@@ -7,6 +7,8 @@ import com.sirelon.marsroverphotos.platform.AppReview
 import com.sirelon.marsroverphotos.platform.DesktopTracker
 import com.sirelon.marsroverphotos.platform.FirebaseAnalytics
 import com.sirelon.marsroverphotos.platform.NoOpAppReview
+import com.sirelon.marsroverphotos.platform.NoOpPushNotifications
+import com.sirelon.marsroverphotos.platform.PushNotifications
 import com.sirelon.marsroverphotos.platform.FirebasePhotosImpl
 import com.sirelon.marsroverphotos.platform.IFirebasePhotos
 import com.sirelon.marsroverphotos.platform.ImageOperations
@@ -54,4 +56,8 @@ val platformModule = module {
 
     // In-app review — no-op on desktop (caller falls back to store URL)
     single<AppReview> { NoOpAppReview() }
+
+    // Push notifications — no-op on desktop; the GitLive messaging JVM actual is unimplemented,
+    // so this target must never reach it.
+    single<PushNotifications> { NoOpPushNotifications() }
 }

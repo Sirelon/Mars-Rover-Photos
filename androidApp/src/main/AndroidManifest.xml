@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:name=".MarsRoverApplication"
@@ -45,6 +46,23 @@
                     android:scheme="marsrover"
                     android:host="photo"
                     android:pathPattern="/.*" />
+
+            </intent-filter>
+
+            <!--
+                whatsnew needs its own filter. Android pools the <data> attributes of a filter
+                rather than pairing them per tag, so the "/.*" above would apply here too and the
+                path-less marsrover://whatsnew would never match.
+            -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- marsrover://whatsnew and marsrover://whatsnew/{version} -->
+                <data
+                    android:scheme="marsrover"
+                    android:host="whatsnew" />
             </intent-filter>
 
             <!-- Web deep links (optional - for future web app) -->
@@ -92,6 +110,21 @@
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="@string/ad_application_id" />
+
+        <!--
+            Defaults the FCM SDK uses when it renders an incoming notification. The channel named
+            here is created by AndroidPushNotifications on opt-in — FCM does not create it, and
+            messages fall back to a generic channel if it is missing.
+        -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_notification" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/notification_accent" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/notification_channel_id" />
 
         <property
             android:name="android.adservices.AD_SERVICES_CONFIG"

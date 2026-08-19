@@ -201,6 +201,21 @@ fun AppNavigation(
                     selectedId = target.id
                 )
             )
+
+            // A push can name a version this build ships no notes for (an older install being
+            // told about a newer release); the full list is the honest landing spot for that.
+            // Routed on the URI alone, without waiting to see whether the notes carry this version.
+            // WhatsNewStoryScreen already resolves the release once Firestore answers, shows a
+            // spinner until then, and leaves if there is nothing to show — and a suspend here is
+            // worse than redundant: it gets cancelled by the adaptive-layout switch on first render,
+            // so a cold launch from a notification tap would navigate nowhere at all.
+            is DeepLink.WhatsNew -> navigator.navigate(
+                if (target.version != null) {
+                    AppDestination.WhatsNewStory(target.version)
+                } else {
+                    AppDestination.AllVersions
+                }
+            )
         }
         onDeepLinkConsumed?.invoke()
     }

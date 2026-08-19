@@ -160,3 +160,7 @@ graphify-out/.graphify_*
 graphify-out/cost.json
 graphify-out/*-callflow.html
 graphify-out/[0-9][0-9][0-9][0-9]-*/
+
+# macOS log archives from `log collect` (can be gigabytes)
+system_logs.logarchive/
+*.logarchive/

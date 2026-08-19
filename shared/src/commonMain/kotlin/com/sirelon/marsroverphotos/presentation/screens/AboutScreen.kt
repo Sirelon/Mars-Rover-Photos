@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
 import coil3.SingletonImageLoader
@@ -42,6 +43,7 @@ import coil3.compose.LocalPlatformContext
 import com.sirelon.marsroverphotos.domain.settings.Theme
 import com.sirelon.marsroverphotos.platform.AppReview
 import com.sirelon.marsroverphotos.platform.BuildInfo
+import com.sirelon.marsroverphotos.platform.PushPermissionStatus
 import com.sirelon.marsroverphotos.presentation.navigation.AppDestination
 import com.sirelon.marsroverphotos.presentation.navigation.LocalAboutCallbacks
 import com.sirelon.marsroverphotos.presentation.navigation.LocalAppNavigator
@@ -82,11 +84,25 @@ fun AboutScreen() {
     val coilContext = LocalPlatformContext.current
     val currentTheme by viewModel.themeFlow.collectAsStateWithLifecycle()
     val showFacts by viewModel.showFactsFlow.collectAsStateWithLifecycle()
+    val notificationsEnabled by viewModel.notificationsEnabledFlow.collectAsStateWithLifecycle()
+    val pushStatus by viewModel.pushStatus.collectAsStateWithLifecycle()
+
+    // Authorization can be revoked in system settings while the app is backgrounded, so re-read it
+    // whenever this screen comes back into composition rather than trusting the cached value.
+    LifecycleResumeEffect(Unit) {
+        viewModel.refreshPushStatus()
+        onPauseOrDispose { }
+    }
+
     AboutContent(
         currentTheme = currentTheme,
         showFacts = showFacts,
+        notificationsEnabled = notificationsEnabled,
+        pushStatus = pushStatus,
         onThemeChange = viewModel::setTheme,
         onFactsToggle = viewModel::toggleFacts,
+        onNotificationsToggle = viewModel::toggleNotifications,
+        onOpenNotificationSettings = viewModel::openNotificationSettings,
         onClearCache = {
             val loader = SingletonImageLoader.get(coilContext)
             loader.diskCache?.clear()
@@ -105,8 +121,12 @@ fun AboutScreen() {
 private fun AboutContent(
     currentTheme: Theme,
     showFacts: Boolean,
+    notificationsEnabled: Boolean,
+    pushStatus: PushPermissionStatus,
     onThemeChange: (Theme) -> Unit,
     onFactsToggle: (Boolean) -> Unit,
+    onNotificationsToggle: (Boolean) -> Unit,
+    onOpenNotificationSettings: () -> Unit,
     onClearCache: () -> Unit,
     onRateApp: () -> Unit,
     appVersion: String,
@@ -189,6 +209,36 @@ private fun AboutContent(
                         sub = "See what changed in past releases",
                         onClick = { navigator.navigate(AppDestination.AllVersions) },
                     )
+                    // Desktop has no push support at all, so the row would be a permanently
+                    // disabled control with nothing behind it.
+                    if (pushStatus != PushPermissionStatus.Unsupported) {
+                        AppRowDivider()
+                        val blocked = pushStatus == PushPermissionStatus.Denied
+                        AppRow(
+                            icon = MaterialSymbol.Notifications,
+                            iconContainer = colors.secondaryContainer,
+                            iconTint = colors.onSecondaryContainer,
+                            label = "Mars Updates",
+                            sub = when {
+                                blocked -> "Blocked — tap to open system settings"
+                                notificationsEnabled -> "New photos and release news"
+                                else -> "Off"
+                            },
+                            // Once the OS prompt is spent, the switch cannot do anything; sending
+                            // the user to system settings is the only route back.
+                            onClick = if (blocked) onOpenNotificationSettings else null,
+                            trailing = if (blocked) {
+                                null
+                            } else {
+                                {
+                                    Switch(
+                                        checked = notificationsEnabled,
+                                        onCheckedChange = onNotificationsToggle,
+                                    )
+                                }
+                            },
+                        )
+                    }
                 }
 
                 AppSection(label = "Connect") {

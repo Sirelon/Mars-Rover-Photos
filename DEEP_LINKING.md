@@ -18,11 +18,21 @@ Open a photo:
 marsrover://photo/{photoId}
 ```
 
+Open the release notes:
+
+```text
+marsrover://whatsnew
+marsrover://whatsnew/{version}
+```
+
 Examples:
 
 - `marsrover://rover/5` — open Curiosity photos
 - `marsrover://rover/3` — open Perseverance photos
 - `marsrover://photo/12345` — open photo `12345`
+- `marsrover://whatsnew` — open the full version history
+- `marsrover://whatsnew/4.2.0` — open the story view for 4.2.0, falling back to the version history
+  when the installed build ships no notes for that version
 
 ### HTTPS app links
 
@@ -65,6 +75,10 @@ adb shell am start -W -a android.intent.action.VIEW \
 adb shell am start -W -a android.intent.action.VIEW \
   -d "marsrover://photo/12345" \
   com.sirelon.marsroverphotos
+
+adb shell am start -W -a android.intent.action.VIEW \
+  -d "marsrover://whatsnew/4.2.0" \
+  com.sirelon.marsroverphotos
 ```
 
 ### iOS simulator
@@ -72,10 +86,13 @@ adb shell am start -W -a android.intent.action.VIEW \
 ```bash
 xcrun simctl openurl booted "marsrover://rover/5"
 xcrun simctl openurl booted "marsrover://photo/12345"
+xcrun simctl openurl booted "marsrover://whatsnew"
 ```
 
 ## Implementation notes
 
 - The shared deep-link model lives in [`shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/DeepLink.kt`](/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/DeepLink.kt).
-- iOS URL parsing and dispatch live in [`shared/src/iosMain/kotlin/Main.ios.kt`](/Users/sirelon/Projects/MarsRoverPhotos/shared/src/iosMain/kotlin/Main.ios.kt).
+- All URI parsing goes through `parseDeepLink` in [`shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/DeepLinkParser.kt`](/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/DeepLinkParser.kt), shared by Android intents, the iOS `onOpenURL` bridge and notification taps. A new link form is added there once.
+- iOS dispatch into the running Compose content lives in [`shared/src/iosMain/kotlin/Main.ios.kt`](/Users/sirelon/Projects/MarsRoverPhotos/shared/src/iosMain/kotlin/Main.ios.kt).
+- Notification taps carry their target as a `link` value in the message's data payload — see [`docs/PUSH_NOTIFICATIONS.md`](/Users/sirelon/Projects/MarsRoverPhotos/docs/PUSH_NOTIFICATIONS.md).
 - The home-screen widget can navigate internally to a specific image via `DeepLink.Image`, but that is not a documented public URI format yet.
