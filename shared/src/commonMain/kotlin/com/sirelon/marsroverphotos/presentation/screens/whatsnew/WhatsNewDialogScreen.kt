@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -21,9 +20,7 @@ import com.sirelon.marsroverphotos.presentation.navigation.LocalAppNavigator
 import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
 import com.sirelon.marsroverphotos.presentation.ui.AppButton
 import com.sirelon.marsroverphotos.presentation.ui.AppOutlinedButton
-import com.sirelon.marsroverphotos.presentation.ui.AppRow
 import com.sirelon.marsroverphotos.presentation.ui.AppRowDivider
-import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.CardShape
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sirelon.marsroverphotos.presentation.viewmodels.WhatsNewViewModel
@@ -34,7 +31,6 @@ fun WhatsNewDialogScreen() {
     val navigator = LocalAppNavigator.current
     val viewModel: WhatsNewViewModel = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val showPushOptIn by viewModel.showPushOptIn.collectAsStateWithLifecycle()
     val release = state.currentRelease ?: return
     val hasDetail = release.changes.any { it.detail != null }
 
@@ -78,26 +74,6 @@ fun WhatsNewDialogScreen() {
                                 navigator.navigate(AppDestination.WhatsNewStory(release.version, page = index))
                             }
                         } else null,
-                    )
-                }
-
-                if (showPushOptIn) {
-                    AppRowDivider()
-                    AppRow(
-                        icon = MaterialSymbol.Notifications,
-                        iconContainer = MaterialTheme.colorScheme.secondaryContainer,
-                        iconTint = MaterialTheme.colorScheme.onSecondaryContainer,
-                        label = "Mars Updates",
-                        sub = "Get told about new photos and releases",
-                        trailing = {
-                            // Always unchecked: the row only exists while permission is
-                            // undecided, and enablePushNotifications() clears showPushOptIn
-                            // before it awaits the OS, so the whole row leaves on the same tap.
-                            Switch(
-                                checked = false,
-                                onCheckedChange = { viewModel.enablePushNotifications() },
-                            )
-                        },
                     )
                 }
 

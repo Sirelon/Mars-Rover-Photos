@@ -1,57 +1,21 @@
 package com.sirelon.marsroverphotos.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.sirelon.marsroverphotos.domain.releasenotes.RELEASES
 import com.sirelon.marsroverphotos.domain.releasenotes.Release
 import com.sirelon.marsroverphotos.domain.settings.AppSettings
 import com.sirelon.marsroverphotos.platform.BuildInfo
-import com.sirelon.marsroverphotos.platform.PushNotifications
-import com.sirelon.marsroverphotos.platform.PushPermissionStatus
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 
 data class WhatsNewUiState(
     val releases: ImmutableList<Release>,
     val currentRelease: Release?,
 )
 
-class WhatsNewViewModel(
-    private val appSettings: AppSettings,
-    private val pushNotifications: PushNotifications,
-) : ViewModel() {
-
-    private val _showPushOptIn = MutableStateFlow(false)
-
-    /**
-     * Whether the dialog offers to turn on notifications.
-     *
-     * Only while the OS prompt is still available — once it has been used, the answer is settled
-     * and About is the place to change it. This is the app's primary opt-in surface: the dialog
-     * already reaches everyone who just updated, which is exactly the audience for release
-     * notifications, and it costs no extra prompt because the OS is only asked on tap.
-     */
-    val showPushOptIn: StateFlow<Boolean> = _showPushOptIn.asStateFlow()
-
-    init {
-        viewModelScope.launch {
-            _showPushOptIn.value =
-                pushNotifications.permissionStatus() == PushPermissionStatus.NotDetermined
-        }
-    }
-
-    /** Requests notification permission and subscribes on success. Hides the row either way. */
-    fun enablePushNotifications() {
-        viewModelScope.launch {
-            _showPushOptIn.value = false
-            val granted = pushNotifications.requestPermission() == PushPermissionStatus.Granted
-            appSettings.notificationsEnabled = granted
-            if (granted) pushNotifications.setSubscribed(true)
-        }
-    }
+class WhatsNewViewModel(private val appSettings: AppSettings) : ViewModel() {
 
     private val _state = MutableStateFlow(
         WhatsNewUiState(

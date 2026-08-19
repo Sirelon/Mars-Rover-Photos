@@ -39,11 +39,8 @@ Taps route through the same path as any other deep link — see [DEEP_LINKING.md
 
 ## Opt-in
 
-There is no permission prompt at launch. The OS prompt appears only when the user taps one of two
-controls:
-
-- the **Mars Updates** row in the What's New dialog, shown while the OS prompt is still available;
-- the **Mars Updates** row in About → Updates, which is also where it gets turned back off.
+There is no permission prompt at launch. The OS prompt appears only when the user turns on the
+**Mars Updates** switch in About → Updates, which is also where it gets turned back off.
 
 Android 13+ requires `POST_NOTIFICATIONS`; iOS requires `UNUserNotificationCenter` authorization.
 Once the prompt has been used, the OS will not show it again — the About row then reads "Blocked"
