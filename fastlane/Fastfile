@@ -16,8 +16,10 @@ ASC_KEY_FILEPATH = File.expand_path("AuthKey_G5TTXS7GV3.p8", __dir__)
 REPO_ROOT        = File.expand_path("..", __dir__)
 
 # Release-notes staging, written by the store-release skill. Gitignored: mechanical inputs for
-# supply/deliver, regenerated every release, not content worth versioning. One text serves both
-# stores, so the Android tree (where supply's layout requires it) is the single copy.
+# supply/deliver, regenerated every release, not content worth versioning. release_notes.txt is one
+# text serving both stores, so the Android tree (where supply's layout requires it) is the single
+# copy, copied as-is into the iOS tree. promotional_text.txt is Apple-only (Play has no equivalent
+# field) and lives only under the iOS tree.
 ANDROID_METADATA_DIR = File.join(REPO_ROOT, ".claude/tmp/release-metadata/android")
 IOS_METADATA_DIR     = File.join(REPO_ROOT, ".claude/tmp/release-metadata/ios")
 STORE_LOCALE         = "en-US"
@@ -121,25 +123,41 @@ platform :ios do
     )
   end
 
-  desc "Upload the store 'What's New' text for the current version (metadata only, no binary)"
+  desc "Upload the store 'What's New' + promotional text for the current version (metadata only, no binary)"
   lane :release_notes do
     ensure_credentials
-    notes = File.join(IOS_METADATA_DIR, STORE_LOCALE, "release_notes.txt")
-    unless File.exist?(notes)
-      UI.user_error!("Missing #{notes} — stage it first (the store-release skill writes it)")
+    notes_path = File.join(IOS_METADATA_DIR, STORE_LOCALE, "release_notes.txt")
+    unless File.exist?(notes_path)
+      UI.user_error!("Missing #{notes_path} — stage it first (the store-release skill writes it)")
     end
-    # Apple does not carry release notes forward into a new version draft, so this needs the
-    # App Store version to exist already: run it after `ios release` has uploaded the binary.
-    upload_to_app_store(
+    promo_path = File.join(IOS_METADATA_DIR, STORE_LOCALE, "promotional_text.txt")
+
+    params = {
       app_identifier: APP_IDENTIFIER,
       app_version: app_version("name"),
-      metadata_path: IOS_METADATA_DIR,
+      release_notes: { STORE_LOCALE => File.read(notes_path, encoding: "UTF-8").strip },
       skip_binary_upload: true,
       skip_screenshots: true,
       submit_for_review: false,
       automatic_release: false,
-      force: true # no interactive HTML-preview confirmation
-    )
+      force: true, # no interactive HTML-preview confirmation
+      # precheck's in-app-purchase check doesn't support App Store Connect API key auth yet ("cannot
+      # check In-app purchases with the App Store Connect API Key"), and it otherwise runs even
+      # though submit_for_review is false. This app has no IAP and isn't submitting here, so skip it.
+      run_precheck_before_submit: false
+    }
+    if File.exist?(promo_path)
+      params[:promotional_text] = { STORE_LOCALE => File.read(promo_path, encoding: "UTF-8").strip }
+    else
+      UI.important("No promotional text staged at #{promo_path} — leaving Promotional Text untouched")
+    end
+
+    # Deliberately no metadata_path: it makes deliver mirror the WHOLE local folder onto App Store
+    # Connect, and a field whose file isn't staged locally is not guaranteed to survive that sync —
+    # exactly the "incomplete staging tree overwrites the live listing" risk already called out for
+    # Play's supply below. Passing release_notes/promotional_text as explicit per-locale hashes
+    # touches only those two fields; Description, Keywords, Subtitle etc. are never in scope.
+    upload_to_app_store(**params)
   end
 end
 

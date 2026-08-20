@@ -5,6 +5,7 @@
 The app displays it as a badge in the top-right corner of every debug build. This lets the owner immediately identify which feature is installed when multiple agents have built and installed APKs in parallel.
 
 ```
+mkdir -p androidApp/src/main/assets
 echo "your-feature-name" > androidApp/src/main/assets/debug_label.txt
 ```
 

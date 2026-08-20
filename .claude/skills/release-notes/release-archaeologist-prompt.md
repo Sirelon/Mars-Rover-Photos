@@ -1,7 +1,10 @@
 # Release-archaeologist agent prompt template
 
 Spawn one per release range, `model: sonnet`. Substitute `{{VERSION}}`, `{{RANGE}}`,
-`{{COMMIT_COUNT}}`, `{{DATE}}`, `{{PREV_VERSION}}`, `{{EVIDENCE_PACK}}`.
+`{{COMMIT_COUNT}}`, `{{DATE}}`, `{{PREV_VERSION}}`, `{{EVIDENCE_PACK}}`, `{{PREV_RELEASE_ENTRY_JSON}}`
+(the previous version's published `changes` array from `scripts/release-notes.json` — paste it
+verbatim; write `none — first tracked release` on the bootstrap case where there is no previous
+entry).
 
 Add the **migration clause** (bottom of this file) only for ranges that span a platform migration.
 
@@ -57,6 +60,34 @@ If an item shipped as *part of* a larger change, set `related_to` to that item's
 presenting it as a peer. A button added during a screen redesign is part of the redesign. Keep the
 evidence granular — separate diffs stay separate entries — but the editorial pass needs to know
 they were one thing to the user.
+
+## RULE 6 — verify "already shipped" by tag-tree content, never by merge-base ancestry alone
+
+Merge-commit topology means `{{RANGE}}` can contain a commit that landed *after* `{{PREV_VERSION}}`
+in the graph even though its content was already shipped and already described in
+`{{PREV_VERSION}}`'s published notes. `git merge-base --is-ancestor <sha> {{PREV_VERSION}}` does
+**not** settle this either way — a confirmed case in this repo had two commits both fail that
+ancestry check, yet one was already fully shipped at the tag and the other was genuinely new.
+
+Before reporting a finding that touches the same screen, capability, or gesture as anything in
+`{{PREV_RELEASE_ENTRY_JSON}}` below, resolve it by reading the tag's actual content, not ancestry:
+
+```
+git show {{PREV_VERSION}}:<path-to-file> | grep -c '<distinguishing symbol or text>'
+git diff {{PREV_VERSION}}:<path> HEAD:<path>            # or across old/new paths if it moved
+```
+
+- Capability already present at the tag → drop the finding entirely, even though ancestry says the
+  commit is "new". If this range adds a genuine incremental delta on top of it, report only that
+  delta and set `related_to` to the previously-shipped item's title.
+- Capability absent at the tag → the finding is genuinely new for this range, regardless of what
+  `git merge-base --is-ancestor` reported.
+
+Previously published entry for `{{PREV_VERSION}}` (do not re-report any of this):
+
+```json
+{{PREV_RELEASE_ENTRY_JSON}}
+```
 
 ## Evidence pack (precomputed)
 

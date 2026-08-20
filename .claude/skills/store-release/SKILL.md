@@ -36,6 +36,9 @@ bump version                    ── seconds, must be first
    │                                                    │
    └────────► (after Android's Gradle is done) fastlane ios beta ──────► TestFlight
                                                                               │
+                                                            fastlane ios release_notes
+                                                         (What's New + Promo text → ASC draft)
+                                                                              │
                                                     commit + local tag ◄──────┘
 ```
 
@@ -140,7 +143,10 @@ pipeline exists to prevent.
 
 **One agent.** Spawn a single release-archaeologist — `model: sonnet`, `effort: high` — with
 [`../release-notes/release-archaeologist-prompt.md`](../release-notes/release-archaeologist-prompt.md)
-verbatim, substituting the range and version. It writes
+verbatim, substituting the range and version. Its Rule 6 needs `{{PREV_RELEASE_ENTRY_JSON}}` —
+paste in `$PREV`'s `changes` array from `scripts/release-notes.json` — so the agent can catch the
+merge-topology overlap described above itself, instead of you re-deriving the exclusion by hand. It
+writes
 `.claude/tmp/release-notes/raw/<version>.json` and returns a one-line summary. Build the evidence
 pack in bash first (step 3 of the `release-notes` skill) so it doesn't spend tokens rediscovering
 the file list.
@@ -181,12 +187,19 @@ cat > "$META/android/en-US/changelogs/$CODE.txt" <<'EOF'
 • <bullet>
 EOF
 cp "$META/android/en-US/changelogs/$CODE.txt" "$META/ios/en-US/release_notes.txt"
+cat > "$META/ios/en-US/promotional_text.txt" <<'EOF'
+<one-sentence teaser, ≤170 chars>
+EOF
 ```
 
 `.claude/tmp/` is gitignored, so this stages the exact bytes that will be published without
-polluting the diff. The Android copy is the one the release path reads — the iOS copy exists for the
-manual App Store step later (`fastlane ios release_notes`), which Apple does *not* carry forward
-into a new version draft on its own.
+polluting the diff. The Android copy is the one the release path reads; the iOS copy plus
+`promotional_text.txt` feed `fastlane ios release_notes` in step 5, which pushes both straight to
+the App Store Connect version draft — no separate manual step.
+
+**Promotional Text** is Apple-only (Play has no equivalent field) and appears in a different place
+on the store listing than "What's New", so don't just copy the changelog headline verbatim — write
+a distinct one-sentence teaser, same theme, **hard ceiling 170 characters**, no emoji.
 
 The Android filename **must** be the numeric version code: `supply` looks for `<version_code>.txt`,
 falls back to `default.txt` in the same folder, and ignores anything else, so a misnamed file ships
@@ -240,6 +253,21 @@ Background it; this is usually the longest step. The lane runs `syncIosVersion`,
 *with* a changelog, makes pilot wait just long enough for the build to appear in App Store Connect,
 set the changelog, and skip the rest. So the text does land and the run stays short.
 
+Once that succeeds, immediately follow with the App Store Connect metadata push — it's metadata
+only (`skip_binary_upload`, `submit_for_review: false`), so it stays inside this skill's
+beta/internal scope; it does not submit anything:
+
+```bash
+bundle exec fastlane ios release_notes
+```
+
+This pushes the staged `release_notes.txt` (What's New) and `promotional_text.txt` (Promotional
+Text) to the App Store Connect version draft. Confirmed 2026-08-20: that draft already exists and
+already matches the current marketing version right after `ios beta` alone — `ios release` (the
+separate, still-manual App Store binary upload) is **not** a prerequisite, contrary to what an
+earlier version of this doc assumed. If the lane ever reports the version doesn't match, that's a
+real anomaly worth investigating, not the expected case.
+
 ## Step 6 — commit and tag
 
 Now the tree holds the bump, the notes JSON, and any icon addition. Verify, then commit them
@@ -258,7 +286,8 @@ permission, and the user verifies a release on-device first.
 ## Step 7 — report
 
 - The version, and the store text, once — both stores got the same string.
-- Which of the four things landed: Play internal upload, Play changelog, TestFlight, Firestore.
+- Which of the five things landed: Play internal upload, Play changelog, TestFlight, Firestore,
+  App Store Connect metadata (What's New + Promotional Text on the version draft).
 - That the release commit and tag are **local and unpushed**.
 - Anything still manual: production promotion, App Store submission, and the outstanding items below.
 
@@ -277,8 +306,14 @@ permission, and the user verifies a release on-device first.
   `KMP_XCFRAMEWORK_DIR` build setting, so Release uses `XCFrameworks/release` and Debug uses
   `XCFrameworks/debug`, and the "Build KMP Framework" phase assembles whichever matches
   `$CONFIGURATION`. Xcode resolves the framework while *planning* the build, before script phases run,
-  so a fresh worktree needs one manual `./gradlew :shared:assembleSharedReleaseXCFramework` before its
-  first Release build — after that Xcode keeps it current. See `iosApp/README.md`.
+  so the first build in a configuration whose XCFramework directory doesn't exist yet fails archiving
+  with "no XCFramework found at ... XCFrameworks/release/shared.xcframework" — **this is not only a
+  fresh-worktree problem.** Confirmed 2026-08-20: this repo's long-lived main worktree hit it too,
+  because that day's commit (`b09615d7`) had just moved `project.pbxproj` to per-configuration
+  resolution, and `XCFrameworks/release/` had simply never been assembled before (only `debug/` had,
+  from ordinary iOS dev builds). Same fix either way — one manual
+  `./gradlew :shared:assembleSharedReleaseXCFramework` before the first build in that configuration —
+  after that Xcode keeps it current. See `iosApp/README.md`.
 - Screenshots are a separate job — the `.maestro/` kit and the `store-screenshots` skill. This flow
   never uploads images.
 - The version lives only in `buildSrc/src/main/kotlin/AppVersion.kt`; Android and Desktop read it
@@ -289,11 +324,27 @@ permission, and the user verifies a release on-device first.
 - `Info.plist` declares `ITSAppUsesNonExemptEncryption = false`, so App Store Connect no longer asks
   the export-compliance question per build. That declaration covers an app whose only cryptography is
   HTTPS through the OS stack — revisit it if the app ever ships crypto of its own.
-- **The App Store product page "What's New" is a separate command.** `ios release` passes
-  `skip_metadata: true` and uploads the binary only; `fastlane ios release_notes` pushes the staged
-  text as metadata (no binary) once the App Store version draft exists. Apple does not carry release
-  notes forward into a new draft by itself. That lane has not yet run against real App Store Connect
-  credentials — expect to shake it out the first time.
+- **The App Store product page "What's New" and "Promotional Text" are a separate command from
+  TestFlight**, but not a separate *manual step* any more — step 5 now runs
+  `fastlane ios release_notes` automatically right after `ios beta`. `ios release` passes
+  `skip_metadata: true` and uploads the binary only, and stays a deliberate manual step (it's the
+  App Store submission path this skill never runs on its own); `release_notes` pushes metadata only,
+  no binary, no submission.
+- **Confirmed 2026-08-20, first real run:** the App Store Connect version draft for the new
+  version already existed and already matched (`'5.1.0' is the latest version on App Store
+  Connect`) right after `ios beta` alone — `ios release` uploading a binary first is **not** a
+  prerequisite, contrary to what this doc used to assume. Apple appears to keep the next version's
+  draft open on its own once the previous one shipped; nothing here creates it.
+- **`run_precheck_before_submit: false` is required on that lane.** Without it, deliver's default
+  precheck step fails with "Precheck cannot check In-app purchases with the App Store Connect API
+  Key (yet)" — a known limitation of API-key auth, unrelated to `submit_for_review: false` already
+  being set. This app has no IAP and isn't submitting here, so precheck buys nothing.
+- **Pass `release_notes:`/`promotional_text:` as explicit per-locale hashes, not `metadata_path`.**
+  A `metadata_path` mirrors the *entire* local folder onto the live listing, and a field whose file
+  isn't staged locally (Description, Keywords, Subtitle, ...) is not guaranteed to survive that
+  sync untouched — the same "incomplete staging tree overwrites the live listing" risk already
+  guarded against on the Play side below. Explicit hashes touch only the two fields this skill
+  actually has content for.
 - External TestFlight testers need Beta App Review; internal testers don't.
 - The app serves AdMob and asks for tracking (`NSUserTrackingUsageDescription`, `SKAdNetworkItems`,
   `PrivacyInfo.xcprivacy`), so App Privacy answers must track the SDKs, and the SKAdNetwork list
