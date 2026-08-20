@@ -37,27 +37,30 @@ You must provide `iosApp/iosApp/GoogleService-Info.plist`:
 
 ## Build artifacts
 
-The Xcode project's "Build KMP Framework" script runs:
+The Xcode project's "Build KMP Framework" script assembles the XCFramework for the configuration
+being built, and the linked `shared.xcframework` resolves through the per-configuration
+`KMP_XCFRAMEWORK_DIR` build setting:
 
-```bash
-./gradlew :shared:assembleSharedDebugXCFramework
-```
-
-and expects the shared framework at:
-
-```text
-shared/build/XCFrameworks/debug/shared.xcframework
-```
+| Configuration | Gradle task | Framework location |
+|---|---|---|
+| Debug | `:shared:assembleSharedDebugXCFramework` | `shared/build/XCFrameworks/debug/shared.xcframework` |
+| Release | `:shared:assembleSharedReleaseXCFramework` | `shared/build/XCFrameworks/release/shared.xcframework` |
 
 ## Troubleshooting
 
 ### Shared framework not found
 
-Build the XCFramework manually first:
+Xcode resolves the framework while planning the build, before script phases run, so a fresh checkout
+needs the matching task run by hand once — the debug one for a normal simulator run:
 
 ```bash
-./gradlew :shared:assembleSharedDebugXCFramework
+./gradlew :shared:assembleSharedDebugXCFramework    # or ...ReleaseXCFramework for a Release build
 ```
+
+### `ld: ignoring file ... found architecture 'arm64', required architecture 'x86_64'`
+
+`shared` declares only `iosArm64` and `iosSimulatorArm64` targets, so there is no x86_64 slice to
+link. Build for an Apple-silicon simulator, or pass `ARCHS=arm64` to `xcodebuild`.
 
 ### SPM packages do not resolve
 

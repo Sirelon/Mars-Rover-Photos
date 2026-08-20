@@ -14,9 +14,21 @@ open iosApp/iosApp.xcodeproj
 
 Press `Cmd+R` to run on a simulator.
 
-> The checked-in Xcode project includes a "Build KMP Framework" run script phase that calls
-> `./gradlew :shared:assembleSharedDebugXCFramework`, so after the first successful build you can
+> The checked-in Xcode project includes a "Build KMP Framework" run script phase that assembles the
+> XCFramework matching the configuration being built, so after the first successful build you can
 > usually run directly from Xcode.
+
+The linked `shared.xcframework` resolves through the `KMP_XCFRAMEWORK_DIR` build setting, which is
+defined per configuration:
+
+| Configuration | Gradle task | Links |
+|---|---|---|
+| Debug | `:shared:assembleSharedDebugXCFramework` | `shared/build/XCFrameworks/debug` |
+| Release | `:shared:assembleSharedReleaseXCFramework` | `shared/build/XCFrameworks/release` |
+
+So TestFlight and App Store archives link optimized Kotlin code. Xcode resolves the framework while
+planning the build, before script phases run — which is why a brand-new checkout needs the Gradle
+task run by hand once for whichever configuration you build first.
 
 ## Firebase setup
 
@@ -103,10 +115,12 @@ ContentView.swift   →  Main_iosKt.MainViewController()
 
 ## Shared framework output
 
-The Xcode project points at:
+The Xcode project points at `$(KMP_XCFRAMEWORK_DIR)/shared.xcframework`, which resolves to:
 
 ```text
-shared/build/XCFrameworks/debug/shared.xcframework
+shared/build/XCFrameworks/debug/shared.xcframework      # Debug
+shared/build/XCFrameworks/release/shared.xcframework    # Release
 ```
 
-That XCFramework bundles both simulator and device slices for the shared Kotlin framework.
+Each XCFramework bundles both the device (`ios-arm64`) and simulator (`ios-arm64-simulator`) slices.
+There is no x86_64 slice — `shared` declares only `iosArm64` and `iosSimulatorArm64` targets.
