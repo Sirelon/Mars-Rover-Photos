@@ -1,6 +1,55 @@
 {
   "releases": [
     {
+      "version": "5.1.0",
+      "date": "2026-08-20",
+      "active": true,
+      "changes": [
+        {
+          "id": "whats_new_screen",
+          "icon": "new_releases",
+          "title": "What's New",
+          "summary": "See what changed, right in the app",
+          "detail": "After you update, a one-time dialog highlights what's new. Head to About > Updates any time to browse the full release history as cards, or open one as a full-screen story — tap to move through it, hold to pause, swipe down to close."
+        },
+        {
+          "id": "favorites_sort_filter",
+          "icon": "tune",
+          "title": "Favorites, Organized",
+          "summary": "Sort, filter, and see your collection at a glance",
+          "detail": "Favorites now has sort options — Recent, Most Viewed, By Camera — plus rover filter chips and a stats row showing how many photos, rovers, and cameras you've saved."
+        },
+        {
+          "id": "push_notifications",
+          "icon": "notifications",
+          "title": "Mars Updates",
+          "summary": "Opt in to hear about new photos and releases",
+          "detail": "A Mars Updates toggle in About lets you get notified about new photos and release announcements. Tapping a notification takes you straight to it in the app."
+        },
+        {
+          "id": "popular_photos_redesign",
+          "icon": "leaderboard",
+          "title": "Popular, Reimagined",
+          "summary": "The most popular photos take center stage",
+          "detail": "The Popular tab now leads with a large hero card for the #1 photo, a runner-up row for #2 and #3, and a ranked list below it — in place of the old plain grid. Also fixed: Popular photos failing to load at all on Desktop."
+        },
+        {
+          "id": "mission_info_fixes",
+          "icon": "bug_report",
+          "title": "Mission Info Fixes",
+          "summary": "Cleaner layout and steadier numbers on phones",
+          "detail": "On phones, Mission Info's timeline no longer clips off-screen, and hero text is no longer washed out on light theme. The Total Photos stat also stopped flickering between totals while other photos loaded elsewhere in the app."
+        },
+        {
+          "id": "drag_dismiss_polish",
+          "icon": "swipe_down",
+          "title": "Smoother Dismiss",
+          "summary": "The photo now follows your finger all the way down",
+          "detail": "Dragging down to dismiss a fullscreen photo now visibly moves and shrinks under your finger, instead of staying still until you let go."
+        }
+      ]
+    },
+    {
       "version": "5.0.0",
       "date": "2026-06-29",
       "active": true,
