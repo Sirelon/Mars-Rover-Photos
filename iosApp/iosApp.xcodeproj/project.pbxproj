@@ -134,8 +134,8 @@
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.xcframework;
 			name = shared.xcframework;
-			path = ../shared/build/XCFrameworks/debug/shared.xcframework;
-			sourceTree = SOURCE_ROOT;
+			path = shared.xcframework;
+			sourceTree = KMP_XCFRAMEWORK_DIR;
 		};
 		9E2B4A252B8F3D0100C4A5E2 = {
 			isa = PBXFileReference;
@@ -330,7 +330,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"$SRCROOT/..\"\n./gradlew :shared:assembleSharedDebugXCFramework\n";
+			shellScript = "# Assemble the XCFramework matching this configuration. KMP_XCFRAMEWORK_DIR (set per\n# configuration in the project build settings) points the linked shared.xcframework at the\n# matching output dir, so Debug links the debug slices and Release links optimized ones.\nif [ \"$CONFIGURATION\" = \"Release\" ]; then\n  TASK=assembleSharedReleaseXCFramework\nelse\n  TASK=assembleSharedDebugXCFramework\nfi\ncd \"$SRCROOT/..\"\necho \"note: assembling :shared:$TASK for $CONFIGURATION\"\n./gradlew \":shared:$TASK\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -402,6 +402,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				KMP_XCFRAMEWORK_DIR = "$(SRCROOT)/../shared/build/XCFrameworks/debug";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -460,6 +461,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				KMP_XCFRAMEWORK_DIR = "$(SRCROOT)/../shared/build/XCFrameworks/release";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;

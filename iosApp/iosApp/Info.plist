@@ -20,6 +20,15 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<!--
+	  Export compliance, answered here so App Store Connect stops asking per build — an
+	  unanswered build stays undistributable to TestFlight and the App Store.
+	  false = the app uses only encryption exempt under category 5 part 2 of the US EAR:
+	  HTTPS via the OS networking stack (NASA image APIs, Firebase, AdMob) and the platform's
+	  own crypto. The app ships no cryptography of its own. Revisit if that ever changes.
+	-->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIApplicationSceneManifest</key>

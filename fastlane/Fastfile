@@ -13,6 +13,38 @@ ASC_ISSUER_ID    = "8873b38c-775e-4a3e-baf5-4e2bada765a8"
 # folder itself, not the repo root actions like gradle()/build_app() resolve
 # their string params against, so anchor these to __dir__ explicitly.
 ASC_KEY_FILEPATH = File.expand_path("AuthKey_G5TTXS7GV3.p8", __dir__)
+REPO_ROOT        = File.expand_path("..", __dir__)
+
+# Release-notes staging, written by the store-release skill. Gitignored: mechanical inputs for
+# supply/deliver, regenerated every release, not content worth versioning. One text serves both
+# stores, so the Android tree (where supply's layout requires it) is the single copy.
+ANDROID_METADATA_DIR = File.join(REPO_ROOT, ".claude/tmp/release-metadata/android")
+IOS_METADATA_DIR     = File.join(REPO_ROOT, ".claude/tmp/release-metadata/ios")
+STORE_LOCALE         = "en-US"
+PLAY_CHANGELOG_LIMIT = 500
+
+# buildSrc/AppVersion.kt is the single source of truth for the version on every platform.
+def app_version(field)
+  path = File.join(REPO_ROOT, "buildSrc/src/main/kotlin/AppVersion.kt")
+  UI.user_error!("Not found: #{path}") unless File.exist?(path)
+  value = File.read(path)[/const val #{field} = "?([\w.]+)"?/, 1]
+  UI.user_error!("No `const val #{field}` in #{path}") unless value
+  value
+end
+
+def staged_changelog_path
+  File.join(ANDROID_METADATA_DIR, STORE_LOCALE, "changelogs", "#{app_version('code')}.txt")
+end
+
+# The one changelog both stores use. ENV["CHANGELOG"] overrides it; the generic string is the floor,
+# so an unstaged release still ships something truthful rather than failing at upload.
+def store_changelog
+  path = staged_changelog_path
+  return File.read(path, encoding: "UTF-8").strip if File.exist?(path)
+
+  UI.important("No changelog staged at #{path} — falling back")
+  ENV["CHANGELOG"] || "Bug fixes and improvements"
+end
 
 # ---------------------------------------------------------------------------
 # iOS
@@ -29,6 +61,18 @@ platform :ios do
     )
   end
 
+  # Both credentials are gitignored, so a fresh worktree has neither. Check them before the archive
+  # rather than after it — build_app is the longest step in the whole release.
+  private_lane :ensure_credentials do
+    unless File.exist?(ASC_KEY_FILEPATH)
+      UI.user_error!("Missing #{ASC_KEY_FILEPATH} — App Store Connect uploads need the API key")
+    end
+    plist = File.join(REPO_ROOT, "iosApp/iosApp/GoogleService-Info.plist")
+    unless File.exist?(plist)
+      UI.user_error!("Missing #{plist} — copy iosApp/GoogleService-Info.template.plist and fill it in")
+    end
+  end
+
   desc "Sync MARKETING_VERSION / CURRENT_PROJECT_VERSION from buildSrc/AppVersion.kt"
   private_lane :sync_version do
     # buildSrc/AppVersion.kt is the single source of truth for the app version;
@@ -38,6 +82,7 @@ platform :ios do
 
   desc "Build and upload a new beta to TestFlight"
   lane :beta do
+    ensure_credentials
     sync_version
     Bundler.with_unbundled_env do
       build_app(
@@ -48,13 +93,16 @@ platform :ios do
       )
     end
     upload_to_testflight(
+      # With a changelog supplied, pilot waits just long enough for the build to appear in App Store
+      # Connect to set it, then skips the remaining processing steps.
       skip_waiting_for_build_processing: true,
-      changelog: ENV["CHANGELOG"] || "Bug fixes and improvements"
+      changelog: store_changelog
     )
   end
 
   desc "Build and upload to App Store (does not submit for review)"
   lane :release do
+    ensure_credentials
     sync_version
     Bundler.with_unbundled_env do
       build_app(
@@ -72,6 +120,27 @@ platform :ios do
       skip_screenshots: true
     )
   end
+
+  desc "Upload the store 'What's New' text for the current version (metadata only, no binary)"
+  lane :release_notes do
+    ensure_credentials
+    notes = File.join(IOS_METADATA_DIR, STORE_LOCALE, "release_notes.txt")
+    unless File.exist?(notes)
+      UI.user_error!("Missing #{notes} — stage it first (the store-release skill writes it)")
+    end
+    # Apple does not carry release notes forward into a new version draft, so this needs the
+    # App Store version to exist already: run it after `ios release` has uploaded the binary.
+    upload_to_app_store(
+      app_identifier: APP_IDENTIFIER,
+      app_version: app_version("name"),
+      metadata_path: IOS_METADATA_DIR,
+      skip_binary_upload: true,
+      skip_screenshots: true,
+      submit_for_review: false,
+      automatic_release: false,
+      force: true # no interactive HTML-preview confirmation
+    )
+  end
 end
 
 # ---------------------------------------------------------------------------
@@ -79,8 +148,25 @@ end
 # ---------------------------------------------------------------------------
 
 platform :android do
+  # androidApp/build.gradle.kts applies the release signing config ONLY if keystore.properties
+  # exists. Without it bundleRelease still succeeds and emits an unsigned aab that Play rejects
+  # minutes later, at upload. Fail here instead.
+  private_lane :ensure_signing do
+    props = File.join(REPO_ROOT, "keystore.properties")
+    unless File.exist?(props)
+      UI.user_error!("Missing keystore.properties — bundleRelease would produce an UNSIGNED aab that Play rejects")
+    end
+    store_file = File.read(props)[/^storeFile\s*=\s*(.+)$/, 1]&.strip
+    UI.user_error!("keystore.properties has no storeFile") unless store_file
+    # Gradle resolves a relative storeFile against the androidApp module dir (file() in that
+    # module's build script), so resolve it the same way here.
+    resolved = File.expand_path(store_file, File.join(REPO_ROOT, "androidApp"))
+    UI.user_error!("Keystore not found: #{resolved} (from keystore.properties)") unless File.exist?(resolved)
+  end
+
   desc "Build release AAB and upload to Play Store internal testing"
   lane :beta do
+    ensure_signing
     gradle(task: ":androidApp:bundleRelease")
     upload_to_play_store(
       track: "internal",
@@ -90,17 +176,50 @@ platform :android do
     )
   end
 
+  desc "Attach the staged release notes to the internal-track release (no binary upload)"
+  lane :changelog do
+    code = app_version("code").to_i
+    path = staged_changelog_path
+    UI.user_error!("No changelog staged for version code #{code} at #{path}") unless File.exist?(path)
+
+    length = File.read(path, encoding: "UTF-8").strip.length
+    if length > PLAY_CHANGELOG_LIMIT
+      UI.user_error!("Changelog is #{length} characters — Google Play's limit is #{PLAY_CHANGELOG_LIMIT}")
+    end
+    UI.message("Attaching #{length}-character changelog to version code #{code}")
+
+    upload_to_play_store(
+      package_name: APP_IDENTIFIER,
+      track: "internal",
+      version_code: code,
+      json_key: GOOGLE_PLAY_KEY,
+      metadata_path: ANDROID_METADATA_DIR,
+      skip_upload_apk: true,
+      skip_upload_aab: true,
+      # Release notes only. With a metadata_path set, supply otherwise walks EVERY locale folder
+      # under it and runs listing.save plus image and screenshot syncs — an incomplete staging tree
+      # would then overwrite the live store listing.
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+
   desc "Promote the latest internal build to production on Play Store"
   lane :release do
+    # Without an explicit version_code supply refuses as soon as the internal track holds more than
+    # one release ("has more than one release - use :version_code to filter").
     upload_to_play_store(
       track: "internal",
       track_promote_to: "production",
+      version_code: app_version("code").to_i,
       json_key: GOOGLE_PLAY_KEY
     )
   end
 
   desc "Build release AAB without uploading"
   lane :build do
+    ensure_signing
     gradle(task: ":androidApp:bundleRelease")
   end
 end

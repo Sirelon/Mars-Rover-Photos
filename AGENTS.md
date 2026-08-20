@@ -28,7 +28,7 @@ Beta, alpha, and RC dependency versions are acceptable in this project. Prefer t
 Run commands from the repository root so the Gradle wrapper can supply the pinned toolchain.
 
 ### iOS dev builds
-The Xcode project consumes a prebuilt framework from `shared/build/XCFrameworks/debug/shared.xcframework` — in a fresh clone/worktree (or after any shared-code change) run `./gradlew :shared:assembleSharedDebugXCFramework` before building the iOS app, or Xcode fails with "There is no XCFramework found". `iosApp/iosApp/GoogleService-Info.plist` is gitignored; copy it from an existing checkout or Firebase console, otherwise the build fails on a missing input file.
+The Xcode project consumes a prebuilt framework whose location follows the configuration via the `KMP_XCFRAMEWORK_DIR` build setting: Debug links `shared/build/XCFrameworks/debug/shared.xcframework`, Release links `.../release/...`, and the "Build KMP Framework" phase assembles whichever matches. Xcode resolves that framework while planning the build, before script phases run, so in a fresh clone/worktree run the matching task by hand once — `./gradlew :shared:assembleSharedDebugXCFramework` for dev work — or Xcode fails with "There is no XCFramework found". `iosApp/iosApp/GoogleService-Info.plist` is gitignored; copy it from an existing checkout or Firebase console, otherwise the build fails on a missing input file.
 
 ## Versioning
 The app version lives in **one place**: `buildSrc/src/main/kotlin/AppVersion.kt` (`name` = marketing version, `code` = build number). Android (`androidApp/build.gradle.kts`) and Desktop (`desktopApp/build.gradle.kts`) read it directly at build time. iOS can't read Kotlin, so it's kept in sync via Gradle tasks (group `versioning`, defined in `gradle/versioning.gradle.kts`):
@@ -53,6 +53,39 @@ published release shows no What's New dialog at all. Each change names its icon 
 Symbols ligature (`"rocket_launch"`); the script warns for any name missing from the `MaterialSymbol`
 enum, which would silently render the default symbol. Regenerate the JSON with the `release-notes`
 skill.
+
+## Store releases
+Cutting a release goes through the `store-release` skill (`.claude/skills/store-release/SKILL.md`),
+which owns the whole sequence: bump the version, build and upload Android to the Play internal track,
+generate and publish this release's notes concurrently, upload iOS to TestFlight with the same
+changelog, then commit and tag locally. Promoting to Play production and submitting to the App Store
+stay manual.
+
+Two ordering constraints matter beyond that skill. The bump must precede both builds, because
+`versionCode`/`versionName` are compiled in from `AppVersion.kt`. And the two builds cannot run
+concurrently: both drive Gradle in this project directory — Android via `:androidApp:bundleRelease`,
+iOS via the Xcode "Build KMP Framework" phase, which shells out to `./gradlew` for the XCFramework
+matching the configuration.
+
+Releases are tagged on the version-bump commit (`git tag 5.0.0`), which is what makes
+`<prev tag>..HEAD` a trustworthy range for the next release's notes. Tags are created locally;
+pushing one needs explicit permission.
+
+`fastlane/Fastfile` carries the lanes: `android beta` (build + upload AAB), `android changelog`
+(attach release notes to that upload — a separate call because supply skips all metadata when no
+`metadata_path` resolves), `android release` (promote to production), `ios beta` (TestFlight),
+`ios release` (App Store binary) and `ios release_notes` (App Store "What's New", metadata only).
+The Android lanes refuse to build without a resolvable keystore and the iOS lanes without the App
+Store Connect key and `GoogleService-Info.plist`, so a missing credential fails in a second rather
+than after an archive.
+
+The store changelog is a separate artifact from the in-app What's New above — written to the
+gitignored `.claude/tmp/release-metadata/` and uploaded by fastlane — but both carry the same text,
+derived from the same `scripts/release-notes.json` entry. Every credential the release path needs
+(`keystore.properties`, `fastlane/google-play-key.json`, `fastlane/AuthKey_*.p8`,
+`iosApp/iosApp/GoogleService-Info.plist`) is gitignored, so a fresh worktree has none of them.
+Without `keystore.properties` in particular, `bundleRelease` succeeds and produces an unsigned AAB
+that Play rejects.
 
 ## Coding Style & Naming Conventions
 Kotlin files use four-space indentation, `val` first, and explicit visibility for public APIs. Compose functions and classes stay in PascalCase, constants in `UPPER_SNAKE_CASE`, and extension files match their receiver (`ImageRequestExt.kt`). Keep packages cohesive; add a `feature/*` subpackage for new screens. Run `./gradlew detekt` before review instead of hand-tuning formatting.

@@ -13,6 +13,16 @@ Target: `scripts/release-notes.json`, published to the `release-notes` Firestore
 notes for a shipped version can still be written or fixed. Shape mirrors `Release` / `Release.Change`
 in `domain/releasenotes/Release.kt`; UI lives in `presentation/screens/whatsnew/`.
 
+**Cutting a release enters through [`store-release`](../store-release/SKILL.md), not here.** That
+skill orchestrates the bump, the builds, the uploads and the tag, and calls into this one for a
+single range: one archaeologist agent, editorial done inline, one entry prepended to
+`scripts/release-notes.json`. Use this skill directly for a backfill, a correction, or a question
+about what shipped in some past version.
+
+Because `store-release` tags the version-bump commit, the Step 1 guard below gets easier for every
+release from 5.0.0 onward — tag `5.0.0` already sits on its bump commit. Older tags don't; keep
+validating rather than trusting.
+
 ## Where output goes
 
 **Committed** — `docs/release-notes/`:
