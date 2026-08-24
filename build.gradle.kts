@@ -14,7 +14,7 @@ buildscript {
                 "io.netty:netty-common:4.1.137.Final",
                 "io.netty:netty-handler:4.1.118.Final",
                 "com.google.guava:guava:32.1.3-android",
-                "com.google.protobuf:protobuf-javalite:3.25.5",
+                "com.google.protobuf:protobuf-javalite:4.36.0",
                 "org.apache.commons:commons-lang3:3.18.0",
                 "org.apache.httpcomponents:httpclient:4.5.14",
                 "org.bouncycastle:bcpkix-jdk18on:1.84",
@@ -65,7 +65,7 @@ allprojects {
                 "io.netty:netty-handler:4.1.118.Final",
                 // Google libraries
                 "com.google.guava:guava:32.1.3-android",
-                "com.google.protobuf:protobuf-javalite:3.25.5",
+                "com.google.protobuf:protobuf-javalite:4.36.0",
                 // Apache
                 "org.apache.commons:commons-lang3:3.18.0",
                 "org.apache.httpcomponents:httpclient:4.5.14",
