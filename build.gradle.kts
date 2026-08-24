@@ -8,10 +8,10 @@ buildscript {
     configurations.all {
         resolutionStrategy {
             force(
-                "io.netty:netty-codec-http:4.1.137.Final",
+                "io.netty:netty-codec-http:4.2.17.Final",
                 "io.netty:netty-codec-http2:4.1.132.Final",
-                "io.netty:netty-codec:4.1.137.Final",
-                "io.netty:netty-common:4.1.137.Final",
+                "io.netty:netty-codec:4.2.17.Final",
+                "io.netty:netty-common:4.2.17.Final",
                 "io.netty:netty-handler:4.1.118.Final",
                 "com.google.guava:guava:32.1.3-android",
                 "com.google.protobuf:protobuf-javalite:3.25.5",
@@ -58,10 +58,10 @@ allprojects {
         resolutionStrategy {
             force(
                 // Netty — various DoS / request-smuggling / cache-poisoning CVEs
-                "io.netty:netty-codec-http:4.1.137.Final",
+                "io.netty:netty-codec-http:4.2.17.Final",
                 "io.netty:netty-codec-http2:4.1.132.Final",
-                "io.netty:netty-codec:4.1.137.Final",
-                "io.netty:netty-common:4.1.137.Final",
+                "io.netty:netty-codec:4.2.17.Final",
+                "io.netty:netty-common:4.2.17.Final",
                 "io.netty:netty-handler:4.1.118.Final",
                 // Google libraries
                 "com.google.guava:guava:32.1.3-android",
