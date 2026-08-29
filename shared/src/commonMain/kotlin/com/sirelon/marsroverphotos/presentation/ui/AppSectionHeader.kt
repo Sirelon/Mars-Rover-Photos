@@ -10,14 +10,14 @@ import com.sirelon.marsroverphotos.presentation.theme.AppTypography
 
 /**
  * Screen-level section title ("Mission Timeline", "Statistics", …).
- * Uses [AppTypography.sectionHeader] in tertiary colour.
+ * Uses [AppTypography.sectionHeader] in secondary (brand accent) colour, matching the Rovers screen.
  */
 @Composable
 fun AppSectionHeader(title: String, modifier: Modifier = Modifier) {
     Text(
         text = title,
         style = AppTypography.sectionHeader,
-        color = MaterialTheme.colorScheme.tertiary,
+        color = MaterialTheme.colorScheme.secondary,
         modifier = modifier,
     )
 }
