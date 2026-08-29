@@ -274,7 +274,7 @@ fun RoverItem(
                     modifier = Modifier
                         .width(AppSize.roverThumbWidth)
                         .fillMaxHeight()
-                        .clip(MaterialTheme.shapes.medium)
+                        .clip(MaterialTheme.shapes.large)
                 )
                 Column(modifier = Modifier.weight(1f)) {
                     TitleLine(rover)
