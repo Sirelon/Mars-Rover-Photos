@@ -8,13 +8,17 @@ buildscript {
     configurations.all {
         resolutionStrategy {
             force(
-                "io.netty:netty-codec-http:4.1.137.Final",
-                "io.netty:netty-codec-http2:4.1.132.Final",
-                "io.netty:netty-codec:4.1.137.Final",
-                "io.netty:netty-common:4.1.137.Final",
-                "io.netty:netty-handler:4.1.118.Final",
+                "io.netty:netty-codec-http:4.2.17.Final",
+                "io.netty:netty-codec-http2:4.2.17.Final",
+                "io.netty:netty-codec:4.2.17.Final",
+                "io.netty:netty-common:4.2.17.Final",
+                "io.netty:netty-handler:4.2.17.Final",
                 "com.google.guava:guava:32.1.3-android",
-                "com.google.protobuf:protobuf-javalite:3.25.5",
+                // Pinned to the 3.25.x line: protobuf-javalite 4.x bundles
+                // com.google.protobuf.DescriptorProtos, which collides with the copy inside
+                // com.google.firebase:protolite-well-known-types (pulled in by Firestore) and fails
+                // checkDebugDuplicateClasses. Revisit when Firebase ships protolite built on 4.x.
+                "com.google.protobuf:protobuf-javalite:3.25.9",
                 "org.apache.commons:commons-lang3:3.18.0",
                 "org.apache.httpcomponents:httpclient:4.5.14",
                 "org.bouncycastle:bcpkix-jdk18on:1.84",
@@ -57,15 +61,21 @@ allprojects {
     configurations.all {
         resolutionStrategy {
             force(
-                // Netty — various DoS / request-smuggling / cache-poisoning CVEs
-                "io.netty:netty-codec-http:4.1.137.Final",
-                "io.netty:netty-codec-http2:4.1.132.Final",
-                "io.netty:netty-codec:4.1.137.Final",
-                "io.netty:netty-common:4.1.137.Final",
-                "io.netty:netty-handler:4.1.118.Final",
+                // Netty — various DoS / request-smuggling / cache-poisoning CVEs.
+                // Every io.netty artifact must be forced to the same version; Netty does not
+                // support mixing versions across its modules.
+                "io.netty:netty-codec-http:4.2.17.Final",
+                "io.netty:netty-codec-http2:4.2.17.Final",
+                "io.netty:netty-codec:4.2.17.Final",
+                "io.netty:netty-common:4.2.17.Final",
+                "io.netty:netty-handler:4.2.17.Final",
                 // Google libraries
                 "com.google.guava:guava:32.1.3-android",
-                "com.google.protobuf:protobuf-javalite:3.25.5",
+                // Pinned to the 3.25.x line: protobuf-javalite 4.x bundles
+                // com.google.protobuf.DescriptorProtos, which collides with the copy inside
+                // com.google.firebase:protolite-well-known-types (pulled in by Firestore) and fails
+                // checkDebugDuplicateClasses. Revisit when Firebase ships protolite built on 4.x.
+                "com.google.protobuf:protobuf-javalite:3.25.9",
                 // Apache
                 "org.apache.commons:commons-lang3:3.18.0",
                 "org.apache.httpcomponents:httpclient:4.5.14",

@@ -6,3 +6,10 @@ updates:
       interval: "weekly"
       day: "monday"
     open-pull-requests-limit: 10
+    ignore:
+      # protobuf-javalite 4.x bundles com.google.protobuf.DescriptorProtos, which collides with the
+      # copy inside com.google.firebase:protolite-well-known-types and breaks
+      # checkDebugDuplicateClasses. The force in build.gradle.kts stays on the 3.25.x line until
+      # Firebase ships protolite built against protobuf 4.x.
+      - dependency-name: "com.google.protobuf:protobuf-javalite"
+        update-types: ["version-update:semver-major"]
