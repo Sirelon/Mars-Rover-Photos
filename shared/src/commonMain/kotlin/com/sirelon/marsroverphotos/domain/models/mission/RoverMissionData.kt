@@ -17,6 +17,8 @@ object RoverMissionData {
             SPIRIT_ID -> spiritCameras
             PERSEVERANCE_ID -> perseveranceCameras
             INSIGHT_ID -> insightCameras
+            VIKING_1_ID -> vikingCameras
+            VIKING_2_ID -> vikingCameras
             else -> emptyList()
         }
     }
@@ -28,6 +30,8 @@ object RoverMissionData {
         SPIRIT_ID       -> "Gusev Crater, Mars"
         PERSEVERANCE_ID -> "Jezero Crater, Mars"
         INSIGHT_ID      -> "Elysium Planitia, Mars"
+        VIKING_1_ID     -> "Chryse Planitia, Mars"
+        VIKING_2_ID     -> "Utopia Planitia, Mars"
         else            -> "Mars"
     }
 
@@ -38,6 +42,8 @@ object RoverMissionData {
         SPIRIT_ID       -> "Explored Gusev Crater and uncovered evidence of past volcanic and hydrothermal activity over a six-year surface mission."
         PERSEVERANCE_ID -> "Hunting for signs of ancient microbial life and caching rock samples in Jezero Crater — a former lake bed that held liquid water billions of years ago."
         INSIGHT_ID      -> "Studying the deep interior structure of Mars using seismic instruments and a burrowing heat probe at Elysium Planitia."
+        VIKING_1_ID     -> "Returned the first photograph ever taken from the surface of Mars and went on to image Chryse Planitia for over six years — still the longest surface mission of the 20th century."
+        VIKING_2_ID     -> "Photographed frost, dust storms and drifting soil across the northern plains of Utopia Planitia while searching alongside Viking 1 for signs of life."
         else            -> ""
     }
 
@@ -186,6 +192,24 @@ object RoverMissionData {
             name = "IDC",
             fullName = "Instrument Deployment Camera",
             description = "Wide-angle camera on the robotic arm for deployment monitoring"
+        )
+    )
+
+    /**
+     * Both Viking landers carried the same pair. These are facsimile cameras, not framing cameras:
+     * a nodding mirror scanned the scene one vertical line at a time, so a full panorama took
+     * minutes and a moving subject smears across it.
+     */
+    private val vikingCameras = listOf(
+        CameraSpec(
+            name = "VLC1",
+            fullName = "Viking Lander Camera 1",
+            description = "Left-hand facsimile camera, mounted toward the surface sampler's reach"
+        ),
+        CameraSpec(
+            name = "VLC2",
+            fullName = "Viking Lander Camera 2",
+            description = "Right-hand facsimile camera; took the first image from the Martian surface"
         )
     )
 }

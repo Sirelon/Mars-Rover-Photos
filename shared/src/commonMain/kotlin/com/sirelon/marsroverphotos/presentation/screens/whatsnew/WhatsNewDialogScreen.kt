@@ -23,6 +23,7 @@ import com.sirelon.marsroverphotos.presentation.ui.AppOutlinedButton
 import com.sirelon.marsroverphotos.presentation.ui.AppRowDivider
 import com.sirelon.marsroverphotos.presentation.ui.CardShape
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.dropUnlessResumed
 import com.sirelon.marsroverphotos.presentation.viewmodels.WhatsNewViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -69,7 +70,7 @@ fun WhatsNewDialogScreen() {
                         // the dialog, so it must not be waiting again underneath when the story
                         // is popped.
                         onClick = if (hasDetail) {
-                            {
+                            dropUnlessResumed {
                                 dismiss()
                                 navigator.navigate(AppDestination.WhatsNewStory(release.version, page = index))
                             }
@@ -88,7 +89,7 @@ fun WhatsNewDialogScreen() {
                 ) {
                     if (hasDetail) {
                         AppOutlinedButton(
-                            onClick = {
+                            onClick = dropUnlessResumed {
                                 dismiss()
                                 navigator.navigate(AppDestination.WhatsNewStory(release.version, page = 0))
                             },
@@ -96,7 +97,7 @@ fun WhatsNewDialogScreen() {
                         ) { Text("See All") }
                     }
                     AppButton(
-                        onClick = ::dismiss,
+                        onClick = dropUnlessResumed { dismiss() },
                         modifier = Modifier.weight(1f),
                     ) { Text("Got It") }
                 }

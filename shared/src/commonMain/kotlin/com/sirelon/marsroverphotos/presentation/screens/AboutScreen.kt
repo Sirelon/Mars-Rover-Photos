@@ -37,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
 import coil3.SingletonImageLoader
 import coil3.compose.LocalPlatformContext
@@ -112,7 +113,7 @@ fun AboutScreen() {
         appVersion = callbacks.appVersion,
         rateAppUrl = callbacks.rateAppUrl,
         onNavigateToAdmin = if (BuildInfo.isDebug) {
-            { navigator.navigate(AppDestination.AdminPhotos) }
+            dropUnlessResumed { navigator.navigate(AppDestination.AdminPhotos) }
         } else null
     )
 }
@@ -207,7 +208,7 @@ private fun AboutContent(
                         iconTint = colors.onSecondaryContainer,
                         label = "What's New",
                         sub = "See what changed in past releases",
-                        onClick = { navigator.navigate(AppDestination.AllVersions) },
+                        onClick = dropUnlessResumed { navigator.navigate(AppDestination.AllVersions) },
                     )
                     // Desktop has no push support at all, so the row would be a permanently
                     // disabled control with nothing behind it.
@@ -249,6 +250,15 @@ private fun AboutContent(
                         label = "NASA Open API",
                         sub = "api.nasa.gov",
                         onClick = { uriHandler.openUri("https://api.nasa.gov/") }
+                    )
+                    AppRowDivider()
+                    AppRow(
+                        icon = MaterialSymbol.Public,
+                        iconContainer = live.copy(alpha = 0.15f),
+                        iconTint = live,
+                        label = "PDS Imaging Node",
+                        sub = "Viking lander archive, 1976-1982",
+                        onClick = { uriHandler.openUri("https://pds-imaging.jpl.nasa.gov/") }
                     )
                     AppRowDivider()
                     AppRow(

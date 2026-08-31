@@ -20,6 +20,7 @@ import coil3.request.ImageRequest
 import coil3.toBitmap
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.data.network.RestApi
+import com.sirelon.marsroverphotos.data.viking.VikingCatalog
 import com.sirelon.marsroverphotos.data.network.toMarsImages
 import com.sirelon.marsroverphotos.data.paging.MER_KEYWORDS
 import com.sirelon.marsroverphotos.data.paging.pageQuery
@@ -28,6 +29,8 @@ import com.sirelon.marsroverphotos.domain.models.INSIGHT_ID
 import com.sirelon.marsroverphotos.domain.models.OPPORTUNITY_ID
 import com.sirelon.marsroverphotos.domain.models.PERSEVERANCE_ID
 import com.sirelon.marsroverphotos.domain.models.SPIRIT_ID
+import com.sirelon.marsroverphotos.domain.models.VIKING_1_ID
+import com.sirelon.marsroverphotos.domain.models.VIKING_2_ID
 import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
 import com.sirelon.marsroverphotos.platform.Tracker
 import com.sirelon.marsroverphotos.utils.Logger
@@ -46,6 +49,7 @@ public class MarsPhotoWidgetWorker(
 
     private val imagesRepository: ImagesRepository by inject()
     private val api: RestApi by inject()
+    private val vikingCatalog: VikingCatalog by inject()
     @Suppress("UnusedPrivateProperty")
     private val tracker: Tracker by inject()
 
@@ -117,6 +121,9 @@ public class MarsPhotoWidgetWorker(
             SPIRIT_ID, OPPORTUNITY_ID ->
                 api.searchImages(roverId.pageQuery(), 1, 1, keywords = MER_KEYWORDS)
                     .toMarsImages(roverId = roverId).firstOrNull()
+            // The Viking missions ended in 1980/1982, so there is no "latest" to track — the
+            // widget shows a different frame from the archive on each refresh instead.
+            VIKING_1_ID, VIKING_2_ID -> vikingCatalog.randomPhoto(roverId)
             else -> api.getCuriosityLatestPhotos().firstOrNull()
         }
     }

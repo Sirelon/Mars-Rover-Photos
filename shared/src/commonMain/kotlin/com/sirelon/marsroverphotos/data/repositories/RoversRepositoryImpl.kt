@@ -8,6 +8,8 @@ import com.sirelon.marsroverphotos.domain.models.OPPORTUNITY_ID
 import com.sirelon.marsroverphotos.domain.models.PERSEVERANCE_ID
 import com.sirelon.marsroverphotos.domain.models.Rover
 import com.sirelon.marsroverphotos.domain.models.SPIRIT_ID
+import com.sirelon.marsroverphotos.domain.models.VIKING_1_ID
+import com.sirelon.marsroverphotos.domain.models.VIKING_2_ID
 import com.sirelon.marsroverphotos.domain.repositories.RoversRepository
 import com.sirelon.marsroverphotos.utils.Logger
 import com.sirelon.marsroverphotos.utils.RoverDateUtil
@@ -176,7 +178,38 @@ class RoversRepositoryImpl(
                 totalPhotos = 124550
             )
 
-            roverDao.insertRovers(perseverance, insight, curiosity, opportunity, spirit)
+            // Viking Lander 1 (complete) — the first spacecraft to photograph the surface of Mars.
+            // Bounds are exact and describe what the app can actually show: they come from the same
+            // PDS index that generates the bundled catalogue, after its narrow instrument-reading
+            // frames are dropped. Unlike the API-backed rovers there is nothing to refresh at runtime.
+            val viking1 = Rover(
+                id = VIKING_1_ID,
+                name = "Viking 1",
+                drawableName = "img_viking1",
+                landingDate = "1976-07-20",
+                launchDate = "1975-08-20",
+                status = "complete",
+                maxSol = 2230,
+                maxDate = "1982-10-28",
+                totalPhotos = 1333
+            )
+
+            // Viking Lander 2 (complete)
+            val viking2 = Rover(
+                id = VIKING_2_ID,
+                name = "Viking 2",
+                drawableName = "img_viking2",
+                landingDate = "1976-09-03",
+                launchDate = "1975-09-09",
+                status = "complete",
+                maxSol = 1212,
+                maxDate = "1980-02-01",
+                totalPhotos = 1581
+            )
+
+            roverDao.insertRovers(
+                perseverance, insight, curiosity, opportunity, spirit, viking1, viking2
+            )
             // Force-update Insight's mission-complete bounds for upgraded installs that
             // had stale active/wrong-sol data from a previous version (insertRovers ignores conflicts).
             roverDao.updateRoverMissionBounds(INSIGHT_ID, "complete", 1435, "2022-12-21", 5731)

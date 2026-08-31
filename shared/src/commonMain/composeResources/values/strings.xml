@@ -55,6 +55,8 @@
     <string name="rover_blurb_spirit">Found mineral evidence of ancient water before going silent.</string>
     <string name="rover_blurb_insight">A stationary lander probing the deep interior of Mars.</string>
     <string name="rover_blurb_perseverance">Hunting for ancient life and caching rock in Jezero Crater.</string>
+    <string name="rover_blurb_viking1">Sent the first photograph ever taken from the surface of Mars.</string>
+    <string name="rover_blurb_viking2">Watched frost settle over Utopia Planitia for three Martian winters.</string>
 
     <!-- Rovers screen header + search -->
     <string name="rovers_title">Mars Rovers</string>
