@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
 import com.sirelon.marsroverphotos.presentation.navigation.AppDestination
 import com.sirelon.marsroverphotos.presentation.navigation.LocalAppNavigator
@@ -59,7 +60,7 @@ fun AllVersionsScreen() {
             AppTopBar(
                 scrollBehavior = scrollBehavior,
                 title = { Text("Version History") },
-                onBack = { navigator.goBack() },
+                onBack = dropUnlessResumed { navigator.goBack() },
             )
         },
     ) { innerPadding ->
@@ -93,7 +94,7 @@ fun AllVersionsScreen() {
                     state.releases.forEach { release ->
                         ReleaseCard(
                             release = release,
-                            onOpen = { navigator.navigate(AppDestination.WhatsNewStory(release.version, page = 0)) },
+                            onOpen = dropUnlessResumed { navigator.navigate(AppDestination.WhatsNewStory(release.version, page = 0)) },
                         )
                     }
                 }

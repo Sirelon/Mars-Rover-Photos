@@ -3,7 +3,11 @@ package com.sirelon.marsroverphotos.presentation.navigation
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 
@@ -55,3 +59,28 @@ val LocalSharedTransitionScope = staticCompositionLocalOf<SharedTransitionScope?
 // Provided by screens that run their own AnimatedContent layout transition (e.g. Mission Info
 // compact ↔ expanded). Null-defaulted so sharedRoverImage/sharedRoverName no-op in previews.
 val LocalMissionLayoutAnimatedVisibilityScope = staticCompositionLocalOf<AnimatedVisibilityScope?> { null }
+
+// androidx.lifecycle.compose.dropUnlessResumed only covers zero-arg handlers. Nav callbacks
+// declared on entries (onNavigateToPhotos: (Long) -> Unit, onNavigateToImages: (String, Set<String>)
+// -> Unit, ...) need the same guard — reads the same per-entry LocalLifecycleOwner, so it drops the
+// call exactly when the entry it's declared in is no longer RESUMED (mid pop/push transition),
+// which is what keeps a fast double-tap from pushing two entries.
+@Composable
+fun <T> dropUnlessResumed(block: (T) -> Unit): (T) -> Unit {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    return remember(lifecycleOwner) {
+        { arg: T ->
+            if (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) block(arg)
+        }
+    }
+}
+
+@Composable
+fun <A, B> dropUnlessResumed(block: (A, B) -> Unit): (A, B) -> Unit {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    return remember(lifecycleOwner) {
+        { a: A, b: B ->
+            if (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) block(a, b)
+        }
+    }
+}

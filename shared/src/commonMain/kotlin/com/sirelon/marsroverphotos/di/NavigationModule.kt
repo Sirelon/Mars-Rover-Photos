@@ -6,11 +6,15 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.lifecycle.compose.dropUnlessResumed
+import androidx.navigation3.runtime.NavMetadataKey
+import androidx.navigation3.runtime.metadata
 import androidx.navigation3.ui.NavDisplay
 import com.sirelon.marsroverphotos.presentation.navigation.AppDestination
 import com.sirelon.marsroverphotos.presentation.navigation.LocalAppNavigator
 import com.sirelon.marsroverphotos.presentation.theme.AppMotion
 import com.sirelon.marsroverphotos.presentation.navigation.DialogOverlaySceneStrategy
+import com.sirelon.marsroverphotos.presentation.navigation.dropUnlessResumed
 import com.sirelon.marsroverphotos.presentation.screens.AboutScreen
 import com.sirelon.marsroverphotos.presentation.screens.AdminPhotosScreen
 import com.sirelon.marsroverphotos.presentation.screens.FavoriteScreen
@@ -26,16 +30,16 @@ import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.dsl.module
 import org.koin.dsl.navigation3.navigation
 
-internal const val IMAGES_DESTINATION_KEY = "isImagesDestination"
+internal object ImagesDestinationKey : NavMetadataKey<Boolean>
 
 val navigationModule = module {
     navigation<AppDestination.Rovers> {
         val navigator = LocalAppNavigator.current
         RoversScreen(
-            onNavigateToPhotos = { roverId ->
+            onNavigateToPhotos = dropUnlessResumed { roverId ->
                 navigator.navigate(AppDestination.Photos(roverId))
             },
-            onMissionInfoClick = { roverId ->
+            onMissionInfoClick = dropUnlessResumed { roverId ->
                 navigator.navigate(AppDestination.Mission(roverId))
             }
         )
@@ -47,7 +51,7 @@ val navigationModule = module {
     // entry as their ViewModelStore parent (see SharedViewModelStoreNavEntryDecorator).
 
     navigation<AppDestination.Images>(
-        metadata = mapOf(IMAGES_DESTINATION_KEY to true) +
+        metadata = metadata { put(ImagesDestinationKey, true) } +
             // Open fade for Photos→viewer: matches the shared-element bounds duration so the photo
             // morph and the outgoing screen fade move together (see AppMotion).
             NavDisplay.transitionSpec { EnterTransition.None togetherWith fadeOut(tween(AppMotion.SharedContainerMs, easing = AppMotion.Emphasized)) },
@@ -60,14 +64,14 @@ val navigationModule = module {
             roverId = destination.roverId,
             camera = destination.camera,
             cameras = destination.cameras,
-            onBack = { navigator.goBack() }
+            onBack = dropUnlessResumed { navigator.goBack() }
         )
     }
 
     navigation<AppDestination.Favorite> {
         val navigator = LocalAppNavigator.current
         FavoriteScreen(
-            onNavigateToImages = { image ->
+            onNavigateToImages = dropUnlessResumed { image ->
                 navigator.navigate(
                     AppDestination.Images(
                         selectedId = image.id,
@@ -82,7 +86,7 @@ val navigationModule = module {
     navigation<AppDestination.Popular> {
         val navigator = LocalAppNavigator.current
         PopularScreen(
-            onNavigateToImages = { image ->
+            onNavigateToImages = dropUnlessResumed { image ->
                 navigator.navigate(
                     AppDestination.Images(
                         selectedId = image.id,
@@ -97,8 +101,8 @@ val navigationModule = module {
         val navigator = LocalAppNavigator.current
         RoverMissionInfoScreen(
             roverId = destination.roverId,
-            onBack = { navigator.goBack() },
-            onCameraClick = { cameraAbbrev ->
+            onBack = dropUnlessResumed { navigator.goBack() },
+            onCameraClick = dropUnlessResumed { cameraAbbrev ->
                 navigator.navigate(
                     AppDestination.Photos(
                         roverId = destination.roverId,
@@ -106,7 +110,7 @@ val navigationModule = module {
                     )
                 )
             },
-            onBrowsePhotos = {
+            onBrowsePhotos = dropUnlessResumed {
                 navigator.navigate(
                     AppDestination.Photos(
                         roverId = destination.roverId,
@@ -123,12 +127,12 @@ val navigationModule = module {
 
     navigation<AppDestination.Ukraine> {
         val navigator = LocalAppNavigator.current
-        UkraineScreen(onBack = { navigator.goBack() })
+        UkraineScreen(onBack = dropUnlessResumed { navigator.goBack() })
     }
 
     navigation<AppDestination.AdminPhotos> {
         val navigator = LocalAppNavigator.current
-        AdminPhotosScreen(onBack = { navigator.goBack() })
+        AdminPhotosScreen(onBack = dropUnlessResumed { navigator.goBack() })
     }
 
     navigation<AppDestination.WhatsNewDialog>(
