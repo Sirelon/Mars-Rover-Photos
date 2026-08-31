@@ -60,6 +60,26 @@ Background jobs notify you when they exit — don't sleep-poll them. Use the wai
 
 ## Step 1 — pre-flight
 
+**Sync with the remote before anything else.** Work merged on GitHub is not in the local tree until
+you pull, and nothing downstream catches its absence: the build succeeds, the archaeologist reads a
+truthful-but-incomplete `git log`, and the notes describe a release that is missing its headline
+feature. The only symptom is the store listing not mentioning work that shipped.
+
+```bash
+git fetch --all --prune
+git rev-list --left-right --count HEAD...@{u}   # left=local-only  right=remote-only
+git log --oneline HEAD..@{u}                    # must be empty before you bump
+```
+
+Any remote-only commits → `git pull` and resolve before continuing. Dependency files
+(`build.gradle.kts`, `gradle/libs.versions.toml`) are the usual conflict: take the **higher** version
+on each pin, keep whichever comment stays factually true against the merged values, then re-run
+`./gradlew detekt testDebugUnitTest :shared:desktopTest` before committing the merge — a resolved pin
+that does not build is worse than the conflict.
+
+A version code is spent the moment it reaches Play, even on a rejected or replaced upload. If a build
+already went up before you noticed the missing work, the fix is a **new code**, not a re-upload.
+
 The lanes guard themselves — `android beta`/`build` refuse to run without a resolvable keystore,
 and `ios beta`/`release` refuse without the App Store Connect key and `GoogleService-Info.plist`,
 before either build starts. Run the check anyway so a missing credential surfaces once, up front,
