@@ -70,6 +70,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.presentation.navigation.AppDestination
+import com.sirelon.marsroverphotos.presentation.navigation.ScreenNames
 import com.sirelon.marsroverphotos.presentation.theme.AppMotion
 import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
 import com.sirelon.marsroverphotos.presentation.ui.AppButton
@@ -175,6 +176,20 @@ fun ImagesScreen(
     val uiEvent by viewModel.uiEvent.collectAsStateWithLifecycle(initialValue = null)
 
     val refresh = pagingItems.loadState.refresh
+
+    // Mirrors the screen_view params for this destination (see ScreenTracking.kt), so a failure
+    // can be joined against the views that led into it without a lookup table.
+    TrackEmptyFeed(
+        pagingItems = pagingItems,
+        screen = ScreenNames.PHOTO_DETAIL,
+        params = buildMap {
+            put("source", source.name.lowercase())
+            if (roverId != null) {
+                put("rover_id", roverId.toString())
+                put("feed_mode", feedModeParam(roverId))
+            }
+        },
+    )
 
     if (pagingItems.itemCount == 0) {
         // Only treat the feed as genuinely empty once a load has settled: a

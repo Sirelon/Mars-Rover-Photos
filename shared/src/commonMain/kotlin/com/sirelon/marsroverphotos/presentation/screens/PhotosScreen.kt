@@ -67,6 +67,7 @@ import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.data.paging.ImagesSearchPagingSource
 import com.sirelon.marsroverphotos.domain.models.EducationalFact
 import com.sirelon.marsroverphotos.presentation.models.GridItem
+import com.sirelon.marsroverphotos.presentation.navigation.ScreenNames
 import com.sirelon.marsroverphotos.presentation.ui.AppCard
 import com.sirelon.marsroverphotos.presentation.ui.AppChip
 import com.sirelon.marsroverphotos.presentation.ui.AppEmptyState
@@ -137,6 +138,18 @@ fun PhotosScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val pagingItems = viewModel.gridItemsFlow.collectAsLazyPagingItems()
     val gridState = rememberLazyGridState()
+
+    // A camera filter narrowing a sol down to nothing is a normal outcome, not a broken source,
+    // so it is reported alongside the feed mode rather than folded into it.
+    TrackEmptyFeed(
+        pagingItems = pagingItems,
+        screen = ScreenNames.PHOTOS,
+        params = mapOf(
+            "rover_id" to roverId.toString(),
+            "feed_mode" to feedModeParam(roverId),
+            "has_camera_filter" to state.cameraFilters.isNotEmpty().toString(),
+        ),
+    )
 
     // Scroll to top whenever the feed is re-anchored (sol/date pick, randomize, go-to-latest,
     // camera filter change). Without this the grid keeps its previous scroll offset and the

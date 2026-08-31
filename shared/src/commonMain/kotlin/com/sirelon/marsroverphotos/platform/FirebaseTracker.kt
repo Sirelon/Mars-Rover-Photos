@@ -26,6 +26,23 @@ class FirebaseTracker(private val analytics: FirebaseAnalytics) : Tracker {
         )
     }
 
+    override fun trackFeedError(screen: String, error: Throwable, params: Map<String, String>) {
+        analytics.logEvent(
+            "feed_error",
+            params + buildMap {
+                put("screen", screen)
+                put("error_type", error::class.simpleName ?: "Unknown")
+                // GA4 truncates string params at 100 chars. The head of the message carries the
+                // status code / host that identifies which backend broke; the tail does not.
+                error.message?.takeIf { it.isNotBlank() }?.let { put("reason", it.take(100)) }
+            },
+        )
+    }
+
+    override fun trackFeedEmpty(screen: String, params: Map<String, String>) {
+        analytics.logEvent("feed_empty", params + mapOf("screen" to screen))
+    }
+
     override fun trackFavorite(photo: MarsImage, from: String, fav: Boolean) {
         val event = if (fav) "FavoritePhoto" else "UnFavoritePhoto"
         analytics.logEvent(event, mapOf("screen" to from, "photo_id" to photo.id))

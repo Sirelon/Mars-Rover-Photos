@@ -7,6 +7,8 @@ class DesktopTracker : Tracker {
     override fun trackClick(event: String) { Logger.d("Tracker") { "trackClick: $event" } }
     override fun trackEvent(event: String, params: Map<String, String>) { Logger.d("Tracker") { "trackEvent: $event $params" } }
     override fun trackScreen(screenName: String, params: Map<String, String>) { Logger.d("Tracker") { "trackScreen: $screenName $params" } }
+    override fun trackFeedError(screen: String, error: Throwable, params: Map<String, String>) { Logger.d("Tracker") { "trackFeedError: $screen ${error::class.simpleName} $params" } }
+    override fun trackFeedEmpty(screen: String, params: Map<String, String>) { Logger.d("Tracker") { "trackFeedEmpty: $screen $params" } }
     override fun trackFavorite(photo: MarsImage, from: String, fav: Boolean) { Logger.d("Tracker") { "trackFavorite: ${photo.id} fav=$fav from=$from" } }
     override fun trackSeen(photo: MarsImage) { Logger.d("Tracker") { "trackSeen: ${photo.id}" } }
     override fun trackScale(photo: MarsImage) { Logger.d("Tracker") { "trackScale: ${photo.id}" } }
