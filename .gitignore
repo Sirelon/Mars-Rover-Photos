@@ -131,6 +131,9 @@ Cloud/
 xcuserdata/
 *.xcuserstate
 *.xcworkspace/xcuserdata/
+# SwiftPM checkout cache written by the KMP linkage integration; every iOS build regenerates it,
+# and its package stubs duplicate the ones tracked under iosApp/KotlinMultiplatformLinkedPackage/
+.swiftpm-locks/
 # CocoaPods (not used — project uses SPM)
 Pods/
 Podfile.lock

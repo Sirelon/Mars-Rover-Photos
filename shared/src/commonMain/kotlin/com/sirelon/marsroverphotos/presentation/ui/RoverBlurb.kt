@@ -7,12 +7,16 @@ import com.sirelon.marsroverphotos.domain.models.OPPORTUNITY_ID
 import com.sirelon.marsroverphotos.domain.models.PERSEVERANCE_ID
 import com.sirelon.marsroverphotos.domain.models.Rover
 import com.sirelon.marsroverphotos.domain.models.SPIRIT_ID
+import com.sirelon.marsroverphotos.domain.models.VIKING_1_ID
+import com.sirelon.marsroverphotos.domain.models.VIKING_2_ID
 import com.sirelon.marsroverphotos.shared.resources.Res
 import com.sirelon.marsroverphotos.shared.resources.rover_blurb_curiosity
 import com.sirelon.marsroverphotos.shared.resources.rover_blurb_insight
 import com.sirelon.marsroverphotos.shared.resources.rover_blurb_opportunity
 import com.sirelon.marsroverphotos.shared.resources.rover_blurb_perseverance
 import com.sirelon.marsroverphotos.shared.resources.rover_blurb_spirit
+import com.sirelon.marsroverphotos.shared.resources.rover_blurb_viking1
+import com.sirelon.marsroverphotos.shared.resources.rover_blurb_viking2
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -26,5 +30,7 @@ fun Rover.blurbResource(): StringResource? = when (id) {
     SPIRIT_ID -> Res.string.rover_blurb_spirit
     INSIGHT_ID -> Res.string.rover_blurb_insight
     PERSEVERANCE_ID -> Res.string.rover_blurb_perseverance
+    VIKING_1_ID -> Res.string.rover_blurb_viking1
+    VIKING_2_ID -> Res.string.rover_blurb_viking2
     else -> null
 }

@@ -47,6 +47,8 @@ import com.sirelon.marsroverphotos.domain.models.INSIGHT_ID
 import com.sirelon.marsroverphotos.domain.models.OPPORTUNITY_ID
 import com.sirelon.marsroverphotos.domain.models.PERSEVERANCE_ID
 import com.sirelon.marsroverphotos.domain.models.SPIRIT_ID
+import com.sirelon.marsroverphotos.domain.models.VIKING_1_ID
+import com.sirelon.marsroverphotos.domain.models.VIKING_2_ID
 import com.sirelon.marsroverphotos.presentation.theme.MarsRoverPhotosTheme
 import kotlinx.coroutines.launch
 
@@ -122,7 +124,9 @@ private fun WidgetConfigScreen(
             RoverOption(CURIOSITY_ID, "Curiosity"),
             RoverOption(OPPORTUNITY_ID, "Opportunity"),
             RoverOption(SPIRIT_ID, "Spirit"),
-            RoverOption(INSIGHT_ID, "Insight")
+            RoverOption(INSIGHT_ID, "Insight"),
+            RoverOption(VIKING_1_ID, "Viking 1"),
+            RoverOption(VIKING_2_ID, "Viking 2")
         )
     }
     var selectedId by remember { mutableLongStateOf(DefaultRoverId) }

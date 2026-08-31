@@ -43,6 +43,8 @@ import com.sirelon.marsroverphotos.domain.models.INSIGHT_ID
 import com.sirelon.marsroverphotos.domain.models.OPPORTUNITY_ID
 import com.sirelon.marsroverphotos.domain.models.PERSEVERANCE_ID
 import com.sirelon.marsroverphotos.domain.models.SPIRIT_ID
+import com.sirelon.marsroverphotos.domain.models.VIKING_1_ID
+import com.sirelon.marsroverphotos.domain.models.VIKING_2_ID
 import java.io.File
 
 /** Intent extra key used to carry the photo ID when the widget launches the app. */
@@ -197,6 +199,8 @@ internal fun roverNameForId(roverId: Long): String {
         OPPORTUNITY_ID -> "Opportunity"
         SPIRIT_ID -> "Spirit"
         CURIOSITY_ID -> "Curiosity"
+        VIKING_1_ID -> "Viking 1"
+        VIKING_2_ID -> "Viking 2"
         else -> "Mars Rover"
     }
 }

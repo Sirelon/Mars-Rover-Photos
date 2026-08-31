@@ -10,9 +10,13 @@ import com.sirelon.marsroverphotos.utils.Logger
 import kotlin.math.abs
 
 /**
- * [PagingSource] that pages Mars rover photos by **sol** (Martian day). Used for every rover whose
- * feed is sol-keyed: Curiosity, Perseverance, and Insight. Spirit and Opportunity instead use
- * [ImagesSearchPagingSource] (see [FeedMode] and `Long.usesPageFeed`).
+ * [PagingSource] that pages Mars rover photos by **sol** (Martian day). Used for every mission whose
+ * feed is sol-keyed: Curiosity, Perseverance, Insight, and both Viking landers. Spirit and
+ * Opportunity instead use [ImagesSearchPagingSource] (see [FeedMode] and `Long.usesPageFeed`).
+ *
+ * The [photosRepository] call is not necessarily a network request — Viking is served from a
+ * bundled catalogue — so a scan across empty sols can be far cheaper for some missions than the
+ * budgets below assume. The budgets stay sized for the network case.
  *
  * The key type is [Long] = sol number: APPEND walks sol+1, sol+2, …; PREPEND walks sol-1, sol-2, …
  *

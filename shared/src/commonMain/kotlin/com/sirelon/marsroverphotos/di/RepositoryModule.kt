@@ -7,6 +7,7 @@ import com.sirelon.marsroverphotos.data.repositories.ImagesRepositoryImpl
 import com.sirelon.marsroverphotos.data.repositories.PhotosRepositoryImpl
 import com.sirelon.marsroverphotos.data.repositories.ReleaseNotesRepositoryImpl
 import com.sirelon.marsroverphotos.data.repositories.RoversRepositoryImpl
+import com.sirelon.marsroverphotos.data.viking.VikingCatalog
 import com.sirelon.marsroverphotos.domain.repositories.FactsRepository
 import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
 import com.sirelon.marsroverphotos.domain.repositories.PhotosRepository
@@ -27,9 +28,12 @@ val repositoryModule = module {
         CoroutineScope(SupervisorJob() + Dispatchers.Default)
     }
 
+    // Parsed once per lander and held for the process — see the class KDoc.
+    single { VikingCatalog() }
+
     // Repositories
     single<PhotosRepository> {
-        PhotosRepositoryImpl(api = get())
+        PhotosRepositoryImpl(api = get(), vikingCatalog = get())
     }
 
     // Shared rover-feed pager — one instance feeds both the photos list and the detail pager

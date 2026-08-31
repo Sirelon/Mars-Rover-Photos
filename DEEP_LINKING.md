@@ -55,6 +55,12 @@ not yet declare associated domains, so universal links are not currently wired o
 | Curiosity | 5 |
 | Opportunity | 6 |
 | Spirit | 7 |
+| Viking 1 | 8 |
+| Viking 2 | 9 |
+
+Photo links (`photo/{id}`) resolve numeric NASA photo ids only. The Viking landers and the two
+MER rovers use alphanumeric archive ids (`12A001-BB1`, `PIA00565`), so their individual photos are
+not addressable this way — link to the mission instead.
 
 ## Platform behavior
 
