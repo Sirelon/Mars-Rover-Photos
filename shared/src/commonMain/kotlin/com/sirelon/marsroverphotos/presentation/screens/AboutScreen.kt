@@ -252,6 +252,15 @@ private fun AboutContent(
                     )
                     AppRowDivider()
                     AppRow(
+                        icon = MaterialSymbol.Public,
+                        iconContainer = live.copy(alpha = 0.15f),
+                        iconTint = live,
+                        label = "PDS Imaging Node",
+                        sub = "Viking lander archive, 1976-1982",
+                        onClick = { uriHandler.openUri("https://pds-imaging.jpl.nasa.gov/") }
+                    )
+                    AppRowDivider()
+                    AppRow(
                         icon = MaterialSymbol.Star,
                         iconContainer = colors.secondary.copy(alpha = 0.18f),
                         iconTint = colors.secondary,

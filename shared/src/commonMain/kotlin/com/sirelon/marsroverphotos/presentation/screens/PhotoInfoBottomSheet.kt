@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
+import com.sirelon.marsroverphotos.data.paging.usesPageFeed
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format.MonthNames
@@ -26,8 +27,8 @@ import kotlinx.datetime.toLocalDateTime
  * Bottom sheet displaying detailed information about a Mars rover photo.
  *
  * Shows:
- * - Description (Perseverance only)
- * - Credit (Perseverance only)
+ * - Description (Perseverance and Viking)
+ * - Credit (Perseverance and Viking)
  * - Camera information
  * - Sol and Earth date
  * - Usage statistics
@@ -55,12 +56,12 @@ fun PhotoInfoBottomSheet(
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            // Description section (Perseverance only)
+            // Description section (Perseverance and Viking)
             image.description?.takeIf { it.isNotBlank() }?.let { description ->
                 InfoSection(title = "Description", content = description)
             }
 
-            // Credit section (Perseverance only)
+            // Credit section (Perseverance and Viking)
             image.credit?.takeIf { it.isNotBlank() }?.let { credit ->
                 InfoSection(title = "Credit", content = credit)
             }
@@ -73,8 +74,12 @@ fun PhotoInfoBottomSheet(
                 )
             }
 
-            // Sol and Earth Date — Sol is absent for page-mode rovers (Spirit/Opportunity, sol=0).
-            if (image.sol != 0L) {
+            // Sol and Earth Date — page-mode rovers (Spirit/Opportunity) have no sol and store 0,
+            // as do popular photos whose Firestore document predates the roverId field.
+            // `sol == 0` alone would also hide a real landing-day sol, which for Viking is the
+            // sol holding the first photograph taken from the surface of Mars — so a known
+            // sol-keyed rover shows its sol even at 0.
+            if (image.sol != 0L || (image.roverId != 0L && !image.roverId.usesPageFeed())) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween

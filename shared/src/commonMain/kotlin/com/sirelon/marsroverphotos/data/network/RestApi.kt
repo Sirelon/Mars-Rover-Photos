@@ -74,8 +74,10 @@ class RestApi {
      *
      * @param query The photos query request containing rover ID, sol, and camera
      * @return List of Mars images for the specified query
-     * @throws IllegalArgumentException if the rover ID is not supported.
-     *         Supported rover IDs: PERSEVERANCE_ID, INSIGHT_ID, CURIOSITY_ID, OPPORTUNITY_ID, SPIRIT_ID
+     * @throws IllegalArgumentException if the rover ID has no raw-image endpoint here.
+     *         Supported rover IDs: PERSEVERANCE_ID, INSIGHT_ID, CURIOSITY_ID. Spirit and
+     *         Opportunity are served by [searchImages], and the Viking landers by
+     *         `VikingCatalog`; both are routed before this call in `PhotosRepositoryImpl`.
      */
     suspend fun getRoversPhotos(query: PhotosQueryRequest): List<MarsImage> {
         // We should call another api if rover is insight or perseverance
