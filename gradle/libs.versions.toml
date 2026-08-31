@@ -35,7 +35,7 @@ core-splashscreen = "1.2.0"
 
 # Multiplatform libraries
 # https://github.com/coil-kt/coil/blob/main/CHANGELOG.md
-coil = "3.5.0"
+coil = "3.6.0"
 # https://github.com/Kotlin/kotlinx.serialization/releases
 kotlin-serialization = "1.11.0"
 # https://github.com/Kotlin/kotlinx.collections.immutable/releases
