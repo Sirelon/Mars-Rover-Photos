@@ -1,6 +1,34 @@
 {
   "releases": [
     {
+      "version": "5.2.0",
+      "date": "2026-08-31",
+      "active": true,
+      "changes": [
+        {
+          "id": "viking_landers",
+          "icon": "flight_land",
+          "title": "Viking Landers",
+          "summary": "Two new missions, from the dawn of Mars photography",
+          "detail": "Viking Lander 1 and 2 join the mission list with 2,914 frames from the 1976–1982 archive — including the first photograph ever taken from the surface of Mars. Browse them by sol like any other mission, show them in the home-screen widget, or open one straight from a link."
+        },
+        {
+          "id": "double_tap_navigation_fix",
+          "icon": "bug_report",
+          "title": "Steadier Navigation",
+          "summary": "A quick double-tap no longer opens the same screen twice",
+          "detail": "Tapping a photo or a menu item twice in quick succession, while the screen was still animating, could open the same destination twice and leave an extra screen to back out of. Taps that land mid-transition are now ignored."
+        },
+        {
+          "id": "rover_card_polish",
+          "icon": "palette",
+          "title": "Visual Polish",
+          "summary": "Rover cards and Mission Info headers line up",
+          "detail": "Rover card images now use the same corner radius as the card around them instead of a slightly tighter one, and Mission Info section headers pick up the same orange accent as the Rovers screen in place of a mismatched blue."
+        }
+      ]
+    },
+    {
       "version": "5.1.0",
       "date": "2026-08-20",
       "active": true,

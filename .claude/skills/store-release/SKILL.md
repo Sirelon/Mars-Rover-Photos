@@ -295,13 +295,30 @@ permission, and the user verifies a release on-device first.
 
 **This repo**
 
-- **The first release XCFramework build of a fresh worktree may fail once, spuriously.** Observed:
-  `assembleSharedReleaseXCFramework` failed after 6m on `:shared:linkReleaseFrameworkIosArm64` with a
-  bare "Compilation finished with errors" and no `e:` diagnostic; that same link then succeeded on its
-  own, and re-running the assemble finished in seconds. Two Kotlin/Native release links run
-  concurrently there, so resource pressure is the likely cause, but no OOM evidence survived to
-  confirm it. **Just re-run it** — and don't read the first failure as broken code. If it ever fails
-  twice on the same task, that's a real error and needs the full log, not `tail`.
+- **`assembleSharedReleaseXCFramework` fails on `:shared:linkReleaseFrameworkIosArm64` when the
+  Kotlin/Native linker runs out of heap.** Gradle surfaces it as a bare "Compilation finished with
+  errors"; the real diagnostic is further up the log:
+
+  ```
+  e: Compilation failed: Java heap space
+  e: java.lang.OutOfMemoryError: Java heap space
+  ```
+
+  `:shared:linkReleaseFrameworkIosArm64` and `:shared:linkReleaseFrameworkIosSimulatorArm64` run
+  concurrently, and each Kotlin/Native link is memory-hungry. The knob is `kotlin.native.jvmArgs` in
+  `gradle.properties` — the linker runs in **its own process**, so neither `org.gradle.jvmargs` nor
+  the `kotlin.daemon.jvm.options` nested inside it reaches it. Raising the daemon heap alone
+  reproduces the same OOM. Current setting:
+
+  ```properties
+  kotlin.native.jvmArgs=-Xmx8G
+  ```
+
+  Confirmed 2026-08-31 under Kotlin 2.4.20-Beta1: 4G OOMs, 6G on the daemon (wrong knob) OOMs, 8G on
+  `kotlin.native.jvmArgs` links in ~6m. Run `./gradlew --stop` after editing, or the old daemon keeps
+  the previous value. Re-running unchanged sometimes passes, because the sibling link has already
+  finished and freed memory — treat that as luck, not a fix. **Never read this as broken code**, and
+  always pull the `e:` lines out of the full log rather than reading `tail`.
 - iOS release builds link optimized Kotlin: the framework resolves through the per-configuration
   `KMP_XCFRAMEWORK_DIR` build setting, so Release uses `XCFrameworks/release` and Debug uses
   `XCFrameworks/debug`, and the "Build KMP Framework" phase assembles whichever matches
