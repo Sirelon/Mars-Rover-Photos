@@ -31,6 +31,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
@@ -44,7 +45,8 @@ import com.sirelon.marsroverphotos.presentation.ui.UkraineBanner
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import androidx.navigation3.runtime.NavEntry
-import com.sirelon.marsroverphotos.di.IMAGES_DESTINATION_KEY
+import androidx.navigation3.runtime.get
+import com.sirelon.marsroverphotos.di.ImagesDestinationKey
 import com.sirelon.marsroverphotos.presentation.screens.DateJumpPickerScreen
 import com.sirelon.marsroverphotos.presentation.screens.PhotosFiltersScreen
 import com.sirelon.marsroverphotos.presentation.screens.PhotosScreen
@@ -104,7 +106,7 @@ fun AppNavigation(
                 PhotosScreen(
                     roverId = key.roverId,
                     cameraFilter = key.camera,
-                    onNavigateToImages = { clickedId, cameras ->
+                    onNavigateToImages = dropUnlessResumed { clickedId, cameras ->
                         navigator.navigate(
                             AppDestination.Images(
                                 selectedId = clickedId,
@@ -118,11 +120,11 @@ fun AppNavigation(
                     onClearCameraFilter = {
                         navigator.replaceTop(AppDestination.Photos(key.roverId, camera = null))
                     },
-                    onBack = { navigator.goBack() },
-                    onOpenDateJumpPicker = {
+                    onBack = dropUnlessResumed { navigator.goBack() },
+                    onOpenDateJumpPicker = dropUnlessResumed {
                         navigator.navigate(AppDestination.PhotosDateJumpPicker(key.roverId))
                     },
-                    onOpenFilters = {
+                    onOpenFilters = dropUnlessResumed {
                         navigator.navigate(AppDestination.PhotosFilters(key.roverId))
                     },
                 )
@@ -136,7 +138,7 @@ fun AppNavigation(
             ) {
                 DateJumpPickerScreen(
                     viewModel = koinViewModel(viewModelStoreOwner = LocalSharedViewModelStoreOwner.current),
-                    onDismiss = { navigator.goBack() },
+                    onDismiss = dropUnlessResumed { navigator.goBack() },
                 )
             }
 
@@ -149,8 +151,8 @@ fun AppNavigation(
                 PhotosFiltersScreen(
                     viewModel = koinViewModel(viewModelStoreOwner = LocalSharedViewModelStoreOwner.current),
                     roverId = key.roverId,
-                    onDismiss = { navigator.goBack() },
-                    onOpenDateJumpPicker = {
+                    onDismiss = dropUnlessResumed { navigator.goBack() },
+                    onOpenDateJumpPicker = dropUnlessResumed {
                         navigator.replaceTop(AppDestination.PhotosDateJumpPicker(key.roverId))
                     },
                 )
@@ -241,7 +243,7 @@ fun AppNavigation(
                 // Standard back: previous screen revealed from the left.
                 // When leaving Images, suppress the slide — shared elements handle the visual.
                 popTransitionSpec = {
-                    if (initialState.metadata[IMAGES_DESTINATION_KEY] == true) {
+                    if (initialState.metadata[ImagesDestinationKey] == true) {
                         EnterTransition.None togetherWith fadeOut(tween(IMAGES_POP_FADE, easing = AppMotion.Emphasized))
                     } else {
                         (slideInHorizontally(tween(ANIM_DURATION)) { -it / 5 } + fadeIn(tween(ANIM_DURATION))) togetherWith
@@ -251,7 +253,7 @@ fun AppNavigation(
                 // Predictive back: same curve — NavDisplay drives this interactively
                 // with the system's back gesture progress on Android 14+
                 predictivePopTransitionSpec = {
-                    if (initialState.metadata[IMAGES_DESTINATION_KEY] == true) {
+                    if (initialState.metadata[ImagesDestinationKey] == true) {
                         EnterTransition.None togetherWith fadeOut(tween(IMAGES_POP_FADE, easing = AppMotion.Emphasized))
                     } else {
                         (slideInHorizontally(tween(ANIM_DURATION)) { -it / 5 } + fadeIn(tween(ANIM_DURATION))) togetherWith
@@ -302,8 +304,13 @@ fun AppNavigation(
                         UkraineBanner(
                             modifier = Modifier.fillMaxWidth(),
                             onClick = {
-                                tracker.trackClick("UkraineBanner_Root")
-                                navigator.navigate(AppDestination.Ukraine)
+                                // Chrome, not an entry: it sits outside NavDisplay, so it has no
+                                // per-entry lifecycle for dropUnlessResumed to key off. Guard a fast
+                                // double-tap the same way §3.2's singleTop example does instead.
+                                if (backStack.lastOrNull() != AppDestination.Ukraine) {
+                                    tracker.trackClick("UkraineBanner_Root")
+                                    navigator.navigate(AppDestination.Ukraine)
+                                }
                             },
                         )
                     }
@@ -351,7 +358,9 @@ private fun AppDestination.topLevelDestination(): AppDestination {
     }
 }
 
-private val navBackStackConfiguration = SavedStateConfiguration {
+// internal, not private: exercised directly by AppDestinationSerializationTest to catch a new
+// AppDestination subtype that wasn't added to the polymorphic registration below.
+internal val navBackStackConfiguration = SavedStateConfiguration {
     serializersModule = SerializersModule {
         polymorphic(NavKey::class) {
             subclass(AppDestination.Rovers::class, AppDestination.Rovers.serializer())
