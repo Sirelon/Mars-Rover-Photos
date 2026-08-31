@@ -64,7 +64,7 @@ gitliveFirebase = "3.0.0-alpha01"
 firebaseBom = "34.17.0"
 firebaseAnalyticsVersion = "23.2.0"
 firebaseCrashlyticsVersion = "20.1.0"
-firebaseFirestoreVersion = "26.5.0"
+firebaseFirestoreVersion = "26.6.0"
 # Matches firebase-bom 34.17.0. The GitLive Android artifact depends on firebase-messaging with no
 # version of its own, so the shared module has to supply one.
 firebaseMessagingVersion = "25.1.1"
