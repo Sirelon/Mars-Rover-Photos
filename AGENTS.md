@@ -50,11 +50,14 @@ version's notes can be written or corrected after that build is already on peopl
 idempotent. Add `--dry-run` to inspect the payload first. It authenticates with Application Default
 Credentials, so `gcloud auth application-default login` must have been run.
 
-Publishing is a step of its own: `bumpVersion` does not do it, and a build whose version has no
-published release shows no What's New dialog at all. Each change names its icon with a Material
-Symbols ligature (`"rocket_launch"`); the script warns for any name missing from the `MaterialSymbol`
-enum, which would silently render the default symbol. Regenerate the JSON with the `release-notes`
-skill.
+Publishing is a step of its own: `bumpVersion` does not do it. The What's New dialog nudges toward
+the newest `active` release (`active: false` for a build pushed ahead of store approval — see the
+`store-release` skill) when that version is newer than the installed build; it does not require an
+entry matching the installed version exactly, but with nothing published at all there is no release
+to nudge toward. Each change names its icon with a Material Symbols ligature (`"rocket_launch"`); the
+script warns for
+any name missing from the `MaterialSymbol` enum, which would silently render the default symbol.
+Regenerate the JSON with the `release-notes` skill.
 
 ## Store releases
 Cutting a release goes through the `store-release` skill (`.claude/skills/store-release/SKILL.md`),

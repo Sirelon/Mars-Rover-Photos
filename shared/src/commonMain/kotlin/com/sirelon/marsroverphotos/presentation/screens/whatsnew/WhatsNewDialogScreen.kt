@@ -16,12 +16,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.window.Dialog
 import com.sirelon.marsroverphotos.presentation.navigation.AppDestination
+import com.sirelon.marsroverphotos.presentation.navigation.LocalAboutCallbacks
 import com.sirelon.marsroverphotos.presentation.navigation.LocalAppNavigator
 import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
 import com.sirelon.marsroverphotos.presentation.ui.AppButton
 import com.sirelon.marsroverphotos.presentation.ui.AppOutlinedButton
 import com.sirelon.marsroverphotos.presentation.ui.AppRowDivider
 import com.sirelon.marsroverphotos.presentation.ui.CardShape
+import com.sirelon.marsroverphotos.presentation.ui.rememberPlatformUriHandler
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import com.sirelon.marsroverphotos.presentation.viewmodels.WhatsNewViewModel
@@ -32,12 +34,18 @@ fun WhatsNewDialogScreen() {
     val navigator = LocalAppNavigator.current
     val viewModel: WhatsNewViewModel = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val release = state.currentRelease ?: return
+    val release = state.latestRelease ?: return
     val hasDetail = release.changes.any { it.detail != null }
+    val storeUrl = LocalAboutCallbacks.current.rateAppUrl
+    val uriHandler = rememberPlatformUriHandler()
 
     fun dismiss() {
         viewModel.markSeen()
         navigator.goBack()
+    }
+
+    fun goToStore() {
+        if (storeUrl.isNotBlank()) uriHandler.openUri(storeUrl)
     }
 
     Dialog(onDismissRequest = ::dismiss) {
@@ -56,7 +64,7 @@ fun WhatsNewDialogScreen() {
                         color = MaterialTheme.colorScheme.onSurface,
                     )
                     Text(
-                        text = "Version ${release.version}",
+                        text = "Version ${release.version} is available",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -97,9 +105,12 @@ fun WhatsNewDialogScreen() {
                         ) { Text("See All") }
                     }
                     AppButton(
-                        onClick = dropUnlessResumed { dismiss() },
+                        onClick = dropUnlessResumed {
+                            goToStore()
+                            dismiss()
+                        },
                         modifier = Modifier.weight(1f),
-                    ) { Text("Got It") }
+                    ) { Text("Update") }
                 }
             }
         }

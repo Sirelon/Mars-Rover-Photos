@@ -174,9 +174,17 @@ the file list.
 **Do the editorial pass yourself.** It's one release; a second agent buys nothing. Apply the
 `release-notes` skill's rules: drop `invisible` impact, merge `related_to` entries, order changes by
 importance to the user rather than by date, and don't pad — `maintenance_only` is a legitimate
-outcome. Then prepend the entry to `scripts/release-notes.json` (`active: true`, today's date) and
+outcome. Then prepend the entry to `scripts/release-notes.json` (`active: false`, today's date) and
 add any Material Symbols ligature the notes use that `MaterialSymbol` in
 `presentation/ui/MaterialSymbolIcon.kt` lacks.
+
+**`active: false`, not `true`, every time here.** This step runs right after the build lands on
+Play's internal track / TestFlight — nobody outside your testers can install it yet. The app filters
+out any `active: false` document everywhere (What's New dialog, story, Version History), so
+publishing this stage as `false` is what keeps the update-nudge dialog from telling a user on the
+previous version to go get a build the public store doesn't have. See "Marking a release available"
+below for the flip once that stops being true. (`active` also covers retracting a malformed entry —
+this is the same flag, just a different reason to be `false`.)
 
 **Publish, in the background:**
 
@@ -185,7 +193,25 @@ node scripts/publish-release-notes.mjs --dry-run   # counts + icon warnings, wri
 node scripts/publish-release-notes.mjs            # background; one atomic Firestore commit
 ```
 
-A build whose version has no published entry shows no What's New dialog at all.
+The dialog is keyed off the newest `active` release compared against the installed build, not off an
+entry matching the installed version exactly — a user on 5.1.5 gets nudged toward a published 5.2.0
+even though 5.1.5 itself has no entry. What an inactive version *does* block is the dialog ever
+recommending it: nothing to update to shows nothing.
+
+### Marking a release available
+
+Once you've promoted this version to Play production **and** Apple has approved the App Store
+release — i.e. once a member of the public, not just an internal/TestFlight tester, can actually
+install it — flip that entry to `active: true` and republish:
+
+```bash
+# edit scripts/release-notes.json: this version's "active" → true
+node scripts/publish-release-notes.mjs
+```
+
+This is a separate, later action — often days after this skill's run finishes, once both stores'
+review/promotion has actually happened — so it isn't a step this skill executes itself; do it (or
+remind the user to) when the production promotion and App Store approval are confirmed.
 
 ## Step 4 — store changelog, and the Play upload of it
 
@@ -309,7 +335,9 @@ permission, and the user verifies a release on-device first.
 - Which of the five things landed: Play internal upload, Play changelog, TestFlight, Firestore,
   App Store Connect metadata (What's New + Promotional Text on the version draft).
 - That the release commit and tag are **local and unpushed**.
-- Anything still manual: production promotion, App Store submission, and the outstanding items below.
+- Anything still manual: production promotion, App Store submission, flipping this release to
+  `active: true` in Firestore once both of those land (see "Marking a release available" in step 3),
+  and the outstanding items below.
 
 ## Known pitfalls
 

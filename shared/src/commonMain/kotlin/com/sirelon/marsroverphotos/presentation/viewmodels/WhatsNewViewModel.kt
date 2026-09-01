@@ -18,9 +18,20 @@ import kotlinx.coroutines.withTimeoutOrNull
 
 data class WhatsNewUiState(
     val releases: ImmutableList<Release> = persistentListOf(),
-    val currentRelease: Release? = null,
+    val latestRelease: Release? = null,
     val isLoading: Boolean = true,
 )
+
+/** Numeric `major.minor.patch` comparison — versions in this repo are always that shape (see AGENTS.md › Versioning), so a plain dotted split is enough; no need for a general semver parser. */
+private fun compareVersions(a: String, b: String): Int {
+    val partsA = a.split(".")
+    val partsB = b.split(".")
+    for (i in 0 until maxOf(partsA.size, partsB.size)) {
+        val cmp = (partsA.getOrNull(i)?.toIntOrNull() ?: 0).compareTo(partsB.getOrNull(i)?.toIntOrNull() ?: 0)
+        if (cmp != 0) return cmp
+    }
+    return 0
+}
 
 class WhatsNewViewModel(
     private val releaseNotesRepository: ReleaseNotesRepository,
@@ -48,7 +59,10 @@ class WhatsNewViewModel(
             _state.update {
                 it.copy(
                     releases = releases,
-                    currentRelease = releases.firstOrNull { release -> release.version == BuildInfo.versionName },
+                    // The repository already dropped anything not "available" in the store, so the
+                    // highest version left here is always something the user could actually update
+                    // to — never a build pending approval.
+                    latestRelease = releases.maxWithOrNull { a, b -> compareVersions(a.version, b.version) },
                     // Also cleared on the failure path — the repository returns an empty list rather
                     // than throwing, so nothing can leave this stuck loading forever.
                     isLoading = false,
@@ -74,25 +88,32 @@ class WhatsNewViewModel(
      * so that is what the decision has to read. A cached flag would still say "show" on the root
      * instance after the entry-scoped instance recorded the dialog as seen (e.g. after rotation).
      *
-     * Gated on [WhatsNewUiState.currentRelease] as well as the marker: a build with no matching
-     * release (a `./gradlew bumpVersion` with the notes not yet published, or Desktop's `"unknown"`
-     * version) would otherwise push a dialog that renders nothing and swallows a back press on every
-     * launch.
-     *
-     * A missing marker counts as "show": it can't be told apart from a first run after this
-     * feature shipped, and skipping it there would silently exclude every pre-existing user —
-     * the whole audience for the dialog — permanently. A brand-new install seeing the current
-     * release's highlights once is the cheaper of the two mistakes.
+     * Shows when [WhatsNewUiState.latestRelease] is a newer version than the running build — i.e.
+     * there is a released, store-approved update the user has not installed yet — and that version's
+     * nudge has not already been dismissed. This is deliberately not "does a release note exist for
+     * the version I'm running": that would only ever fire right after an update, never for a user
+     * sitting on an old build who should be told to go get the new one.
      */
     suspend fun shouldShowDialog(): Boolean {
         val loaded = withTimeoutOrNull(DIALOG_LOAD_WAIT_MS) {
             state.first { !it.isLoading }
         } ?: return false
-        return loaded.currentRelease != null && appSettings.lastSeenVersion != BuildInfo.versionName
+        val latest = loaded.latestRelease ?: return false
+        // Desktop never resolves a real version (KoinInit.desktop.kt reads an "app.version" system
+        // property nothing ever sets), so BuildInfo.versionName is always the literal "unknown"
+        // there. compareVersions would otherwise read every one of its segments as 0 and treat any
+        // published release as newer, popping the dialog on every launch with an "Update" button
+        // that has nowhere sensible to send a desktop user.
+        if (BuildInfo.versionName.substringBefore('.').toIntOrNull() == null) return false
+        return compareVersions(latest.version, BuildInfo.versionName) > 0 &&
+            appSettings.lastSeenVersion != latest.version
     }
 
-    /** Records this version as acknowledged, so [shouldShowDialog] stays false until the next update. */
+    /**
+     * Records the current [WhatsNewUiState.latestRelease] as acknowledged, so [shouldShowDialog]
+     * stays false until a newer version's notes are published.
+     */
     fun markSeen() {
-        appSettings.lastSeenVersion = BuildInfo.versionName
+        appSettings.lastSeenVersion = _state.value.latestRelease?.version ?: BuildInfo.versionName
     }
 }

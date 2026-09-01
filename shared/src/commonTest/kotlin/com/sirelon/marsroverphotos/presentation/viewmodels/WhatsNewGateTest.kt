@@ -19,7 +19,6 @@ import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
 /** In-memory [PlatformPreferences]; only the string keys matter for the What's New marker. */
@@ -52,6 +51,11 @@ private class FakeReleaseNotesRepository(
 /**
  * The dialog gate has to wait for a network fetch before it can decide anything, which is the part
  * worth pinning down: it must not hang, and it must not burn the acknowledgement when it gives up.
+ *
+ * It also has to compare versions rather than match them exactly: the dialog now nudges a user
+ * sitting on an old build toward the newest *store-approved* release, not just announce the notes
+ * for whatever build they happen to already be running (the repository is what drops anything still
+ * pending approval — see `ReleaseNotesRepositoryImpl`).
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class WhatsNewGateTest {
@@ -83,15 +87,23 @@ class WhatsNewGateTest {
     }
 
     @Test
-    fun showsDialogOnceTheNotesLoad() = runTest {
+    fun showsDialogWhenANewerVersionIsAvailable() = runTest {
         Dispatchers.setMain(StandardTestDispatcher(testScheduler))
-        val (vm, _) = viewModel(FakeReleaseNotesRepository(persistentListOf(release(installedVersion))))
+        val (vm, _) = viewModel(FakeReleaseNotesRepository(persistentListOf(release("5.1.0"))))
 
         assertTrue(vm.shouldShowDialog())
     }
 
     @Test
-    fun doesNotShowDialogWhenTheInstalledVersionHasNoNotes() = runTest {
+    fun doesNotShowDialogWhenAlreadyOnTheLatestVersion() = runTest {
+        Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+        val (vm, _) = viewModel(FakeReleaseNotesRepository(persistentListOf(release(installedVersion))))
+
+        assertFalse(vm.shouldShowDialog())
+    }
+
+    @Test
+    fun doesNotShowDialogWhenTheInstalledVersionIsAlreadyAheadOfTheNotes() = runTest {
         Dispatchers.setMain(StandardTestDispatcher(testScheduler))
         // A bumpVersion whose notes are not published yet, or Desktop's "unknown" version.
         val (vm, _) = viewModel(FakeReleaseNotesRepository(persistentListOf(release("4.0.0"))))
@@ -100,10 +112,32 @@ class WhatsNewGateTest {
     }
 
     @Test
+    fun doesNotShowDialogOnDesktopWhereTheVersionIsUnresolved() = runTest {
+        Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+        // KoinInit.desktop.kt never resolves a real version, so BuildInfo.versionName is always the
+        // literal "unknown" there — comparing that against a real version must not read it as 0.0.0
+        // and treat every release as an update.
+        val (vm, _) = viewModel(FakeReleaseNotesRepository(persistentListOf(release("5.1.0"))))
+        BuildInfo.init(versionName = "unknown", isDebug = false, packageName = "test")
+
+        assertFalse(vm.shouldShowDialog())
+    }
+
+    @Test
+    fun comparesVersionsNumericallyNotLexically() = runTest {
+        Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+        // Lexical comparison would put "5.9.0" ahead of "5.10.0" and wrongly treat 5.10.0 as older.
+        val (vm, _) = viewModel(FakeReleaseNotesRepository(persistentListOf(release("5.10.0"))))
+        BuildInfo.init(versionName = "5.9.0", isDebug = true, packageName = "test")
+
+        assertTrue(vm.shouldShowDialog())
+    }
+
+    @Test
     fun doesNotShowDialogWhenAlreadyAcknowledged() = runTest {
         Dispatchers.setMain(StandardTestDispatcher(testScheduler))
-        val settings = AppSettings(FakePreferences()).apply { lastSeenVersion = installedVersion }
-        val (vm, _) = viewModel(FakeReleaseNotesRepository(persistentListOf(release(installedVersion))), settings)
+        val settings = AppSettings(FakePreferences()).apply { lastSeenVersion = "5.1.0" }
+        val (vm, _) = viewModel(FakeReleaseNotesRepository(persistentListOf(release("5.1.0"))), settings)
 
         assertFalse(vm.shouldShowDialog())
     }
@@ -113,27 +147,29 @@ class WhatsNewGateTest {
         Dispatchers.setMain(StandardTestDispatcher(testScheduler))
         // A fetch that never lands: the gate must return rather than hang the launch...
         val (vm, settings) = viewModel(
-            FakeReleaseNotesRepository(persistentListOf(release(installedVersion)), CompletableDeferred()),
+            FakeReleaseNotesRepository(persistentListOf(release("5.1.0")), CompletableDeferred()),
         )
 
         assertFalse(vm.shouldShowDialog())
-        // ...and must not record the version as seen, so the next launch still gets its chance.
-        assertFalse(settings.lastSeenVersion == installedVersion)
+        // ...and must not record a version as seen, so the next launch still gets its chance.
+        assertFalse(settings.lastSeenVersion == "5.1.0")
     }
 
     @Test
     fun markSeenSuppressesTheDialogForThisVersionOnly() = runTest {
         Dispatchers.setMain(StandardTestDispatcher(testScheduler))
-        val (vm, settings) = viewModel(FakeReleaseNotesRepository(persistentListOf(release(installedVersion))))
+        val (vm, settings) = viewModel(FakeReleaseNotesRepository(persistentListOf(release("5.1.0"))))
 
         assertTrue(vm.shouldShowDialog())
         vm.markSeen()
         assertFalse(vm.shouldShowDialog())
+        assertEquals("5.1.0", settings.lastSeenVersion)
 
-        // A later release re-arms it: the marker is compared against the running build, not stored
-        // as a boolean, so 5.0.0 acknowledged does not acknowledge 5.1.0.
-        assertEquals(installedVersion, settings.lastSeenVersion)
-        BuildInfo.init(versionName = "5.1.0", isDebug = true, packageName = "test")
-        assertNotEquals(BuildInfo.versionName, settings.lastSeenVersion)
+        // A later release re-arms it: the marker is compared against the newest published version,
+        // not stored as a boolean, so acknowledging 5.1.0 does not acknowledge 5.2.0. A second
+        // instance over the same settings stands in for Nav3 handing the dialog's nav entry its own
+        // WhatsNewViewModel, separate from the root's.
+        val (vmAfterNextRelease, _) = viewModel(FakeReleaseNotesRepository(persistentListOf(release("5.2.0"))), settings)
+        assertTrue(vmAfterNextRelease.shouldShowDialog())
     }
 }
