@@ -52,6 +52,9 @@ class ReleaseNotesRepositoryImpl : ReleaseNotesRepository {
                     .onFailure { Logger.w(TAG) { "Skipping malformed release note ${document.id}" } }
                     .getOrNull()
             }
+            // `active` gates both a malformed/retracted document and a version pushed ahead of
+            // store approval — either way there is nothing to show or update to yet, so it must
+            // stay invisible until flipped to true. See `store-release/SKILL.md`.
             .filter { it.active }
             .mapNotNull { it.toDomain() }
             .sortedByDescending { it.date }

@@ -13,6 +13,13 @@ Target: `scripts/release-notes.json`, published to the `release-notes` Firestore
 notes for a shipped version can still be written or fixed. Shape mirrors `Release` / `Release.Change`
 in `domain/releasenotes/Release.kt`; UI lives in `presentation/screens/whatsnew/`.
 
+`active` doubles as more than a malformed-document kill-switch: `active: false` also covers a build
+pushed ahead of store approval — the app hides an inactive entry entirely and never nudges a user to
+update to it. Backfilling or correcting a version that already shipped, which is what this skill does
+directly, means it's already live — leave `active: true`. `store-release` is the one that writes
+`active: false` for a brand-new release, since it publishes before the store promotion/review that
+would make the build actually reachable.
+
 **Cutting a release enters through [`store-release`](../store-release/SKILL.md), not here.** That
 skill orchestrates the bump, the builds, the uploads and the tag, and calls into this one for a
 single range: one archaeologist agent, editorial done inline, one entry prepended to
@@ -229,7 +236,7 @@ Keep only the three committed docs. Re-running the pipeline regenerates everythi
 - **Never invent a release item.** `maintenance_only: true` is a correct, welcome answer. Most
   releases in this repo are dependency bumps.
 - **Scope is the shipped app**: `shared/`, `androidApp/`, `iosApp/`, `desktopApp/`, `webApp/`.
-  Out: `index.html` (marketing site), `docs/`, `.maestro/`, `graphify-out/`, CI, markdown.
+  Out: `index.html` (marketing site), `docs/`, `.maestro/`, CI, markdown.
   App Store metadata (privacy manifest, SKAdNetwork) is `internal`.
 - **Never push tags.** Creating local tags is fine; pushing needs explicit user permission.
 - Existing entries in `scripts/release-notes.json` have been wrong before — the list once declared a

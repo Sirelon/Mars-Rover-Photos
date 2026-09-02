@@ -11,6 +11,9 @@ import kotlinx.serialization.Serializable
  * Every field carries a default on purpose: GitLive's decoder throws for the whole document when a
  * non-defaulted field is absent, and these documents are hand-authored server-side, so a missing
  * `active` or an empty `changes` must degrade rather than fail.
+ *
+ * `active: false` covers two cases the app treats identically — a malformed/retracted document, and
+ * notes pushed ahead of store approval (nothing to update to yet). See `store-release/SKILL.md`.
  */
 @Serializable
 data class ReleaseDto(

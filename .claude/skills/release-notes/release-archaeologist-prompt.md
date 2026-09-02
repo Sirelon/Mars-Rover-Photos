@@ -31,7 +31,7 @@ wins.
 
 In scope: `shared/`, `androidApp/`, `iosApp/`, `desktopApp/`, `webApp/`.
 OUT of scope — never report as a release item: `index.html` and the marketing site, `docs/`,
-`.maestro/`, `graphify-out/`, CI config, README/markdown. App Store metadata (privacy manifests,
+`.maestro/`, CI config, README/markdown. App Store metadata (privacy manifests,
 SKAdNetwork) is `internal`, not user-facing.
 
 ## RULE 3 — classify by what the user perceives

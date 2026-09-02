@@ -62,8 +62,8 @@ Imports point **inward**: `presentation` → `domain`, never the reverse.
 - `navigation/AppNavigation.kt` and the entry builders in `di/NavigationModule.kt` move between
   destinations. They must not read settings or repositories to decide **whether** to navigate.
 - The condition belongs in a ViewModel and is read back as a single call. Reference implementation:
-  `WhatsNewViewModel.shouldShowDialog()` decides (fresh install vs. update, notes present or not) and
-  the nav root only does
+  `WhatsNewViewModel.shouldShowDialog()` decides (is a newer `active` release published than the one
+  installed, and has its nudge already been dismissed) and the nav root only does
   `if (deepLink == null && whatsNewViewModel.shouldShowDialog()) navigator.navigate(...)`.
   It is a `suspend` function because the notes are fetched, and it bounds its own wait — the nav layer
   neither knows nor decides where the data comes from.
