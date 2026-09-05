@@ -79,7 +79,12 @@ fun RoverMissionInfoScreen(
 
     LaunchedEffect(roverId) { viewModel.setRoverId(roverId) }
     LaunchedEffect(state?.rover?.id) {
-        state?.rover?.let { viewModel.trackEvent("mission_info_opened_${it.name}") }
+        state?.rover?.let { rover ->
+            // Parameterised event plus the superseded per-rover name, which fires alongside it for
+            // a release or two so existing GA4 explorations survive the cutover. See RoversViewModel.
+            viewModel.trackEvent("mission_info_opened", mapOf("rover" to rover.name))
+            viewModel.trackEvent("mission_info_opened_${rover.name}")
+        }
     }
 
     RoverMissionInfoScreen(
