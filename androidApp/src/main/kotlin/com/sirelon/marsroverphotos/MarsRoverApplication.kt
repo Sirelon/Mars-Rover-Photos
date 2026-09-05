@@ -1,6 +1,7 @@
 package com.sirelon.marsroverphotos
 
 import android.app.Application
+import androidx.work.Configuration
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.RequestConfiguration
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -19,9 +20,19 @@ import org.koin.core.logger.Level
  * Application class for Mars Rover Photos.
  * Initializes shared module components and Android-specific features.
  */
-class MarsRoverApplication : Application() {
+class MarsRoverApplication : Application(), Configuration.Provider {
 
     private val roversRepository: RoversRepository by inject()
+
+    /**
+     * Supplies WorkManager on demand. The manifest removes its startup initializer, so WorkManager
+     * is built on the first [androidx.work.WorkManager.getInstance] call — which only the widget
+     * makes — instead of on every cold start. See the provider comment in AndroidManifest.xml.
+     */
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder()
+            .setMinimumLoggingLevel(if (BuildConfig.DEBUG) android.util.Log.DEBUG else android.util.Log.ERROR)
+            .build()
 
     override fun onCreate() {
         super.onCreate()

@@ -165,11 +165,13 @@ public class MarsPhotoWidgetWorker(
                 .setConstraints(constraints)
                 .build()
 
-            WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-                UniqueWorkName,
-                ExistingPeriodicWorkPolicy.UPDATE,
-                request
-            )
+            enqueueSafely(context, "periodic") { workManager ->
+                workManager.enqueueUniquePeriodicWork(
+                    UniqueWorkName,
+                    ExistingPeriodicWorkPolicy.UPDATE,
+                    request
+                )
+            }
         }
 
         fun enqueueOnce(context: Context) {
@@ -181,11 +183,34 @@ public class MarsPhotoWidgetWorker(
                 .setConstraints(constraints)
                 .build()
 
-            WorkManager.getInstance(context).enqueueUniqueWork(
-                UniqueImmediateWork,
-                ExistingWorkPolicy.REPLACE,
-                request
-            )
+            enqueueSafely(context, "immediate") { workManager ->
+                workManager.enqueueUniqueWork(
+                    UniqueImmediateWork,
+                    ExistingWorkPolicy.REPLACE,
+                    request
+                )
+            }
+        }
+
+        /**
+         * Catches [Throwable], not [Exception], on purpose. Building WorkManager reschedules
+         * persisted jobs, and on devices whose framework is missing `JobScheduler#forNamespace`
+         * despite reporting API 34+ that step throws [NoSuchMethodError] — a [LinkageError], which
+         * an `Exception` catch would let through. A widget that stops refreshing itself is a far
+         * better outcome than taking the app down with it.
+         */
+        private inline fun enqueueSafely(
+            context: Context,
+            label: String,
+            enqueue: (WorkManager) -> Unit,
+        ) {
+            try {
+                enqueue(WorkManager.getInstance(context))
+            } catch (error: Throwable) {
+                Logger.e("MarsPhotoWidgetWorker", error) {
+                    "Could not schedule $label widget work; widget will not auto-refresh"
+                }
+            }
         }
     }
 }
