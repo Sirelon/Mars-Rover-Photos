@@ -121,6 +121,23 @@ private const val DISMISS_SCALE_DROP = 0.08f
 private const val DISMISS_SETTLE_MS = 220
 
 /**
+ * Bounds-safe read of a loaded page. A refresh or a page eviction can shrink the snapshot list
+ * while [PagerState] still reports a higher page, and [LazyPagingItems.peek] throws
+ * IndexOutOfBoundsException in that window rather than returning null. Reading the snapshot list
+ * once keeps the bounds check and the lookup on the same list.
+ */
+private fun <T : Any> LazyPagingItems<T>.peekOrNull(index: Int): T? =
+    itemSnapshotList.getOrNull(index)
+
+/**
+ * Bounds-safe version of [LazyPagingItems.get], which throws for the same reason [peekOrNull]
+ * guards against. Unlike peeking, this still routes through `get` so Paging registers the access
+ * and keeps prefetching neighbouring pages.
+ */
+private fun <T : Any> LazyPagingItems<T>.getOrNullSafe(index: Int): T? =
+    if (index >= 0 && index < itemSnapshotList.size) get(index) else null
+
+/**
  * Fullscreen image viewer — horizontal pager with pinch-to-zoom, save, share, info sheet.
  *
  * Content is delivered as paged [androidx.paging.PagingData]. For [AppDestination.ImagesSource.ROVER_FEED]
@@ -307,13 +324,13 @@ private fun ImagesPagerContent(
     // them would delay the title until the settle animation finishes.
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.settledPage }.collect { page ->
-            pagingItems.peek(page)?.let(onSeen)
+            pagingItems.peekOrNull(page)?.let(onSeen)
         }
     }
 
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
-            val marsPhoto = pagingItems.peek(page) ?: return@collect
+            val marsPhoto = pagingItems.peekOrNull(page) ?: return@collect
             onShown(marsPhoto, page)
             titleState = if (marsPhoto.sol == 0L && marsPhoto.camera == null) {
                 marsPhoto.name.orEmpty().ifBlank { "Mars Rover Photos" }
@@ -333,7 +350,7 @@ private fun ImagesPagerContent(
         }
     }
 
-    val currentImage = pagingItems.peek(pagerState.currentPage)
+    val currentImage = pagingItems.peekOrNull(pagerState.currentPage)
 
     // Drag-to-dismiss drives NavDisplay's predictive-back machinery through a synthetic
     // input, so the previous screen is composed and revealed beneath the gesture — the
@@ -646,12 +663,12 @@ private fun ImagesPager(
         HorizontalPager(
             state = pagerState,
             // Stable keys keep the centered photo in place when a PREPEND inserts earlier days.
-            key = { page -> pagingItems.peek(page)?.id ?: page },
+            key = { page -> pagingItems.peekOrNull(page)?.id ?: page },
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black),
         ) { page ->
-            val marsImage = pagingItems[page] ?: return@HorizontalPager
+            val marsImage = pagingItems.getOrNullSafe(page) ?: return@HorizontalPager
             val zoomState = rememberZoomState()
 
             // Reset zoom when the user swipes to another page
