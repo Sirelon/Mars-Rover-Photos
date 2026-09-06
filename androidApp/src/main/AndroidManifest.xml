@@ -107,6 +107,25 @@
                 android:resource="@xml/mars_photo_widget_info" />
         </receiver>
 
+        <!--
+            WorkManager backs only the home-screen widget, so its androidx.startup initializer is
+            removed and MarsRoverApplication supplies the configuration on demand instead. Auto-init
+            reschedules pending jobs from a ContentProvider on every cold start; on devices whose
+            framework lacks JobScheduler#forNamespace despite reporting API 34+, that rescheduling
+            threw NoSuchMethodError before any app code ran. On-demand init keeps WorkManager off the
+            launch path entirely for the majority of users, who have no widget.
+        -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
+
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="@string/ad_application_id" />

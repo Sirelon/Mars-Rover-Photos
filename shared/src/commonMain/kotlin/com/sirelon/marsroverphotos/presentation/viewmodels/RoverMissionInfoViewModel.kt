@@ -129,8 +129,8 @@ class RoverMissionInfoViewModel(
         }
     }
 
-    fun trackEvent(event: String) {
-        analytics.logEvent(event, emptyMap())
+    fun trackEvent(event: String, params: Map<String, String> = emptyMap()) {
+        analytics.logEvent(event, params)
     }
 }
 

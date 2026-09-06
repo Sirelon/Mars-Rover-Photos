@@ -46,15 +46,34 @@ class RoversViewModel(
     }
 
     fun onRoverClicked(rover: Rover) {
+        tracker.trackEvent(RoverSelectedEvent, mapOf(RoverParam to rover.name))
         tracker.trackClick("click_rover_${rover.name}")
     }
 
     fun onMissionInfoClicked(rover: Rover) {
+        tracker.trackEvent(MissionInfoSelectedEvent, mapOf(RoverParam to rover.name))
         tracker.trackClick("click_mission_info_${rover.name}")
     }
 
     private companion object {
         const val STOP_TIMEOUT_MILLIS = 5_000L
+
+        /**
+         * Rover name travels as a parameter so one event covers every rover; baking it into the
+         * event name spreads a single interaction across as many GA4 events as there are rovers,
+         * none of which can be summed without a regex.
+         *
+         * The `click_rover_*` / `click_mission_info_*` events fired alongside these are the
+         * superseded per-rover names, kept for a release or two so existing GA4 explorations keep
+         * reporting across the cutover. Drop them, and this paragraph, once those have been
+         * repointed at the parameterised events.
+         *
+         * Tapping the mission-info button is deliberately not `mission_info_opened` — that name
+         * belongs to the screen actually opening, which RoverMissionInfoScreen reports.
+         */
+        const val RoverSelectedEvent = "rover_selected"
+        const val MissionInfoSelectedEvent = "mission_info_selected"
+        const val RoverParam = "rover"
     }
 }
 
