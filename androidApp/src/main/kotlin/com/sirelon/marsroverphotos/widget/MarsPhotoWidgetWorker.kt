@@ -25,6 +25,7 @@ import com.sirelon.marsroverphotos.data.network.toMarsImages
 import com.sirelon.marsroverphotos.data.paging.MER_KEYWORDS
 import com.sirelon.marsroverphotos.data.paging.pageQuery
 import com.sirelon.marsroverphotos.domain.models.CURIOSITY_ID
+import com.sirelon.marsroverphotos.domain.models.INGENUITY_ID
 import com.sirelon.marsroverphotos.domain.models.INSIGHT_ID
 import com.sirelon.marsroverphotos.domain.models.OPPORTUNITY_ID
 import com.sirelon.marsroverphotos.domain.models.PERSEVERANCE_ID
@@ -124,6 +125,9 @@ public class MarsPhotoWidgetWorker(
             // The Viking missions ended in 1980/1982, so there is no "latest" to track — the
             // widget shows a different frame from the archive on each refresh instead.
             VIKING_1_ID, VIKING_2_ID -> vikingCatalog.randomPhoto(roverId)
+            // Ingenuity stopped flying in 2024, so the same reasoning applies: draw a random
+            // frame from the closed archive rather than pinning one final photo forever.
+            INGENUITY_ID -> api.getIngenuityRandomPhoto().randomOrNull()
             else -> api.getCuriosityLatestPhotos().firstOrNull()
         }
     }

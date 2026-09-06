@@ -184,6 +184,8 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
             // TestPager for pager-level integration tests (KMP since paging 3.3.0)
             implementation(libs.paging.testing)
+            // MockEngine, so tests can assert the shape of an outgoing request
+            implementation(libs.ktor.client.mock)
         }
     }
 }

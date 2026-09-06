@@ -3,6 +3,7 @@ package com.sirelon.marsroverphotos.data.repositories
 import com.sirelon.marsroverphotos.data.database.dao.RoverDao
 import com.sirelon.marsroverphotos.data.network.RestApi
 import com.sirelon.marsroverphotos.domain.models.CURIOSITY_ID
+import com.sirelon.marsroverphotos.domain.models.INGENUITY_ID
 import com.sirelon.marsroverphotos.domain.models.INSIGHT_ID
 import com.sirelon.marsroverphotos.domain.models.OPPORTUNITY_ID
 import com.sirelon.marsroverphotos.domain.models.PERSEVERANCE_ID
@@ -10,6 +11,7 @@ import com.sirelon.marsroverphotos.domain.models.Rover
 import com.sirelon.marsroverphotos.domain.models.SPIRIT_ID
 import com.sirelon.marsroverphotos.domain.models.VIKING_1_ID
 import com.sirelon.marsroverphotos.domain.models.VIKING_2_ID
+import com.sirelon.marsroverphotos.domain.models.inDisplayOrder
 import com.sirelon.marsroverphotos.domain.repositories.RoversRepository
 import com.sirelon.marsroverphotos.utils.Logger
 import com.sirelon.marsroverphotos.utils.RoverDateUtil
@@ -17,6 +19,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlin.time.Clock
 
@@ -207,8 +210,26 @@ class RoversRepositoryImpl(
                 totalPhotos = 1581
             )
 
+            // Ingenuity (complete) — the Mars Helicopter. It arrived folded under Perseverance's
+            // belly and never had a sol clock of its own, so it is seeded with Perseverance's
+            // landing date: every sol<->date conversion in the app derives from that field, and
+            // dating it from its own deployment instead would skew the pickers by 43 sols. Its
+            // first images are from sol 43, the day it was set down (see RoverMissionData.getMinSol).
+            // The campaign closed in Feb 2024, so these bounds are final — nothing refreshes them.
+            val ingenuity = Rover(
+                id = INGENUITY_ID,
+                name = "Ingenuity Helicopter",
+                drawableName = "img_ingenuity",
+                landingDate = "2021-02-18",
+                launchDate = "2020-07-30",
+                status = "complete",
+                maxSol = 1069,
+                maxDate = "2024-02-22",
+                totalPhotos = 14553
+            )
+
             roverDao.insertRovers(
-                perseverance, insight, curiosity, opportunity, spirit, viking1, viking2
+                perseverance, insight, curiosity, opportunity, spirit, viking1, viking2, ingenuity
             )
             // Force-update Insight's mission-complete bounds for upgraded installs that
             // had stale active/wrong-sol data from a previous version (insertRovers ignores conflicts).
@@ -225,7 +246,7 @@ class RoversRepositoryImpl(
     }
 
     override fun getRovers(): Flow<List<Rover>> {
-        return roverDao.getRovers()
+        return roverDao.getRovers().map { rovers -> rovers.inDisplayOrder() }
     }
 
     override suspend fun loadRoverById(id: Long): Rover? {

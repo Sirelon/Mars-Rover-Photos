@@ -1,6 +1,7 @@
 package com.sirelon.marsroverphotos.data.paging
 
 import com.sirelon.marsroverphotos.domain.models.CURIOSITY_ID
+import com.sirelon.marsroverphotos.domain.models.INGENUITY_ID
 import com.sirelon.marsroverphotos.domain.models.INSIGHT_ID
 import com.sirelon.marsroverphotos.domain.models.OPPORTUNITY_ID
 import com.sirelon.marsroverphotos.domain.models.PERSEVERANCE_ID
@@ -18,10 +19,11 @@ class RoverFeedModeTest {
     }
 
     @Test
-    fun curiosityInsightPerseverance_useSolFeed() {
+    fun curiosityInsightPerseveranceIngenuity_useSolFeed() {
         assertFalse(CURIOSITY_ID.usesPageFeed())
         assertFalse(INSIGHT_ID.usesPageFeed())
         assertFalse(PERSEVERANCE_ID.usesPageFeed())
+        assertFalse(INGENUITY_ID.usesPageFeed())
     }
 
     @Test
