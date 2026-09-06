@@ -10,6 +10,7 @@ import com.sirelon.marsroverphotos.data.LastViewedPhotoStore
 import com.sirelon.marsroverphotos.data.paging.RoverFeedPager
 import com.sirelon.marsroverphotos.data.paging.pageQuery
 import com.sirelon.marsroverphotos.data.paging.usesPageFeed
+import com.sirelon.marsroverphotos.domain.models.mission.RoverMissionData
 import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
 import com.sirelon.marsroverphotos.domain.repositories.RoversRepository
 import com.sirelon.marsroverphotos.platform.ImageOperationResult
@@ -141,13 +142,16 @@ class ImageViewModel(
             val rover = roversRepository.loadRoverById(roverId) ?: return@launch
             val selectedSol = selectedId
                 ?.let { imagesRepository.loadImages(listOf(it)).first().firstOrNull()?.sol }
-            val anchorSol = selectedSol ?: (rover.maxSol - 1).coerceAtLeast(0L)
-            val maxSol = rover.maxSol.coerceAtLeast(1L)
+            // Same bounds the list feed uses: a mission whose first images come well after
+            // landing must not have the viewer scan back through the empty sols before them.
+            val minSol = RoverMissionData.getMinSol(rover.id)
+            val maxSol = rover.maxSol.coerceAtLeast(minSol + 1)
+            val anchorSol = selectedSol ?: (rover.maxSol - 1).coerceAtLeast(minSol)
             roverFeedPager.setFeed(
                 roverId = rover.id,
                 mode = FeedMode.Sol(
-                    anchorSol = anchorSol.coerceIn(0L, maxSol),
-                    minSol = 0L,
+                    anchorSol = anchorSol.coerceIn(minSol, maxSol),
+                    minSol = minSol,
                     maxSol = maxSol,
                     cameras = effectiveCameras,
                 ),

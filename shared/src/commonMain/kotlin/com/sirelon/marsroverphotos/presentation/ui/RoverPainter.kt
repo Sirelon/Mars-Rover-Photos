@@ -3,6 +3,7 @@ package com.sirelon.marsroverphotos.presentation.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.painter.Painter
 import com.sirelon.marsroverphotos.domain.models.CURIOSITY_ID
+import com.sirelon.marsroverphotos.domain.models.INGENUITY_ID
 import com.sirelon.marsroverphotos.domain.models.INSIGHT_ID
 import com.sirelon.marsroverphotos.domain.models.OPPORTUNITY_ID
 import com.sirelon.marsroverphotos.domain.models.PERSEVERANCE_ID
@@ -12,6 +13,7 @@ import com.sirelon.marsroverphotos.domain.models.VIKING_1_ID
 import com.sirelon.marsroverphotos.domain.models.VIKING_2_ID
 import com.sirelon.marsroverphotos.shared.resources.Res
 import com.sirelon.marsroverphotos.shared.resources.img_curiosity
+import com.sirelon.marsroverphotos.shared.resources.img_ingenuity
 import com.sirelon.marsroverphotos.shared.resources.img_insight
 import com.sirelon.marsroverphotos.shared.resources.img_opportunity
 import com.sirelon.marsroverphotos.shared.resources.img_perseverance
@@ -43,6 +45,9 @@ private fun Rover.drawableResource(): DrawableResource {
         // in the hero.
         VIKING_1_ID -> Res.drawable.img_viking1
         VIKING_2_ID -> Res.drawable.img_viking2
+        // Ingenuity could not photograph itself either: both its cameras pointed away from the
+        // airframe. This is Perseverance's Mastcam-Z portrait of it parked on the surface.
+        INGENUITY_ID -> Res.drawable.img_ingenuity
         else -> Res.drawable.img_placeholder
     }
 }

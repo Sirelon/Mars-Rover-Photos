@@ -14,4 +14,14 @@ interface PhotosRepository {
      * @return List of Mars images
      */
     suspend fun refreshImages(query: PhotosQueryRequest): List<MarsImage>
+
+    /**
+     * First sol at or after [fromSol] that holds photos, resolved in one request.
+     *
+     * Only for picking an opening anchor on a sparse feed, where most sols are empty and the
+     * paging source would otherwise probe them one network round-trip at a time. Returns null
+     * when the source cannot answer — the caller then keeps its original sol and lets the normal
+     * scan find the photos, which is slower but equally correct.
+     */
+    suspend fun nearestSolWithPhotosAtOrAfter(roverId: Long, fromSol: Long): Long? = null
 }
