@@ -22,7 +22,7 @@
     <string name="sol_date_fmt">Sol date: \n%1$d</string>
     <string name="earth_date_fmt">Earth date: \n%1$s</string>
     <string name="sol_label">Sol: </string>
-    <string name="sol_max_error_fmt">The max sol for this rover is %1$d</string>
+    <string name="sol_max_error_fmt">The last sol for this mission is %1$d</string>
     <string name="select_date">Select date</string>
     <string name="choose">Choose</string>
     <string name="select">Select</string>
@@ -31,8 +31,8 @@
     <string name="educational_fact">Educational fact</string>
     <string name="did_you_know">Did You Know?</string>
     <string name="tap_to_retry">Tap to retry</string>
-    <string name="no_photos_title">The rover didn\'t take any photos on this date.</string>
-    <string name="favorite_empty_btn">Go to rovers</string>
+    <string name="no_photos_title">No photos from this mission on this date.</string>
+    <string name="favorite_empty_btn">Go to missions</string>
     <string name="favorite_empty_title">No favorite photos yet.\nYou can save any photos you like.\nJust mark them as "favorite".</string>
     <string name="popular_empty_title">No popular photos available.\nCheck back later!</string>
     <string name="images_empty_title">No photos available.</string>
@@ -57,12 +57,13 @@
     <string name="rover_blurb_perseverance">Hunting for ancient life and caching rock in Jezero Crater.</string>
     <string name="rover_blurb_viking1">Sent the first photograph ever taken from the surface of Mars.</string>
     <string name="rover_blurb_viking2">Watched frost settle over Utopia Planitia for three Martian winters.</string>
+    <string name="rover_blurb_ingenuity">The first aircraft to fly on another world.</string>
 
     <!-- Rovers screen header + search -->
-    <string name="rovers_title">Mars Rovers</string>
+    <string name="rovers_title">Missions</string>
     <string name="rovers_subtitle_fmt">%1$d missions · %2$d active</string>
-    <string name="rovers_search_placeholder">Search rovers</string>
-    <string name="rovers_search_empty_fmt">No rovers match \"%1$s\"</string>
+    <string name="rovers_search_placeholder">Search missions</string>
+    <string name="rovers_search_empty_fmt">No missions match \"%1$s\"</string>
 
     <!-- Rover row metric-strip labels -->
     <string name="metric_label_photos">photos</string>
@@ -70,7 +71,7 @@
     <string name="metric_label_last">last</string>
 
     <!-- Navigation labels -->
-    <string name="nav_rovers">Rovers</string>
+    <string name="nav_rovers">Missions</string>
     <string name="nav_favorite">Favorites</string>
     <string name="nav_popular">Popular</string>
     <string name="nav_about">About</string>

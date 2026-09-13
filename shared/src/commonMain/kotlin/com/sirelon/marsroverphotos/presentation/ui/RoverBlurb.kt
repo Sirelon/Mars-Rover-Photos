@@ -2,6 +2,7 @@ package com.sirelon.marsroverphotos.presentation.ui
 
 import androidx.compose.runtime.Composable
 import com.sirelon.marsroverphotos.domain.models.CURIOSITY_ID
+import com.sirelon.marsroverphotos.domain.models.INGENUITY_ID
 import com.sirelon.marsroverphotos.domain.models.INSIGHT_ID
 import com.sirelon.marsroverphotos.domain.models.OPPORTUNITY_ID
 import com.sirelon.marsroverphotos.domain.models.PERSEVERANCE_ID
@@ -11,6 +12,7 @@ import com.sirelon.marsroverphotos.domain.models.VIKING_1_ID
 import com.sirelon.marsroverphotos.domain.models.VIKING_2_ID
 import com.sirelon.marsroverphotos.shared.resources.Res
 import com.sirelon.marsroverphotos.shared.resources.rover_blurb_curiosity
+import com.sirelon.marsroverphotos.shared.resources.rover_blurb_ingenuity
 import com.sirelon.marsroverphotos.shared.resources.rover_blurb_insight
 import com.sirelon.marsroverphotos.shared.resources.rover_blurb_opportunity
 import com.sirelon.marsroverphotos.shared.resources.rover_blurb_perseverance
@@ -32,5 +34,6 @@ fun Rover.blurbResource(): StringResource? = when (id) {
     PERSEVERANCE_ID -> Res.string.rover_blurb_perseverance
     VIKING_1_ID -> Res.string.rover_blurb_viking1
     VIKING_2_ID -> Res.string.rover_blurb_viking2
+    INGENUITY_ID -> Res.string.rover_blurb_ingenuity
     else -> null
 }

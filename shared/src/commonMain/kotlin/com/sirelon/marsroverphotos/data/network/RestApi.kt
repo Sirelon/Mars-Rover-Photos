@@ -3,6 +3,7 @@ package com.sirelon.marsroverphotos.data.network
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.data.network.models.NasaImagesSearchResponse
 import com.sirelon.marsroverphotos.domain.models.CURIOSITY_ID
+import com.sirelon.marsroverphotos.domain.models.INGENUITY_ID
 import com.sirelon.marsroverphotos.domain.models.INSIGHT_ID
 import com.sirelon.marsroverphotos.domain.models.PERSEVERANCE_ID
 import com.sirelon.marsroverphotos.domain.models.PhotosQueryRequest
@@ -17,6 +18,10 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
+import kotlin.random.Random
+
+/** Pages of Ingenuity's closed archive: 14,553 images at the feed's cap of 100 per page. */
+private const val INGENUITY_FEED_PAGES = 146
 
 /**
  * @author romanishin
@@ -75,8 +80,8 @@ class RestApi {
      * @param query The photos query request containing rover ID, sol, and camera
      * @return List of Mars images for the specified query
      * @throws IllegalArgumentException if the rover ID has no raw-image endpoint here.
-     *         Supported rover IDs: PERSEVERANCE_ID, INSIGHT_ID, CURIOSITY_ID. Spirit and
-     *         Opportunity are served by [searchImages], and the Viking landers by
+     *         Supported rover IDs: PERSEVERANCE_ID, INGENUITY_ID, INSIGHT_ID, CURIOSITY_ID.
+     *         Spirit and Opportunity are served by [searchImages], and the Viking landers by
      *         `VikingCatalog`; both are routed before this call in `PhotosRepositoryImpl`.
      */
     suspend fun getRoversPhotos(query: PhotosQueryRequest): List<MarsImage> {
@@ -84,7 +89,11 @@ class RestApi {
         val sol = query.sol
         return when (query.roverId) {
             PERSEVERANCE_ID -> {
-                loadPerseverance(query)
+                loadSolFeed(query, category = "mars2020")
+            }
+
+            INGENUITY_ID -> {
+                loadSolFeed(query, category = "ingenuity")
             }
 
             INSIGHT_ID -> {
@@ -102,12 +111,49 @@ class RestApi {
         }
     }
 
-    private suspend fun loadPerseverance(query: PhotosQueryRequest): List<MarsImage> {
+    /**
+     * One sol of the Mars 2020 raw-image feed, for whichever mission [category] selects
+     * (`mars2020` or `ingenuity`). Both share the feed, the record shape and the mapper.
+     */
+    private suspend fun loadSolFeed(
+        query: PhotosQueryRequest,
+        category: String,
+    ): List<MarsImage> {
         // `response.totalImages` counts only the photos matching this sol/camera query, so it is
         // deliberately NOT published to [perseveranceTotalImages].
-        val response = nasaApi.getPerseveranceRawImages(sol = "${query.sol}:sol:in")
+        val response = nasaApi.getPerseveranceRawImages(
+            sol = "${query.sol}:sol:in",
+            category = category,
+        )
         return response.photos.preveranceToUI(query.roverId)
     }
+
+    /**
+     * A random Ingenuity frame, for the widget.
+     *
+     * Ingenuity's campaign closed in 2024, so there is no "latest" to track — a latest-photo
+     * widget would show one frozen image forever. Like the Viking landers, it draws from the
+     * whole archive instead: 14,553 images at the feed's hard cap of 100 per page means pages
+     * 0..145 carry data.
+     *
+     * Deliberately does not go through [getPerseveranceLatestPhotos] and never writes to
+     * [_perseveranceTotalImages]: this response's `total_images` is Ingenuity's 14,553, and
+     * publishing it there would overwrite Perseverance's "Total Photos" stat (SIR-80).
+     */
+    suspend fun getIngenuityRandomPhoto(): List<MarsImage> {
+        val response = nasaApi.getPerseveranceRawImages(
+            category = "ingenuity",
+            page = Random.nextInt(0, INGENUITY_FEED_PAGES),
+        )
+        return response.photos.preveranceToUI(INGENUITY_ID)
+    }
+
+    /**
+     * First sol at or after [fromSol] holding an Ingenuity photo, or null when the lookup fails
+     * or there is none. Used to pick an opening anchor on Ingenuity's sparse feed.
+     */
+    suspend fun getIngenuityNearestSolAtOrAfter(fromSol: Long): Long? =
+        nasaApi.getIngenuityNearestSolAtOrAfter(fromSol)
 
     suspend fun getInsightLatestPhotos(): List<MarsImage> {
         return nasaApi.getRawImages("insight").list.mapToUi(INSIGHT_ID)

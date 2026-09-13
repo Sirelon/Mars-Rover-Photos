@@ -218,7 +218,7 @@ private fun FavoritePhotosContent(
                 title = "No favorite photos yet.\nYou can save any photos you like.\nJust mark them as \"favorite\".",
                 modifier = Modifier.padding(innerPadding),
                 action = {
-                    AppButton(onClick = onNavigateToRovers) { Text("Go to rovers") }
+                    AppButton(onClick = onNavigateToRovers) { Text("Go to missions") }
                 },
             )
         } else {
@@ -254,7 +254,7 @@ private fun FavoritePhotosContent(
                 if (isFilterEmpty) {
                     item(span = { GridItemSpan(maxLineSpan) }) {
                         AppEmptyState(
-                            title = "No photos saved for this rover yet.",
+                            title = "No photos saved for this mission yet.",
                             showImage = false,
                             action = {
                                 AppButton(onClick = { onRoverFilterChange(null) }) {
@@ -410,7 +410,7 @@ private fun FavoriteStatsRow(
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Text(
-            text = "${stats.roverCount} rover${if (stats.roverCount != 1) "s" else ""}",
+            text = "${stats.roverCount} mission${if (stats.roverCount != 1) "s" else ""}",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

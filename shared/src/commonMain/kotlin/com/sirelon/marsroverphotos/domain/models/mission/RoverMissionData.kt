@@ -19,8 +19,22 @@ object RoverMissionData {
             INSIGHT_ID -> insightCameras
             VIKING_1_ID -> vikingCameras
             VIKING_2_ID -> vikingCameras
+            INGENUITY_ID -> ingenuityCameras
             else -> emptyList()
         }
+    }
+
+    /**
+     * First sol this mission has photos for.
+     *
+     * Zero for everything that started taking pictures on arrival. Ingenuity is the exception:
+     * it rode down folded under Perseverance's belly and returned nothing until sol 43, the day
+     * it was set down on the surface. Anchoring its feed or its date picker any lower only offers
+     * empty days.
+     */
+    fun getMinSol(roverId: Long): Long = when (roverId) {
+        INGENUITY_ID -> 43L
+        else -> 0L
     }
 
     /** Landing site displayed in the mission hero and timeline (e.g. "Jezero Crater, Mars"). */
@@ -32,6 +46,7 @@ object RoverMissionData {
         INSIGHT_ID      -> "Elysium Planitia, Mars"
         VIKING_1_ID     -> "Chryse Planitia, Mars"
         VIKING_2_ID     -> "Utopia Planitia, Mars"
+        INGENUITY_ID    -> "Jezero Crater, Mars"
         else            -> "Mars"
     }
 
@@ -44,6 +59,7 @@ object RoverMissionData {
         INSIGHT_ID      -> "Studying the deep interior structure of Mars using seismic instruments and a burrowing heat probe at Elysium Planitia."
         VIKING_1_ID     -> "Returned the first photograph ever taken from the surface of Mars and went on to image Chryse Planitia for over six years — still the longest surface mission of the 20th century."
         VIKING_2_ID     -> "Photographed frost, dust storms and drifting soil across the northern plains of Utopia Planitia while searching alongside Viking 1 for signs of life."
+        INGENUITY_ID    -> "A 1.8 kg technology demonstration that was meant to fly five times and flew 72, scouting ahead of Perseverance across Jezero Crater until a damaged rotor blade ended the mission in January 2024."
         else            -> ""
     }
 
@@ -210,6 +226,24 @@ object RoverMissionData {
             name = "VLC2",
             fullName = "Viking Lander Camera 2",
             description = "Right-hand facsimile camera; took the first image from the Martian surface"
+        )
+    )
+
+    /**
+     * Ingenuity's two cameras. As with [perseveranceCameras], fullName is the raw instrument
+     * identifier the Mars 2020 feed reports, because filterByCameras matches on that prefix.
+     * The helicopter carried nothing else: every frame in the archive is one of these two.
+     */
+    private val ingenuityCameras = listOf(
+        CameraSpec(
+            name = "NAVCAM",
+            fullName = "HELI_NAV",
+            description = "Downward-looking black-and-white camera in the fuselage; tracked the ground during every flight"
+        ),
+        CameraSpec(
+            name = "RTE",
+            fullName = "HELI_RTE",
+            description = "13-megapixel color camera angled at the horizon — the source of Ingenuity's much smaller color archive"
         )
     )
 }
