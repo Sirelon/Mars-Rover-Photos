@@ -28,6 +28,27 @@ interface Tracker {
      */
     fun trackFeedEmpty(screen: String, params: Map<String, String> = emptyMap())
 
+    /**
+     * What a single ad impression was worth, from the AdMob paid-event callback.
+     *
+     * Typed rather than a [trackEvent] call because the money has to travel as a number: GA4 only
+     * folds ad revenue into user LTV and campaign ROAS when it arrives on the reserved
+     * `ad_impression` event as a numeric `value` next to its `currency`, and [trackEvent] carries
+     * strings. The AdMob console knows this revenue too, but only per day and per ad unit — never
+     * per user, session or screen, which is the whole reason to log it here as well.
+     *
+     * [value] is in whole [currencyCode] units. The platforms report an impression's worth
+     * differently — micros on Android, a decimal on iOS — so each converts at its own call site.
+     */
+    fun trackAdImpression(
+        adSource: String,
+        adFormat: String,
+        adUnitName: String,
+        value: Double,
+        currencyCode: String,
+        precision: String,
+    )
+
     fun trackFavorite(photo: MarsImage, from: String, fav: Boolean)
     fun trackSeen(photo: MarsImage)
     fun trackScale(photo: MarsImage)

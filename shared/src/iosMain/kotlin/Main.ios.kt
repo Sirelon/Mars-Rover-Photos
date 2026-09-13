@@ -4,6 +4,7 @@ import androidx.compose.ui.window.ComposeUIViewController
 import com.sirelon.marsroverphotos.domain.settings.AppSettings
 import com.sirelon.marsroverphotos.platform.BuildInfo
 import com.sirelon.marsroverphotos.platform.PushNotifications
+import com.sirelon.marsroverphotos.platform.Tracker
 import com.sirelon.marsroverphotos.presentation.App
 import com.sirelon.marsroverphotos.presentation.navigation.DeepLink
 import com.sirelon.marsroverphotos.presentation.navigation.parseDeepLink
@@ -44,6 +45,35 @@ fun onFcmRegistrationTokenAvailable() {
     CoroutineScope(Dispatchers.Main).launch {
         koin.get<PushNotifications>().setSubscribed(true)
     }
+}
+
+/**
+ * Called by `BannerAdFactory.swift` for every AdMob paid event.
+ *
+ * The banner itself has to live in Swift, where the GoogleMobileAds SDK is, so its revenue comes
+ * back across the bridge to land on the same `ad_impression` event the Android slot logs.
+ */
+fun trackAdImpression(
+    adSource: String,
+    adFormat: String,
+    adUnitName: String,
+    value: Double,
+    currencyCode: String,
+    precision: String,
+) {
+    KoinPlatform.getKoin().get<Tracker>().trackAdImpression(
+        adSource = adSource,
+        adFormat = adFormat,
+        adUnitName = adUnitName,
+        value = value,
+        currencyCode = currencyCode,
+        precision = precision,
+    )
+}
+
+/** Banner load outcomes from the same Swift factory — the fill rate the console can't break down. */
+fun trackAdEvent(event: String, params: Map<String, String>) {
+    KoinPlatform.getKoin().get<Tracker>().trackEvent(event, params)
 }
 
 /**

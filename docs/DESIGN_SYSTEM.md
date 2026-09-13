@@ -87,6 +87,12 @@ coral **accent/secondary** (`#FC6C4B`, "the Mars accent"). Light theme is white-
   `BottomAppBar` consumes the navigation-bar inset itself — so nothing overlaps a screen's content
   and a screen adding its own `navigationBarsPadding()`/ad-height padding just double-pads. Trailing
   `contentPadding` on a screen's list is breathing room, nothing more.
+- **The banner outlives the ad slot.** `AdSlot` leaves composition every time a fullscreen
+  destination collapses the chrome, so the platform ad views are retained across that on purpose:
+  Android parks the `AdView` in `RetainedBanner` (`AdSlot.android.kt`), iOS parks the `BannerView`
+  in `BannerAdFactoryImpl`, both paused and detached while off screen and re-attached with the ad
+  still loaded. A banner destroyed with the composable discards an impression that has already been
+  paid for and costs a fresh request — and an empty slot — every time a photo closes.
 
 ### Process
 - Run `./gradlew detekt` before review; `./gradlew testDebugUnitTest` (JVM) and

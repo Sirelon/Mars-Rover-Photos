@@ -43,6 +43,31 @@ class FirebaseTracker(private val analytics: FirebaseAnalytics) : Tracker {
         analytics.logEvent("feed_empty", params + mapOf("screen" to screen))
     }
 
+    override fun trackAdImpression(
+        adSource: String,
+        adFormat: String,
+        adUnitName: String,
+        value: Double,
+        currencyCode: String,
+        precision: String,
+    ) {
+        analytics.logEvent(
+            "ad_impression",
+            mapOf(
+                "ad_platform" to "AdMob",
+                "ad_source" to adSource,
+                "ad_format" to adFormat,
+                "ad_unit_name" to adUnitName,
+                "currency" to currencyCode,
+                // Numeric, and paired with currency: that is what makes GA4 read it as revenue.
+                "value" to value,
+                // An average-eCPM estimate and a real auction price both arrive here, and only the
+                // latter is worth optimising a placement against.
+                "precision" to precision,
+            ),
+        )
+    }
+
     override fun trackFavorite(photo: MarsImage, from: String, fav: Boolean) {
         val event = if (fav) "FavoritePhoto" else "UnFavoritePhoto"
         analytics.logEvent(event, mapOf("screen" to from, "photo_id" to photo.id))
