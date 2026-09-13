@@ -8,7 +8,7 @@ import androidx.compose.animation.MutableTransform
 import androidx.compose.animation.core.DeferredTransitionState
 import androidx.compose.animation.core.ExperimentalDeferredTransitionApi
 import androidx.compose.animation.core.animate
-import androidx.compose.animation.core.rememberTransition
+import androidx.compose.animation.core.rememberDeferredTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -368,7 +368,7 @@ private fun ImagesPagerContent(
     // attached to the content the finger is moving, so the fly-out starts from where the photo
     // actually is instead of snapping back to its untransformed bounds first.
     val dismissState = remember { DeferredTransitionState(true) }
-    val dismissTransition = rememberTransition(dismissState)
+    val dismissTransition = rememberDeferredTransition(dismissState)
     var dismissProgress by remember { mutableFloatStateOf(0f) }
     val dismissTransform = remember {
         MutableTransform().apply {

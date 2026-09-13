@@ -42,6 +42,7 @@ plugins {
     alias(libs.plugins.firebase.crashlytics) apply false
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.compose.multiplatform) apply false
+    alias(libs.plugins.compose.hot.reload) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.room) apply false
     id("io.gitlab.arturbosch.detekt") version "1.23.8"
@@ -52,6 +53,8 @@ allprojects {
         mavenCentral()
         maven { url = uri("https://jitpack.io") }
         maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/dev") }
+        // Compose Hot Reload dev builds (runtime/agent side; the plugin repo is in settings.gradle.kts)
+        maven { url = uri("https://packages.jetbrains.team/maven/p/firework/dev") }
         google()
     }
 

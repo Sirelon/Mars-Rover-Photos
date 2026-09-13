@@ -6,9 +6,17 @@ ksp = "2.3.11"
 
 # Compose Multiplatform
 # https://github.com/JetBrains/compose-multiplatform/releases
-compose-multiplatform = "1.12.0"
+# 1.13 dev build (compose dev repo): first line with ComposeDesktopEntryPoint.captureContentToImage(),
+# which Compose Hot Reload's take_screenshot MCP tool needs for an in-process capture instead of a
+# java.awt.Robot screen grab. Move to 1.13.0-alpha01 / stable once it reaches Maven Central.
+compose-multiplatform = "1.13.0-alpha01+dev4730"
+# Compose Hot Reload for the desktop target + its MCP server (hotMcpServer); needs CMP 1.10.0+.
+# Dev build from the firework repo (settings.gradle.kts): the MCP take_screenshot tool captures
+# in-process via ComposeDesktopEntryPoint only from the 2026-09-01 change, which no Maven Central
+# release carries yet. Move to the next 1.3.0 alpha/stable on Maven Central when it appears.
+compose-hot-reload = "1.3.0-alpha+220"
 # Compose Multiplatform material3 ships on its own, slower version line than the core artifacts
-compose-mp-material3 = "1.12.0-alpha03"
+compose-mp-material3 = "1.13.0-alpha01+dev4730"
 
 # AndroidX
 # https://developer.android.com/jetpack/androidx/releases/activity
@@ -186,6 +194,7 @@ android-library = { id = "com.android.library", version.ref = "androidGradlePlug
 android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
+compose-hot-reload = { id = "org.jetbrains.compose.hot-reload", version.ref = "compose-hot-reload" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
