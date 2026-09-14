@@ -8,7 +8,7 @@ ksp = "2.3.11"
 # https://github.com/JetBrains/compose-multiplatform/releases
 compose-multiplatform = "1.12.0"
 # Compose Multiplatform material3 ships on its own, slower version line than the core artifacts
-compose-mp-material3 = "1.12.0-alpha03"
+compose-mp-material3 = "1.13.0-alpha01"
 
 # AndroidX
 # https://developer.android.com/jetpack/androidx/releases/activity
