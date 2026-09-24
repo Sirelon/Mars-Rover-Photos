@@ -35,6 +35,7 @@ import com.sirelon.marsroverphotos.domain.models.VIKING_2_ID
 import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
 import com.sirelon.marsroverphotos.platform.Tracker
 import com.sirelon.marsroverphotos.utils.Logger
+import com.sirelon.marsroverphotos.utils.nasaImageSmallFallbackUrls
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
@@ -137,12 +138,18 @@ public class MarsPhotoWidgetWorker(
             return@withContext null
         }
         val loader = ImageLoader(context)
-        val request = ImageRequest.Builder(context)
-            .data(url)
-            .size(640)
-            .build()
-        val result = loader.execute(request)
-        result.image?.toBitmap()
+        // NASA doesn't generate every size variant for every Spirit/Opportunity asset, so the
+        // stored ~small URL can 403 — walk the same small→thumb→orig chain the grid uses (a no-op
+        // single-element list for every other rover's non-NASA-Image-Library URL).
+        for (candidate in nasaImageSmallFallbackUrls(url)) {
+            val request = ImageRequest.Builder(context)
+                .data(candidate)
+                .size(640)
+                .build()
+            val bitmap = loader.execute(request).image?.toBitmap()
+            if (bitmap != null) return@withContext bitmap
+        }
+        null
     }
 
     private fun saveBitmap(directory: File, key: String, bitmap: Bitmap): String? {

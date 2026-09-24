@@ -30,6 +30,8 @@ import com.sirelon.marsroverphotos.utils.Logger
 import com.sirelon.marsroverphotos.utils.RoverDateUtil
 import com.sirelon.marsroverphotos.utils.formatDisplayDate
 import kotlin.time.Clock
+import kotlin.time.TimeMark
+import kotlin.time.TimeSource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
@@ -95,6 +97,9 @@ class PhotosViewModel(
     val scrollToTopEvents: SharedFlow<Unit> = _scrollToTopEvents.asSharedFlow()
 
     private var dateUtil: RoverDateUtil? = null
+
+    /** Reports how long this screen entry's feed took to show its first photos — see [onFeedSettled]. */
+    private val feedLoadTimer = FeedLoadTimer()
 
     private val factPoolFlow = MutableStateFlow<List<EducationalFact>>(emptyList())
 
@@ -287,6 +292,17 @@ class PhotosViewModel(
     }
 
     fun consumeLastViewedPhotoId(): String? = roverFeedPager.consumeLastViewedPhotoId()
+
+    /**
+     * Called by [com.sirelon.marsroverphotos.presentation.screens.TrackFeedLoaded] once the grid's
+     * paging state settles with photos on screen. Fires [Tracker.trackFeedLoaded] the first time
+     * this happens for this screen entry only — later refreshes (date jump, filters,
+     * pull-to-refresh, append) are already past their first photos and [FeedLoadTimer] ignores them.
+     */
+    fun onFeedSettled(itemCount: Int) {
+        val rover = roverStateFlow.value ?: return
+        feedLoadTimer.onSettled(itemCount, rover.name, tracker)
+    }
 
     val favoriteOverrides get() = roverFeedPager.favoriteOverrides
 
@@ -501,4 +517,22 @@ data class PhotosUiState(
             val pageSize = ImagesSearchPagingSource.PAGE_SIZE
             return if (totalPagePhotos > 0) (totalPagePhotos + pageSize - 1) / pageSize else 1
         }
+}
+
+/**
+ * Measures the time from a [PhotosViewModel] screen entry (construction) to the moment its feed
+ * first has photos on screen, and reports it once via [Tracker.trackFeedLoaded].
+ *
+ * Split out of [PhotosViewModel] so the once-per-entry guard and the duration math are
+ * unit-testable without constructing the ViewModel's seven collaborators.
+ */
+class FeedLoadTimer(private val startMark: TimeMark = TimeSource.Monotonic.markNow()) {
+    private var reported = false
+
+    /** No-op once already reported, or while [itemCount] is still zero. */
+    fun onSettled(itemCount: Int, rover: String, tracker: Tracker) {
+        if (reported || itemCount <= 0) return
+        reported = true
+        tracker.trackFeedLoaded(rover, startMark.elapsedNow().inWholeMilliseconds)
+    }
 }

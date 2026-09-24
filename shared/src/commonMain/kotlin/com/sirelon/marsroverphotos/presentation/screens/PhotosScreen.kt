@@ -82,6 +82,7 @@ import com.sirelon.marsroverphotos.presentation.ui.LikeHeartOverlay
 import com.sirelon.marsroverphotos.presentation.ui.MarsImageFavoriteToggle
 import com.sirelon.marsroverphotos.presentation.ui.rememberLikeHeartState
 import com.sirelon.marsroverphotos.presentation.ui.NetworkImage
+import com.sirelon.marsroverphotos.presentation.ui.photoContentDescription
 import com.sirelon.marsroverphotos.presentation.viewmodels.PhotosUiState
 import com.sirelon.marsroverphotos.presentation.viewmodels.PhotosViewModel
 import com.sirelon.marsroverphotos.shared.resources.Res
@@ -91,6 +92,7 @@ import com.sirelon.marsroverphotos.shared.resources.no_photos_title
 import com.sirelon.marsroverphotos.shared.resources.page_of_fmt
 import com.sirelon.marsroverphotos.shared.resources.tap_to_retry
 import com.sirelon.marsroverphotos.utils.formatDisplayDate
+import com.sirelon.marsroverphotos.utils.nasaImageSmallFallbackUrls
 import coil3.SingletonImageLoader
 import coil3.compose.LocalPlatformContext
 import coil3.request.CachePolicy
@@ -150,6 +152,8 @@ fun PhotosScreen(
             "has_camera_filter" to state.cameraFilters.isNotEmpty().toString(),
         ),
     )
+    // Third outcome of the same feed load: how long it took to show its first photos.
+    TrackFeedLoaded(pagingItems = pagingItems, onSettled = viewModel::onFeedSettled)
 
     // Scroll to top whenever the feed is re-anchored (sol/date pick, randomize, go-to-latest,
     // camera filter change). Without this the grid keeps its previous scroll offset and the
@@ -537,6 +541,10 @@ private fun PhotoCard(
     onFavoriteClick: (image: MarsImage) -> Unit,
 ) {
     val heartState = rememberLikeHeartState()
+    // ~small is occasionally missing for Spirit/Opportunity assets (NASA doesn't generate every
+    // size variant); fall back through ~thumb to ~orig rather than leaving a broken tile — see
+    // NasaImageUrl.kt. No-op (single-element list) for non-NASA-Image-Library images.
+    val smallFallbackChain = remember(image.imageUrl) { nasaImageSmallFallbackUrls(image.imageUrl) }
 
     AppCard(
         modifier = Modifier
@@ -551,7 +559,9 @@ private fun PhotoCard(
                         .fillMaxWidth()
                         .aspectRatio(1F)
                         .sharedPhoto(image.id),
-                    imageUrl = image.imageUrl,
+                    imageUrl = smallFallbackChain.first(),
+                    fallbackUrls = smallFallbackChain.drop(1),
+                    contentDescription = image.photoContentDescription(),
                     // Writer: cache the thumbnail under the shared key the viewer reads instantly.
                     cacheKey = "photo_${image.id}",
                 )

@@ -83,6 +83,7 @@ import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.presentation.ui.NetworkImage
 import com.sirelon.marsroverphotos.presentation.ui.NoScrollEffect
+import com.sirelon.marsroverphotos.presentation.ui.photoContentDescription
 import com.sirelon.marsroverphotos.presentation.ui.navFadeEnter
 import com.sirelon.marsroverphotos.presentation.ui.sharedFavorite
 import com.sirelon.marsroverphotos.presentation.ui.sharedPhoto
@@ -93,7 +94,7 @@ import com.sirelon.marsroverphotos.presentation.viewmodels.UiEvent
 import com.sirelon.marsroverphotos.shared.resources.Res
 import com.sirelon.marsroverphotos.shared.resources.images_empty_btn
 import com.sirelon.marsroverphotos.shared.resources.images_empty_title
-import com.sirelon.marsroverphotos.utils.nasaImageLargeUrl
+import com.sirelon.marsroverphotos.utils.nasaImageLargeFallbackUrls
 import com.sirelon.marsroverphotos.utils.nasaImageOrigUrl
 import kotlin.math.roundToInt
 import kotlinx.coroutines.Job
@@ -692,7 +693,11 @@ private fun ImagesPager(
             // Threshold (> 1.1f, not > 1f) so an overscroll/settle bounce doesn't trigger a heavy
             // ~orig decode; the screen-sized ~large already looks crisp until a real zoom.
             val zoomedIn by remember { derivedStateOf { zoomState.scale > ZOOM_THRESHOLD } }
-            val largeUrl = remember(marsImage.imageUrl) { nasaImageLargeUrl(marsImage.imageUrl) }
+            // ~large is missing for a meaningful share of Spirit/Opportunity assets (NASA doesn't
+            // generate every size variant); fall back through ~medium to the always-present ~orig
+            // rather than leaving the upscaled grid thumbnail on screen — see NasaImageUrl.kt.
+            val largeFallbackChain =
+                remember(marsImage.imageUrl) { nasaImageLargeFallbackUrls(marsImage.imageUrl) }
             val origUrl = remember(marsImage.imageUrl) { nasaImageOrigUrl(marsImage.imageUrl) }
 
             // Reuses the full-res swap's own threshold rather than re-deriving it from the raw
@@ -725,7 +730,9 @@ private fun ImagesPager(
                             },
                         ),
                     contentScale = ContentScale.Fit,
-                    imageUrl = if (zoomedIn) origUrl else largeUrl,
+                    imageUrl = if (zoomedIn) origUrl else largeFallbackChain.first(),
+                    fallbackUrls = if (zoomedIn) emptyList() else largeFallbackChain.drop(1),
+                    contentDescription = marsImage.photoContentDescription(),
                     showPlaceholder = false,
                     cacheKey = if (zoomedIn) null else "photo_large_${marsImage.id}",
                     placeholderCacheKey = if (zoomedIn) "photo_large_${marsImage.id}" else "photo_${marsImage.id}",

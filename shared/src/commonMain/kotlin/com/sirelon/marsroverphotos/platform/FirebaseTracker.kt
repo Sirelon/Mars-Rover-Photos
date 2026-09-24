@@ -43,6 +43,17 @@ class FirebaseTracker(private val analytics: FirebaseAnalytics) : Tracker {
         analytics.logEvent("feed_empty", params + mapOf("screen" to screen))
     }
 
+    override fun trackFeedLoaded(rover: String, loadMs: Long) {
+        analytics.logEvent(
+            "feed_loaded",
+            mapOf(
+                "rover" to rover,
+                // Numeric, like trackAdImpression's value: GA4 can only average load_ms this way.
+                "load_ms" to loadMs,
+            ),
+        )
+    }
+
     override fun trackAdImpression(
         adSource: String,
         adFormat: String,

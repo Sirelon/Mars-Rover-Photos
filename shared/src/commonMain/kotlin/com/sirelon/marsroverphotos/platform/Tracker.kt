@@ -29,6 +29,16 @@ interface Tracker {
     fun trackFeedEmpty(screen: String, params: Map<String, String> = emptyMap())
 
     /**
+     * How long a rover's photo feed took to show its first photos, from screen entry to the
+     * moment the initial load settles with something on screen.
+     *
+     * Typed rather than a [trackEvent] call for the same reason as [trackAdImpression]: GA4 only
+     * averages a numeric param, and [trackEvent] carries strings, so [loadMs] would arrive as text
+     * no report could aggregate.
+     */
+    fun trackFeedLoaded(rover: String, loadMs: Long)
+
+    /**
      * What a single ad impression was worth, from the AdMob paid-event callback.
      *
      * Typed rather than a [trackEvent] call because the money has to travel as a number: GA4 only

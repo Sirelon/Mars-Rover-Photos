@@ -117,6 +117,17 @@ public class MarsPhotoWidget : GlanceAppWidget() {
         val action = actionStartActivity(launchIntent)
         val showDetails = size.width >= 200.dp && size.height >= 140.dp
         val showOverlay = size.height >= 110.dp
+        // Computed once so the accessibility label carries sol/date regardless of widget size,
+        // even though the matching visible Text below is only shown at the larger sizes.
+        val detail = if (sol > 0 && earthDate.isNotBlank()) {
+            "Sol $sol - $earthDate"
+        } else if (earthDate.isNotBlank()) {
+            earthDate
+        } else if (sol > 0) {
+            "Sol $sol"
+        } else {
+            ""
+        }
 
         Box(
             modifier = GlanceModifier
@@ -126,7 +137,7 @@ public class MarsPhotoWidget : GlanceAppWidget() {
             if (imageProvider != null) {
                 Image(
                     provider = imageProvider,
-                    contentDescription = roverName,
+                    contentDescription = if (detail.isBlank()) roverName else "$roverName, $detail",
                     modifier = GlanceModifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
                 )
@@ -166,15 +177,6 @@ public class MarsPhotoWidget : GlanceAppWidget() {
                             )
                         )
                         if (showDetails) {
-                            val detail = if (sol > 0 && earthDate.isNotBlank()) {
-                                "Sol $sol - $earthDate"
-                            } else if (earthDate.isNotBlank()) {
-                                earthDate
-                            } else if (sol > 0) {
-                                "Sol $sol"
-                            } else {
-                                ""
-                            }
                             if (detail.isNotBlank()) {
                                 Text(
                                     text = detail,

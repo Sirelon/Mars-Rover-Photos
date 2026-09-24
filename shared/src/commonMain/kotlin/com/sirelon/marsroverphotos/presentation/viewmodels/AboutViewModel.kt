@@ -37,12 +37,16 @@ class AboutViewModel(
 
     fun setTheme(theme: Theme) {
         appSettings.theme = theme
-        analytics.logEvent("change_theme_$theme", emptyMap())
+        // Theme travels as a parameter on one fixed event name rather than baking it into the
+        // name (former change_theme_<THEME>), which would spread one setting across as many GA4
+        // events as there are themes.
+        analytics.logEvent("theme_changed", mapOf("theme" to theme.name.lowercase()))
     }
 
     fun toggleFacts(enabled: Boolean) {
         appSettings.showFacts = enabled
-        analytics.logEvent("toggle_facts_$enabled", emptyMap())
+        // Same fix as setTheme: former toggle_facts_<true|false> becomes one event with a param.
+        analytics.logEvent("facts_toggled", mapOf("enabled" to enabled))
     }
 
     fun refreshPushStatus() {

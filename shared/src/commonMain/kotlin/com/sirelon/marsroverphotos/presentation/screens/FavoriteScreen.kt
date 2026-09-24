@@ -64,6 +64,7 @@ import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.presentation.ui.compactCount
+import com.sirelon.marsroverphotos.presentation.ui.photoContentDescription
 import com.sirelon.marsroverphotos.presentation.ui.sharedPhoto
 import com.sirelon.marsroverphotos.presentation.viewmodels.FavoriteImagesViewModel
 import com.sirelon.marsroverphotos.shared.resources.Res
@@ -300,7 +301,10 @@ private fun FavoritePhotoCard(
                 .crossfade(true)
                 .memoryCacheKey("photo_${photo.id}")
                 .build(),
-            contentDescription = null,
+            // No sibling text on this card names the rover/camera/sol (only a view count below),
+            // so the image itself carries the label — unlike the Popular cards, which already
+            // show that info as visible text merged into the same clickable node.
+            contentDescription = photo.photoContentDescription(),
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(1f)

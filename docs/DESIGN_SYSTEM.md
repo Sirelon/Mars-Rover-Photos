@@ -122,9 +122,12 @@ coral **accent/secondary** (`#FC6C4B`, "the Mars accent"). Light theme is white-
   Coil key via `NetworkImage(cacheKey = "photo_<id>")`; the viewer **reads** it via `placeholderCacheKey`.
   Writer and reader are **separate params** (`cacheKey` vs `placeholderCacheKey`) — never the same key on
   both ends, or the thumb/full-res entries ping-pong while both are composed during the transition.
-- **Progressive res:** the viewer loads `~large` first (`nasaImageLargeUrl`) and upgrades to `~orig`
-  (`nasaImageOrigUrl`) only on zoom; `~large` is cached under `photo_large_<id>` so the upgrade is
-  flash-free.
+- **Progressive res:** the viewer loads `~large` first (first entry of `nasaImageLargeFallbackUrls`)
+  and upgrades to `~orig` (`nasaImageOrigUrl`) only on zoom; `~large` is cached under
+  `photo_large_<id>` so the upgrade is flash-free. NASA doesn't generate every size variant for
+  every NASA Image Library asset (Spirit/Opportunity) — a missing one 403s — so `NetworkImage`
+  walks the rest of the chain (`~medium`, then `~orig`) on a load error; the grid thumbnail does
+  the same via `nasaImageSmallFallbackUrls` (`~small` → `~thumb` → `~orig`). See `NasaImageUrl.kt`.
 - **Where the nav specs live:** the Photos→viewer **open** fade is on the `Images` nav entry
   (`di/NavigationModule.kt`); the **close / predictive-pop** fade is on the `NavDisplay`
   (`navigation/AppNavigation.kt`). Both use `AppMotion.SharedContainerMs`; standard slide nav uses
@@ -224,7 +227,7 @@ Stable design-system pieces (path = `shared/src/commonMain/kotlin/com/sirelon/ma
 | `AppEmptyState` | `ui/AppEmptyState.kt` | Shared empty/error state with optional alien mascot and action slot. |
 | `AppFloatingActionButton` | `ui/AppFloatingActionButton.kt` | Branded FAB that defaults to the Mars accent (`colorScheme.secondary`). |
 | `MarsSnackbar` | `ui/widgets.kt` | Branded snackbar host. |
-| `MarsImage` | `ui/MarsImage.kt` | Coil-backed image. |
+| `MarsImage` | `ui/MarsImage.kt` | Coil-backed image. `MarsImage.photoContentDescription()` builds its `NetworkImage` `contentDescription` ("Perseverance, Mastcam-Z, sol 1,234") from rover/camera/sol instead of the URL; a decorative/duplicate-label call site passes `null`. |
 | `PlatformDatePickerDialog` | `ui/PlatformDatePicker.kt` | Compose-only cross-platform date picker dialog with min/max range support. |
 | `CenteredColumn` / `CenteredProgress` | `ui/CenteredComponents.kt` | Shared centering primitives for loading and empty states. |
 | `MarsNavigationSuite` | `navigation/MarsBottomBar.kt` | Adaptive bottom bar ↔ nav rail (compact ↔ medium/expanded). |
@@ -431,3 +434,13 @@ wrapper and no screen-level type scale** here.
   handoff-mapping note that a px brief is not a licence to mint tokens. Also promoted the
   "don't pad for the ad slot / nav bar" fact into **Adaptive layout & navigation** and the
   unit-carry trap into **Number formatting**. New **Mission Info** section.
+- 2026-09-24 — **Photo accessibility fix.** `NetworkImage` and the other photo composables in
+  `MarsImage.kt` were passing the raw image URL (or nothing) as `contentDescription`, so TalkBack/
+  VoiceOver read out URLs. Added `MarsImage.photoContentDescription()` (component index above) and
+  gave `NetworkImage` a `contentDescription: String?` parameter (default `null`, for decorative
+  loads or a call site whose parent already merges a label — e.g. the Popular cards, which already
+  show rover/sol/camera as visible `Text`). Reuses `formatThousands` for the sol's thousands
+  separator; the rover id → name table is duplicated in `ui/MarsImage.kt` (private
+  `roverDisplayName`) rather than imported from `data/repositories/RoversRepositoryImpl`, because
+  `presentation` may only depend on `domain` — same pattern as `RoverPainter.kt`'s id → drawable
+  dispatch.

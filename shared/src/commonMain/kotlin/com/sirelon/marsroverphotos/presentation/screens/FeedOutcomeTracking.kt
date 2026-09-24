@@ -50,6 +50,27 @@ fun TrackEmptyFeed(
 }
 
 /**
+ * Notices the moment a paged feed first has something to show — the third outcome of a feed
+ * load alongside [TrackEmptyFeed]'s error/empty pair.
+ *
+ * This composable only detects the moment; it does not decide whether to report it or compute
+ * how long it took. That is [onSettled]'s job (backed by a ViewModel), so the once-per-entry
+ * guard and the duration math stay testable without a Compose paging setup.
+ */
+@Composable
+fun TrackFeedLoaded(
+    pagingItems: LazyPagingItems<*>,
+    onSettled: (itemCount: Int) -> Unit,
+) {
+    LaunchedEffect(pagingItems) {
+        snapshotFlow { pagingItems.loadState.refresh to pagingItems.itemCount }
+            .collect { (refresh, itemCount) ->
+                if (refresh is LoadState.NotLoading && itemCount > 0) onSettled(itemCount)
+            }
+    }
+}
+
+/**
  * Which backend served this rover, as an analytics parameter — the page-keyed images.nasa.gov
  * library (Spirit/Opportunity) or the sol-keyed raw archive. A failure rate that splits along
  * this line points at a source rather than at the app.
