@@ -77,6 +77,9 @@ class GdprHelper(private val activity: Activity) {
 
     private fun showConsentForm(consentForm: ConsentForm) {
         Logger.d(TAG) { "showConsentForm status=${consentInformation.consentStatus}" }
+        // The load callback can land after the Activity was destroyed (rotation, back); showing then
+        // fails with "Activity is destroyed". The next Activity instance runs init() again.
+        if (activity.isFinishing || activity.isDestroyed) return
         if (consentInformation.consentStatus == ConsentInformation.ConsentStatus.REQUIRED) {
             consentForm.show(activity) { formError ->
                 if (formError != null) {
@@ -86,7 +89,7 @@ class GdprHelper(private val activity: Activity) {
                     }
                 }
                 // Reload form after dismissal so it is ready for future re-requests.
-                loadForm()
+                if (!activity.isFinishing && !activity.isDestroyed) loadForm()
                 updateAcceptanceFromConsentState()
             }
         } else {

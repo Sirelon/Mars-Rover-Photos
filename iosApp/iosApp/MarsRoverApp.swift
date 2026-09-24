@@ -108,10 +108,9 @@ struct MarsRoverApp: App {
         let hideAdsArg = launchArgs.contains { $0.range(of: "hideAds", options: .caseInsensitive) != nil }
         if UserDefaults.standard.bool(forKey: "hideAds") || hideAdsArg {
             BuildInfo.shared.hideAds = true
+            // Keep screen on during Maestro runs only; never for real users.
+            UIApplication.shared.isIdleTimerDisabled = true
         }
-
-        // Keep screen on during testing
-        UIApplication.shared.isIdleTimerDisabled = true
     }
 
     var body: some Scene {
