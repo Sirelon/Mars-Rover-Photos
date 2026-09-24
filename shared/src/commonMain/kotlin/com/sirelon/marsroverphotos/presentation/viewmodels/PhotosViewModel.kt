@@ -19,6 +19,8 @@ import com.sirelon.marsroverphotos.domain.models.EducationalFact
 import com.sirelon.marsroverphotos.domain.models.Rover
 import com.sirelon.marsroverphotos.domain.repositories.FactsRepository
 import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
+import com.sirelon.marsroverphotos.domain.models.mission.RoverMissionData
+import com.sirelon.marsroverphotos.domain.repositories.PhotosRepository
 import com.sirelon.marsroverphotos.domain.repositories.RoversRepository
 import com.sirelon.marsroverphotos.domain.settings.AppSettings
 import com.sirelon.marsroverphotos.platform.Tracker
@@ -62,6 +64,7 @@ import kotlin.random.Random
 @OptIn(ExperimentalCoroutinesApi::class)
 class PhotosViewModel(
     private val roversRepository: RoversRepository,
+    private val photosRepository: PhotosRepository,
     private val factsRepository: FactsRepository,
     private val appSettings: AppSettings,
     private val roverFeedPager: RoverFeedPager,
@@ -304,7 +307,15 @@ class PhotosViewModel(
         }
         viewModelScope.launch {
             val rover = roverFlow.first()
-            applyAnchor(rover, Random.nextLong(0L, rover.maxSol.coerceAtLeast(1L)))
+            val minSol = RoverMissionData.getMinSol(rover.id)
+            val maxSol = rover.maxSol.coerceAtLeast(minSol + 1)
+            val candidate = Random.nextLong(minSol, maxSol)
+            // On a sparse feed most draws land on an empty sol, which the paging source would
+            // resolve by probing forward one request per sol. Ask the source for the nearest sol
+            // that actually has photos instead; a null answer just means we open where we landed.
+            val anchor = photosRepository.nearestSolWithPhotosAtOrAfter(rover.id, candidate)
+                ?: candidate
+            applyAnchor(rover, anchor)
         }
     }
 
@@ -373,9 +384,20 @@ class PhotosViewModel(
 
     suspend fun maxSol() = roverFlow.first().maxSol
 
-    fun minDate() = dateUtil?.roverLandingDate ?: run {
-        Logger.w("PhotosViewModel") { "DateUtil not initialized, returning current time for min date" }
-        Clock.System.now().toEpochMilliseconds()
+    suspend fun minSol() = RoverMissionData.getMinSol(roverFlow.first().id)
+
+    /**
+     * Earliest date the pickers offer. This is the mission's first *photographed* sol, which for
+     * every rover is landing day and so resolves to the same value as before. Ingenuity is the
+     * exception — it did not fly until sol 43.
+     */
+    fun minDate(): Long {
+        val util = dateUtil ?: run {
+            Logger.w("PhotosViewModel") { "DateUtil not initialized, returning current time for min date" }
+            return Clock.System.now().toEpochMilliseconds()
+        }
+        val roverId = roverIdEmitter.value ?: return util.roverLandingDate
+        return util.dateFromSol(RoverMissionData.getMinSol(roverId))
     }
 
     fun dateFromSol() = dateUtil?.dateFromSol(getSol()) ?: run {
@@ -410,14 +432,15 @@ class PhotosViewModel(
     }
 
     private fun applyAnchor(rover: Rover, sol: Long) {
-        val maxSol = rover.maxSol.coerceAtLeast(1L)
-        val clamped = sol.coerceIn(0L, maxSol)
+        val minSol = RoverMissionData.getMinSol(rover.id)
+        val maxSol = rover.maxSol.coerceAtLeast(minSol + 1)
+        val clamped = sol.coerceIn(minSol, maxSol)
         visibleSolEmitter.value = clamped
         roverFeedPager.setFeed(
             roverId = rover.id,
             mode = FeedMode.Sol(
                 anchorSol = clamped,
-                minSol = 0L,
+                minSol = minSol,
                 maxSol = maxSol,
                 cameras = cameraFilterEmitter.value,
             ),

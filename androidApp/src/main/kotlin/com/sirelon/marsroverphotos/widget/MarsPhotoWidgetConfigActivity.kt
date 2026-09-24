@@ -43,6 +43,7 @@ import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.state.PreferencesGlanceStateDefinition
 import androidx.lifecycle.lifecycleScope
 import com.sirelon.marsroverphotos.domain.models.CURIOSITY_ID
+import com.sirelon.marsroverphotos.domain.models.INGENUITY_ID
 import com.sirelon.marsroverphotos.domain.models.INSIGHT_ID
 import com.sirelon.marsroverphotos.domain.models.OPPORTUNITY_ID
 import com.sirelon.marsroverphotos.domain.models.PERSEVERANCE_ID
@@ -121,6 +122,7 @@ private fun WidgetConfigScreen(
     val roverOptions = remember {
         listOf(
             RoverOption(PERSEVERANCE_ID, "Perseverance"),
+            RoverOption(INGENUITY_ID, "Ingenuity Helicopter"),
             RoverOption(CURIOSITY_ID, "Curiosity"),
             RoverOption(OPPORTUNITY_ID, "Opportunity"),
             RoverOption(SPIRIT_ID, "Spirit"),
@@ -140,7 +142,7 @@ private fun WidgetConfigScreen(
 
     Scaffold(
         topBar = {
-            AppTopBar(title = { Text(text = "Choose rover") })
+            AppTopBar(title = { Text(text = "Choose mission") })
         }
     ) { paddingValues ->
         Column(

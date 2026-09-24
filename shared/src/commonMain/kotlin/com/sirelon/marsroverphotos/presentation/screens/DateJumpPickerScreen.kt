@@ -96,9 +96,15 @@ private fun SolDateContent(
     viewModel: PhotosViewModel,
     onDismiss: () -> Unit,
 ) {
+    var minSol by remember { mutableLongStateOf(0L) }
     var maxSol by remember { mutableLongStateOf(1L) }
     LaunchedEffect(Unit) {
-        maxSol = viewModel.maxSol().coerceAtLeast(1L)
+        // Resolve both bounds before publishing either: a recomposition that saw the new minSol
+        // against the old maxSol would coerce into an empty range and throw.
+        val lower = viewModel.minSol()
+        val upper = viewModel.maxSol().coerceAtLeast(lower + 1)
+        minSol = lower
+        maxSol = upper
     }
 
     val currentSol by viewModel.solFlow.collectAsState(initial = 0L)
@@ -131,8 +137,8 @@ private fun SolDateContent(
 
         Column {
             Slider(
-                value = selectedSol.coerceIn(0L, maxSol).toFloat(),
-                valueRange = 0f..maxSol.toFloat(),
+                value = selectedSol.coerceIn(minSol, maxSol).toFloat(),
+                valueRange = minSol.toFloat()..maxSol.toFloat(),
                 onValueChange = { selectedSol = it.toLong() },
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -141,7 +147,7 @@ private fun SolDateContent(
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
-                    text = "0",
+                    text = minSol.toString(),
                     style = AppTypography.statLabel,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

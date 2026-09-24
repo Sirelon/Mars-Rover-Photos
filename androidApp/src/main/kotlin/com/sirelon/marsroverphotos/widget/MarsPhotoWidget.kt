@@ -39,6 +39,7 @@ import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import com.sirelon.marsroverphotos.MainActivity
 import com.sirelon.marsroverphotos.domain.models.CURIOSITY_ID
+import com.sirelon.marsroverphotos.domain.models.INGENUITY_ID
 import com.sirelon.marsroverphotos.domain.models.INSIGHT_ID
 import com.sirelon.marsroverphotos.domain.models.OPPORTUNITY_ID
 import com.sirelon.marsroverphotos.domain.models.PERSEVERANCE_ID
@@ -137,7 +138,7 @@ public class MarsPhotoWidget : GlanceAppWidget() {
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = if (hasConfiguredRover) "Updating photo" else "Select a rover",
+                        text = if (hasConfiguredRover) "Updating photo" else "Select a mission",
                         modifier = GlanceModifier
                             .padding(12.dp)
                     )
@@ -201,6 +202,7 @@ internal fun roverNameForId(roverId: Long): String {
         CURIOSITY_ID -> "Curiosity"
         VIKING_1_ID -> "Viking 1"
         VIKING_2_ID -> "Viking 2"
+        INGENUITY_ID -> "Ingenuity Helicopter"
         else -> "Mars Rover"
     }
 }

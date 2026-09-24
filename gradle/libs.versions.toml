@@ -1,7 +1,7 @@
 [versions]
 # Core
-kotlin = "2.4.20-RC2"
-androidGradlePlugin = "9.3.2"
+kotlin = "2.4.20"
+androidGradlePlugin = "9.4.0"
 ksp = "2.3.11"
 
 # Compose Multiplatform
@@ -43,7 +43,7 @@ core-splashscreen = "1.2.0"
 
 # Multiplatform libraries
 # https://github.com/coil-kt/coil/blob/main/CHANGELOG.md
-coil = "3.6.0"
+coil = "3.6.1"
 # https://github.com/Kotlin/kotlinx.serialization/releases
 kotlin-serialization = "1.11.0"
 # https://github.com/Kotlin/kotlinx.collections.immutable/releases
@@ -65,7 +65,7 @@ navigation-compose = "2.9.2"
 
 # GitLive Firebase KMP SDK
 # https://github.com/GitLiveApp/firebase-kotlin-sdk/releases
-gitliveFirebase = "3.0.0-alpha01"
+gitliveFirebase = "3.0.0-alpha02"
 
 # Firebase
 # https://firebase.google.com/support/release-notes/android
@@ -159,6 +159,7 @@ ktor-client-darwin = { group = "io.ktor", name = "ktor-client-darwin", version.r
 ktor-client-js = { group = "io.ktor", name = "ktor-client-js", version.ref = "ktor" }
 ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-client-mock = { group = "io.ktor", name = "ktor-client-mock", version.ref = "ktor" }
 
 # Kermit Multiplatform Logging
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
