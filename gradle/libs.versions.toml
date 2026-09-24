@@ -2,7 +2,7 @@
 # Core
 kotlin = "2.4.20"
 androidGradlePlugin = "9.4.0"
-ksp = "2.3.11"
+ksp = "2.3.12"
 
 # Compose Multiplatform
 # https://github.com/JetBrains/compose-multiplatform/releases
@@ -35,7 +35,7 @@ glance = "1.3.0-alpha02"
 # https://developer.android.com/jetpack/androidx/releases/paging
 paging = "3.5.1"
 # https://developer.android.com/jetpack/androidx/releases/room3
-room = "3.0.2"
+room = "3.0.3"
 # https://developer.android.com/jetpack/androidx/releases/work
 work = "2.11.2"
 # https://developer.android.com/jetpack/androidx/releases/core
@@ -43,7 +43,7 @@ core-splashscreen = "1.2.0"
 
 # Multiplatform libraries
 # https://github.com/coil-kt/coil/blob/main/CHANGELOG.md
-coil = "3.6.1"
+coil = "3.6.2"
 # https://github.com/Kotlin/kotlinx.serialization/releases
 kotlin-serialization = "1.11.0"
 # https://github.com/Kotlin/kotlinx.collections.immutable/releases
@@ -55,7 +55,7 @@ kotlinx-coroutines = "1.11.0"
 # https://github.com/ktorio/ktor/releases
 ktor = "3.5.2"
 # https://github.com/touchlab/Kermit
-kermit = "2.1.0"
+kermit = "2.2.0"
 # https://github.com/InsertKoinIO/koin
 koin = "4.2.2"
 koin-compose = "4.2.2"
@@ -69,13 +69,13 @@ gitliveFirebase = "3.0.0-alpha02"
 
 # Firebase
 # https://firebase.google.com/support/release-notes/android
-firebaseBom = "34.18.0"
+firebaseBom = "34.19.0"
 firebaseAnalyticsVersion = "23.2.0"
-firebaseCrashlyticsVersion = "20.1.0"
+firebaseCrashlyticsVersion = "20.1.1"
 firebaseFirestoreVersion = "26.6.0"
 # Matches firebase-bom 34.18.0. The GitLive Android artifact depends on firebase-messaging with no
 # version of its own, so the shared module has to supply one.
-firebaseMessagingVersion = "25.1.2"
+firebaseMessagingVersion = "25.1.3"
 
 # Testing
 
