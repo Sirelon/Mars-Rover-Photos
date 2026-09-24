@@ -47,7 +47,7 @@ kotlinx-coroutines = "1.11.0"
 # https://github.com/ktorio/ktor/releases
 ktor = "3.5.2"
 # https://github.com/touchlab/Kermit
-kermit = "2.1.0"
+kermit = "2.2.0"
 # https://github.com/InsertKoinIO/koin
 koin = "4.2.2"
 koin-compose = "4.2.2"
