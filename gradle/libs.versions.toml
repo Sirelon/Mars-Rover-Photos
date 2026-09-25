@@ -40,6 +40,15 @@ room = "3.0.3"
 work = "2.11.2"
 # https://developer.android.com/jetpack/androidx/releases/core
 core-splashscreen = "1.2.0"
+# https://developer.android.com/jetpack/androidx/releases/benchmark
+# Macrobenchmark + the Baseline Profile Gradle plugin; 1.5.0 is the first line that supports AGP 9.
+benchmark = "1.5.0"
+# https://developer.android.com/jetpack/androidx/releases/profileinstaller
+profileinstaller = "1.4.1"
+# https://developer.android.com/jetpack/androidx/releases/test-uiautomator
+uiautomator = "2.4.0"
+# https://developer.android.com/jetpack/androidx/releases/test
+androidx-test-junit = "1.3.0"
 
 # Multiplatform libraries
 # https://github.com/coil-kt/coil/blob/main/CHANGELOG.md
@@ -105,6 +114,12 @@ androidx-sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", 
 
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "core-splashscreen" }
+androidx-profileinstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "profileinstaller" }
+
+# Baseline Profile generation + startup benchmarks (:baselineprofile)
+androidx-benchmark-macro-junit4 = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmark" }
+androidx-test-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "uiautomator" }
+androidx-test-ext-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-test-junit" }
 
 # Compose Multiplatform (KMP) — direct coordinates replacing deprecated compose.XXX shorthands
 compose-mp-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-multiplatform" }
@@ -192,6 +207,7 @@ play-review-ktx = { module = "com.google.android.play:review-ktx", version.ref =
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
+android-test = { id = "com.android.test", version.ref = "androidGradlePlugin" }
 android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
@@ -204,4 +220,5 @@ firebase-crashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.
 google-services = { id = "com.google.gms.google-services", version = "4.5.0" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 room = { id = "androidx.room3", version.ref = "room" }
+androidx-baselineprofile = { id = "androidx.baselineprofile", version.ref = "benchmark" }
 

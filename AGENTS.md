@@ -4,6 +4,7 @@
 This is a Kotlin Multiplatform project. The module layout:
 - `shared/` — all shared code: domain, data, repositories, view models, common Compose UI, navigation, DI
 - `androidApp/` — Android shell: `MainActivity`, `MarsRoverApplication`, widget, GDPR helper, app icons
+- `baselineprofile/` — Android Baseline Profile generator and cold-startup Macrobenchmark for `androidApp` (see *Baseline Profile* below)
 - `desktopApp/` — Desktop shell
 - `iosApp/` — Swift/iOS shell, Xcode project, Firebase config
 - `webApp/` — experimental standalone WASM shell; shared web support is still disabled (see `WASM_WEB_SUPPORT.md`)
@@ -32,6 +33,24 @@ Beta, alpha, and RC dependency versions are acceptable in this project. Prefer t
 - `./gradlew detekt` — lint and autocorrect according to `config/detekt/detekt.yml`.
 - `./gradlew :shared:compileAndroidMain` — quick Android-target compile check of shared code (AGP 9 KMP task naming; there is no `compileDebugKotlinAndroid` on `:shared`).
 Run commands from the repository root so the Gradle wrapper can supply the pinned toolchain.
+
+### Baseline Profile (Android)
+The release build ships a Baseline Profile and a startup profile from
+`androidApp/src/release/generated/baselineProfiles/`, so ART compiles the startup path and the photo
+grid ahead of time instead of interpreting them on first launch. `:baselineprofile` produces them by
+driving two journeys (`Journeys.kt`): cold start until the rover list shows, then opening Curiosity and
+flinging the photo grid. The UI is found by Compose `testTag` (`roverCard`, `photoGrid`),
+so renaming one of those tags breaks generation.
+
+- `./gradlew :androidApp:generateBaselineProfile` — regenerates both files; commit the result. It runs
+  on the Gradle-managed `pixel6Api37` emulator, never on a connected device, because installing the
+  benchmark build replaces whatever copy of the app is on the device. The photo journey needs network.
+- `./gradlew :baselineprofile:pixel6Api37BenchmarkReleaseAndroidTest -Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.suppressErrors=EMULATOR`
+  — `StartupBenchmarks` measures cold start with and without the profile. Emulator timings are only
+  meaningful relative to each other.
+
+Regenerate after substantial changes to startup or the photo feed; a stale profile still helps, but
+less.
 
 ### Desktop hot reload & the Compose Hot Reload MCP server
 The desktop target is the fastest place to see and drive shared UI, and it is wired for

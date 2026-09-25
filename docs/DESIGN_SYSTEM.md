@@ -182,6 +182,17 @@ coral **accent/secondary** (`#FC6C4B`, "the Mars accent"). Light theme is white-
   badges, `activeStatusColor()` — reads `colorScheme` normally and is correct in both app themes,
   with brand overrides and dynamic color intact.
 
+- **"Opening a rover's photos freezes, then the app dies" — the lazy-grid cache window, not the
+  shared elements.** Profiles point at `SharedTransitionScopeImpl` bookkeeping, but that is only
+  expensive because hundreds of cells are composed with four on screen. The default grid prefetcher
+  in Compose 1.13 (the cache window) keeps composed every line from the window's start to the first
+  visible one. When the sol feed prepends a page, the grid holds its place, the first visible index
+  jumps ~100 while the window start stays, every prepended cell composes and reads its item, and
+  Paging prepends again until OutOfMemoryError. `App()` sets
+  `ComposeFoundationFlags.isPreferDefaultCacheWindowOverPrefetchStrategy = false` to use the classic
+  prefetcher. The flag is temporary upstream (`TODO: b/536884365`); when a Compose bump removes it,
+  re-test opening Curiosity's feed before reaching for another workaround.
+
 **Driven progress / pager timers** — notes from four rounds on the What's New story bar
 (`screens/whatsnew/WhatsNewStoryScreen.kt`), each symptom looked like a different bug:
 

@@ -26,6 +26,7 @@ rootProject.name = "MarsRoverPhotos"
 
 include(":shared")
 include(":androidApp")
+include(":baselineprofile")
 // include(":iosApp")  // Not yet created
 include(":desktopApp")
 include(":webApp")
