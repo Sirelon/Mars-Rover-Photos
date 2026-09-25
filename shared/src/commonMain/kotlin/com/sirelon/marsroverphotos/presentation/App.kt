@@ -1,5 +1,7 @@
 package com.sirelon.marsroverphotos.presentation
 
+import androidx.compose.foundation.ComposeFoundationFlags
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -39,6 +41,7 @@ import org.koin.compose.koinInject
  * Main app composable.
  * Root of the Compose UI hierarchy.
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun App(
     deepLink: DeepLink? = null,
@@ -48,6 +51,14 @@ fun App(
     rateAppUrl: String = "",
     debugLabel: String = ""
 ) {
+    // Lazy grids default to the cache-window prefetcher, which keeps composed every line from the
+    // window's start up to the first visible one. When the rover feed prepends a sol, the grid
+    // holds its place, so the first visible index jumps by a whole page while the window start
+    // stays put: every prepended cell is composed, reads its item, and makes Paging prepend again.
+    // The loop runs until the app is out of memory. The classic prefetcher has no such window.
+    // Set here, before any grid composes.
+    ComposeFoundationFlags.isPreferDefaultCacheWindowOverPrefetchStrategy = false
+
     // Keep the in-memory image cache large enough that the fullscreen viewer's big bitmaps don't
     // evict the list/grid thumbnails. The list screens are disposed while the viewer is on top (a
     // normal Nav3 push — needed for the shared-element morph), so on return they recompose and
