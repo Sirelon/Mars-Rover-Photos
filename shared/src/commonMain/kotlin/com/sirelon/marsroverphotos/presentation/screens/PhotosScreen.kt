@@ -417,7 +417,9 @@ private fun PhotosGrid(
     LazyVerticalGrid(
         state = gridState,
         columns = GridCells.Fixed(2),
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .testTag("photoGrid"),
         contentPadding = PaddingValues(
             start = AppSpacing.md,
             end = AppSpacing.md,
