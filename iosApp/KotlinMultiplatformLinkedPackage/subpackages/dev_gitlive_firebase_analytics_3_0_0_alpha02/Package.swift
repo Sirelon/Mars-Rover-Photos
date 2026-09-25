@@ -1,15 +1,15 @@
 // swift-tools-version: 5.9
 import PackageDescription
 let package = Package(
-  name: "dev_gitlive_firebase_analytics_3_0_0_alpha01",
+  name: "dev_gitlive_firebase_analytics_3_0_0_alpha02",
   platforms: [
     .iOS("15.0")
   ],
   products: [
     .library(
-      name: "dev_gitlive_firebase_analytics_3_0_0_alpha01",
+      name: "dev_gitlive_firebase_analytics_3_0_0_alpha02",
       type: .none,
-      targets: ["dev_gitlive_firebase_analytics_3_0_0_alpha01"]
+      targets: ["dev_gitlive_firebase_analytics_3_0_0_alpha02"]
     )
   ],
   dependencies: [
@@ -20,7 +20,7 @@ let package = Package(
   ],
   targets: [
     .target(
-      name: "dev_gitlive_firebase_analytics_3_0_0_alpha01",
+      name: "dev_gitlive_firebase_analytics_3_0_0_alpha02",
       dependencies: [
         .product(
           name: "FirebaseAnalytics",
