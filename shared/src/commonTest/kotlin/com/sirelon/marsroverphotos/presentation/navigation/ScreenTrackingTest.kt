@@ -20,6 +20,7 @@ class ScreenTrackingTest {
         AppDestination.Images(),
         AppDestination.WhatsNewDialog,
         AppDestination.AllVersions,
+        AppDestination.Support,
         AppDestination.WhatsNewStory(version = "5.0.0"),
     )
 

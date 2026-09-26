@@ -31,12 +31,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.sirelon.marsroverphotos.platform.BuildInfo
+import com.sirelon.marsroverphotos.presentation.viewmodels.SupportViewModel
 import com.sirelon.marsroverphotos.presentation.viewmodels.WhatsNewViewModel
 import com.sirelon.marsroverphotos.platform.Tracker
 import com.sirelon.marsroverphotos.presentation.theme.AppMotion
@@ -164,6 +166,9 @@ fun AppNavigation(
     val dialogOverlaySceneStrategy = remember { DialogOverlaySceneStrategy<NavKey>() }
     val tracker: Tracker = koinInject()
     val whatsNewViewModel: WhatsNewViewModel = koinViewModel()
+    // Owning any Support tier turns the ad slot off — live, the moment the purchase completes.
+    val supportViewModel: SupportViewModel = koinViewModel()
+    val isAdFree by supportViewModel.isAdFree.collectAsStateWithLifecycle()
     // Screens self-register as fullscreen by implementing the marker interface, so a new one can't
     // ship with the chrome still drawn over it (this flag drives chromeVisible, the status-bar
     // inset animation and the Ukraine banner).
@@ -283,7 +288,7 @@ fun AppNavigation(
                 },
                 resetScrollKey = chromeDestination,
                 chromeVisible = !isFullscreen,
-                bottomChrome = { if (!BuildInfo.hideAds) AdSlot(modifier = Modifier.fillMaxWidth()) },
+                bottomChrome = { if (!BuildInfo.hideAds && !isAdFree) AdSlot(modifier = Modifier.fillMaxWidth()) },
             ) {
                 val statusBarTop = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
                 val topPadding by animateDpAsState(
@@ -351,6 +356,7 @@ private fun AppDestination.topLevelDestination(): AppDestination {
         // row, so the highlight has to stay on About while the user is inside them.
         AppDestination.About,
         AppDestination.AllVersions,
+        AppDestination.Support,
         is AppDestination.WhatsNewStory -> AppDestination.About
 
         // Never reached: the dialog is a DialogDestination, which chromeDestination filters out.
@@ -377,6 +383,7 @@ internal val navBackStackConfiguration = SavedStateConfiguration {
             subclass(AppDestination.WhatsNewDialog::class, AppDestination.WhatsNewDialog.serializer())
             subclass(AppDestination.AllVersions::class, AppDestination.AllVersions.serializer())
             subclass(AppDestination.WhatsNewStory::class, AppDestination.WhatsNewStory.serializer())
+            subclass(AppDestination.Support::class, AppDestination.Support.serializer())
         }
     }
 }

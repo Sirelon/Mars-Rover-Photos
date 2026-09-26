@@ -7,7 +7,6 @@ import com.sirelon.marsroverphotos.platform.BuildInfo
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.FirebaseOptions
 import dev.gitlive.firebase.initialize
-import org.koin.core.context.startKoin
 import java.util.concurrent.ConcurrentHashMap
 
 fun initKoinDesktop() {
@@ -36,15 +35,6 @@ fun initKoinDesktop() {
         packageName = "com.sirelon.marsroverphotos"
     )
 
-    val koinApplication = startKoin {
-        modules(
-            platformModule,
-            databaseModule,
-            networkModule,
-            repositoryModule,
-            viewModelModule,
-            navigationModule
-        )
-    }
+    val koinApplication = initKoin(listOf(platformModule, supportModule))
     koinApplication.koin.get<RoversRepository>().initialize()
 }

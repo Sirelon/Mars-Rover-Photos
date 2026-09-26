@@ -11,6 +11,36 @@ This is a Kotlin Multiplatform project. The module layout:
 
 Feature screens and view models live in `shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation`. Android-specific implementations go in `shared/src/androidMain` or `androidApp/`. Static-analysis configuration is stored under `config/detekt/`.
 
+`shared/src/mobileMain` is the intermediate source set shared by Android and iOS but not desktop
+(declared with `applyDefaultHierarchyTemplate` in `shared/build.gradle.kts`). It holds what only the
+two store platforms have: the RevenueCat billing implementation (`data/support/`) and Firebase Remote
+Config feature flags (`data/featureflags/`), wired by `di/SupportModule.kt`. `desktopMain` binds
+fakes for the same interfaces (`FakeSupportRepository`, `StaticFeatureFlags`), so a `commonMain`
+consumer never knows which it got. Put code here when its dependency has no JVM variant — check the
+artifact's Gradle module metadata before assuming.
+
+## Support tiers, ad-free and feature flags
+"Support the developer" sells four non-consumable tiers (`support_small` … `support_huge`) through
+RevenueCat (project `Mars Rover Photos`); owning any of them activates the `ad_free` entitlement,
+which `SupportRepository.isAdFree` exposes and the navigation root reads to drop the ad slot. The
+Android and iOS entry points also skip the consent (UMP) and ATT prompts for supporters. Public SDK
+keys are per build type: `BuildConfig.REVENUECAT_API_KEY` on Android, the `#if DEBUG` branch in
+`MarsRoverApp.swift` on iOS — debug builds talk to RevenueCat's Test Store, so nothing is charged and
+purchases can be made on any device with no store account setup.
+
+User-facing copy says "support" or "tip", never "donation": both stores classify in-app donations as
+a restricted category, and the purchase must not be tied to a cause.
+
+The feature sits behind the Remote Config boolean `support_tiers_enabled` (`FeatureFlag.SUPPORT_TIERS`,
+default `false`). The About row and the Support screen entry point are hidden while it is off; the
+ad-free gate is not, so an owner keeps ad-free whatever the flag says. Flip it in the Firebase console
+(project `mars-rover-photos`); debug builds pin it on (`FeatureFlag.enabledInDebug`) and refetch every
+launch, release builds honour the remote value and refetch at most every 12 hours. The flag must be
+on in production before a build carrying the in-app purchases is submitted to App Review, and the
+review notes must say where the purchase UI is (About → Support the Developer): reviewers who cannot
+reach an IAP reject the submission. Desktop has no Remote Config and no store: the flag is forced on and billing is faked so the
+screen can be iterated through Compose Hot Reload.
+
 The KMP migration is complete. The legacy `app/` module has been deleted.
 
 ## Photo Feed & Data Sources

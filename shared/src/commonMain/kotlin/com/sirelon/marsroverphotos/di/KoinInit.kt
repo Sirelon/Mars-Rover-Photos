@@ -9,22 +9,19 @@ import org.koin.dsl.KoinAppDeclaration
  * Initialize Koin dependency injection.
  * Call this from each platform's application entry point.
  *
- * @param platformModule Platform-specific module (Android, iOS, Desktop, Web)
+ * @param platformModules Platform-specific modules (Android, iOS, Desktop, Web): the platform
+ *   module plus the store-billing / feature-flag module for that target.
  * @param appDeclaration Optional Koin configuration block
  */
 fun initKoin(
-    platformModule: Module,
+    platformModules: List<Module>,
     appDeclaration: KoinAppDeclaration = {}
 ): KoinApplication {
     return startKoin {
         appDeclaration()
         modules(
-            platformModule,      // Platform-specific dependencies (must be first)
-            databaseModule,      // Room database and DAOs
-            networkModule,       // Ktor and REST API
-            repositoryModule,    // Repository implementations
-            viewModelModule,     // ViewModels
-            navigationModule     // Navigation 3 entries
+            platformModules +    // Platform-specific dependencies (must be first)
+                commonModules
         )
     }
 }
@@ -33,9 +30,9 @@ fun initKoin(
  * Common modules that are shared across all platforms.
  */
 val commonModules = listOf(
-    databaseModule,
-    networkModule,
-    repositoryModule,
-    viewModelModule,
-    navigationModule
+    databaseModule,      // Room database and DAOs
+    networkModule,       // Ktor and REST API
+    repositoryModule,    // Repository implementations
+    viewModelModule,     // ViewModels
+    navigationModule,    // Navigation 3 entries
 )

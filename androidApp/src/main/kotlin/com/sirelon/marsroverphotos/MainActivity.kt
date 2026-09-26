@@ -14,6 +14,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.lifecycleScope
+import com.sirelon.marsroverphotos.domain.repositories.SupportRepository
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
+import org.koin.android.ext.android.inject
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -33,6 +40,7 @@ import com.sirelon.marsroverphotos.widget.WidgetExtraImageId
 class MainActivity : ComponentActivity() {
     private var pendingDeepLink: DeepLink? by mutableStateOf(null)
     private val gdprHelper = GdprHelper(this)
+    private val supportRepository: SupportRepository by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Install Android 12+ splash screen
@@ -54,7 +62,15 @@ class MainActivity : ComponentActivity() {
             window.isNavigationBarContrastEnforced = false
         }
 
-        gdprHelper.init()
+        // Supporters (any "Support the developer" tier) see no ads, so they get no consent form
+        // either. The answer comes from the billing SDK's local cache — milliseconds — and the wait
+        // is bounded so a first launch without a cache still shows the form promptly.
+        lifecycleScope.launch {
+            val adFree = withTimeoutOrNull(AD_FREE_WAIT_MS) {
+                supportRepository.isAdFree.filterNotNull().first()
+            } ?: false
+            if (!adFree) gdprHelper.init()
+        }
 
         // Only on a fresh start. On Activity recreation (rotation isn't in configChanges) Nav3
         // restores the back stack, so re-reading the launch intent would navigate a second time
@@ -142,6 +158,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private companion object {
+        private const val AD_FREE_WAIT_MS = 1_500L
         const val TAG = "MainActivity"
 
         /** Key FCM gives a notification's `data.link` value once it becomes an intent extra. */

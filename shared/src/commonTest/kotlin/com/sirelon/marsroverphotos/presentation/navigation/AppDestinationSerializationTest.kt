@@ -32,6 +32,7 @@ class AppDestinationSerializationTest {
         AppDestination.WhatsNewDialog,
         AppDestination.AllVersions,
         AppDestination.WhatsNewStory(version = "5.0.0"),
+        AppDestination.Support,
     )
 
     private val json = Json { serializersModule = navBackStackConfiguration.serializersModule }

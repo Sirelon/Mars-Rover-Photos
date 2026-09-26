@@ -7,6 +7,7 @@ import com.google.android.gms.ads.RequestConfiguration
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sirelon.marsroverphotos.di.initKoin
 import com.sirelon.marsroverphotos.di.platformModule
+import com.sirelon.marsroverphotos.di.supportModule
 import com.sirelon.marsroverphotos.domain.repositories.RoversRepository
 import com.sirelon.marsroverphotos.platform.BuildInfo
 import com.sirelon.marsroverphotos.platform.initAndroidDatabase
@@ -51,7 +52,7 @@ class MarsRoverApplication : Application(), Configuration.Provider {
         com.sirelon.marsroverphotos.platform.initAndroidImageOperations(this)
 
         // Initialize Koin DI
-        initKoin(platformModule) {
+        initKoin(listOf(platformModule, supportModule(BuildConfig.REVENUECAT_API_KEY))) {
             androidLogger(Level.ERROR)
             androidContext(this@MarsRoverApplication)
         }
