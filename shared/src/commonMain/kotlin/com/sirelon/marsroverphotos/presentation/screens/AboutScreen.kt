@@ -42,7 +42,7 @@ import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_L
 import coil3.SingletonImageLoader
 import coil3.compose.LocalPlatformContext
 import com.sirelon.marsroverphotos.domain.settings.Theme
-import com.sirelon.marsroverphotos.platform.AppReview
+import com.sirelon.marsroverphotos.presentation.review.ReviewPrompter
 import com.sirelon.marsroverphotos.platform.BuildInfo
 import com.sirelon.marsroverphotos.platform.PushPermissionStatus
 import com.sirelon.marsroverphotos.presentation.navigation.AppDestination
@@ -135,7 +135,7 @@ private fun AboutContent(
     onNavigateToAdmin: (() -> Unit)?
 ) {
     val uriHandler = rememberPlatformUriHandler()
-    val appReview: AppReview = koinInject()
+    val reviewPrompter: ReviewPrompter = koinInject()
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val colors = MaterialTheme.colorScheme
@@ -269,7 +269,7 @@ private fun AboutContent(
                         sub = "Enjoying Mars? Leave a review",
                         onClick = {
                             scope.launch {
-                                val shown = appReview.requestReview()
+                                val shown = reviewPrompter.requestFromAbout()
                                 if (!shown) {
                                     if (rateAppUrl.isNotBlank()) {
                                         uriHandler.openUri(rateAppUrl)

@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sirelon.marsroverphotos.domain.models.Rover
 import com.sirelon.marsroverphotos.domain.repositories.RoversRepository
+import com.sirelon.marsroverphotos.domain.settings.AppSettings
+import com.sirelon.marsroverphotos.platform.ConsentPromptGate
 import com.sirelon.marsroverphotos.platform.Tracker
 import com.sirelon.marsroverphotos.utils.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +18,9 @@ import kotlinx.coroutines.flow.stateIn
 
 class RoversViewModel(
     roversRepository: RoversRepository,
-    private val tracker: Tracker
+    private val tracker: Tracker,
+    private val appSettings: AppSettings,
+    private val consentPromptGate: ConsentPromptGate,
 ) : ViewModel() {
 
     val rovers: StateFlow<List<Rover>> = roversRepository.getRovers()
@@ -47,6 +51,11 @@ class RoversViewModel(
 
     fun onRoverClicked(rover: Rover) {
         tracker.trackEvent(RoverSelectedEvent, mapOf(RoverParam to rover.name))
+        // The ad-consent prompts go up on the second rover the user has ever opened: counted across
+        // sessions, so a one-rover-per-visit user is asked on the next visit's tap, and released
+        // only here, on a tap, so a returning user meets the sheet at a navigation moment rather
+        // than at launch off the saved count.
+        if (appSettings.recordRoverOpened() >= ConsentPromptRoverTaps) consentPromptGate.open()
     }
 
     fun onMissionInfoClicked(rover: Rover) {
@@ -66,6 +75,9 @@ class RoversViewModel(
          * belongs to the screen actually opening, which RoverMissionInfoScreen reports.
          */
         const val RoverSelectedEvent = "rover_selected"
+
+        /** The rover tap, counted across sessions, that releases the ad-consent prompts. */
+        const val ConsentPromptRoverTaps = 2
         const val MissionInfoSelectedEvent = "mission_info_selected"
         const val RoverParam = "rover"
     }

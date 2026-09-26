@@ -180,8 +180,8 @@ add any Material Symbols ligature the notes use that `MaterialSymbol` in
 
 **`active: false`, not `true`, every time here.** This step runs right after the build lands on
 Play's internal track / TestFlight — nobody outside your testers can install it yet. The app filters
-out any `active: false` document everywhere (What's New dialog, story, Version History), so
-publishing this stage as `false` is what keeps the update-nudge dialog from telling a user on the
+out any `active: false` document everywhere (What's New card, story, Version History), so
+publishing this stage as `false` is what keeps the update card from telling a user on the
 previous version to go get a build the public store doesn't have. See "Marking a release available"
 below for the flip once that stops being true. (`active` also covers retracting a malformed entry —
 this is the same flag, just a different reason to be `false`.)
@@ -193,9 +193,9 @@ node scripts/publish-release-notes.mjs --dry-run   # counts + icon warnings, wri
 node scripts/publish-release-notes.mjs            # background; one atomic Firestore commit
 ```
 
-The dialog is keyed off the newest `active` release compared against the installed build, not off an
+The update card is keyed off the newest `active` release compared against the installed build, not off an
 entry matching the installed version exactly — a user on 5.1.5 gets nudged toward a published 5.2.0
-even though 5.1.5 itself has no entry. What an inactive version *does* block is the dialog ever
+even though 5.1.5 itself has no entry. What an inactive version *does* block is the card ever
 recommending it: nothing to update to shows nothing.
 
 ### Marking a release available

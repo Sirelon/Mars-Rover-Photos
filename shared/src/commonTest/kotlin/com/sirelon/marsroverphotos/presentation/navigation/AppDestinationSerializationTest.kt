@@ -29,7 +29,6 @@ class AppDestinationSerializationTest {
         AppDestination.AdminPhotos,
         AppDestination.PhotosDateJumpPicker(roverId = 5),
         AppDestination.PhotosFilters(roverId = 5),
-        AppDestination.WhatsNewDialog,
         AppDestination.AllVersions,
         AppDestination.WhatsNewStory(version = "5.0.0"),
     )

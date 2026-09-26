@@ -72,10 +72,6 @@ sealed interface AppDestination : NavKey {
     @Serializable
     data class PhotosFilters(val roverId: Long) : DialogDestination
 
-    /** Dialog destination: what's new for the current release. */
-    @Serializable
-    data object WhatsNewDialog : DialogDestination
-
     /** Full-screen scrollable list of all past releases. */
     @Serializable
     data object AllVersions : AppDestination

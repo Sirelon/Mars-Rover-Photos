@@ -114,11 +114,13 @@ version's notes can be written or corrected after that build is already on peopl
 idempotent. Add `--dry-run` to inspect the payload first. It authenticates with Application Default
 Credentials, so `gcloud auth application-default login` must have been run.
 
-Publishing is a step of its own: `bumpVersion` does not do it. The What's New dialog nudges toward
-the newest `active` release (`active: false` for a build pushed ahead of store approval — see the
-`store-release` skill) when that version is newer than the installed build; it does not require an
-entry matching the installed version exactly, but with nothing published at all there is no release
-to nudge toward. Each change names its icon with a Material Symbols ligature (`"rocket_launch"`); the
+Publishing is a step of its own: `bumpVersion` does not do it. Release notes surface as one
+dismissible card at the top of the Rovers list, from the second launch on and never as a launch
+dialog: an update card toward the newest `active` release (`active: false` for a build pushed ahead
+of store approval — see the `store-release` skill) when that version is newer than the installed
+build, otherwise a what's-new card for the installed build once after an update. The update card does
+not require an entry matching the installed version exactly, but with nothing published at all there
+is no release to nudge toward. Each change names its icon with a Material Symbols ligature (`"rocket_launch"`); the
 script warns for
 any name missing from the `MaterialSymbol` enum, which would silently render the default symbol.
 Regenerate the JSON with the `release-notes` skill.
@@ -163,6 +165,19 @@ derived from the same `scripts/release-notes.json` entry. Every credential the r
 `iosApp/iosApp/GoogleService-Info.plist`) is gitignored, so a fresh worktree has none of them.
 Without `keystore.properties` in particular, `bundleRelease` succeeds and produces an unsigned AAB
 that Play rejects.
+
+## Ads & consent prompts
+Banner ads (AdMob) sit in the app chrome on every non-fullscreen screen and load only once consent
+is on record: `AndroidAdConsent.canRequestAds` on Android, `IosAdSlot.factory` on iOS. The consent
+state is refreshed on every launch (`GdprHelper.init()` from `MainActivity`, `refreshConsent()` in
+`MarsRoverApp.swift`), so a returning user gets ads at once. The prompts themselves — the UMP consent
+form for EEA/UK users on both platforms, then App Tracking Transparency on iOS — wait for the
+second rover the user opens, counted across sessions in `AppSettings` (`platform/ConsentPromptGate`,
+opened by `RoversViewModel` on that tap and never at launch), so a first launch shows the rover
+list and a whole first visit before any sheet. The iOS order is fixed: UMP before ATT before
+`MobileAds.start`, and both prompts need the app foreground-active. Debug builds force EEA geography
+so the form is always testable; the `hideAds` launch argument (store screenshots) skips the ads and
+both prompts entirely.
 
 ## Coding Style & Naming Conventions
 Kotlin files use four-space indentation, `val` first, and explicit visibility for public APIs. Compose functions and classes stay in PascalCase, constants in `UPPER_SNAKE_CASE`, and extension files match their receiver (`ImageRequestExt.kt`). Keep packages cohesive; add a `feature/*` subpackage for new screens. Run `./gradlew detekt` before review instead of hand-tuning formatting.

@@ -15,8 +15,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
  * Helper for Google User Messaging Platform (UMP) GDPR consent.
- * Shows a consent form for EEA users when personalized ads are in use.
- * For non-EEA users or when consent is not required, [acceptGdpr] emits `true` silently.
+ *
+ * [init] refreshes the consent state on every launch, so a user whose consent is already on record
+ * gets ads at once. The consent form itself — shown to EEA/UK users once — waits for [onPromptsAllowed],
+ * which the Activity calls when `ConsentPromptGate` opens (the second rover tap, counted across
+ * sessions), so a first launch shows the rover list and a whole first visit before any sheet. For non-EEA users or when consent is not required,
+ * [acceptGdpr] emits `true` silently.
  */
 class GdprHelper(private val activity: Activity) {
 
@@ -26,6 +30,11 @@ class GdprHelper(private val activity: Activity) {
 
     /** Emits `true` once consent has been obtained or is not required. */
     val acceptGdpr = MutableStateFlow(false)
+
+    private var promptsAllowed = false
+
+    /** A form that loaded before [onPromptsAllowed]; shown the moment the prompts are allowed. */
+    private var pendingForm: ConsentForm? = null
 
     fun init() {
         val paramsBuilder = ConsentRequestParameters.Builder()
@@ -55,6 +64,18 @@ class GdprHelper(private val activity: Activity) {
         )
     }
 
+    /**
+     * The gate opened: a form that has been waiting goes up now, and one that loads later goes up
+     * as soon as it is ready.
+     */
+    fun onPromptsAllowed() {
+        promptsAllowed = true
+        pendingForm?.let { form ->
+            pendingForm = null
+            showConsentForm(form)
+        }
+    }
+
     private fun onError(error: FormError) {
         Logger.w(TAG) { "UMP error ${error.errorCode}: ${error.message}" }
         if (!error.isTransientNetworkError) {
@@ -76,23 +97,30 @@ class GdprHelper(private val activity: Activity) {
     }
 
     private fun showConsentForm(consentForm: ConsentForm) {
-        Logger.d(TAG) { "showConsentForm status=${consentInformation.consentStatus}" }
+        Logger.d(TAG) { "showConsentForm status=${consentInformation.consentStatus} allowed=$promptsAllowed" }
         // The load callback can land after the Activity was destroyed (rotation, back); showing then
         // fails with "Activity is destroyed". The next Activity instance runs init() again.
         if (activity.isFinishing || activity.isDestroyed) return
-        if (consentInformation.consentStatus == ConsentInformation.ConsentStatus.REQUIRED) {
-            consentForm.show(activity) { formError ->
-                if (formError != null) {
-                    Logger.w(TAG) { "Consent form dismissed with error ${formError.errorCode}: ${formError.message}" }
-                    if (!formError.isTransientNetworkError) {
-                        recordException(RuntimeException("UMP form dismiss ${formError.errorCode}: ${formError.message}"))
-                    }
+        if (consentInformation.consentStatus != ConsentInformation.ConsentStatus.REQUIRED) {
+            updateAcceptanceFromConsentState()
+            return
+        }
+        if (!promptsAllowed) {
+            // Consent is required but the gate has not opened yet: hold the form, and mirror the
+            // current (denied) state so no ad is requested in the meantime.
+            pendingForm = consentForm
+            updateAcceptanceFromConsentState()
+            return
+        }
+        consentForm.show(activity) { formError ->
+            if (formError != null) {
+                Logger.w(TAG) { "Consent form dismissed with error ${formError.errorCode}: ${formError.message}" }
+                if (!formError.isTransientNetworkError) {
+                    recordException(RuntimeException("UMP form dismiss ${formError.errorCode}: ${formError.message}"))
                 }
-                // Reload form after dismissal so it is ready for future re-requests.
-                if (!activity.isFinishing && !activity.isDestroyed) loadForm()
-                updateAcceptanceFromConsentState()
             }
-        } else {
+            // Reload form after dismissal so it is ready for future re-requests.
+            if (!activity.isFinishing && !activity.isDestroyed) loadForm()
             updateAcceptanceFromConsentState()
         }
     }
