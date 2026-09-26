@@ -25,6 +25,20 @@ IOS_METADATA_DIR     = File.join(REPO_ROOT, ".claude/tmp/release-metadata/ios")
 STORE_LOCALE         = "en-US"
 PLAY_CHANGELOG_LIMIT = 500
 
+# Store listing text (title, descriptions, keywords). Committed, unlike the release-notes staging
+# above: it changes rarely and is reviewed like code. Deliberately not fastlane/metadata/, which
+# supply and deliver pick up on their own. Every release pushes it through `android changelog` and
+# `ios release_notes`, so an edit here ships with the next release.
+LISTING_DIR = File.join(REPO_ROOT, "fastlane/listing")
+# field => [store limit, unit]. Apple counts keywords in bytes, everything else in characters.
+PLAY_LISTING_LIMITS = {
+  "title" => [30, :chars], "short_description" => [80, :chars], "full_description" => [4000, :chars]
+}.freeze
+IOS_LISTING_LIMITS = {
+  "name" => [30, :chars], "subtitle" => [30, :chars], "keywords" => [100, :bytes],
+  "description" => [4000, :chars]
+}.freeze
+
 # buildSrc/AppVersion.kt is the single source of truth for the version on every platform.
 def app_version(field)
   path = File.join(REPO_ROOT, "buildSrc/src/main/kotlin/AppVersion.kt")
@@ -46,6 +60,20 @@ def store_changelog
 
   UI.important("No changelog staged at #{path} — falling back")
   ENV["CHANGELOG"] || "Bug fixes and improvements"
+end
+
+# Reads fastlane/listing/<store>/en-US/<field>.txt into { field => text } and refuses anything over
+# the store's limit, so an overlong line fails here rather than as an API error mid-upload.
+def listing_texts(store, limits)
+  limits.each_with_object({}) do |(field, (limit, unit)), texts|
+    path = File.join(LISTING_DIR, store, STORE_LOCALE, "#{field}.txt")
+    UI.user_error!("Missing #{path}") unless File.exist?(path)
+
+    text = File.read(path, encoding: "UTF-8").strip
+    size = unit == :bytes ? text.bytesize : text.length
+    UI.user_error!("#{path} is #{size} #{unit} — the store limit is #{limit}") if size > limit
+    texts[field] = text
+  end
 end
 
 # ---------------------------------------------------------------------------
@@ -123,7 +151,7 @@ platform :ios do
     )
   end
 
-  desc "Upload the store 'What's New' + promotional text for the current version (metadata only, no binary)"
+  desc "Upload the listing text, 'What's New' and promotional text to the current version draft (metadata only, no binary)"
   lane :release_notes do
     ensure_credentials
     notes_path = File.join(IOS_METADATA_DIR, STORE_LOCALE, "release_notes.txt")
@@ -151,12 +179,18 @@ platform :ios do
     else
       UI.important("No promotional text staged at #{promo_path} — leaving Promotional Text untouched")
     end
+    # Name and subtitle live on App Info rather than the version, but App Info is editable exactly
+    # while a version draft is, so the same call covers them.
+    listing_texts("ios", IOS_LISTING_LIMITS).each do |field, text|
+      params[field.to_sym] = { STORE_LOCALE => text }
+    end
 
     # Deliberately no metadata_path: it makes deliver mirror the WHOLE local folder onto App Store
     # Connect, and a field whose file isn't staged locally is not guaranteed to survive that sync —
     # exactly the "incomplete staging tree overwrites the live listing" risk already called out for
-    # Play's supply below. Passing release_notes/promotional_text as explicit per-locale hashes
-    # touches only those two fields; Description, Keywords, Subtitle etc. are never in scope.
+    # Play's supply below. Passing each field as an explicit per-locale hash touches only What's
+    # New, Promotional Text, name, subtitle, keywords and description; screenshots, URLs and
+    # categories are never in scope.
     upload_to_app_store(**params)
   end
 end
@@ -194,7 +228,7 @@ platform :android do
     )
   end
 
-  desc "Attach the staged release notes to the internal-track release (no binary upload)"
+  desc "Attach the staged release notes to the internal-track release, then upload the listing text (no binary upload)"
   lane :changelog do
     code = app_version("code").to_i
     path = staged_changelog_path
@@ -220,6 +254,30 @@ platform :android do
       skip_upload_metadata: true,
       skip_upload_images: true,
       skip_upload_screenshots: true
+    )
+
+    listing
+  end
+
+  desc "Upload the listing text (title, short and full description). Pass validate_only:true to check without publishing"
+  lane :listing do |options|
+    listing_texts("android", PLAY_LISTING_LIMITS) # limits check only; supply reads the files itself
+
+    upload_to_play_store(
+      package_name: APP_IDENTIFIER,
+      # supply only uploads metadata alongside a release, so it needs one to attach to. The listing
+      # itself is app-wide: it goes live after Google's review, whatever the track.
+      track: "internal",
+      version_code: app_version("code").to_i,
+      json_key: GOOGLE_PLAY_KEY,
+      metadata_path: File.join(LISTING_DIR, "android"),
+      skip_upload_apk: true,
+      skip_upload_aab: true,
+      # supply sets only the fields that have a .txt file (video stays untouched), then saves.
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      validate_only: options[:validate_only] || false
     )
   end
 

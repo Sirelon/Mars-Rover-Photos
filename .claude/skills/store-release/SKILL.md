@@ -29,7 +29,7 @@ bump version                    ── seconds, must be first
    │
    ├─► fastlane android beta ────────────────► AAB on internal track ──┐
    │      (background, owns Gradle)                                    │
-   │                                                                   ├─► Play changelog
+   │                                                                   ├─► Play changelog + listing
    ├─► release-archaeologist agent ─► editorial ─► publish to Firestore ┘
    │      (concurrent, no Gradle)          │
    │                                       └─► store changelog text
@@ -37,7 +37,7 @@ bump version                    ── seconds, must be first
    └────────► (after Android's Gradle is done) fastlane ios beta ──────► TestFlight
                                                                               │
                                                             fastlane ios release_notes
-                                                         (What's New + Promo text → ASC draft)
+                                                (What's New + Promo text + listing → ASC draft)
                                                                               │
                                                     commit + local tag ◄──────┘
 ```
@@ -268,8 +268,17 @@ The lane passes `skip_upload_metadata`/`images`/`screenshots` — not politeness
 plus an image and screenshot sync per locale, so an incomplete staging tree could overwrite the live
 store listing. Those flags live in the Fastfile precisely so no invocation can forget them.
 
-**Locale.** English-only app, so one locale: `en-US`. Not yet verified against the live Play
-listing — verify once and record the answer here:
+The same lane then runs `android listing`, which uploads the committed store listing text
+(`fastlane/listing/android/en-US/`: `title`, `short_description`, `full_description`) in a second
+edit. supply sets only the fields that have a file, so the video URL, images and screenshots are left
+alone. The listing is app-wide rather than per-track, so the new text goes live after Google's
+review, usually before this build reaches production. If the text describes a feature that isn't in
+production yet, that feature shows on the listing before users can get it. The lane refuses any field
+over Play's limit. `bundle exec fastlane android listing validate_only:true` checks an edit with
+Google without publishing it.
+
+**Locale.** English-only app, so one locale: `en-US`. Confirmed 2026-09-25: `en-US` is the only
+listing on Play. To re-check after adding a store language:
 
 ```bash
 bundle exec fastlane run download_from_play_store \
@@ -308,7 +317,10 @@ bundle exec fastlane ios release_notes
 ```
 
 This pushes the staged `release_notes.txt` (What's New) and `promotional_text.txt` (Promotional
-Text) to the App Store Connect version draft. Confirmed 2026-08-20: that draft already exists and
+Text) to the App Store Connect version draft, plus the committed listing text in
+`fastlane/listing/ios/en-US/` (`name`, `subtitle`, `keywords`, `description`). Apple locks all four
+to a version, so they go live when this version is approved. The lane refuses any field over
+Apple's limit, measuring keywords in bytes. Confirmed 2026-08-20: that draft already exists and
 already matches the current marketing version right after `ios beta` alone — `ios release` (the
 separate, still-manual App Store binary upload) is **not** a prerequisite, contrary to what an
 earlier version of this doc assumed. If the lane ever reports the version doesn't match, that's a
@@ -332,8 +344,9 @@ permission, and the user verifies a release on-device first.
 ## Step 7 — report
 
 - The version, and the store text, once — both stores got the same string.
-- Which of the five things landed: Play internal upload, Play changelog, TestFlight, Firestore,
-  App Store Connect metadata (What's New + Promotional Text on the version draft).
+- Which of the six things landed: Play internal upload, Play changelog, Play listing text,
+  TestFlight, Firestore, App Store Connect metadata (What's New, Promotional Text and the listing
+  text on the version draft).
 - That the release commit and tag are **local and unpushed**.
 - Anything still manual: production promotion, App Store submission, flipping this release to
   `active: true` in Firestore once both of those land (see "Marking a release available" in step 3),
@@ -381,6 +394,9 @@ permission, and the user verifies a release on-device first.
   after that Xcode keeps it current. See `iosApp/README.md`.
 - Screenshots are a separate job — the `.maestro/` kit and the `store-screenshots` skill. This flow
   never uploads images.
+- Listing text (store titles, descriptions, iOS subtitle and keywords) lives in `fastlane/listing/`,
+  is committed, and ships with every release through steps 4 and 5. To change the listing, edit
+  those files; the next release publishes them.
 - The version lives only in `buildSrc/src/main/kotlin/AppVersion.kt`; Android and Desktop read it
   directly, iOS is synced into `project.pbxproj`.
 
@@ -404,12 +420,17 @@ permission, and the user verifies a release on-device first.
   precheck step fails with "Precheck cannot check In-app purchases with the App Store Connect API
   Key (yet)" — a known limitation of API-key auth, unrelated to `submit_for_review: false` already
   being set. This app has no IAP and isn't submitting here, so precheck buys nothing.
-- **Pass `release_notes:`/`promotional_text:` as explicit per-locale hashes, not `metadata_path`.**
-  A `metadata_path` mirrors the *entire* local folder onto the live listing, and a field whose file
-  isn't staged locally (Description, Keywords, Subtitle, ...) is not guaranteed to survive that
-  sync untouched — the same "incomplete staging tree overwrites the live listing" risk already
-  guarded against on the Play side below. Explicit hashes touch only the two fields this skill
-  actually has content for.
+- **Pass every field as an explicit per-locale hash, not `metadata_path`.** A `metadata_path`
+  mirrors the *entire* local folder onto the live listing, and a field whose file isn't staged
+  locally is not guaranteed to survive that sync untouched — the same "incomplete staging tree
+  overwrites the live listing" risk already guarded against on the Play side below. Explicit hashes
+  touch only the six fields this flow has content for: What's New, Promotional Text, name,
+  subtitle, keywords and description. The committed listing text therefore lives in
+  `fastlane/listing/`, not the `fastlane/metadata/` folder that deliver and supply load by
+  default.
+- **Name and subtitle live on App Info, not on the version.** App Info is editable only while a
+  version draft exists, which is always the case at this point in the flow. If `release_notes` ever
+  fails with "could not find an editable 'App Info'", no draft is open.
 - External TestFlight testers need Beta App Review; internal testers don't.
 - The app serves AdMob and asks for tracking (`NSUserTrackingUsageDescription`, `SKAdNetworkItems`,
   `PrivacyInfo.xcprivacy`), so App Privacy answers must track the SDKs, and the SKAdNetwork list
