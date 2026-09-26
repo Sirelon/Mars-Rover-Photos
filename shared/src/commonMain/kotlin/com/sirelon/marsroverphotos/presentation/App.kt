@@ -14,6 +14,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,6 +39,7 @@ import com.sirelon.marsroverphotos.presentation.theme.MarsRoverPhotosTheme
 import com.sirelon.marsroverphotos.presentation.theme.isSystemInDarkTheme
 import com.sirelon.marsroverphotos.presentation.theme.supportsDynamicColor
 import org.koin.compose.koinInject
+import kotlin.time.Clock
 
 /**
  * Main app composable.
@@ -82,7 +86,18 @@ fun App(
     // preference comes back — so without this the setting reads on and nothing ever arrives.
     // Idempotent, and it pairs with the per-launch APNs re-registration in the iOS app delegate:
     // that supplies the token this subscription needs.
+    //
+    // The same effect counts this open, once: the flag survives Activity recreation (rotation is
+    // not in configChanges), so a rotated session is not counted twice, while a new process is.
+    var launchRecorded by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(Unit) {
+        if (!launchRecorded) {
+            appSettings.recordLaunch(
+                versionName = BuildInfo.versionName,
+                nowMillis = Clock.System.now().toEpochMilliseconds(),
+            )
+            launchRecorded = true
+        }
         if (appSettings.notificationsEnabled) pushNotifications.setSubscribed(true)
     }
 

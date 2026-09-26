@@ -19,7 +19,6 @@ object ScreenNames {
     const val ADMIN_PHOTOS = "admin_photos"
     const val PHOTOS_DATE_JUMP = "photos_date_jump"
     const val PHOTOS_FILTERS = "photos_filters"
-    const val WHATS_NEW_DIALOG = "whats_new_dialog"
     const val ALL_VERSIONS = "all_versions"
     const val WHATS_NEW_STORY = "whats_new_story"
 }
@@ -60,7 +59,6 @@ fun AppDestination.toScreenView(): ScreenView = when (this) {
         },
     )
 
-    AppDestination.WhatsNewDialog -> ScreenView(ScreenNames.WHATS_NEW_DIALOG)
     AppDestination.AllVersions -> ScreenView(ScreenNames.ALL_VERSIONS)
     is AppDestination.WhatsNewStory -> ScreenView(
         name = ScreenNames.WHATS_NEW_STORY,

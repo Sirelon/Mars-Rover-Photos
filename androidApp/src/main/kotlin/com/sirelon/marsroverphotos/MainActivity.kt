@@ -14,17 +14,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.lifecycleScope
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import com.sirelon.marsroverphotos.gdpr.GdprHelper
 import com.sirelon.marsroverphotos.platform.ActivityProvider
 import com.sirelon.marsroverphotos.platform.BuildInfo
+import com.sirelon.marsroverphotos.platform.ConsentPromptGate
 import com.sirelon.marsroverphotos.presentation.App
 import com.sirelon.marsroverphotos.presentation.navigation.DeepLink
 import com.sirelon.marsroverphotos.presentation.navigation.parseDeepLink
 import com.sirelon.marsroverphotos.utils.Logger
 import com.sirelon.marsroverphotos.widget.WidgetExtraImageId
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 
 /**
  * Main activity for the Mars Rover Photos app.
@@ -33,6 +38,7 @@ import com.sirelon.marsroverphotos.widget.WidgetExtraImageId
 class MainActivity : ComponentActivity() {
     private var pendingDeepLink: DeepLink? by mutableStateOf(null)
     private val gdprHelper = GdprHelper(this)
+    private val consentPromptGate: ConsentPromptGate by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Install Android 12+ splash screen
@@ -54,7 +60,17 @@ class MainActivity : ComponentActivity() {
             window.isNavigationBarContrastEnforced = false
         }
 
-        gdprHelper.init()
+        // Screenshot capture shows no ads, so it has no consent to collect either. Otherwise the
+        // consent state is refreshed now, while the form itself waits for ConsentPromptGate to open
+        // (the second rover tap, counted across sessions). The wait dies with the Activity; a
+        // recreated one re-registers.
+        if (!hideAds) {
+            gdprHelper.init()
+            lifecycleScope.launch {
+                consentPromptGate.opened.first { it }
+                gdprHelper.onPromptsAllowed()
+            }
+        }
 
         // Only on a fresh start. On Activity recreation (rotation isn't in configChanges) Nav3
         // restores the back stack, so re-reading the launch intent would navigate a second time

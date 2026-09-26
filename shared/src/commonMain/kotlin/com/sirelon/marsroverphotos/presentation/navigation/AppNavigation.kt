@@ -37,7 +37,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.sirelon.marsroverphotos.platform.BuildInfo
-import com.sirelon.marsroverphotos.presentation.viewmodels.WhatsNewViewModel
+import com.sirelon.marsroverphotos.presentation.review.ReviewPrompter
 import com.sirelon.marsroverphotos.platform.Tracker
 import com.sirelon.marsroverphotos.presentation.theme.AppMotion
 import com.sirelon.marsroverphotos.presentation.ui.AdSlot
@@ -163,7 +163,7 @@ fun AppNavigation(
     }
     val dialogOverlaySceneStrategy = remember { DialogOverlaySceneStrategy<NavKey>() }
     val tracker: Tracker = koinInject()
-    val whatsNewViewModel: WhatsNewViewModel = koinViewModel()
+    val reviewPrompter: ReviewPrompter = koinInject()
     // Screens self-register as fullscreen by implementing the marker interface, so a new one can't
     // ship with the chrome still drawn over it (this flag drives chromeVisible, the status-bar
     // inset animation and the Ukraine banner).
@@ -176,14 +176,15 @@ fun AppNavigation(
         tracker.trackScreen(screenView.name, screenView.params)
     }
 
-    LaunchedEffect(Unit) {
-        // Asked once per app start, and only on a plain launch: a cold start into a deep link is
-        // already showing the user what they asked for, so the dialog stays out of the way. The
-        // marker is only written on acknowledgement, so it simply comes back on the next plain
-        // launch rather than being lost.
-        if (deepLink == null && whatsNewViewModel.shouldShowDialog()) {
-            navigator.navigate(AppDestination.WhatsNewDialog)
-        }
+    // Reports the moment the fullscreen viewer closes. Whether that is the moment to ask for a store
+    // review is ReviewPrompter's call, not this layer's — the same split as the screen_view observer
+    // above: nav notices the transition, the policy lives elsewhere.
+    val destinationLatch = remember { DestinationLatch() }
+    LaunchedEffect(currentDestination) {
+        val closedViewer = destinationLatch.last is AppDestination.Images &&
+            currentDestination !is AppDestination.Images
+        destinationLatch.last = currentDestination
+        if (closedViewer) reviewPrompter.onViewerClosed()
     }
 
     LaunchedEffect(deepLink) {
@@ -328,6 +329,14 @@ fun AppNavigation(
 }
 
 /**
+ * The destination the viewer-close observer last saw. Plain state on purpose: nothing renders from
+ * it, it only has to survive recomposition between two runs of the effect.
+ */
+private class DestinationLatch {
+    var last: AppDestination? = null
+}
+
+/**
  * Stable, camera-independent contentKey for a rover's Photos entry. Used as the Photos
  * entry's contentKey and named by its dialog entries as their shared-ViewModelStore parent.
  */
@@ -352,9 +361,6 @@ private fun AppDestination.topLevelDestination(): AppDestination {
         AppDestination.About,
         AppDestination.AllVersions,
         is AppDestination.WhatsNewStory -> AppDestination.About
-
-        // Never reached: the dialog is a DialogDestination, which chromeDestination filters out.
-        AppDestination.WhatsNewDialog -> AppDestination.Rovers
     }
 }
 
@@ -374,7 +380,6 @@ internal val navBackStackConfiguration = SavedStateConfiguration {
             subclass(AppDestination.PhotosDateJumpPicker::class, AppDestination.PhotosDateJumpPicker.serializer())
             subclass(AppDestination.PhotosFilters::class, AppDestination.PhotosFilters.serializer())
             subclass(AppDestination.AdminPhotos::class, AppDestination.AdminPhotos.serializer())
-            subclass(AppDestination.WhatsNewDialog::class, AppDestination.WhatsNewDialog.serializer())
             subclass(AppDestination.AllVersions::class, AppDestination.AllVersions.serializer())
             subclass(AppDestination.WhatsNewStory::class, AppDestination.WhatsNewStory.serializer())
         }

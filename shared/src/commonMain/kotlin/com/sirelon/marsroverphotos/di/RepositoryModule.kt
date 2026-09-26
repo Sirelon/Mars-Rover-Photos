@@ -1,5 +1,7 @@
 package com.sirelon.marsroverphotos.di
 
+import com.sirelon.marsroverphotos.platform.ConsentPromptGate
+import com.sirelon.marsroverphotos.presentation.review.ReviewPrompter
 import com.sirelon.marsroverphotos.data.LastViewedPhotoStore
 import com.sirelon.marsroverphotos.data.paging.RoverFeedPager
 import com.sirelon.marsroverphotos.data.repositories.FactsRepositoryImpl
@@ -49,6 +51,12 @@ val repositoryModule = module {
     // Shared marker for the last photo viewed in the fullscreen viewer — lets the Favorites/Popular
     // lists restore their scroll position on return (the rover feed uses RoverFeedPager's own).
     single { LastViewedPhotoStore() }
+
+    // One per process: it carries the session flags that gate the store-review prompt.
+    single { ReviewPrompter(appSettings = get(), appReview = get(), tracker = get()) }
+
+    // One per process: the latch the ad-consent prompts wait for (opened on the second rover tap).
+    single { ConsentPromptGate() }
 
     single<RoversRepository> {
         RoversRepositoryImpl(

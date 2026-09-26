@@ -122,28 +122,28 @@ struct MarsRoverApp: App {
                     Main_iosKt.pushDeepLink(urlString: url.absoluteString)
                 }
         }
-        // UMP must collect consent before MobileAds.start so the SDK can pick up the user's
-        // choice; ATT must run before any ad request so IDFA personalization is honored.
-        // We trigger this only once the scene is foreground-active: ATTrackingManager
-        // silently returns .denied (no prompt shown) if requested while the app is not
-        // active, and the UMP consent form has no view controller to present from.
+        // Consent state is refreshed once the scene is foreground-active, after the first frame.
+        // The prompts it may lead to (UMP form, ATT) wait for ConsentPromptGate on the Kotlin side
+        // to open (the second rover tap, counted across sessions), so a first launch shows the rover
+        // list and a whole first visit before any sheet. Screenshot capture shows no ads and so
+        // collects no consent at all.
         .onChange(of: scenePhase) { newPhase in
-            // Skip the ATT / consent prompts entirely during screenshot capture.
             guard newPhase == .active, !didBootstrapAds, !BuildInfo.shared.hideAds else { return }
             didBootstrapAds = true
-            // Small delay so the prompts appear after the first frame (Apple HIG).
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                 guard UIApplication.shared.applicationState == .active else {
                     // App slipped to the background during the delay — retry on next .active.
                     didBootstrapAds = false
                     return
                 }
-                Self.bootstrapAds()
+                Self.refreshConsent()
             }
         }
     }
 
-    private static func bootstrapAds() {
+    /// Refreshes the UMP consent state. A user whose consent is already on record and whose ATT
+    /// answer is known gets ads at once; anyone who still has a sheet to see waits for the gate.
+    private static func refreshConsent() {
         let params = RequestParameters()
         params.isTaggedForUnderAgeOfConsent = false
 
@@ -157,18 +157,51 @@ struct MarsRoverApp: App {
             if let umpError {
                 NSLog("UMP requestConsentInfoUpdate error: \(umpError.localizedDescription)")
             }
-            ConsentForm.loadAndPresentIfRequired(from: nil) { _ in
-                guard ConsentInformation.shared.canRequestAds else {
-                    IosAdSlot.shared.factory = nil
-                    NSLog("UMP canRequestAds=false, skipping Mobile Ads start")
-                    return
-                }
-                ATTrackingManager.requestTrackingAuthorization { _ in
-                    MobileAds.shared.start { _ in
-                        IosAdSlot.shared.factory = BannerAdFactoryImpl()
-                    }
-                }
+            let needsConsentForm = ConsentInformation.shared.consentStatus == .required
+            let needsTrackingPrompt = ATTrackingManager.trackingAuthorizationStatus == .notDetermined
+            if needsConsentForm || needsTrackingPrompt {
+                Main_iosKt.onConsentPromptsAllowed { presentPrompts() }
+            } else {
+                startAdsIfAllowed()
             }
+        }
+    }
+
+    /// UMP first, then ATT, then the SDK: UMP must collect consent before MobileAds.start so the
+    /// SDK picks up the choice, and ATT must precede the first ad request so IDFA personalization
+    /// is honored. Both need the app active — ATTrackingManager silently answers .denied otherwise,
+    /// and the consent form has no view controller to present from — so a tap that somehow lands
+    /// while inactive is retried rather than spent.
+    private static func presentPrompts() {
+        guard UIApplication.shared.applicationState == .active else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { presentPrompts() }
+            return
+        }
+        ConsentForm.loadAndPresentIfRequired(from: nil) { _ in
+            guard ConsentInformation.shared.canRequestAds else {
+                IosAdSlot.shared.factory = nil
+                NSLog("UMP canRequestAds=false, skipping Mobile Ads start")
+                return
+            }
+            // Returns the recorded answer without UI when the status is already determined.
+            ATTrackingManager.requestTrackingAuthorization { _ in
+                startAds()
+            }
+        }
+    }
+
+    private static func startAdsIfAllowed() {
+        guard ConsentInformation.shared.canRequestAds else {
+            IosAdSlot.shared.factory = nil
+            NSLog("UMP canRequestAds=false, skipping Mobile Ads start")
+            return
+        }
+        startAds()
+    }
+
+    private static func startAds() {
+        MobileAds.shared.start { _ in
+            IosAdSlot.shared.factory = BannerAdFactoryImpl()
         }
     }
 }

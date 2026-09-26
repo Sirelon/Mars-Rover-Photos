@@ -3,6 +3,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.window.ComposeUIViewController
 import com.sirelon.marsroverphotos.domain.settings.AppSettings
 import com.sirelon.marsroverphotos.platform.BuildInfo
+import com.sirelon.marsroverphotos.platform.ConsentPromptGate
 import com.sirelon.marsroverphotos.platform.PushNotifications
 import com.sirelon.marsroverphotos.platform.Tracker
 import com.sirelon.marsroverphotos.presentation.App
@@ -11,6 +12,7 @@ import com.sirelon.marsroverphotos.presentation.navigation.parseDeepLink
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.mp.KoinPlatform
 import platform.UIKit.UIViewController
@@ -44,6 +46,19 @@ fun onFcmRegistrationTokenAvailable() {
     if (!koin.get<AppSettings>().notificationsEnabled) return
     CoroutineScope(Dispatchers.Main).launch {
         koin.get<PushNotifications>().setSubscribed(true)
+    }
+}
+
+/**
+ * Called by the iOS app shell to learn when the ad-consent prompts (UMP form, ATT) may go up. Runs
+ * [listener] on the main thread once `ConsentPromptGate` opens (the second rover tap, counted
+ * across sessions) — at once if it already has.
+ */
+fun onConsentPromptsAllowed(listener: () -> Unit) {
+    val gate = KoinPlatform.getKoin().get<ConsentPromptGate>()
+    CoroutineScope(Dispatchers.Main).launch {
+        gate.opened.first { it }
+        listener()
     }
 }
 

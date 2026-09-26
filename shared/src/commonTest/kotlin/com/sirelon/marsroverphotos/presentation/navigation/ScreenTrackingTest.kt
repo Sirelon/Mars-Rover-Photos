@@ -18,7 +18,6 @@ class ScreenTrackingTest {
         AppDestination.PhotosDateJumpPicker(roverId = 5),
         AppDestination.PhotosFilters(roverId = 5),
         AppDestination.Images(),
-        AppDestination.WhatsNewDialog,
         AppDestination.AllVersions,
         AppDestination.WhatsNewStory(version = "5.0.0"),
     )
