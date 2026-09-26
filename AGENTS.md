@@ -142,8 +142,16 @@ pushing one needs explicit permission.
 
 `fastlane/Fastfile` carries the lanes: `android beta` (build + upload AAB), `android changelog`
 (attach release notes to that upload — a separate call because supply skips all metadata when no
-`metadata_path` resolves), `android release` (promote to production), `ios beta` (TestFlight),
-`ios release` (App Store binary) and `ios release_notes` (App Store "What's New", metadata only).
+`metadata_path` resolves — then run `android listing`), `android listing` (Play title and
+descriptions), `android release` (promote to production), `ios beta` (TestFlight), `ios release`
+(App Store binary) and `ios release_notes` (App Store "What's New", promotional text, name,
+subtitle, keywords and description; metadata only).
+
+The store listing text lives in `fastlane/listing/{android,ios}/en-US/*.txt`, one file per field,
+and is committed. Every release uploads it through `android changelog` and `ios release_notes`, so
+to change what the store pages say, edit those files and it ships with the next release. The lanes
+refuse a field over the store's limit (Play title 30, short description 80, full description 4000;
+Apple name and subtitle 30, keywords 100 bytes, description 4000).
 The Android lanes refuse to build without a resolvable keystore and the iOS lanes without the App
 Store Connect key and `GoogleService-Info.plist`, so a missing credential fails in a second rather
 than after an archive.
