@@ -37,7 +37,7 @@ paging = "3.5.1"
 # https://developer.android.com/jetpack/androidx/releases/room3
 room = "3.0.3"
 # https://developer.android.com/jetpack/androidx/releases/work
-work = "2.11.2"
+work = "2.12.0"
 # https://developer.android.com/jetpack/androidx/releases/core
 core-splashscreen = "1.2.0"
 # https://developer.android.com/jetpack/androidx/releases/benchmark
