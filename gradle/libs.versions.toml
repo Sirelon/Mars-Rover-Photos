@@ -1,7 +1,7 @@
 [versions]
 # Core
 kotlin = "2.4.20"
-androidGradlePlugin = "9.4.0"
+androidGradlePlugin = "9.4.1"
 ksp = "2.3.12"
 
 # Compose Multiplatform
