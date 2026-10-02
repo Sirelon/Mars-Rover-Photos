@@ -191,7 +191,7 @@ paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pag
 paging-testing = { module = "androidx.paging:paging-testing", version.ref = "paging" }
 
 navigation3-runtime = { group = "androidx.navigation3", name = "navigation3-runtime", version.ref = "navigation3" }
-navigation3-ui = { group = "org.jetbrains.androidx.navigation3", name = "navigation3-ui", version = "1.1.1" }
+navigation3-ui = { group = "org.jetbrains.androidx.navigation3", name = "navigation3-ui", version = "1.1.2" }
 lifecycle-viewmodel-navigation3 = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-navigation3", version.ref = "lifecycle-navigation3" }
 
 # Android-only Compose (used by androidApp widget/glance code)
