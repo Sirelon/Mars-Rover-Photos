@@ -23,7 +23,7 @@ compose-mp-material3 = "1.13.0-alpha01+dev4730"
 activityCompose = "1.13.0"
 # https://developer.android.com/jetpack/androidx/releases/appcompat
 appcompat = "1.8.0"
-ktx = "1.19.0"
+ktx = "1.19.1"
 # https://developer.android.com/jetpack/androidx/releases/lifecycle
 lifecycle = "2.11.0"
 # https://developer.android.com/jetpack/androidx/releases/compose
