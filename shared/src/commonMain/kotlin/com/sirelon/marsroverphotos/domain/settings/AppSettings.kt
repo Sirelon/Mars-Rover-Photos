@@ -19,8 +19,15 @@ class AppSettings(
         const val KEY_SHOW_FACTS = "showFacts"
         const val KEY_SHOW_CAMERA_NAME = "showCameraName"
         const val KEY_LAST_SEEN_VERSION = "lastSeenVersion"
+        const val KEY_DISMISSED_UPDATE_VERSION = "dismissedUpdateVersion"
         const val KEY_NOTIFICATIONS_ENABLED = "notificationsEnabled"
         const val KEY_NOTIFICATION_OPT_IN_PENDING = "notificationOptInPending"
+        const val KEY_LAUNCH_COUNT = "launchCount"
+        const val KEY_FIRST_LAUNCH_AT = "firstLaunchAt"
+        const val KEY_FIRST_LAUNCH_VERSION = "firstLaunchVersion"
+        const val KEY_ROVER_OPEN_COUNT = "roverOpenCount"
+        const val KEY_LAST_REVIEW_PROMPT_AT = "lastReviewPromptAt"
+        const val KEY_LAST_REVIEW_PROMPT_VERSION = "lastReviewPromptVersion"
     }
 
     private val _notificationsEnabledFlow =
@@ -95,9 +102,71 @@ class AppSettings(
         get() = preferences.getBoolean(KEY_NOTIFICATION_OPT_IN_PENDING, false)
         set(value) = preferences.setBoolean(KEY_NOTIFICATION_OPT_IN_PENDING, value)
 
+    /**
+     * The newest version whose release notes the user has acknowledged — opened or dismissed the
+     * what's-new card for. Compared against the installed build to tell whether its notes are
+     * still unread.
+     */
     var lastSeenVersion: String?
         get() = preferences.getString(KEY_LAST_SEEN_VERSION, "").takeIf { it.isNotEmpty() }
         set(value) { preferences.setString(KEY_LAST_SEEN_VERSION, value.orEmpty()) }
+
+    /**
+     * The version the update card was last dismissed for. Kept apart from [lastSeenVersion] on
+     * purpose: waving away "update to 5.4.0" says nothing about having read 5.4.0's notes, which
+     * still deserve their card once 5.4.0 is actually installed.
+     */
+    var dismissedUpdateVersion: String?
+        get() = preferences.getString(KEY_DISMISSED_UPDATE_VERSION, "").takeIf { it.isNotEmpty() }
+        set(value) { preferences.setString(KEY_DISMISSED_UPDATE_VERSION, value.orEmpty()) }
+
+    /** How many times the app has been opened, as counted by [recordLaunch]. */
+    val launchCount: Int
+        get() = preferences.getInt(KEY_LAUNCH_COUNT, 0)
+
+    /** Epoch milliseconds of the first counted launch; null until [recordLaunch] has run once. */
+    val firstLaunchAt: Long?
+        get() = preferences.getLong(KEY_FIRST_LAUNCH_AT, 0L).takeIf { it > 0L }
+
+    /**
+     * The build that was running at the first counted launch. Together with [lastSeenVersion] it
+     * separates a fresh install of a version (nothing to call "new") from an update to it.
+     */
+    val firstLaunchVersion: String?
+        get() = preferences.getString(KEY_FIRST_LAUNCH_VERSION, "").takeIf { it.isNotEmpty() }
+
+    /**
+     * Counts an app open. Called once per launch by the app root; the first call also pins
+     * [firstLaunchAt] and [firstLaunchVersion], which never move afterwards.
+     */
+    fun recordLaunch(versionName: String, nowMillis: Long) {
+        preferences.setInt(KEY_LAUNCH_COUNT, launchCount + 1)
+        if (firstLaunchAt == null) {
+            preferences.setLong(KEY_FIRST_LAUNCH_AT, nowMillis)
+            preferences.setString(KEY_FIRST_LAUNCH_VERSION, versionName)
+        }
+    }
+
+    /** How many rovers the user has opened, across sessions, as counted by [recordRoverOpened]. */
+    val roverOpenCount: Int
+        get() = preferences.getInt(KEY_ROVER_OPEN_COUNT, 0)
+
+    /** Counts a rover tap and returns the new total. */
+    fun recordRoverOpened(): Int {
+        val count = roverOpenCount + 1
+        preferences.setInt(KEY_ROVER_OPEN_COUNT, count)
+        return count
+    }
+
+    /** When the store review sheet was last requested, in epoch milliseconds; null if never. */
+    var lastReviewPromptAt: Long?
+        get() = preferences.getLong(KEY_LAST_REVIEW_PROMPT_AT, 0L).takeIf { it > 0L }
+        set(value) { preferences.setLong(KEY_LAST_REVIEW_PROMPT_AT, value ?: 0L) }
+
+    /** The build the store review sheet was last requested on. */
+    var lastReviewPromptVersion: String?
+        get() = preferences.getString(KEY_LAST_REVIEW_PROMPT_VERSION, "").takeIf { it.isNotEmpty() }
+        set(value) { preferences.setString(KEY_LAST_REVIEW_PROMPT_VERSION, value.orEmpty()) }
 
     /**
      * App theme preference.

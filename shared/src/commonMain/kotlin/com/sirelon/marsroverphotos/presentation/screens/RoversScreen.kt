@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -58,6 +59,11 @@ import com.sirelon.marsroverphotos.presentation.theme.activeStatusColor
 import com.sirelon.marsroverphotos.presentation.ui.AppEmptyState
 import com.sirelon.marsroverphotos.presentation.ui.AppMetricItem
 import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
+import com.sirelon.marsroverphotos.presentation.navigation.LocalAboutCallbacks
+import com.sirelon.marsroverphotos.presentation.ui.AppNoticeCard
+import com.sirelon.marsroverphotos.presentation.ui.rememberPlatformUriHandler
+import com.sirelon.marsroverphotos.presentation.viewmodels.WhatsNewCard
+import com.sirelon.marsroverphotos.presentation.viewmodels.WhatsNewViewModel
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.presentation.ui.StatusBadge
@@ -77,15 +83,29 @@ import com.sirelon.marsroverphotos.utils.formatDisplayDate
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
+private const val WHATS_NEW_CARD_KEY = "whats-new-card"
+
 @Composable
 fun RoversScreen(
     onNavigateToPhotos: (Long) -> Unit,
-    onMissionInfoClick: (Long) -> Unit
+    onMissionInfoClick: (Long) -> Unit,
+    onOpenWhatsNewStory: (version: String) -> Unit,
 ) {
     val viewModel: RoversViewModel = koinViewModel()
     val rovers by viewModel.rovers.collectAsStateWithLifecycle()
     val filteredRovers by viewModel.filteredRovers.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
+
+    // The release card lives here, at the top of the list, rather than as a launch dialog: the
+    // decision of which card (if any) is the ViewModel's, this screen only renders it.
+    val whatsNewViewModel: WhatsNewViewModel = koinViewModel()
+    val whatsNewState by whatsNewViewModel.state.collectAsStateWithLifecycle()
+    val whatsNewCard = whatsNewState.card
+    val storeUrl = LocalAboutCallbacks.current.rateAppUrl
+    val uriHandler = rememberPlatformUriHandler()
+    LaunchedEffect(whatsNewCard) {
+        if (whatsNewCard != null) whatsNewViewModel.onCardShown(whatsNewCard)
+    }
 
     RoversContent(
         rovers = filteredRovers,
@@ -99,7 +119,16 @@ fun RoversScreen(
         onMissionInfoClick = { rover ->
             viewModel.onMissionInfoClicked(rover)
             onMissionInfoClick(rover.id)
-        }
+        },
+        whatsNewCard = whatsNewCard,
+        onWhatsNewCardClick = { card ->
+            whatsNewViewModel.onCardOpened(card)
+            when (card) {
+                is WhatsNewCard.UpdateAvailable -> if (storeUrl.isNotBlank()) uriHandler.openUri(storeUrl)
+                is WhatsNewCard.Highlights -> onOpenWhatsNewStory(card.release.version)
+            }
+        },
+        onWhatsNewCardDismiss = whatsNewViewModel::onCardDismissed,
     )
 }
 
@@ -113,6 +142,9 @@ fun RoversContent(
     onClick: (rover: Rover) -> Unit,
     onMissionInfoClick: (rover: Rover) -> Unit,
     modifier: Modifier = Modifier,
+    whatsNewCard: WhatsNewCard? = null,
+    onWhatsNewCardClick: (WhatsNewCard) -> Unit = {},
+    onWhatsNewCardDismiss: (WhatsNewCard) -> Unit = {},
 ) {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     // 1 column on compact, 2 on medium AND expanded — same adaptive source as the nav suite.
@@ -234,6 +266,18 @@ fun RoversContent(
                     verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
                     horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
                 ) {
+                    if (whatsNewCard != null) {
+                        item(key = WHATS_NEW_CARD_KEY, span = { GridItemSpan(maxLineSpan) }) {
+                            AppNoticeCard(
+                                icon = whatsNewCard.noticeIcon(),
+                                title = whatsNewCard.noticeTitle(),
+                                sub = whatsNewCard.noticeSub(),
+                                onClick = { onWhatsNewCardClick(whatsNewCard) },
+                                onDismiss = { onWhatsNewCardDismiss(whatsNewCard) },
+                                modifier = Modifier.animateItem(),
+                            )
+                        }
+                    }
                     items(rovers, key = { it.id }) { item ->
                         RoverItem(
                             modifier = Modifier.fillMaxWidth(),
@@ -247,6 +291,20 @@ fun RoversContent(
         }
     }
 }
+
+private fun WhatsNewCard.noticeIcon(): MaterialSymbol = when (this) {
+    is WhatsNewCard.UpdateAvailable -> MaterialSymbol.NewReleases
+    is WhatsNewCard.Highlights -> MaterialSymbol.Rocket
+}
+
+private fun WhatsNewCard.noticeTitle(): String = when (this) {
+    is WhatsNewCard.UpdateAvailable -> "Update to ${release.version}"
+    is WhatsNewCard.Highlights -> "What's new in ${release.version}"
+}
+
+/** The first two change titles, as a one-line teaser of what the tap leads to. */
+private fun WhatsNewCard.noticeSub(): String? =
+    release.changes.take(2).joinToString(" · ") { it.title }.takeIf { it.isNotBlank() }
 
 @Composable
 fun RoverItem(

@@ -16,6 +16,7 @@ import com.sirelon.marsroverphotos.domain.repositories.RoversRepository
 import com.sirelon.marsroverphotos.platform.ImageOperationResult
 import com.sirelon.marsroverphotos.platform.ImageOperations
 import com.sirelon.marsroverphotos.platform.Tracker
+import com.sirelon.marsroverphotos.presentation.review.ReviewPrompter
 import com.sirelon.marsroverphotos.presentation.navigation.AppDestination
 import com.sirelon.marsroverphotos.presentation.navigation.ScreenNames
 import com.sirelon.marsroverphotos.utils.Logger
@@ -51,6 +52,7 @@ class ImageViewModel(
     private val roverFeedPager: RoverFeedPager,
     private val lastViewedPhotoStore: LastViewedPhotoStore,
     private val tracker: Tracker,
+    private val reviewPrompter: ReviewPrompter,
 ) : ViewModel() {
 
     private val idsEmitter = MutableStateFlow<List<String>>(emptyList())
@@ -172,6 +174,7 @@ class ImageViewModel(
             try {
                 imagesRepository.setFavorite(image, favorite)
                 tracker.trackFavorite(image, from = ScreenNames.PHOTO_DETAIL, fav = favorite)
+                if (favorite) reviewPrompter.onDelightAction()
             } catch (e: Exception) {
                 Logger.e("ImageViewModel", e) { "Error setting favorite for image ${image.id}" }
             }
@@ -186,6 +189,7 @@ class ImageViewModel(
                 is ImageOperationResult.Success -> {
                     Logger.d("ImageViewModel") { "Image saved: ${result.message}" }
                     tracker.trackSave(photo)
+                    reviewPrompter.onDelightAction()
                     uiEventEmitter.send(UiEvent.PhotoSaved(result.message))
                 }
                 is ImageOperationResult.Error -> {
@@ -205,6 +209,7 @@ class ImageViewModel(
                     Logger.d("ImageViewModel") { "Image shared successfully" }
                     // The chosen target app isn't reported back by the KMP share sheet.
                     tracker.trackShare(marsImage, packageName = null)
+                    reviewPrompter.onDelightAction()
                 }
                 is ImageOperationResult.Error -> {
                     Logger.e("ImageViewModel", null) { "Error sharing image: ${result.error}" }

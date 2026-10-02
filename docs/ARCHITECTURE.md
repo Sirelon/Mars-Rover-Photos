@@ -61,12 +61,15 @@ Imports point **inward**: `presentation` → `domain`, never the reverse.
 ### Navigation routes; it does not decide
 - `navigation/AppNavigation.kt` and the entry builders in `di/NavigationModule.kt` move between
   destinations. They must not read settings or repositories to decide **whether** to navigate.
-- The condition belongs in a ViewModel and is read back as a single call. Reference implementation:
-  `WhatsNewViewModel.shouldShowDialog()` decides (is a newer `active` release published than the one
-  installed, and has its nudge already been dismissed) and the nav root only does
-  `if (deepLink == null && whatsNewViewModel.shouldShowDialog()) navigator.navigate(...)`.
-  It is a `suspend` function because the notes are fetched, and it bounds its own wait — the nav layer
-  neither knows nor decides where the data comes from.
+- The condition belongs in a ViewModel and is read back as state. Reference implementation:
+  `WhatsNewViewModel` decides which release card the Rovers list shows (`WhatsNewUiState.card` — a
+  newer `active` release than the installed build, or the notes for a build the user just updated
+  to, neither acknowledged yet, never on the first launch) and `RoversScreen` only renders it and
+  reports taps back. The screen neither knows nor decides where the data comes from.
+- The same split covers prompts that are not screens. `AppNavigation` reports that the fullscreen
+  viewer closed; `presentation/review/ReviewPrompter` decides whether that is the moment to ask for
+  a store review (a favorite, save or share in that visit, third launch or later, cooldowns) and
+  asks. Nav observes transitions — like the `screen_view` observer — and owns no policy.
 - Corollary: business state that outlives a screen ("the user has seen version N") is written by the
   ViewModel through `AppSettings` — not by a `LaunchedEffect` in the navigation composable. Logic
   parked in nav is untestable and duplicates a responsibility that already has an owner.
@@ -83,7 +86,7 @@ Imports point **inward**: `presentation` → `domain`, never the reverse.
   self-verifying script — otherwise the rule above applies.
 - **Cache in the repository, not the ViewModel.** Nav3 gives every back-stack entry its own
   `ViewModelStore`, so one screen's ViewModel is constructed once per entry that asks for it —
-  `WhatsNewViewModel` exists up to four times over (nav root, dialog, story pager, version list).
+  `WhatsNewViewModel` exists up to three times over (Rovers list, story pager, version list).
   `ReleaseNotesRepositoryImpl` holds the fetched list behind a `Mutex` so that costs one query, not
   four. Anything a ViewModel fetches in `init` needs the same treatment.
 - A fetch that fails returns empty rather than throwing, and the screen renders `CenteredProgress` /

@@ -226,7 +226,7 @@ node scripts/publish-release-notes.mjs --dry-run   # counts + icon warnings, wri
 node scripts/publish-release-notes.mjs            # one atomic commit of every release
 ```
 
-Publishing is what ships the notes. A release left unpublished shows no What's New dialog at all.
+Publishing is what ships the notes. A release left unpublished shows no What's New card at all.
 
 Then delete the scratch — `.claude/tmp/release-notes/`, `/tmp/release-packs/`, `/tmp/ranges.tsv`.
 Keep only the three committed docs. Re-running the pipeline regenerates everything else.

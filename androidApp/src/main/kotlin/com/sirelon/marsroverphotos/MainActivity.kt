@@ -17,21 +17,22 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.sirelon.marsroverphotos.domain.repositories.SupportRepository
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
-import org.koin.android.ext.android.inject
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import com.sirelon.marsroverphotos.gdpr.GdprHelper
 import com.sirelon.marsroverphotos.platform.ActivityProvider
 import com.sirelon.marsroverphotos.platform.BuildInfo
+import com.sirelon.marsroverphotos.platform.ConsentPromptGate
 import com.sirelon.marsroverphotos.presentation.App
 import com.sirelon.marsroverphotos.presentation.navigation.DeepLink
 import com.sirelon.marsroverphotos.presentation.navigation.parseDeepLink
 import com.sirelon.marsroverphotos.utils.Logger
 import com.sirelon.marsroverphotos.widget.WidgetExtraImageId
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 
 /**
  * Main activity for the Mars Rover Photos app.
@@ -41,6 +42,7 @@ class MainActivity : ComponentActivity() {
     private var pendingDeepLink: DeepLink? by mutableStateOf(null)
     private val gdprHelper = GdprHelper(this)
     private val supportRepository: SupportRepository by inject()
+    private val consentPromptGate: ConsentPromptGate by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Install Android 12+ splash screen
@@ -62,14 +64,23 @@ class MainActivity : ComponentActivity() {
             window.isNavigationBarContrastEnforced = false
         }
 
-        // Supporters (any "Support the developer" tier) see no ads, so they get no consent form
-        // either. The answer comes from the billing SDK's local cache — milliseconds — and the wait
-        // is bounded so a first launch without a cache still shows the form promptly.
-        lifecycleScope.launch {
-            val adFree = withTimeoutOrNull(AD_FREE_WAIT_MS) {
-                supportRepository.isAdFree.filterNotNull().first()
-            } ?: false
-            if (!adFree) gdprHelper.init()
+        // Screenshot capture shows no ads, so it has no consent to collect either. Supporters (any
+        // "Support the developer" tier) see no ads and no consent form too; that answer comes from
+        // the billing SDK's local cache — milliseconds — and the wait is bounded so a first launch
+        // without a cache still shows the form promptly. Everyone else has the consent state
+        // refreshed now, while the form itself waits for ConsentPromptGate to open (the second
+        // rover tap, counted across sessions). The wait dies with the Activity; a recreated one
+        // re-registers.
+        if (!hideAds) {
+            lifecycleScope.launch {
+                val adFree = withTimeoutOrNull(AD_FREE_WAIT_MS) {
+                    supportRepository.isAdFree.filterNotNull().first()
+                } ?: false
+                if (adFree) return@launch
+                gdprHelper.init()
+                consentPromptGate.opened.first { it }
+                gdprHelper.onPromptsAllowed()
+            }
         }
 
         // Only on a fresh start. On Activity recreation (rotation isn't in configChanges) Nav3

@@ -8,6 +8,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.sirelon.marsroverphotos.data.paging.usesPageFeed
 import com.sirelon.marsroverphotos.platform.Tracker
+import com.sirelon.marsroverphotos.presentation.review.ReviewPrompter
 import org.koin.compose.koinInject
 
 /**
@@ -28,6 +29,7 @@ fun TrackEmptyFeed(
     screen: String,
     params: Map<String, String> = emptyMap(),
     tracker: Tracker = koinInject(),
+    reviewPrompter: ReviewPrompter = koinInject(),
 ) {
     // Read through a latch: params change as the user re-anchors the feed, and restarting the
     // effect on every one of those would re-report the state the feed is already in.
@@ -39,8 +41,11 @@ fun TrackEmptyFeed(
             .collect { (refresh, itemCount) ->
                 if (itemCount > 0) return@collect
                 when {
-                    refresh is LoadState.Error ->
+                    refresh is LoadState.Error -> {
                         tracker.trackFeedError(screen, refresh.error, currentParams.value)
+                        // A session that showed an error is no moment to ask for a review.
+                        reviewPrompter.onFeedError()
+                    }
 
                     refresh is LoadState.NotLoading && refresh.endOfPaginationReached ->
                         tracker.trackFeedEmpty(screen, currentParams.value)

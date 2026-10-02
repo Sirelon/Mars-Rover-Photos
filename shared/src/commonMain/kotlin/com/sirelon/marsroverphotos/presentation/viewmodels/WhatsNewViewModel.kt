@@ -6,20 +6,35 @@ import com.sirelon.marsroverphotos.domain.releasenotes.Release
 import com.sirelon.marsroverphotos.domain.repositories.ReleaseNotesRepository
 import com.sirelon.marsroverphotos.domain.settings.AppSettings
 import com.sirelon.marsroverphotos.platform.BuildInfo
+import com.sirelon.marsroverphotos.platform.Tracker
+import com.sirelon.marsroverphotos.presentation.review.ReviewPrompter
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeoutOrNull
+
+/**
+ * The one release card the Rovers list may show: at most one per launch, never on the first launch
+ * of a fresh install, and gone for good once opened or dismissed.
+ */
+sealed interface WhatsNewCard {
+    val release: Release
+
+    /** A newer store-approved release than the installed build. Tapping it goes to the store. */
+    data class UpdateAvailable(override val release: Release) : WhatsNewCard
+
+    /** The notes for the build the user just updated to. Tapping it opens the story. */
+    data class Highlights(override val release: Release) : WhatsNewCard
+}
 
 data class WhatsNewUiState(
     val releases: ImmutableList<Release> = persistentListOf(),
     val latestRelease: Release? = null,
     val isLoading: Boolean = true,
+    val card: WhatsNewCard? = null,
 )
 
 /** Numeric `major.minor.patch` comparison — versions in this repo are always that shape (see AGENTS.md › Versioning), so a plain dotted split is enough; no need for a general semver parser. */
@@ -36,36 +51,31 @@ private fun compareVersions(a: String, b: String): Int {
 class WhatsNewViewModel(
     private val releaseNotesRepository: ReleaseNotesRepository,
     private val appSettings: AppSettings,
+    private val tracker: Tracker,
+    private val reviewPrompter: ReviewPrompter,
 ) : ViewModel() {
-
-    private companion object {
-        /**
-         * How long [shouldShowDialog] waits for the notes before giving up on this launch.
-         *
-         * Bounded on purpose. Unbounded, a slow network would drop a modal dialog on top of content
-         * the user has already started reading. Timing out costs only this launch: the acknowledged
-         * marker is left alone, so the next launch — served from Firestore's local cache, effectively
-         * instantly — shows the dialog instead.
-         */
-        const val DIALOG_LOAD_WAIT_MS = 3_000L
-    }
 
     private val _state = MutableStateFlow(WhatsNewUiState())
     val state: StateFlow<WhatsNewUiState> = _state.asStateFlow()
 
+    /** Cards this instance has already reported as shown — a recomposition must not re-log one. */
+    private val shownCards = mutableSetOf<WhatsNewCard>()
+
     init {
         viewModelScope.launch {
             val releases = releaseNotesRepository.getReleases()
+            // The repository already dropped anything not "available" in the store, so the highest
+            // version left here is always something the user could actually update to — never a
+            // build pending approval.
+            val latest = releases.maxWithOrNull { a, b -> compareVersions(a.version, b.version) }
             _state.update {
                 it.copy(
                     releases = releases,
-                    // The repository already dropped anything not "available" in the store, so the
-                    // highest version left here is always something the user could actually update
-                    // to — never a build pending approval.
-                    latestRelease = releases.maxWithOrNull { a, b -> compareVersions(a.version, b.version) },
+                    latestRelease = latest,
                     // Also cleared on the failure path — the repository returns an empty list rather
                     // than throwing, so nothing can leave this stuck loading forever.
                     isLoading = false,
+                    card = cardFor(releases, latest),
                 )
             }
         }
@@ -76,44 +86,87 @@ class WhatsNewViewModel(
         _state.value.releases.firstOrNull { it.version == version }
 
     /**
-     * Whether the What's New dialog should open on this launch.
+     * Which card, if any, the Rovers list shows this launch.
      *
-     * Suspends until the notes have loaded (bounded by [DIALOG_LOAD_WAIT_MS]) because they come from
-     * Firestore — there is nothing to decide on before the fetch lands.
+     * Reads [AppSettings] live rather than caching a flag: Nav3 gives every entry its own
+     * ViewModelStore, so the instance that renders the card (Rovers) is not the one behind the story
+     * or the version list, and the persisted markers are the only state they share.
      *
-     * Deliberately a function reading [AppSettings] live rather than a flag cached in [state]:
-     * the dialog is shown from the root composable but acknowledged from the dialog's own nav
-     * entry, and Nav3 gives each entry its own `ViewModelStore` — so the two call sites resolve
-     * different [WhatsNewViewModel] instances. Only the persisted marker is shared between them,
-     * so that is what the decision has to read. A cached flag would still say "show" on the root
-     * instance after the entry-scoped instance recorded the dialog as seen (e.g. after rotation).
-     *
-     * Shows when [WhatsNewUiState.latestRelease] is a newer version than the running build — i.e.
-     * there is a released, store-approved update the user has not installed yet — and that version's
-     * nudge has not already been dismissed. This is deliberately not "does a release note exist for
-     * the version I'm running": that would only ever fire right after an update, never for a user
-     * sitting on an old build who should be told to go get the new one.
+     * Rules, in priority order:
+     * - Never on the first launch. A fresh install has nothing to call "new", and the first launch is
+     *   already the busiest moment the app has (consent prompts). Decided by [AppSettings.launchCount].
+     * - [WhatsNewCard.UpdateAvailable] when the newest `active` release is newer than the installed
+     *   build and that version's card has not been dismissed. This is what tells a user on an old
+     *   build to go get the new one — deliberately not "is there a note for the version I run".
+     * - Otherwise [WhatsNewCard.Highlights] when the installed build has notes the user has not
+     *   acknowledged and this is not the version they first installed: a fresh install of 5.3.0 is
+     *   not told what is new in 5.3.0, an update from 5.2.0 is.
      */
-    suspend fun shouldShowDialog(): Boolean {
-        val loaded = withTimeoutOrNull(DIALOG_LOAD_WAIT_MS) {
-            state.first { !it.isLoading }
-        } ?: return false
-        val latest = loaded.latestRelease ?: return false
+    private fun cardFor(releases: List<Release>, latest: Release?): WhatsNewCard? {
+        if (appSettings.launchCount < MIN_LAUNCHES_FOR_CARD) return null
+        val installed = BuildInfo.versionName
         // Desktop never resolves a real version (KoinInit.desktop.kt reads an "app.version" system
         // property nothing ever sets), so BuildInfo.versionName is always the literal "unknown"
         // there. compareVersions would otherwise read every one of its segments as 0 and treat any
-        // published release as newer, popping the dialog on every launch with an "Update" button
-        // that has nowhere sensible to send a desktop user.
-        if (BuildInfo.versionName.substringBefore('.').toIntOrNull() == null) return false
-        return compareVersions(latest.version, BuildInfo.versionName) > 0 &&
-            appSettings.lastSeenVersion != latest.version
+        // published release as an update, with nowhere sensible to send a desktop user.
+        if (installed.substringBefore('.').toIntOrNull() == null) return null
+        if (latest != null &&
+            compareVersions(latest.version, installed) > 0 &&
+            appSettings.dismissedUpdateVersion != latest.version
+        ) {
+            return WhatsNewCard.UpdateAvailable(latest)
+        }
+        val current = releases.firstOrNull { it.version == installed } ?: return null
+        // The story has no pages for a release without changes, so there would be nothing to open.
+        if (current.changes.isEmpty()) return null
+        if (appSettings.lastSeenVersion == installed) return null
+        val freshInstall = appSettings.firstLaunchVersion == installed && appSettings.lastSeenVersion == null
+        if (freshInstall) return null
+        return WhatsNewCard.Highlights(current)
     }
 
     /**
-     * Records the current [WhatsNewUiState.latestRelease] as acknowledged, so [shouldShowDialog]
-     * stays false until a newer version's notes are published.
+     * The card reached the screen. Logged once per card, and noted with [ReviewPrompter] so the
+     * store-review prompt stays quiet for the rest of this session — one nudge at a time.
      */
-    fun markSeen() {
-        appSettings.lastSeenVersion = _state.value.latestRelease?.version ?: BuildInfo.versionName
+    fun onCardShown(card: WhatsNewCard) {
+        if (!shownCards.add(card)) return
+        reviewPrompter.onWhatsNewCardShown()
+        tracker.trackEvent("whats_new_card_shown", card.params())
+    }
+
+    fun onCardOpened(card: WhatsNewCard) {
+        acknowledge(card)
+        tracker.trackEvent("whats_new_card_opened", card.params())
+    }
+
+    fun onCardDismissed(card: WhatsNewCard) {
+        acknowledge(card)
+        tracker.trackEvent("whats_new_card_dismissed", card.params())
+    }
+
+    /**
+     * Records the card as dealt with and takes it off the screen. Whatever card would come next
+     * waits for the next launch rather than sliding in right away: one nudge per session.
+     */
+    private fun acknowledge(card: WhatsNewCard) {
+        when (card) {
+            is WhatsNewCard.UpdateAvailable -> appSettings.dismissedUpdateVersion = card.release.version
+            is WhatsNewCard.Highlights -> appSettings.lastSeenVersion = card.release.version
+        }
+        _state.update { it.copy(card = null) }
+    }
+
+    private fun WhatsNewCard.params(): Map<String, String> = mapOf(
+        "kind" to when (this) {
+            is WhatsNewCard.UpdateAvailable -> "update"
+            is WhatsNewCard.Highlights -> "highlights"
+        },
+        "version" to release.version,
+    )
+
+    private companion object {
+        /** The card first appears on the second launch. */
+        const val MIN_LAUNCHES_FOR_CARD = 2
     }
 }
