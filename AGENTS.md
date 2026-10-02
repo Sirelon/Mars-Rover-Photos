@@ -177,6 +177,30 @@ descriptions), `android release` (promote to production), `ios beta` (TestFlight
 (App Store binary) and `ios release_notes` (App Store "What's New", promotional text, name,
 subtitle, keywords and description; metadata only).
 
+### Samsung Galaxy Store
+`fastlane android galaxy` is the whole Samsung release in one lane: it builds the release APK,
+re-signs it, pushes the Play listing text plus the staged changelog as the store's "What's New",
+attaches the binary and submits the listing for Samsung's review. `skip_build:true` reuses the APK
+already in `androidApp/build/outputs/apk/release/`. It runs after the Play upload of the same
+version, never concurrently (same Gradle directory), and only when the Galaxy listing is not
+already in review; it also refuses a version code the listing already holds.
+
+Samsung has no equivalent of Play App Signing, so the listing still expects the certificate the
+app was first published with: `anyNew2.jks`, alias `marsrovers`, not `upload.jks`. The lane
+re-signs the Play-signed APK with apksigner rather than building twice. Credentials, all
+gitignored:
+
+- `fastlane/galaxy-store.env` — `GALAXY_KEYSTORE`, `GALAXY_KEY_ALIAS`, `GALAXY_KS_PASS`,
+  `GALAXY_KEY_PASS`. The passwords are never on the command line; apksigner reads them from the
+  environment.
+- `fastlane/galaxy-store-key.pem` — private key of the Seller Portal service account (Seller Portal
+  → Assistance → API Service → Create Service Account, Content Publish API scope). Samsung shows the
+  key once; the service account id and the listing's content id are constants in the Fastfile.
+
+Existing binaries on the listing are left attached: Samsung serves each binary to the devices it
+targets, and the two from 2016 and 2019 may be the only builds still offered to very old Android
+versions. Removing one is a Seller Portal decision, not the lane's.
+
 The store listing text lives in `fastlane/listing/{android,ios}/en-US/*.txt`, one file per field,
 and is committed. Every release uploads it through `android changelog` and `ios release_notes`, so
 to change what the store pages say, edit those files and it ships with the next release. The lanes
