@@ -8,6 +8,7 @@ import com.revenuecat.purchases.kmp.ktx.awaitCustomerInfo
 import com.revenuecat.purchases.kmp.ktx.awaitOfferings
 import com.revenuecat.purchases.kmp.ktx.awaitPurchase
 import com.revenuecat.purchases.kmp.ktx.awaitRestore
+import com.revenuecat.purchases.kmp.ktx.awaitSyncPurchases
 import com.revenuecat.purchases.kmp.models.CustomerInfo
 import com.revenuecat.purchases.kmp.models.Package
 import com.revenuecat.purchases.kmp.models.PurchasesError
@@ -19,6 +20,7 @@ import com.revenuecat.purchases.kmp.models.StoreTransaction
 import com.sirelon.marsroverphotos.domain.repositories.SupportRepository
 import com.sirelon.marsroverphotos.domain.support.SupportPurchaseResult
 import com.sirelon.marsroverphotos.domain.support.SupportTier
+import com.sirelon.marsroverphotos.platform.PlatformPreferences
 import com.sirelon.marsroverphotos.utils.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,6 +38,10 @@ import kotlinx.coroutines.sync.withLock
  * SDK's on-disk customer cache — instant, no network — and then kept current by the SDK delegate,
  * which fires after every purchase, restore and background refresh.
  *
+ * A reinstall gives RevenueCat a fresh anonymous app user id that owns nothing, so the first launch
+ * on a device also syncs the store account's purchases once (`syncPurchases`, no store sign-in
+ * prompt) and remembers that in [preferences]; a supporter who reinstalls never sees ads again.
+ *
  * The current offering is fetched once per process behind a [Mutex]: every Nav3 entry builds its
  * own ViewModel, so without this the About row, the ad gate and the Support screen would each hit
  * the store. An empty result is not cached so a flaky launch retries on the next call.
@@ -44,11 +50,13 @@ class RevenueCatSupportRepository(
     apiKey: String,
     isDebug: Boolean,
     private val scope: CoroutineScope,
+    private val preferences: PlatformPreferences,
 ) : SupportRepository {
 
     private companion object {
         const val TAG = "SupportRepository"
         const val AD_FREE_ENTITLEMENT = "ad_free"
+        const val KEY_PURCHASES_SYNCED = "supportPurchasesSynced"
 
         /** The store titles are "Support: Coffee"; the screen already says "Support". */
         const val TITLE_PREFIX = "Support: "
@@ -93,7 +101,28 @@ class RevenueCatSupportRepository(
                     // Unknown is not "supporter": ads stay on until a purchase or restore says otherwise.
                     _isAdFree.compareAndSet(null, false)
                 }
+            syncPurchasesOnce()
         }
+    }
+
+    /**
+     * One sync per install, and only when the cached customer owns nothing: a supporter's new
+     * anonymous id gets aliased to the one that bought the tier. Failures (offline) retry on the
+     * next launch; RevenueCat only warns against syncing on *every* launch.
+     */
+    private suspend fun syncPurchasesOnce() {
+        if (preferences.getBoolean(KEY_PURCHASES_SYNCED, false)) return
+        if (_isAdFree.value == true) {
+            preferences.setBoolean(KEY_PURCHASES_SYNCED, true)
+            return
+        }
+        runCatching { Purchases.sharedInstance.awaitSyncPurchases() }
+            .onSuccess {
+                apply(it)
+                preferences.setBoolean(KEY_PURCHASES_SYNCED, true)
+                Logger.d(TAG) { "Purchases synced after install; adFree=${_isAdFree.value}" }
+            }
+            .onFailure { Logger.w(TAG) { "Purchase sync after install failed: ${it.message}" } }
     }
 
     // Cheapest first: the dashboard's package order is not something the UI should depend on.

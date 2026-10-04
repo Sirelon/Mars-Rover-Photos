@@ -17,7 +17,12 @@ import org.koin.dsl.module
  */
 fun supportModule(revenueCatApiKey: String): Module = module {
     single<SupportRepository> {
-        RevenueCatSupportRepository(apiKey = revenueCatApiKey, isDebug = BuildInfo.isDebug, scope = get())
+        RevenueCatSupportRepository(
+            apiKey = revenueCatApiKey,
+            isDebug = BuildInfo.isDebug,
+            scope = get(),
+            preferences = get(),
+        )
     }
     single<FeatureFlags> { FirebaseFeatureFlags(isDebug = BuildInfo.isDebug, scope = get()) }
 }
