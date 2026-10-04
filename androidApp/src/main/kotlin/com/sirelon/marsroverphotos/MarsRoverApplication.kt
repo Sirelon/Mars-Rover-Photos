@@ -12,6 +12,9 @@ import com.sirelon.marsroverphotos.domain.repositories.RoversRepository
 import com.sirelon.marsroverphotos.platform.BuildInfo
 import com.sirelon.marsroverphotos.platform.initAndroidDatabase
 import com.sirelon.marsroverphotos.utils.Logger
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -24,6 +27,7 @@ import org.koin.core.logger.Level
 class MarsRoverApplication : Application(), Configuration.Provider {
 
     private val roversRepository: RoversRepository by inject()
+    private val applicationScope: CoroutineScope by inject()
 
     /**
      * Supplies WorkManager on demand. The manifest removes its startup initializer, so WorkManager
@@ -74,22 +78,27 @@ class MarsRoverApplication : Application(), Configuration.Provider {
             Logger.w("MarsRoverApplication") { "Firebase Crashlytics initialization failed: ${e.message}" }
         }
 
-        // Initialize AdMob
-        try {
-            // Register test devices so debug ad clicks don't count as invalid traffic.
-            // Test device IDs are logged by the SDK ("setTestDeviceIds(...)").
-            if (BuildConfig.DEBUG) {
-                MobileAds.setRequestConfiguration(
-                    RequestConfiguration.Builder()
-                        .setTestDeviceIds(listOf("5E9A79263E2CEF0CABB3EB5C02E071D0"))
-                        .build()
-                )
+        // Initialize AdMob off the main thread. The SDK marks initialize() @WorkerThread: it loads
+        // the Play Services ads module and brings up WebView, with disk and network work on the
+        // calling thread (about 14 s on a cold emulator start). Nothing on the start path needs it
+        // synchronously: AdSlot requests ads only once UMP consent allows, long after this completes.
+        applicationScope.launch(Dispatchers.IO) {
+            try {
+                // Register test devices so debug ad clicks don't count as invalid traffic.
+                // Test device IDs are logged by the SDK ("setTestDeviceIds(...)").
+                if (BuildConfig.DEBUG) {
+                    MobileAds.setRequestConfiguration(
+                        RequestConfiguration.Builder()
+                            .setTestDeviceIds(listOf("5E9A79263E2CEF0CABB3EB5C02E071D0"))
+                            .build()
+                    )
+                }
+                MobileAds.initialize(this@MarsRoverApplication) { status ->
+                    Logger.d("MarsRoverApplication") { "AdMob init status: $status" }
+                }
+            } catch (e: Exception) {
+                Logger.w("MarsRoverApplication") { "AdMob initialization failed: ${e.message}" }
             }
-            MobileAds.initialize(this) { status ->
-                Logger.d("MarsRoverApplication") { "AdMob init status: $status" }
-            }
-        } catch (e: Exception) {
-            Logger.w("MarsRoverApplication") { "AdMob initialization failed: ${e.message}" }
         }
     }
 }
