@@ -109,6 +109,9 @@ git status --short                                    # a release wants a clean 
   `app_store_connect_api_key` when it's missing, which is why `ensure_credentials` checks for it
   explicitly rather than letting a finished archive fail at upload.
 - `iosApp/iosApp/GoogleService-Info.plist` — copy from `GoogleService-Info.template.plist`.
+- `fastlane/galaxy-store.env` + `fastlane/galaxy-store-key.pem` — only for `android galaxy`
+  (Samsung Galaxy Store; see AGENTS.md). Not part of this skill's beta flow: the Samsung lane
+  submits straight to review, so it runs by hand once the Play build is approved.
 
 Ask the user to copy in whatever is missing. Never regenerate a keystore.
 

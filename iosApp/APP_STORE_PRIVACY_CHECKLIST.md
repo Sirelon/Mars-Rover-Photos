@@ -19,6 +19,8 @@ Declarations MUST match `PrivacyInfo.xcprivacy` and the bundled SDKs (AdMob, Fir
 - [ ] **Usage Data → Product Interaction**: collected · Analytics  *(Firebase Analytics)*
 - [ ] **Diagnostics → Crash Data**: collected · App Functionality  *(Crashlytics)*
 - [ ] **Diagnostics → Performance Data**: collected · App Functionality  *(Firebase Performance)*
+- [ ] **Purchases → Purchase History**: collected · App Functionality · not linked to identity ·
+      not used for tracking  *(RevenueCat: receipt + anonymous app user id for the ad-free unlock)*
 - [ ] Confirm the **"Used for Tracking"** toggle is ON for Device ID — this is what makes
       Apple *expect* the ATT prompt. ATT present but tracking not declared (or vice-versa) → rejection.
 
@@ -29,9 +31,17 @@ Declarations MUST match `PrivacyInfo.xcprivacy` and the bundled SDKs (AdMob, Fir
 - [ ] App Review Information → **Notes**: add a line — "The app shows banner ads and
       requests App Tracking Transparency authorization ~1s after the first screen appears."
 
+## B2b — Make the in-app purchases reviewable
+- [ ] Remote Config `support_tiers_enabled` = true before submitting, or the Support row is hidden.
+- [ ] App Review Information → **Notes**: "About → Support the Developer offers four one-time
+      tips (Coffee, Lunch, Dinner, Feast) that remove ads. No account needed; Restore purchases
+      is on the same screen."
+- [ ] The four IAPs are submitted together with the version (first IAP review).
+
 ## B3 — Privacy Policy URL  (mandatory for ad-serving apps)
 - [ ] App Store Connect → App Information → **Privacy Policy URL**.
 - [ ] The policy text must mention AdMob, the IDFA, and third-party advertising.
+- [ ] The policy text must mention RevenueCat and the in-app purchases (section "In-App Purchases").
 
 ## Flag (separate from ads, verify before release)
 - [ ] `GoogleService-Info.plist` — confirm it's the real Firebase config, not a template,

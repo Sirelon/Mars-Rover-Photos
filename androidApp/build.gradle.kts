@@ -52,7 +52,11 @@ android {
     }
 
     buildTypes {
+        // RevenueCat public SDK keys (safe to commit). Debug routes purchases to RevenueCat's Test Store
+        // so no store account is charged; release uses the Play Store key. Per build type rather than a
+        // runtime check so the Test Store key never exists in a release binary.
         release {
+            buildConfigField("String", "REVENUECAT_API_KEY", "\"goog_BUcdCexFEVvjvRGiJLfHavzLwJu\"")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
@@ -61,7 +65,7 @@ android {
             )
         }
         debug {
-            // Debug configuration
+            buildConfigField("String", "REVENUECAT_API_KEY", "\"test_ChJWrWSOgskHLoeBZYOwwVxjsiT\"")
         }
     }
 

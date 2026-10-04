@@ -44,6 +44,26 @@ kotlin {
     // Desktop (JVM) target
     jvm("desktop")
 
+    // `mobileMain` = androidMain + iosMain. Holds the store-billing (RevenueCat) and Remote Config
+    // implementations: purchases-kmp publishes no JVM variant and GitLive's JVM Remote Config shim
+    // is non-functional, so desktop gets fakes from desktopMain instead.
+    // withAndroidTarget() matches only the legacy KotlinAndroidTarget; the AGP 9 KMP library target is
+    // a different type, so the Android compilations are selected by platform type instead.
+    @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
+    applyDefaultHierarchyTemplate {
+        common {
+            group("mobile") {
+                withCompilations { it.platformType == org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.androidJvm }
+                // Nested by name so the default template's `iosMain` becomes a child of `mobileMain`;
+                // a bare withIos() here would attach the iOS compilations directly and leave iosMain
+                // unable to see mobileMain (sibling fragments are invisible to each other in K2).
+                group("ios") {
+                    withIos()
+                }
+            }
+        }
+    }
+
     // Web (Wasm) target - TEMPORARILY DISABLED
     // TODO: WASM support requires significant refactoring:
     // - Room Database doesn't support WASM
@@ -131,6 +151,7 @@ kotlin {
             implementation(libs.firebase.crashlytics.versioned)
             implementation(libs.firebase.firestore.versioned)
             implementation(libs.firebase.messaging.versioned)
+            implementation(libs.firebase.config.versioned)
 
             // GitLive Firebase KMP (analytics + crashlytics — Android + iOS only)
             implementation(libs.gitlive.firebase.analytics)
@@ -147,6 +168,14 @@ kotlin {
 
             // Google Play in-app review (Android only)
             implementation(libs.play.review.ktx)
+        }
+
+        // Android + iOS only (see the hierarchy template above)
+        val mobileMain by getting {
+            dependencies {
+                implementation(libs.purchases.kmp.core)
+                implementation(libs.gitlive.firebase.config)
+            }
         }
 
         // iOS-specific dependencies

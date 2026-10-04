@@ -17,6 +17,7 @@ let package = Package(
     .package(path: "subpackages/dev_gitlive_firebase_analytics_3_0_0_alpha02"),
     .package(path: "subpackages/dev_gitlive_firebase_crashlytics_3_0_0_alpha02"),
     .package(path: "subpackages/dev_gitlive_firebase_messaging_3_0_0_alpha02"),
+    .package(path: "subpackages/dev_gitlive_firebase_config_3_0_0_alpha02"),
     .package(path: "subpackages/dev_gitlive_firebase_app_3_0_0_alpha02")
   ],
   targets: [
@@ -27,6 +28,7 @@ let package = Package(
         .product(name: "dev_gitlive_firebase_analytics_3_0_0_alpha02", package: "dev_gitlive_firebase_analytics_3_0_0_alpha02"),
         .product(name: "dev_gitlive_firebase_crashlytics_3_0_0_alpha02", package: "dev_gitlive_firebase_crashlytics_3_0_0_alpha02"),
         .product(name: "dev_gitlive_firebase_messaging_3_0_0_alpha02", package: "dev_gitlive_firebase_messaging_3_0_0_alpha02"),
+        .product(name: "dev_gitlive_firebase_config_3_0_0_alpha02", package: "dev_gitlive_firebase_config_3_0_0_alpha02"),
         .product(name: "dev_gitlive_firebase_app_3_0_0_alpha02", package: "dev_gitlive_firebase_app_3_0_0_alpha02")
       ]
     )

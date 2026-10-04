@@ -19,6 +19,7 @@ class ScreenTrackingTest {
         AppDestination.PhotosFilters(roverId = 5),
         AppDestination.Images(),
         AppDestination.AllVersions,
+        AppDestination.Support,
         AppDestination.WhatsNewStory(version = "5.0.0"),
     )
 

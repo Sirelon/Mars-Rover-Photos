@@ -143,6 +143,8 @@ iosApp/iosApp/GoogleService-Info.plist
 # Fastlane — credentials stay untracked; build/report artifacts too
 fastlane/*.p8
 fastlane/google-play-key.json
+fastlane/galaxy-store-key.pem
+fastlane/galaxy-store.env
 fastlane/report.xml
 fastlane/README.md
 *.ipa

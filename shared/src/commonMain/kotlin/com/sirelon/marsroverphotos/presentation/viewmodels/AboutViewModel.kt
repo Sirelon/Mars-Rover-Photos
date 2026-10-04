@@ -2,6 +2,8 @@ package com.sirelon.marsroverphotos.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sirelon.marsroverphotos.domain.featureflags.FeatureFlag
+import com.sirelon.marsroverphotos.domain.featureflags.FeatureFlags
 import com.sirelon.marsroverphotos.domain.settings.AppSettings
 import com.sirelon.marsroverphotos.domain.settings.Theme
 import com.sirelon.marsroverphotos.platform.FirebaseAnalytics
@@ -16,9 +18,12 @@ class AboutViewModel(
     private val appSettings: AppSettings,
     private val analytics: FirebaseAnalytics,
     private val pushNotifications: PushNotifications,
+    featureFlags: FeatureFlags,
 ) : ViewModel() {
 
     val themeFlow = appSettings.themeFlow
+    /** Remote kill switch for the "Support the developer" row; off until Remote Config says otherwise. */
+    val supportEnabled: StateFlow<Boolean> = featureFlags.isEnabled(FeatureFlag.SUPPORT_TIERS)
     val showFactsFlow = appSettings.showFactsFlow
     val notificationsEnabledFlow = appSettings.notificationsEnabledFlow
 

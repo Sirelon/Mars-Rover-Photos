@@ -226,7 +226,7 @@ Stable design-system pieces (path = `shared/src/commonMain/kotlin/com/sirelon/ma
 | `AppRow` / `AppRowDivider` / `AppSection` | `ui/AppRow.kt` | The list-row family (renamed from `Settings*`; they long outgrew settings). `AppRow` = leading `AppIconBox` + label + optional `sub`, with a trailing region that is either a custom `trailing` slot or — for a link row (non-null `onClick`, no `trailing`) — the app-wide chevron. **Don't hand-build that chevron**; pass `onClick` and let the row draw it. `AppRowDivider` = hairline inset past the icon-box. `AppSection` = optional `label` + an `AppOutlinedCard` of rows, with `header`/`footer` slots (a divider is inserted before `footer`) and an optional `onClick` that makes the whole card tappable (clipped to `CardShape` first, so the ripple follows the corners). Exports `AppRowIndent` for aligning content under a row's label. |
 | `AppNoticeCard` | `ui/AppNoticeCard.kt` | Dismissible notice: one `AppRow` (secondaryContainer icon-box) on an `AppSection` card, the whole card tappable via `onClick`, a close action in the trailing slot via `onDismiss`. For a nudge that takes a slot at the top of a list and goes away for good — the release card on Rovers. Never modal. |
 | `AppSectionHeader` / `AppSectionLabel` | `ui/AppSectionHeader.kt` | Accent title and all-caps label pair for screen sections, cards, and timeline milestones. |
-| `AppIconBox` | `ui/AppIconBox.kt` | Tinted rounded container holding a `MaterialSymbol` (tinted container + icon). General — use anywhere a colored icon tile is needed. |
+| `AppIconBox` | `ui/AppIconBox.kt` | Tinted rounded container holding a `MaterialSymbol` (tinted container + icon). General — use anywhere a colored icon tile is needed. `size` / `iconSize` default to the row tile (`iconBox` / `icon`); a screen header passes `iconBoxHero` / `iconDefault` instead of wrapping the box in its own `size` modifier. |
 | `AppMetricItem` | `ui/AppMetricItem.kt` | Inline icon + value + label trio in one `Row` (e.g. "🖼 134K photos"). Icon/label = `onSurfaceVariant`, value = `onSurface` (SemiBold `bodyMedium`); inline icon size. Repeats 3× in a rover row's metric strip; general anywhere a compact metric is needed. |
 | `AppSolEarthCard` | `ui/AppSolEarthCard.kt` | Paired Sol and nearest-Earth-date cards for date-jump and photo-date contexts. |
 | `AppBadge` / `StatusBadge` / `BadgeRow` | `ui/Badges.kt` | `AppBadge` = neutral outlined pill; `StatusBadge(label, color)` = colored dot + label (parameterized); `BadgeRow` = slot row composing them. |
@@ -259,6 +259,13 @@ Stable design-system pieces (path = `shared/src/commonMain/kotlin/com/sirelon/ma
 
 **New `MaterialSymbol` glyphs (Rovers):** `Collections`, `Schedule`, `Event`, `Search` — added to the
 enum in `ui/MaterialSymbolIcon.kt` (the bundled full variable font renders them).
+
+**`MaterialSymbol` glyphs (Support the developer):** `VolunteerActivism`, `Coffee`, `LunchDining`,
+`DinnerDining`, `Celebration`, `Restore`. The Support screen (`screens/support/SupportScreen.kt`) is
+built entirely from the row family: `AppSection` + `AppRow` with a price in the `trailing` slot for the
+tiers, `AppRow` without `onClick` for the supporter status, `AppOutlinedButton` for Restore. New
+`AppSize` tokens: `iconBoxHero` (56dp screen-header icon tile) and `inlineProgressStroke` (2dp stroke
+for an icon-sized `CircularProgressIndicator`).
 
 **New `AppSize` tokens (Rovers):** `roverThumbWidth` (112dp portrait-thumb fixed width),
 `roverInfoReserve` (40dp title-line trailing reserve clearing the overlaid info button),

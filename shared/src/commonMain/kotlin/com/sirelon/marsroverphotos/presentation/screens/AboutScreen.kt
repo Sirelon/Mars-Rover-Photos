@@ -87,6 +87,7 @@ fun AboutScreen() {
     val showFacts by viewModel.showFactsFlow.collectAsStateWithLifecycle()
     val notificationsEnabled by viewModel.notificationsEnabledFlow.collectAsStateWithLifecycle()
     val pushStatus by viewModel.pushStatus.collectAsStateWithLifecycle()
+    val supportEnabled by viewModel.supportEnabled.collectAsStateWithLifecycle()
 
     // Authorization can be revoked in system settings while the app is backgrounded, so re-read it
     // whenever this screen comes back into composition rather than trusting the cached value.
@@ -114,7 +115,10 @@ fun AboutScreen() {
         rateAppUrl = callbacks.rateAppUrl,
         onNavigateToAdmin = if (BuildInfo.isDebug) {
             dropUnlessResumed { navigator.navigate(AppDestination.AdminPhotos) }
-        } else null
+        } else null,
+        onNavigateToSupport = if (supportEnabled) {
+            dropUnlessResumed { navigator.navigate(AppDestination.Support) }
+        } else null,
     )
 }
 
@@ -132,7 +136,9 @@ private fun AboutContent(
     onRateApp: () -> Unit,
     appVersion: String,
     rateAppUrl: String,
-    onNavigateToAdmin: (() -> Unit)?
+    onNavigateToAdmin: (() -> Unit)?,
+    /** Null while the Remote Config flag is off: the row is simply absent. */
+    onNavigateToSupport: (() -> Unit)?,
 ) {
     val uriHandler = rememberPlatformUriHandler()
     val reviewPrompter: ReviewPrompter = koinInject()
@@ -243,6 +249,17 @@ private fun AboutContent(
                 }
 
                 AppSection(label = "Connect") {
+                    if (onNavigateToSupport != null) {
+                        AppRow(
+                            icon = MaterialSymbol.VolunteerActivism,
+                            iconContainer = colors.tertiaryContainer,
+                            iconTint = colors.onTertiaryContainer,
+                            label = "Support the Developer",
+                            sub = "Leave a tip and go ad-free forever",
+                            onClick = onNavigateToSupport,
+                        )
+                        AppRowDivider()
+                    }
                     AppRow(
                         icon = MaterialSymbol.Public,
                         iconContainer = live.copy(alpha = 0.15f),

@@ -23,6 +23,7 @@ import com.sirelon.marsroverphotos.presentation.screens.RoverMissionInfoScreen
 import com.sirelon.marsroverphotos.presentation.screens.RoversScreen
 import com.sirelon.marsroverphotos.presentation.screens.UkraineScreen
 import com.sirelon.marsroverphotos.presentation.screens.whatsnew.AllVersionsScreen
+import com.sirelon.marsroverphotos.presentation.screens.support.SupportScreen
 import com.sirelon.marsroverphotos.presentation.screens.whatsnew.WhatsNewStoryScreen
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.dsl.module
@@ -138,6 +139,10 @@ val navigationModule = module {
 
     navigation<AppDestination.AllVersions> {
         AllVersionsScreen()
+    }
+
+    navigation<AppDestination.Support> {
+        SupportScreen()
     }
 
     navigation<AppDestination.WhatsNewStory> { destination ->

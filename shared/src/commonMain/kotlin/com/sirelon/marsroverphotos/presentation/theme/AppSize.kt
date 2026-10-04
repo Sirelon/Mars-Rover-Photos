@@ -84,4 +84,10 @@ object AppSize {
 
     /** 16dp — hero mascot drop-shadow elevation. */
     val heroShadow: Dp = 16.dp
+
+    /** 56dp — large icon tile introducing a screen (e.g. the Support screen header). */
+    val iconBoxHero: Dp = 56.dp
+
+    /** 2dp — stroke of a small inline circular progress indicator sized to an icon. */
+    val inlineProgressStroke: Dp = 2.dp
 }

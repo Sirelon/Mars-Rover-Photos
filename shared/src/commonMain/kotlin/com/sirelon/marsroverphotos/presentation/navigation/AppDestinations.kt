@@ -76,6 +76,10 @@ sealed interface AppDestination : NavKey {
     @Serializable
     data object AllVersions : AppDestination
 
+    /** "Support the developer": the purchasable tiers that unlock ad-free. Reached from About. */
+    @Serializable
+    data object Support : AppDestination
+
     /** Full-screen story-style pager for a single release. */
     @Serializable
     data class WhatsNewStory(val version: String, val page: Int = 0) : FullscreenDestination

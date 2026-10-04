@@ -95,10 +95,12 @@ struct MarsRoverApp: App {
         // Initialize Firebase before anything else (required for Analytics, Crashlytics, Firestore)
         FirebaseApp.configure()
         // Initialize Koin dependency injection from shared module
+        // RevenueCat public SDK keys (safe to ship). Debug routes purchases to RevenueCat's Test Store
+        // so nothing is charged; release uses the App Store key.
         #if DEBUG
-        IosApp.shared.start(isDebug: true)
+        IosApp.shared.start(isDebug: true, revenueCatApiKey: "test_ChJWrWSOgskHLoeBZYOwwVxjsiT")
         #else
-        IosApp.shared.start(isDebug: false)
+        IosApp.shared.start(isDebug: false, revenueCatApiKey: "appl_kViBGXbPssDWIOlkApjQQjYGQgd")
         #endif
 
         // Screenshot capture passes `hideAds` as a launch argument to hide all ads. Tolerate the
@@ -136,7 +138,13 @@ struct MarsRoverApp: App {
                     didBootstrapAds = false
                     return
                 }
-                Self.refreshConsent()
+                Task { @MainActor in
+                    // Supporters (any "Support the developer" tier) see no ads, so they get neither the
+                    // consent form nor the ATT prompt. Bounded on the Kotlin side; false on any failure.
+                    let adFree = (try? await IosApp.shared.isAdFree())?.boolValue ?? false
+                    if adFree { return }
+                    Self.refreshConsent()
+                }
             }
         }
     }

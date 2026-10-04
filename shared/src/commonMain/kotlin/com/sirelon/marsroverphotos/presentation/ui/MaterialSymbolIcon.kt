@@ -71,6 +71,13 @@ enum class MaterialSymbol(val iconName: String) {
     NewReleases("new_releases"),
     Leaderboard("leaderboard"),
     SwipeDown("swipe_down"),
+    // Support the developer
+    VolunteerActivism("volunteer_activism"),
+    Coffee("coffee"),
+    LunchDining("lunch_dining"),
+    DinnerDining("dinner_dining"),
+    Celebration("celebration"),
+    Restore("restore"),
 }
 
 /**

@@ -15,6 +15,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
+import com.sirelon.marsroverphotos.domain.repositories.SupportRepository
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.withTimeoutOrNull
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -38,6 +41,7 @@ import org.koin.android.ext.android.inject
 class MainActivity : ComponentActivity() {
     private var pendingDeepLink: DeepLink? by mutableStateOf(null)
     private val gdprHelper = GdprHelper(this)
+    private val supportRepository: SupportRepository by inject()
     private val consentPromptGate: ConsentPromptGate by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,13 +64,20 @@ class MainActivity : ComponentActivity() {
             window.isNavigationBarContrastEnforced = false
         }
 
-        // Screenshot capture shows no ads, so it has no consent to collect either. Otherwise the
-        // consent state is refreshed now, while the form itself waits for ConsentPromptGate to open
-        // (the second rover tap, counted across sessions). The wait dies with the Activity; a
-        // recreated one re-registers.
+        // Screenshot capture shows no ads, so it has no consent to collect either. Supporters (any
+        // "Support the developer" tier) see no ads and no consent form too; that answer comes from
+        // the billing SDK's local cache — milliseconds — and the wait is bounded so a first launch
+        // without a cache still shows the form promptly. Everyone else has the consent state
+        // refreshed now, while the form itself waits for ConsentPromptGate to open (the second
+        // rover tap, counted across sessions). The wait dies with the Activity; a recreated one
+        // re-registers.
         if (!hideAds) {
-            gdprHelper.init()
             lifecycleScope.launch {
+                val adFree = withTimeoutOrNull(AD_FREE_WAIT_MS) {
+                    supportRepository.isAdFree.filterNotNull().first()
+                } ?: false
+                if (adFree) return@launch
+                gdprHelper.init()
                 consentPromptGate.opened.first { it }
                 gdprHelper.onPromptsAllowed()
             }
@@ -158,6 +169,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private companion object {
+        private const val AD_FREE_WAIT_MS = 1_500L
         const val TAG = "MainActivity"
 
         /** Key FCM gives a notification's `data.link` value once it becomes an intent extra. */

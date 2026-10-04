@@ -6,6 +6,17 @@ IOS_PROJECT    = "iosApp/iosApp.xcodeproj"
 IOS_SCHEME     = "iosApp"
 ANDROID_AAB         = "androidApp/build/outputs/bundle/release/androidApp-release.aab"
 GOOGLE_PLAY_KEY     = "fastlane/google-play-key.json"
+ANDROID_APK         = "androidApp/build/outputs/apk/release/androidApp-release.apk"
+
+# Samsung Galaxy Store (Content Publish API). The listing there predates Play App Signing, so Samsung
+# still expects the ORIGINAL certificate: the lane re-signs the APK with the keystore named in
+# fastlane/galaxy-store.env (gitignored: GALAXY_KEYSTORE, GALAXY_KEY_ALIAS, GALAXY_KS_PASS,
+# GALAXY_KEY_PASS) — upload.jks only satisfies Play. The service account is created in Seller Portal
+# under Assistance > API Service; its private key is fastlane/galaxy-store-key.pem (gitignored).
+GALAXY_SERVICE_ACCOUNT_ID = "1c0cd0bd-a91f-4d7d-9344-5619d2abcf3e"
+GALAXY_CONTENT_ID         = "000002166436" # Seller Portal id of the app listing
+GALAXY_API                = "https://devapi.samsungapps.com"
+GALAXY_APK                = "androidApp/build/outputs/apk/release/androidApp-release-galaxy.apk"
 
 ASC_KEY_ID       = "G5TTXS7GV3"
 ASC_ISSUER_ID    = "8873b38c-775e-4a3e-baf5-4e2bada765a8"
@@ -14,6 +25,8 @@ ASC_ISSUER_ID    = "8873b38c-775e-4a3e-baf5-4e2bada765a8"
 # their string params against, so anchor these to __dir__ explicitly.
 ASC_KEY_FILEPATH = File.expand_path("AuthKey_G5TTXS7GV3.p8", __dir__)
 REPO_ROOT        = File.expand_path("..", __dir__)
+GALAXY_KEY_FILEPATH = File.expand_path("galaxy-store-key.pem", __dir__)
+GALAXY_ENV_FILEPATH = File.expand_path("galaxy-store.env", __dir__)
 
 # Release-notes staging, written by the store-release skill. Gitignored: mechanical inputs for
 # supply/deliver, regenerated every release, not content worth versioning. release_notes.txt is one
@@ -38,6 +51,12 @@ IOS_LISTING_LIMITS = {
   "name" => [30, :chars], "subtitle" => [30, :chars], "keywords" => [100, :bytes],
   "description" => [4000, :chars]
 }.freeze
+# Samsung reuses the Play text. Seller Portal accepts a longer short description than the API docs
+# claim (the live listing holds 77 bytes), so the limits here are the ones the portal enforces.
+GALAXY_LISTING_LIMITS = {
+  "title" => [100, :bytes], "short_description" => [80, :chars], "full_description" => [4000, :bytes]
+}.freeze
+GALAXY_NEW_FEATURE_LIMIT = 4000
 
 # buildSrc/AppVersion.kt is the single source of truth for the version on every platform.
 def app_version(field)
@@ -73,6 +92,112 @@ def listing_texts(store, limits)
     size = unit == :bytes ? text.bytesize : text.length
     UI.user_error!("#{path} is #{size} #{unit} — the store limit is #{limit}") if size > limit
     texts[field] = text
+  end
+end
+
+# ---------------------------------------------------------------------------
+# Samsung Galaxy Store helpers (Content Publish API)
+# ---------------------------------------------------------------------------
+
+# Newest apksigner in the SDK: ANDROID_HOME first, then the default macOS SDK location.
+def apksigner_path
+  sdk = ENV["ANDROID_HOME"] || ENV["ANDROID_SDK_ROOT"] || File.expand_path("~/Library/Android/sdk")
+  candidates = Dir.glob(File.join(sdk, "build-tools", "*", "apksigner")).sort_by do |p|
+    Gem::Version.new(File.basename(File.dirname(p)))
+  rescue ArgumentError
+    Gem::Version.new("0")
+  end
+  UI.user_error!("No apksigner under #{sdk}/build-tools — install Android build-tools") if candidates.empty?
+  candidates.last
+end
+
+def galaxy_env
+  UI.user_error!("Missing #{GALAXY_ENV_FILEPATH} — see the Galaxy Store section in AGENTS.md") unless File.exist?(GALAXY_ENV_FILEPATH)
+  require "dotenv"
+  Dotenv.load(GALAXY_ENV_FILEPATH)
+  %w[GALAXY_KEYSTORE GALAXY_KEY_ALIAS GALAXY_KS_PASS GALAXY_KEY_PASS].each do |name|
+    UI.user_error!("#{name} is not set in #{GALAXY_ENV_FILEPATH}") if ENV[name].to_s.empty?
+  end
+end
+
+# Re-signs the Play-signed APK with the Galaxy Store certificate. apksigner replaces the signature
+# only, so the binary itself is the one Play got. Passwords go through the environment, never argv.
+def galaxy_sign(apk)
+  galaxy_env
+  keystore = File.expand_path(ENV["GALAXY_KEYSTORE"], REPO_ROOT)
+  UI.user_error!("Galaxy keystore not found: #{keystore}") unless File.exist?(keystore)
+  out = File.join(REPO_ROOT, GALAXY_APK)
+  sh(
+    apksigner_path, "sign", "--ks", keystore, "--ks-key-alias", ENV["GALAXY_KEY_ALIAS"],
+    "--ks-pass", "env:GALAXY_KS_PASS", "--key-pass", "env:GALAXY_KEY_PASS",
+    "--out", out, File.join(REPO_ROOT, apk),
+    log: false
+  )
+  out
+end
+
+def galaxy_token
+  unless File.exist?(GALAXY_KEY_FILEPATH)
+    UI.user_error!("Missing #{GALAXY_KEY_FILEPATH} — download it from Seller Portal > Assistance > API Service")
+  end
+  require "jwt"
+  require "openssl"
+  now = Time.now.to_i
+  jwt = JWT.encode(
+    { iss: GALAXY_SERVICE_ACCOUNT_ID, scopes: ["publishing"], iat: now, exp: now + 20 * 60 },
+    OpenSSL::PKey::RSA.new(File.read(GALAXY_KEY_FILEPATH)), "RS256"
+  )
+  body = galaxy_request(:post, "/auth/accessToken", headers: { "Authorization" => "Bearer #{jwt}" })
+  body.dig("createdItem", "accessToken") || UI.user_error!("Galaxy token response had no accessToken: #{body}")
+end
+
+# One JSON round-trip. Samsung answers 200 with an errorCode/errorMsg body for most failures, and
+# 204 with no body for contentSubmit, so success means "2xx and no error field".
+def galaxy_request(method, path, token: nil, headers: {}, json: nil, form: nil, base: GALAXY_API)
+  require "net/http"
+  require "json"
+  uri = URI("#{base}#{path}")
+  req = Net::HTTP.const_get(method.to_s.capitalize).new(uri)
+  req["Authorization"] = "Bearer #{token}" if token
+  req["service-account-id"] = GALAXY_SERVICE_ACCOUNT_ID
+  headers.each { |k, v| req[k] = v }
+  if form
+    req.set_form(form, "multipart/form-data")
+  else
+    req["content-type"] = "application/json"
+    req.body = json ? JSON.generate(json) : ""
+  end
+  res = Net::HTTP.start(uri.host, uri.port, use_ssl: true, read_timeout: 600) { |http| http.request(req) }
+  UI.user_error!("Galaxy #{method.to_s.upcase} #{path} -> HTTP #{res.code}: #{res.body}") unless res.code.start_with?("2")
+  return {} if res.body.to_s.strip.empty?
+
+  body = JSON.parse(res.body)
+  body = body.first if body.is_a?(Array) && path.include?("contentInfo")
+  if body.is_a?(Hash) && (body["errorCode"] || (body["resultCode"] && body["resultCode"] != "0000"))
+    UI.user_error!("Galaxy #{method.to_s.upcase} #{path} failed: #{body}")
+  end
+  body
+end
+
+def galaxy_content_info(token)
+  galaxy_request(:get, "/seller/contentInfo?contentId=#{GALAXY_CONTENT_ID}", token: token)
+end
+
+# Uploads a file and returns its fileKey. The upload host differs from the API host and is handed
+# back by createUploadSessionId, so it is not hardcoded.
+def galaxy_upload(token, path)
+  session = galaxy_request(:post, "/seller/createUploadSessionId", token: token)
+  upload_uri = URI(session["url"])
+  UI.message("Uploading #{File.basename(path)} (#{(File.size(path) / 1024.0 / 1024).round(1)} MB) to Galaxy Store")
+  File.open(path, "rb") do |file|
+    body = galaxy_request(
+      :post, upload_uri.path, token: token, base: "#{upload_uri.scheme}://#{upload_uri.host}",
+      form: [
+        ["file", file, { filename: File.basename(path), content_type: "application/vnd.android.package-archive" }],
+        ["sessionId", session["sessionId"]]
+      ]
+    )
+    body["fileKey"] || UI.user_error!("Galaxy upload returned no fileKey: #{body}")
   end
 end
 
@@ -297,5 +422,55 @@ platform :android do
   lane :build do
     ensure_signing
     gradle(task: ":androidApp:bundleRelease")
+  end
+
+  desc "Build the release APK, re-sign it with the Galaxy Store key, push listing text + changelog, and submit to Samsung for review. Pass skip_build:true to reuse the APK already in build/outputs"
+  lane :galaxy do |options|
+    ensure_signing
+    galaxy_env # fail on a missing keystore or password before the long build
+    listing = listing_texts("android", GALAXY_LISTING_LIMITS)
+    changelog = store_changelog
+    if changelog.length > GALAXY_NEW_FEATURE_LIMIT
+      UI.user_error!("Changelog is #{changelog.length} characters — Galaxy Store's limit is #{GALAXY_NEW_FEATURE_LIMIT}")
+    end
+
+    token = galaxy_token
+    info = galaxy_content_info(token)
+    # Anything else means Samsung is reviewing a submission, and a second one is refused.
+    unless %w[FOR_SALE REGISTERING].include?(info["contentStatus"])
+      UI.user_error!("Galaxy Store listing is #{info['contentStatus']} — wait for the current review to finish")
+    end
+    code = app_version("code").to_i
+    if (info["binaryList"] || []).any? { |b| b["versionCode"].to_i >= code }
+      UI.user_error!("Galaxy Store already holds version code #{code} or newer — bump the version first")
+    end
+
+    gradle(task: ":androidApp:assembleRelease") unless options[:skip_build]
+    apk = galaxy_sign(ANDROID_APK)
+
+    # contentUpdate moves the listing into REGISTERING (Seller Portal's "Updating"), which the binary
+    # and submit calls require. Omitted fields keep their current values; the three echoed back from
+    # contentInfo are mandatory on every call.
+    galaxy_request(:post, "/seller/contentUpdate", token: token, json: {
+      contentId: GALAXY_CONTENT_ID,
+      defaultLanguageCode: info["defaultLanguageCode"],
+      paid: info["paid"],
+      publicationType: info["publicationType"],
+      appTitle: listing["title"],
+      shortDescription: listing["short_description"],
+      longDescription: listing["full_description"].gsub(%r{</?b>}, ""), # Samsung renders no HTML
+      newFeature: changelog
+    })
+
+    file_key = galaxy_upload(token, apk)
+    # Existing binaries stay attached on purpose: Samsung serves each to the devices it targets, and
+    # the old ones may be the only build left for very old Android versions.
+    added = galaxy_request(:post, "/seller/v2/content/binary", token: token, json: {
+      contentId: GALAXY_CONTENT_ID, filekey: file_key, gms: "Y"
+    })
+    UI.message("Attached binary seq #{added.dig('data', 'binarySeq')} (version code #{code})")
+
+    galaxy_request(:post, "/seller/contentSubmit", token: token, json: { contentId: GALAXY_CONTENT_ID })
+    UI.success("Submitted #{app_version('name')} (#{code}) to Galaxy Store review")
   end
 end

@@ -11,6 +11,36 @@ This is a Kotlin Multiplatform project. The module layout:
 
 Feature screens and view models live in `shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation`. Android-specific implementations go in `shared/src/androidMain` or `androidApp/`. Static-analysis configuration is stored under `config/detekt/`.
 
+`shared/src/mobileMain` is the intermediate source set shared by Android and iOS but not desktop
+(declared with `applyDefaultHierarchyTemplate` in `shared/build.gradle.kts`). It holds what only the
+two store platforms have: the RevenueCat billing implementation (`data/support/`) and Firebase Remote
+Config feature flags (`data/featureflags/`), wired by `di/SupportModule.kt`. `desktopMain` binds
+fakes for the same interfaces (`FakeSupportRepository`, `StaticFeatureFlags`), so a `commonMain`
+consumer never knows which it got. Put code here when its dependency has no JVM variant — check the
+artifact's Gradle module metadata before assuming.
+
+## Support tiers, ad-free and feature flags
+"Support the developer" sells four non-consumable tiers (`support_small` … `support_huge`) through
+RevenueCat (project `Mars Rover Photos`); owning any of them activates the `ad_free` entitlement,
+which `SupportRepository.isAdFree` exposes and the navigation root reads to drop the ad slot. The
+Android and iOS entry points also skip the consent (UMP) and ATT prompts for supporters. Public SDK
+keys are per build type: `BuildConfig.REVENUECAT_API_KEY` on Android, the `#if DEBUG` branch in
+`MarsRoverApp.swift` on iOS — debug builds talk to RevenueCat's Test Store, so nothing is charged and
+purchases can be made on any device with no store account setup.
+
+User-facing copy says "support" or "tip", never "donation": both stores classify in-app donations as
+a restricted category, and the purchase must not be tied to a cause.
+
+The feature sits behind the Remote Config boolean `support_tiers_enabled` (`FeatureFlag.SUPPORT_TIERS`,
+default `false`). The About row and the Support screen entry point are hidden while it is off; the
+ad-free gate is not, so an owner keeps ad-free whatever the flag says. Flip it in the Firebase console
+(project `mars-rover-photos`); debug builds pin it on (`FeatureFlag.enabledInDebug`) and refetch every
+launch, release builds honour the remote value and refetch at most every 12 hours. The flag must be
+on in production before a build carrying the in-app purchases is submitted to App Review, and the
+review notes must say where the purchase UI is (About → Support the Developer): reviewers who cannot
+reach an IAP reject the submission. Desktop has no Remote Config and no store: the flag is forced on and billing is faked so the
+screen can be iterated through Compose Hot Reload.
+
 The KMP migration is complete. The legacy `app/` module has been deleted.
 
 ## Photo Feed & Data Sources
@@ -148,6 +178,30 @@ pushing one needs explicit permission.
 descriptions), `android release` (promote to production), `ios beta` (TestFlight), `ios release`
 (App Store binary) and `ios release_notes` (App Store "What's New", promotional text, name,
 subtitle, keywords and description; metadata only).
+
+### Samsung Galaxy Store
+`fastlane android galaxy` is the whole Samsung release in one lane: it builds the release APK,
+re-signs it, pushes the Play listing text plus the staged changelog as the store's "What's New",
+attaches the binary and submits the listing for Samsung's review. `skip_build:true` reuses the APK
+already in `androidApp/build/outputs/apk/release/`. It runs after the Play upload of the same
+version, never concurrently (same Gradle directory), and only when the Galaxy listing is not
+already in review; it also refuses a version code the listing already holds.
+
+Samsung has no equivalent of Play App Signing, so the listing still expects the certificate the
+app was first published with: `anyNew2.jks`, alias `marsrovers`, not `upload.jks`. The lane
+re-signs the Play-signed APK with apksigner rather than building twice. Credentials, all
+gitignored:
+
+- `fastlane/galaxy-store.env` — `GALAXY_KEYSTORE`, `GALAXY_KEY_ALIAS`, `GALAXY_KS_PASS`,
+  `GALAXY_KEY_PASS`. The passwords are never on the command line; apksigner reads them from the
+  environment.
+- `fastlane/galaxy-store-key.pem` — private key of the Seller Portal service account (Seller Portal
+  → Assistance → API Service → Create Service Account, Content Publish API scope). Samsung shows the
+  key once; the service account id and the listing's content id are constants in the Fastfile.
+
+Existing binaries on the listing are left attached: Samsung serves each binary to the devices it
+targets, and the two from 2016 and 2019 may be the only builds still offered to very old Android
+versions. Removing one is a Seller Portal decision, not the lane's.
 
 The store listing text lives in `fastlane/listing/{android,ios}/en-US/*.txt`, one file per field,
 and is committed. Every release uploads it through `android changelog` and `ios release_notes`, so
