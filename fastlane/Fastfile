@@ -235,16 +235,41 @@ platform :ios do
     gradle(task: "syncIosVersion")
   end
 
+  # Xcode can refresh a provisioning profile only when it can reach the developer portal. This Mac
+  # has no Apple ID signed into Xcode, so xcodebuild authenticates with the App Store Connect API
+  # key. gym forwards xcargs to both the archive and the export; without the key the export fails
+  # with "No Accounts" as soon as the cached App Store profile predates the current distribution
+  # certificate. Do not repeat these flags in export_xcargs: xcodebuild rejects duplicates.
+  def provisioning_xcargs
+    "-allowProvisioningUpdates " \
+      "-authenticationKeyPath #{ASC_KEY_FILEPATH.shellescape} " \
+      "-authenticationKeyID #{ASC_KEY_ID.shellescape} " \
+      "-authenticationKeyIssuerID #{ASC_ISSUER_ID.shellescape}"
+  end
+
+  # The App Store profile for the export. Xcode's cached "iOS Team Store Provisioning Profile"
+  # goes stale whenever the distribution certificate is reissued, and with no Apple ID signed into
+  # Xcode its automatic repair fails ("No Accounts" / "Cloud signing permission error"). sigh
+  # fetches or creates a matching profile through the App Store Connect API key, and gym then uses
+  # it for the export's provisioningProfiles mapping; the archive itself stays on automatic signing.
+  def app_store_profile
+    get_provisioning_profile(
+      app_identifier: APP_IDENTIFIER,
+      output_path: File.join(Dir.tmpdir, "marsroverphotos-profiles")
+    )
+  end
+
   desc "Build and upload a new beta to TestFlight"
   lane :beta do
     ensure_credentials
     sync_version
+    app_store_profile
     Bundler.with_unbundled_env do
       build_app(
         project: IOS_PROJECT,
         scheme: IOS_SCHEME,
         export_method: "app-store",
-        xcargs: "-allowProvisioningUpdates"
+        xcargs: provisioning_xcargs
       )
     end
     upload_to_testflight(
@@ -259,12 +284,13 @@ platform :ios do
   lane :release do
     ensure_credentials
     sync_version
+    app_store_profile
     Bundler.with_unbundled_env do
       build_app(
         project: IOS_PROJECT,
         scheme: IOS_SCHEME,
         export_method: "app-store",
-        xcargs: "-allowProvisioningUpdates"
+        xcargs: provisioning_xcargs
       )
     end
     upload_to_app_store(

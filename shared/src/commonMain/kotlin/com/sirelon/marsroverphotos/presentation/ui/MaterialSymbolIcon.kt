@@ -43,6 +43,7 @@ enum class MaterialSymbol(val iconName: String) {
     ArrowBack("arrow_back"),
     Rocket("rocket_launch"),
     FlightLand("flight_land"),
+    Flight("flight"),
     Star("star"),
     Flag("flag"),
     CameraAlt("photo_camera"),

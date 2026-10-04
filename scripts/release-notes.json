@@ -1,6 +1,55 @@
 {
   "releases": [
     {
+      "version": "5.3.0",
+      "date": "2026-10-04",
+      "active": false,
+      "changes": [
+        {
+          "id": "ingenuity_helicopter",
+          "icon": "flight",
+          "title": "Ingenuity Helicopter",
+          "summary": "The first aircraft to fly on another world joins the missions",
+          "detail": "Ingenuity sits right after Perseverance in the list, now called Missions, with about 14,500 frames from its navigation and colour cameras browsable by sol. It has its own Mission Info page and can feed the home-screen widget. Search, titles and empty states now say missions, since the list holds landers and a helicopter too."
+        },
+        {
+          "id": "support_the_developer",
+          "icon": "volunteer_activism",
+          "title": "Support the Developer",
+          "summary": "Leave a tip and go ad-free for good",
+          "detail": "About gains a Support the Developer screen with four one-time tiers, from a coffee to a feast. Any tier switches ads off on this store account for good, and Restore purchases brings that back on a new device or after a reinstall. The app is still free; this is a way to say thanks."
+        },
+        {
+          "id": "quieter_start",
+          "icon": "new_releases",
+          "title": "A Quieter Start",
+          "summary": "No pop-ups on launch: what's new is a card, consent waits",
+          "detail": "The What's New dialog that used to open on launch is gone. A dismissible card at the top of Missions now shows what changed in this version, or points to the store when a newer version is out. Where the law requires an ad-consent form, it no longer interrupts the first visit and appears only once you open a second mission."
+        },
+        {
+          "id": "photo_descriptions",
+          "icon": "visibility",
+          "title": "Photos Described Aloud",
+          "summary": "Screen readers name the mission, camera and sol",
+          "detail": "TalkBack and VoiceOver used to read a long image address for every photo. They now say things like \"Perseverance, Mastcam-Z, sol 1,234\" in the grid, the viewer, Favorites and the widget."
+        },
+        {
+          "id": "photo_size_fallbacks",
+          "icon": "photo_camera",
+          "title": "Spirit and Opportunity Load Reliably",
+          "summary": "Photos without a large NASA copy no longer show as broken tiles",
+          "detail": "Many Spirit and Opportunity images exist on NASA's servers only in some sizes. When the requested size is missing, the app now falls through to the next available one instead of showing a broken tile or a blurry upscaled thumbnail."
+        },
+        {
+          "id": "stability_5_3",
+          "icon": "bug_report",
+          "title": "Stability",
+          "summary": "Fewer crashes in the feed, the viewer and the widget",
+          "detail": "Fixed a runaway loop that could run the photo feed out of memory when a new sol arrived, a crash in the fullscreen viewer when the photo list refreshed underneath it, and a startup crash on some Android devices caused by widget scheduling. On iOS the screen can dim and sleep again while the app is open."
+        }
+      ]
+    },
+    {
       "version": "5.2.0",
       "date": "2026-08-31",
       "active": true,
