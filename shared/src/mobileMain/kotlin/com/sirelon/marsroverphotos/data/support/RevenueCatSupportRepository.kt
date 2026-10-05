@@ -20,6 +20,7 @@ import com.revenuecat.purchases.kmp.models.StoreTransaction
 import com.sirelon.marsroverphotos.domain.repositories.SupportRepository
 import com.sirelon.marsroverphotos.domain.support.SupportPurchaseResult
 import com.sirelon.marsroverphotos.domain.support.SupportTier
+import com.sirelon.marsroverphotos.domain.support.SupportTierKind
 import com.sirelon.marsroverphotos.platform.PlatformPreferences
 import com.sirelon.marsroverphotos.utils.Logger
 import kotlinx.coroutines.CoroutineScope
@@ -58,8 +59,11 @@ class RevenueCatSupportRepository(
         const val AD_FREE_ENTITLEMENT = "ad_free"
         const val KEY_PURCHASES_SYNCED = "supportPurchasesSynced"
 
-        /** The store titles are "Support: Coffee"; the screen already says "Support". */
-        const val TITLE_PREFIX = "Support: "
+        /** The store titles are "Support: Lunch" / "Tip: Coffee"; the screen already says "Support". */
+        val TITLE_PREFIXES = listOf("Support: ", "Tip: ")
+
+        /** The one package whose product is a consumable tip rather than an ad-free unlock. */
+        const val TIP_PACKAGE = "support_small"
 
         const val TIER_UNAVAILABLE = "This tier isn't available right now."
 
@@ -198,10 +202,9 @@ class RevenueCatSupportRepository(
 
     private fun Package.toTier() = SupportTier(
         id = storeProduct.id,
-        title = storeProduct.title
-            .replace(PLAY_APP_NAME_SUFFIX, "")
-            .removePrefix(TITLE_PREFIX)
-            .trim(),
+        packageId = identifier,
+        kind = if (identifier == TIP_PACKAGE) SupportTierKind.TIP else SupportTierKind.AD_FREE,
+        title = TITLE_PREFIXES.fold(storeProduct.title.replace(PLAY_APP_NAME_SUFFIX, "")) { t, p -> t.removePrefix(p) }.trim(),
         price = storeProduct.price.formatted,
     )
 }
