@@ -1,0 +1,4 @@
+# Rendered outputs: reproduce with ~/.claude/skills/store-banners/render.sh <campaign-dir>
+*/*-[0-9]*x[0-9]*.png
+*/*-[0-9]*x[0-9]*.jpg
+*/.crop-preview.png

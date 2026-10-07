@@ -1,0 +1,62 @@
+<!doctype html>
+<!-- Photo: NASA PIA24542, "Perseverance's Selfie with Ingenuity" (NASA/JPL-Caltech/MSSS), public domain. -->
+<!--
+  App Store creative-asset banner. render.sh loads this page once per size with #universal, #header or #search.
+  Edit only the CONTENT block and the --focus-* values; the safe box and type scale follow the size.
+-->
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  :root {
+    --navy: #1A283D;      /* primaryNavy, Theme.kt */
+    --blue: #385C8A;      /* primary */
+    --sky: #7FA6D8;       /* primaryLight */
+    --mars: #FC6C4B;      /* accent */
+    /* Photo focal point per size (object-position). Tune so the subject sits inside the safe box. */
+    --focus-universal: 50% 45%;
+    --focus-header: 50% 44%;
+    --focus-search: 50% 50%;
+  }
+  html, body { margin: 0; width: 100vw; height: 100vh; overflow: hidden; background: var(--navy); }
+  body { font-family: -apple-system, "SF Pro Display", "Helvetica Neue", sans-serif; color: #fff; }
+
+  .photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  /* Darken the text side only; the subject side stays untouched. */
+  .scrim { position: absolute; inset: 0;
+    background: linear-gradient(90deg, rgba(26,40,61,.92) 0%, rgba(26,40,61,.55) 38%, rgba(26,40,61,0) 62%); }
+
+  /* Safe box = the area every crop of this size shows, minus a margin.
+     universal: overlap of the 21:9 and 3:2 crops (4425x2247 of 5244x2950). */
+  .safe { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    display: flex; flex-direction: column; justify-content: center; gap: 2.2vmin; box-sizing: border-box; }
+  body.universal .safe { width: 84.4vw; height: 76.2vh; padding: 0 4vmin; }
+  body.header    .safe { width: 92vw;   height: 80vh;   padding: 0 4vmin; }
+  body.search    .safe { width: 90vw;   height: 82vh;   padding: 0 4vmin; }
+
+  .eyebrow  { font-size: 3.4vmin; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--mars); }
+  .headline { font-size: 11vmin; font-weight: 800; line-height: 1.02; letter-spacing: -.02em; max-width: 60%; margin: 0; text-wrap: balance; }
+  .subline  { font-size: 4.2vmin; font-weight: 500; line-height: 1.3; color: #DCE6F2; max-width: 56%; margin: 0; text-wrap: balance; }
+  body.search .headline { max-width: 66%; }
+  body.search .subline  { max-width: 64%; }
+</style>
+</head>
+<body>
+  <!-- CONTENT: photo + copy. Paths are relative to this file. -->
+  <img class="photo" src="photo.jpg" alt="">
+  <div class="scrim"></div>
+  <div class="safe">
+    <div class="eyebrow">Raw NASA images</div>
+    <h1 class="headline">See Mars as the rovers see it</h1>
+    <p class="subline">Eight missions, from Viking to Perseverance</p>
+  </div>
+  <!-- /CONTENT -->
+
+<script>
+  const size = (location.hash.slice(1) || "universal");
+  document.body.classList.add(size);
+  document.querySelector(".photo").style.objectPosition =
+    getComputedStyle(document.documentElement).getPropertyValue("--focus-" + size);
+</script>
+</body>
+</html>

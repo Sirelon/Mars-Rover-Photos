@@ -162,6 +162,12 @@ generate and publish this release's notes concurrently, upload iOS to TestFlight
 changelog, then commit and tag locally. Promoting to Play production and submitting to the App Store
 stay manual.
 
+App Store header and search-results banners come from the global `store-banners` skill; campaigns
+live in `Design/store-banners/<slug>/`. Their imagery source is NASA's public-domain library: search
+`https://images-api.nasa.gov/search?q=<query>&media_type=image`, take the original at
+`https://images-assets.nasa.gov/image/<nasa_id>/<nasa_id>~orig.jpg` (check its size in the
+`metadata.json` beside it), and use mission photos only, never NASA logos or insignia.
+
 Two ordering constraints matter beyond that skill. The bump must precede both builds, because
 `versionCode`/`versionName` are compiled in from `AppVersion.kt`. And the two builds cannot run
 concurrently: both drive Gradle in this project directory — Android via `:androidApp:bundleRelease`,
