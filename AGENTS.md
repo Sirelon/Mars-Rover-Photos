@@ -20,9 +20,17 @@ consumer never knows which it got. Put code here when its dependency has no JVM 
 artifact's Gradle module metadata before assuming.
 
 ## Support tiers, ad-free and feature flags
-"Support the developer" sells four non-consumable tiers (`support_small` … `support_huge`) through
-RevenueCat (project `Mars Rover Photos`); owning any of them activates the `ad_free` entitlement,
-which `SupportRepository.isAdFree` exposes and the navigation root reads to drop the ad slot. The
+"Support the developer" sells four tiers through RevenueCat (project `Mars Rover Photos`), one
+package each (`support_small` … `support_huge`). Coffee (`support_small`, store product `tip_coffee`,
+$0.99) is a consumable tip: buyable any number of times, each purchase removes ads for 30 days, and
+purchases stack (`tipAdFreeUntil`). Lunch, Dinner and Feast (`support_medium` $1.99, `support_large`
+$4.99, `support_huge` $9.99) are non-consumables that activate the `ad_free` entitlement for good and
+restore on a new device. `tip_coffee` stays off that entitlement: RevenueCat would report it as
+permanent, and App Review expects a permanent unlock to be a restorable non-consumable. The repository
+derives the Coffee window from `CustomerInfo.nonSubscriptionTransactions`. `SupportRepository.isAdFree`
+combines both, and the navigation root reads it to drop the ad slot. The UI keys icons and wording on the package id, not the
+store product id, so a store-side rename never reaches the screen. Price, type and tier changes are
+the owner's decision — propose, do not implement. The
 Android and iOS entry points also skip the consent (UMP) and ATT prompts for supporters. Public SDK
 keys are per build type: `BuildConfig.REVENUECAT_API_KEY` on Android, the `#if DEBUG` branch in
 `MarsRoverApp.swift` on iOS — debug builds talk to RevenueCat's Test Store, so nothing is charged and

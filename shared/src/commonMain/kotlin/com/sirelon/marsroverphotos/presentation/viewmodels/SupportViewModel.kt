@@ -7,6 +7,7 @@ import com.sirelon.marsroverphotos.domain.featureflags.FeatureFlags
 import com.sirelon.marsroverphotos.domain.repositories.SupportRepository
 import com.sirelon.marsroverphotos.domain.support.SupportPurchaseResult
 import com.sirelon.marsroverphotos.domain.support.SupportTier
+import com.sirelon.marsroverphotos.domain.support.SupportTierKind
 import com.sirelon.marsroverphotos.platform.Tracker
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -36,7 +37,11 @@ data class SupportUiState(
 
 /** One-shot outcomes for the snackbar; a cancelled store sheet produces none. */
 sealed interface SupportUiEvent {
+    /** An ad-free tier was bought (or recognised as already owned). */
     data object PurchaseSucceeded : SupportUiEvent
+
+    /** A coffee was bought; ads are off for 30 days and the row stays buyable. */
+    data object TipThanks : SupportUiEvent
     data object Restored : SupportUiEvent
     data object NothingToRestore : SupportUiEvent
     data class Failed(val message: String) : SupportUiEvent
@@ -96,13 +101,16 @@ class SupportViewModel(
 
     fun purchase(tierId: String) {
         if (_state.value.isBusy) return
+        val kind = _state.value.tiers.firstOrNull { it.id == tierId }?.kind ?: SupportTierKind.AD_FREE
         _state.update { it.copy(purchasingTierId = tierId) }
         viewModelScope.launch {
             val result = repository.purchase(tierId)
             _state.update { it.copy(purchasingTierId = null) }
-            trackPurchase(tierId, result)
+            trackPurchase(tierId, kind, result)
             when (result) {
-                SupportPurchaseResult.Success -> _events.send(SupportUiEvent.PurchaseSucceeded)
+                SupportPurchaseResult.Success -> _events.send(
+                    if (kind == SupportTierKind.TIP) SupportUiEvent.TipThanks else SupportUiEvent.PurchaseSucceeded,
+                )
                 SupportPurchaseResult.Cancelled -> Unit
                 is SupportPurchaseResult.Failure -> _events.send(SupportUiEvent.Failed(result.message))
             }
@@ -120,9 +128,10 @@ class SupportViewModel(
         }
     }
 
-    private fun trackPurchase(tierId: String, result: SupportPurchaseResult) {
+    private fun trackPurchase(tierId: String, kind: SupportTierKind, result: SupportPurchaseResult) {
         val params = buildMap {
             put("tier", tierId)
+            put("kind", if (kind == SupportTierKind.TIP) "tip" else "ad_free")
             put(
                 "result",
                 when (result) {

@@ -6,6 +6,7 @@ import com.sirelon.marsroverphotos.domain.featureflags.FeatureFlags
 import com.sirelon.marsroverphotos.domain.repositories.SupportRepository
 import com.sirelon.marsroverphotos.domain.support.SupportPurchaseResult
 import com.sirelon.marsroverphotos.domain.support.SupportTier
+import com.sirelon.marsroverphotos.domain.support.SupportTierKind
 import com.sirelon.marsroverphotos.platform.Tracker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,8 +26,11 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
+private val LUNCH = SupportTier("support_medium", "support_medium", SupportTierKind.AD_FREE, "Lunch", "$1.99")
+private val COFFEE = SupportTier("tip_coffee", "support_small", SupportTierKind.TIP, "Coffee", "$0.99")
+
 private class FakeSupportRepository(
-    private val tiers: List<SupportTier> = listOf(SupportTier("support_small", "Coffee", "$0.99")),
+    private val tiers: List<SupportTier> = listOf(LUNCH),
     var purchaseResult: SupportPurchaseResult = SupportPurchaseResult.Success,
     var restoreResult: Boolean = false,
     initialAdFree: Boolean? = false,
@@ -108,7 +112,7 @@ class SupportViewModelTest {
         advanceUntilIdle()
 
         assertFalse(vm.state.value.isLoading)
-        assertEquals(listOf("support_small"), vm.state.value.tiers.map { it.id })
+        assertEquals(listOf("support_medium"), vm.state.value.tiers.map { it.id })
         assertTrue(vm.isFeatureEnabled.value)
     }
 
@@ -119,15 +123,34 @@ class SupportViewModelTest {
         val vm = viewModel(repo)
         advanceUntilIdle()
 
-        vm.purchase("support_small")
+        vm.purchase("support_medium")
         advanceUntilIdle()
 
-        assertEquals(listOf("support_small"), repo.purchased)
+        assertEquals(listOf("support_medium"), repo.purchased)
         assertTrue(vm.isAdFree.value)
         assertTrue(vm.state.value.isAdFree)
         assertNull(vm.state.value.purchasingTierId)
         assertEquals(SupportUiEvent.PurchaseSucceeded, vm.collectOne())
-        assertEquals("support_purchase" to mapOf("tier" to "support_small", "result" to "success"), tracker.events.single())
+        assertEquals(
+            "support_purchase" to mapOf("tier" to "support_medium", "kind" to "ad_free", "result" to "success"),
+            tracker.events.single(),
+        )
+    }
+
+    @Test
+    fun tipThanksAndUnlocksAdFree() = runTest {
+        Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+        val repo = FakeSupportRepository(tiers = listOf(COFFEE, LUNCH))
+        val vm = viewModel(repo)
+        advanceUntilIdle()
+
+        vm.purchase("tip_coffee")
+        advanceUntilIdle()
+
+        assertEquals(listOf("tip_coffee"), repo.purchased)
+        assertTrue(vm.isAdFree.value)
+        assertEquals(SupportUiEvent.TipThanks, vm.collectOne())
+        assertEquals("tip", tracker.events.single().second["kind"])
     }
 
     @Test
@@ -136,7 +159,7 @@ class SupportViewModelTest {
         val vm = viewModel(FakeSupportRepository(purchaseResult = SupportPurchaseResult.Cancelled))
         advanceUntilIdle()
 
-        vm.purchase("support_small")
+        vm.purchase("support_medium")
         advanceUntilIdle()
 
         assertFalse(vm.isAdFree.value)
@@ -150,7 +173,7 @@ class SupportViewModelTest {
         val vm = viewModel(FakeSupportRepository(purchaseResult = SupportPurchaseResult.Failure("Store is down", code = "StoreProblemError")))
         advanceUntilIdle()
 
-        vm.purchase("support_small")
+        vm.purchase("support_medium")
         advanceUntilIdle()
 
         assertEquals(SupportUiEvent.Failed("Store is down"), vm.collectOne())
@@ -164,8 +187,8 @@ class SupportViewModelTest {
         val vm = viewModel(repo)
         advanceUntilIdle()
 
-        vm.purchase("support_small")
-        vm.purchase("support_small")
+        vm.purchase("support_medium")
+        vm.purchase("support_medium")
         advanceUntilIdle()
 
         assertEquals(1, repo.purchased.size)
@@ -234,7 +257,7 @@ class SupportViewModelTest {
         val vm = viewModel(repo)
         advanceUntilIdle()
 
-        vm.purchase("support_small")
+        vm.purchase("support_medium")
         vm.restore()
         advanceUntilIdle()
 

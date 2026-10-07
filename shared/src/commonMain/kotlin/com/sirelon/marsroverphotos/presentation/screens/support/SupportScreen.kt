@@ -34,6 +34,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
 import com.sirelon.marsroverphotos.domain.support.SupportTier
+import com.sirelon.marsroverphotos.domain.support.SupportTierKind
 import com.sirelon.marsroverphotos.presentation.navigation.LocalAppNavigator
 import com.sirelon.marsroverphotos.presentation.theme.AppSize
 import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
@@ -75,6 +76,7 @@ fun SupportScreen() {
             snackbarHostState.showSnackbar(
                 when (event) {
                     SupportUiEvent.PurchaseSucceeded -> "Thank you! Ads are gone."
+                    SupportUiEvent.TipThanks -> "Thanks for the coffee! Ads are off for 30 days."
                     SupportUiEvent.Restored -> "Purchases restored."
                     SupportUiEvent.NothingToRestore -> "No earlier purchase found on this store account."
                     // Already a full sentence from the repository ("Nothing was charged — …").
@@ -175,8 +177,8 @@ private fun Intro() {
             iconSize = AppSize.iconDefault,
         )
         Text(
-            text = "Mars Rover Photos is free and built by one person. If it brings you a little joy, " +
-                "leave a tip. Any tier switches ads off for good on this store account.",
+            text = "Mars Rover Photos is free and built by one person. A coffee switches ads off for 30 days, " +
+                "any time you like. Lunch or more switches them off for good, and Restore brings that back.",
             style = MaterialTheme.typography.bodyLarge,
             color = colors.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -193,7 +195,7 @@ private fun SupporterCard() {
             iconContainer = colors.primaryContainer,
             iconTint = colors.onPrimaryContainer,
             label = "You're a supporter — thank you!",
-            sub = "Ads are off. Restore brings this back on any device signed into the same store account.",
+            sub = "Ads are off. Thank you for keeping the rovers rolling.",
         )
     }
 }
@@ -214,7 +216,10 @@ private fun TierList(
                 iconContainer = colors.secondaryContainer,
                 iconTint = colors.onSecondaryContainer,
                 label = tier.title,
-                sub = "One-time",
+                sub = when (tier.kind) {
+                    SupportTierKind.TIP -> "Removes ads for 30 days · tip any time"
+                    SupportTierKind.AD_FREE -> "Removes ads forever"
+                },
                 onClick = if (enabled) ({ onPurchase(tier.id) }) else null,
                 trailing = {
                     if (purchasingTierId == tier.id) {
@@ -260,7 +265,7 @@ private fun RestoreRow(isRestoring: Boolean, enabled: Boolean, onRestore: () -> 
             Text("Restore purchases")
         }
         Text(
-            text = "Already a supporter on another device? Restore picks it up.",
+            text = "Bought Lunch or more on another device? Restore picks it up.",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -268,8 +273,8 @@ private fun RestoreRow(isRestoring: Boolean, enabled: Boolean, onRestore: () -> 
     }
 }
 
-/** Tier ids are the store product identifiers set up in the RevenueCat dashboard. */
-private fun SupportTier.symbol(): MaterialSymbol = when (id) {
+/** Package ids are the RevenueCat package lookup keys; they outlive store product renames. */
+private fun SupportTier.symbol(): MaterialSymbol = when (packageId) {
     "support_small" -> MaterialSymbol.Coffee
     "support_medium" -> MaterialSymbol.LunchDining
     "support_large" -> MaterialSymbol.DinnerDining
