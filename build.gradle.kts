@@ -19,7 +19,7 @@ buildscript {
                 // com.google.firebase:protolite-well-known-types (pulled in by Firestore) and fails
                 // checkDebugDuplicateClasses. Revisit when Firebase ships protolite built on 4.x.
                 "com.google.protobuf:protobuf-javalite:3.25.9",
-                "org.apache.commons:commons-lang3:3.20.0",
+                "org.apache.commons:commons-lang3:3.21.0",
                 "org.apache.httpcomponents:httpclient:4.5.14",
                 "org.bouncycastle:bcpkix-jdk18on:1.86",
                 "org.bitbucket.b_c:jose4j:0.9.7",
@@ -82,7 +82,7 @@ allprojects {
                 // checkDebugDuplicateClasses. Revisit when Firebase ships protolite built on 4.x.
                 "com.google.protobuf:protobuf-javalite:3.25.9",
                 // Apache
-                "org.apache.commons:commons-lang3:3.20.0",
+                "org.apache.commons:commons-lang3:3.21.0",
                 "org.apache.httpcomponents:httpclient:4.5.14",
                 // Crypto / auth / XML parsers
                 "org.bouncycastle:bcpkix-jdk18on:1.86",
