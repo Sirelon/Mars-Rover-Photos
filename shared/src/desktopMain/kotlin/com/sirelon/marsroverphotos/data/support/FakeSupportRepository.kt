@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * Desktop stand-in: there is no store on the JVM, so the tiers are the dashboard's four with US
- * prices; buying an ad-free tier flips ad-free for the process, a coffee changes nothing. Exists so the Support screen can be
+ * prices; buying any tier flips ad-free for the process. Exists so the Support screen can be
  * driven through Compose Hot Reload without a phone.
  */
 class FakeSupportRepository : SupportRepository {
@@ -36,7 +36,7 @@ class FakeSupportRepository : SupportRepository {
         delay(PURCHASE_DELAY_MS)
         val tier = tiers.firstOrNull { it.id == tierId }
             ?: return SupportPurchaseResult.Failure("This tier isn't available right now.", code = "TierMissing")
-        if (tier.kind == SupportTierKind.AD_FREE) _isAdFree.value = true
+        _isAdFree.value = true
         return SupportPurchaseResult.Success
     }
 

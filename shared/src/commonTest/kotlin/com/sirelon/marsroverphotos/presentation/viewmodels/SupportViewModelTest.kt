@@ -46,8 +46,7 @@ private class FakeSupportRepository(
 
     override suspend fun purchase(tierId: String): SupportPurchaseResult {
         purchased += tierId
-        val kind = tiers.firstOrNull { it.id == tierId }?.kind
-        if (purchaseResult == SupportPurchaseResult.Success && kind == SupportTierKind.AD_FREE) _isAdFree.value = true
+        if (purchaseResult == SupportPurchaseResult.Success) _isAdFree.value = true
         return purchaseResult
     }
 
@@ -139,7 +138,7 @@ class SupportViewModelTest {
     }
 
     @Test
-    fun tipThanksWithoutUnlockingAdFree() = runTest {
+    fun tipThanksAndUnlocksAdFree() = runTest {
         Dispatchers.setMain(StandardTestDispatcher(testScheduler))
         val repo = FakeSupportRepository(tiers = listOf(COFFEE, LUNCH))
         val vm = viewModel(repo)
@@ -149,7 +148,7 @@ class SupportViewModelTest {
         advanceUntilIdle()
 
         assertEquals(listOf("tip_coffee"), repo.purchased)
-        assertFalse(vm.isAdFree.value)
+        assertTrue(vm.isAdFree.value)
         assertEquals(SupportUiEvent.TipThanks, vm.collectOne())
         assertEquals("tip", tracker.events.single().second["kind"])
     }

@@ -19,7 +19,10 @@ data class SupportTier(
 )
 
 enum class SupportTierKind {
-    /** A consumable thank-you: buyable any number of times, unlocks nothing. */
+    /**
+     * A consumable: buyable any number of times, grants the `ad_free` entitlement, but stores do not
+     * restore consumables, so ad-free is lost on reinstall or a new device.
+     */
     TIP,
 
     /** A non-consumable: bought once per store account, grants the `ad_free` entitlement, restorable. */

@@ -76,7 +76,7 @@ fun SupportScreen() {
             snackbarHostState.showSnackbar(
                 when (event) {
                     SupportUiEvent.PurchaseSucceeded -> "Thank you! Ads are gone."
-                    SupportUiEvent.TipThanks -> "Thanks for the coffee!"
+                    SupportUiEvent.TipThanks -> "Thanks for the coffee! Ads are gone."
                     SupportUiEvent.Restored -> "Purchases restored."
                     SupportUiEvent.NothingToRestore -> "No earlier purchase found on this store account."
                     // Already a full sentence from the repository ("Nothing was charged — …").
@@ -177,8 +177,8 @@ private fun Intro() {
             iconSize = AppSize.iconDefault,
         )
         Text(
-            text = "Mars Rover Photos is free and built by one person. Buy me a coffee as often as " +
-                "you like, or pick Lunch or more and ads are gone for good on this store account.",
+            text = "Mars Rover Photos is free and built by one person. Any tier switches ads off. " +
+                "Buy a coffee as often as you like; Lunch or more also comes back with Restore on a new device.",
             style = MaterialTheme.typography.bodyLarge,
             color = colors.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -195,7 +195,7 @@ private fun SupporterCard() {
             iconContainer = colors.primaryContainer,
             iconTint = colors.onPrimaryContainer,
             label = "You're a supporter — thank you!",
-            sub = "Ads are off. Restore brings this back on any device signed into the same store account.",
+            sub = "Ads are off. Thank you for keeping the rovers rolling.",
         )
     }
 }
@@ -217,7 +217,7 @@ private fun TierList(
                 iconTint = colors.onSecondaryContainer,
                 label = tier.title,
                 sub = when (tier.kind) {
-                    SupportTierKind.TIP -> "Tip · any time"
+                    SupportTierKind.TIP -> "Removes ads on this device · tip any time"
                     SupportTierKind.AD_FREE -> "Removes ads forever"
                 },
                 onClick = if (enabled) ({ onPurchase(tier.id) }) else null,
@@ -265,7 +265,7 @@ private fun RestoreRow(isRestoring: Boolean, enabled: Boolean, onRestore: () -> 
             Text("Restore purchases")
         }
         Text(
-            text = "Already a supporter on another device? Restore picks it up.",
+            text = "Bought Lunch or more on another device? Restore picks it up.",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,

@@ -22,10 +22,11 @@ artifact's Gradle module metadata before assuming.
 ## Support tiers, ad-free and feature flags
 "Support the developer" sells four tiers through RevenueCat (project `Mars Rover Photos`), one
 package each (`support_small` … `support_huge`). Coffee (`support_small`, store product `tip_coffee`,
-$0.99) is a consumable tip: buyable any number of times, unlocks nothing. Lunch, Dinner and Feast
-(`support_medium` $1.99, `support_large` $4.99, `support_huge` $9.99) are non-consumables; owning any
-of them activates the `ad_free` entitlement, which `SupportRepository.isAdFree` exposes and the
-navigation root reads to drop the ad slot. The UI keys icons and wording on the package id, not the
+$0.99) is a consumable tip: buyable any number of times. Lunch, Dinner and Feast
+(`support_medium` $1.99, `support_large` $4.99, `support_huge` $9.99) are non-consumables. Every tier
+activates the `ad_free` entitlement; only the non-consumables restore on a new device or reinstall,
+because stores do not restore consumables. `SupportRepository.isAdFree` exposes the entitlement, and the
+navigation root reads it to drop the ad slot. The UI keys icons and wording on the package id, not the
 store product id, so a store-side rename never reaches the screen. Price, type and tier changes are
 the owner's decision — propose, do not implement. The
 Android and iOS entry points also skip the consent (UMP) and ATT prompts for supporters. Public SDK
