@@ -20,8 +20,9 @@ data class SupportTier(
 
 enum class SupportTierKind {
     /**
-     * A consumable: buyable any number of times, grants the `ad_free` entitlement, but stores do not
-     * restore consumables, so ad-free is lost on reinstall or a new device.
+     * A consumable: buyable any number of times, each one keeps ads off for [TIP_AD_FREE_PERIOD]
+     * (stacking). Not attached to the `ad_free` entitlement, which would make it permanent; stores do
+     * not restore consumables, so the window is also lost on reinstall or a new device.
      */
     TIP,
 

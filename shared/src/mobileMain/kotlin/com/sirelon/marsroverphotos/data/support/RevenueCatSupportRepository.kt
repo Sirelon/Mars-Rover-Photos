@@ -21,15 +21,19 @@ import com.sirelon.marsroverphotos.domain.repositories.SupportRepository
 import com.sirelon.marsroverphotos.domain.support.SupportPurchaseResult
 import com.sirelon.marsroverphotos.domain.support.SupportTier
 import com.sirelon.marsroverphotos.domain.support.SupportTierKind
+import com.sirelon.marsroverphotos.domain.support.tipAdFreeUntil
 import com.sirelon.marsroverphotos.platform.PlatformPreferences
 import com.sirelon.marsroverphotos.utils.Logger
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlin.time.Clock
 
 /**
  * [SupportRepository] over the RevenueCat SDK (Play Billing on Android, StoreKit on iOS).
@@ -65,6 +69,9 @@ class RevenueCatSupportRepository(
         /** The one package whose product is a consumable tip rather than an ad-free unlock. */
         const val TIP_PACKAGE = "support_small"
 
+        /** The Coffee store product; its purchases give a time-limited ad-free window. */
+        const val TIP_PRODUCT = "tip_coffee"
+
         const val TIER_UNAVAILABLE = "This tier isn't available right now."
 
         /** Google Play appends " (App Name)" to every product title. */
@@ -73,6 +80,9 @@ class RevenueCatSupportRepository(
 
     private val _isAdFree = MutableStateFlow<Boolean?>(null)
     override val isAdFree: StateFlow<Boolean?> = _isAdFree.asStateFlow()
+
+    /** Flips ad-free off when the Coffee window ends while the app is running. */
+    private var tipExpiryJob: Job? = null
 
     private val offeringMutex = Mutex()
     private var cachedPackages: List<Package>? = null
@@ -185,8 +195,26 @@ class RevenueCatSupportRepository(
         return _isAdFree.value == true
     }
 
+    /**
+     * Ad-free is the `ad_free` entitlement (Lunch or more, permanent) or an open Coffee window.
+     * Coffee is kept off the entitlement on purpose: RevenueCat would report it as unlocked forever.
+     */
     private fun apply(customerInfo: CustomerInfo) {
-        _isAdFree.value = customerInfo.entitlements.active.containsKey(AD_FREE_ENTITLEMENT)
+        val owned = customerInfo.entitlements.active.containsKey(AD_FREE_ENTITLEMENT)
+        val tipUntil = tipAdFreeUntil(
+            customerInfo.nonSubscriptionTransactions
+                .filter { it.productIdentifier == TIP_PRODUCT }
+                .map { it.purchaseDateMillis },
+        )
+        val remaining = (tipUntil ?: 0L) - Clock.System.now().toEpochMilliseconds()
+        _isAdFree.value = owned || remaining > 0
+        tipExpiryJob?.cancel()
+        if (!owned && remaining > 0) {
+            tipExpiryJob = scope.launch {
+                delay(remaining)
+                apply(customerInfo)
+            }
+        }
     }
 
     private suspend fun packages(): List<Package> = offeringMutex.withLock {

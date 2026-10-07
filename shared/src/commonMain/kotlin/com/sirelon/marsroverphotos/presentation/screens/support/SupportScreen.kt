@@ -76,7 +76,7 @@ fun SupportScreen() {
             snackbarHostState.showSnackbar(
                 when (event) {
                     SupportUiEvent.PurchaseSucceeded -> "Thank you! Ads are gone."
-                    SupportUiEvent.TipThanks -> "Thanks for the coffee! Ads are gone."
+                    SupportUiEvent.TipThanks -> "Thanks for the coffee! Ads are off for 30 days."
                     SupportUiEvent.Restored -> "Purchases restored."
                     SupportUiEvent.NothingToRestore -> "No earlier purchase found on this store account."
                     // Already a full sentence from the repository ("Nothing was charged — …").
@@ -177,8 +177,8 @@ private fun Intro() {
             iconSize = AppSize.iconDefault,
         )
         Text(
-            text = "Mars Rover Photos is free and built by one person. Any tier switches ads off. " +
-                "Buy a coffee as often as you like; Lunch or more also comes back with Restore on a new device.",
+            text = "Mars Rover Photos is free and built by one person. A coffee switches ads off for 30 days, " +
+                "any time you like. Lunch or more switches them off for good, and Restore brings that back.",
             style = MaterialTheme.typography.bodyLarge,
             color = colors.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -217,7 +217,7 @@ private fun TierList(
                 iconTint = colors.onSecondaryContainer,
                 label = tier.title,
                 sub = when (tier.kind) {
-                    SupportTierKind.TIP -> "Removes ads on this device · tip any time"
+                    SupportTierKind.TIP -> "Removes ads for 30 days · tip any time"
                     SupportTierKind.AD_FREE -> "Removes ads forever"
                 },
                 onClick = if (enabled) ({ onPurchase(tier.id) }) else null,

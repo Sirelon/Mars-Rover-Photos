@@ -40,7 +40,7 @@ sealed interface SupportUiEvent {
     /** An ad-free tier was bought (or recognised as already owned). */
     data object PurchaseSucceeded : SupportUiEvent
 
-    /** A coffee was bought; ads are off and the row stays buyable. */
+    /** A coffee was bought; ads are off for 30 days and the row stays buyable. */
     data object TipThanks : SupportUiEvent
     data object Restored : SupportUiEvent
     data object NothingToRestore : SupportUiEvent

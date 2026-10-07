@@ -7,8 +7,8 @@ import kotlinx.coroutines.flow.StateFlow
 /**
  * Store billing for the "Support the developer" tiers and the `ad_free` entitlement they grant.
  *
- * Every tier grants ad-free. The non-consumable tiers stay with the store account and restore on a
- * new device; the consumable Coffee tip does not survive a reinstall. Bound as a Koin `single`: the ad gate at
+ * Every tier grants ad-free. The non-consumable tiers do it for good, stay with the store account
+ * and restore on a new device; the consumable Coffee tip does it for 30 days on this install. Bound as a Koin `single`: the ad gate at
  * the navigation root, the About row and the Support screen all read the same [isAdFree].
  */
 interface SupportRepository {
