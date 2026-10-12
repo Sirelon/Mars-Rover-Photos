@@ -7,7 +7,7 @@ plugins {
 // (gradle/libs.versions.toml, `kotlin`) instead. Drop this once Gradle embeds >= 2.4.20.
 buildscript {
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.4.20")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.4.21")
     }
 }
 
