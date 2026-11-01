@@ -89,8 +89,8 @@ class ReviewPrompterTest {
     }
 
     @Test
-    fun waitsForTheThirdLaunch() = runTest {
-        val prompter = prompter(settings(launches = 2))
+    fun waitsForTheSecondLaunch() = runTest {
+        val prompter = prompter(settings(launches = 1))
 
         prompter.onDelightAction()
         prompter.onViewerClosed()
@@ -99,15 +99,15 @@ class ReviewPrompterTest {
     }
 
     @Test
-    fun waitsThreeDaysAfterTheFirstLaunch() = runTest {
-        clock.nowMillis = FIRST_LAUNCH_AT + 2 * DAY_MS
+    fun waitsOneDayAfterTheFirstLaunch() = runTest {
+        clock.nowMillis = FIRST_LAUNCH_AT + DAY_MS / 2
         val prompter = prompter()
 
         prompter.onDelightAction()
         prompter.onViewerClosed()
         assertEquals(0, appReview.requests)
 
-        clock.nowMillis = FIRST_LAUNCH_AT + 3 * DAY_MS
+        clock.nowMillis = FIRST_LAUNCH_AT + DAY_MS
         prompter.onDelightAction()
         prompter.onViewerClosed()
         assertEquals(1, appReview.requests)
