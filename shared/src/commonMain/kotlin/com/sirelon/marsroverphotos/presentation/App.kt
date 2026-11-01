@@ -26,6 +26,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
 import coil3.memory.MemoryCache
+import coil3.network.ktor3.KtorNetworkFetcherFactory
 import com.sirelon.marsroverphotos.domain.settings.AppSettings
 import com.sirelon.marsroverphotos.domain.settings.Theme
 import com.sirelon.marsroverphotos.platform.BuildInfo
@@ -34,6 +35,8 @@ import com.sirelon.marsroverphotos.presentation.navigation.AppNavigation
 import com.sirelon.marsroverphotos.presentation.navigation.DeepLink
 import com.sirelon.marsroverphotos.presentation.navigation.LocalAboutCallbacks
 import com.sirelon.marsroverphotos.platform.PushNotifications
+import com.sirelon.marsroverphotos.platform.createHttpClientEngine
+import io.ktor.client.HttpClient
 import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
 import com.sirelon.marsroverphotos.presentation.theme.MarsRoverPhotosTheme
 import com.sirelon.marsroverphotos.presentation.theme.isSystemInDarkTheme
@@ -75,6 +78,8 @@ fun App(
                     .maxSizePercent(context, 0.40)
                     .build()
             }
+            // Images go through the app's own engine, so Android's per-host request cap applies to them.
+            .components { add(KtorNetworkFetcherFactory(httpClient = { HttpClient(createHttpClientEngine()) })) }
             .build()
     }
 
