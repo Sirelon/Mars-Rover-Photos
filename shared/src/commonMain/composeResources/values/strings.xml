@@ -33,6 +33,8 @@
     <string name="tap_to_retry">Tap to retry</string>
     <string name="no_photos_title">No photos from this mission on this date.</string>
     <string name="no_connection_title">No connection.</string>
+    <string name="offline_saved_photos">Offline — showing saved photos</string>
+    <string name="retry">Retry</string>
     <string name="favorite_empty_btn">Go to missions</string>
     <string name="favorite_empty_title">No favorite photos yet.\nYou can save any photos you like.\nJust mark them as "favorite".</string>
     <string name="popular_empty_title">No popular photos available.\nCheck back later!</string>

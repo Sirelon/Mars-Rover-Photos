@@ -35,6 +35,7 @@ import kotlin.time.TimeMark
 import kotlin.time.TimeSource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,10 +46,12 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.random.Random
@@ -96,6 +99,14 @@ class PhotosViewModel(
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
     )
     val scrollToTopEvents: SharedFlow<Unit> = _scrollToTopEvents.asSharedFlow()
+
+    /**
+     * Fires once for each feed refresh that Room's saved photos served because the network failed;
+     * the screen shows the offline snackbar for it. A Channel, so a refresh served while the
+     * fullscreen viewer is open still gets its snackbar when the grid is back.
+     */
+    private val _offlineNotices = Channel<Unit>(Channel.CONFLATED)
+    val offlineNotices: Flow<Unit> = _offlineNotices.receiveAsFlow()
 
     private var dateUtil: RoverDateUtil? = null
 
@@ -203,6 +214,14 @@ class PhotosViewModel(
     )
 
     init {
+        // drop(1): the value the shared pager holds now belongs to a refresh that an earlier
+        // screen entry already announced. Only refreshes served from here on get a snackbar.
+        viewModelScope.launch {
+            roverFeedPager.refreshNetworkError.drop(1).filterNotNull().collect {
+                _offlineNotices.trySend(Unit)
+            }
+        }
+
         viewModelScope.launch {
             runCatching {
                 factsRepository.loadFacts()

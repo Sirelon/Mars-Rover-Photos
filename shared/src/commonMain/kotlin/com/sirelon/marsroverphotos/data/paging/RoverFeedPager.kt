@@ -90,8 +90,8 @@ class RoverFeedPager(
 
     /**
      * The network error behind the current feed's last refresh when Room's cached photos were
-     * served in its place; null when that refresh came from the network. Analytics read it to
-     * report the failure instead of a load time.
+     * served in its place; null when that refresh came from the network. The photos screen reads
+     * it to show the offline snackbar and to report the failure instead of a load time.
      */
     val refreshNetworkError: StateFlow<Throwable?> = _refreshNetworkError.asStateFlow()
 

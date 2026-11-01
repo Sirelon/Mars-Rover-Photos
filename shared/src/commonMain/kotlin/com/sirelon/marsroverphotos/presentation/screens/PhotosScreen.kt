@@ -90,6 +90,11 @@ import com.sirelon.marsroverphotos.shared.resources.did_you_know
 import com.sirelon.marsroverphotos.shared.resources.educational_fact
 import com.sirelon.marsroverphotos.shared.resources.no_connection_title
 import com.sirelon.marsroverphotos.shared.resources.no_photos_title
+import com.sirelon.marsroverphotos.shared.resources.retry
+import com.sirelon.marsroverphotos.shared.resources.offline_saved_photos
+import com.sirelon.marsroverphotos.presentation.ui.MarsSnackbar
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.SnackbarHostState
 import com.sirelon.marsroverphotos.shared.resources.page_of_fmt
 import com.sirelon.marsroverphotos.shared.resources.tap_to_retry
 import com.sirelon.marsroverphotos.utils.formatDisplayDate
@@ -242,10 +247,22 @@ fun PhotosScreen(
         }
     }
 
+    // Saved photos stood in for a failed network refresh: say so, and offer a retry.
+    val snackbarHostState = remember { SnackbarHostState() }
+    val offlineMessage = stringResource(Res.string.offline_saved_photos)
+    val retryLabel = stringResource(Res.string.retry)
+    LaunchedEffect(viewModel) {
+        viewModel.offlineNotices.collect {
+            val result = snackbarHostState.showSnackbar(message = offlineMessage, actionLabel = retryLabel)
+            if (result == SnackbarResult.ActionPerformed) currentPagingItems.value.refresh()
+        }
+    }
+
     PhotosScreen(
         state = state,
         pagingItems = pagingItems,
         gridState = gridState,
+        snackbarHostState = snackbarHostState,
         currentPage = visiblePage,
         // Re-anchoring (random sol or random page) emits scrollToTopEvents, collected above.
         onRandomize = viewModel::randomize,
@@ -275,6 +292,7 @@ private fun PhotosScreen(
     state: PhotosUiState,
     pagingItems: LazyPagingItems<GridItem>,
     gridState: LazyGridState,
+    snackbarHostState: SnackbarHostState,
     currentPage: Int,
     onRandomize: () -> Unit,
     onGoToLatest: () -> Unit,
@@ -293,6 +311,7 @@ private fun PhotosScreen(
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         contentWindowInsets = WindowInsets(),
+        snackbarHost = { MarsSnackbar(snackbarHostState = snackbarHostState) },
         topBar = {
             AppTopBar(
                 scrollBehavior = scrollBehavior,
@@ -758,6 +777,7 @@ private fun PhotosScreenPreview() {
             ),
             pagingItems = pagingItems,
             gridState = rememberLazyGridState(),
+            snackbarHostState = remember { SnackbarHostState() },
             currentPage = 1,
             onRandomize = {},
             onGoToLatest = {},
