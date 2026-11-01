@@ -137,6 +137,16 @@ interface ImagesDao {
     suspend fun loadCachedSol(roverId: Long, sol: Long): List<MarsImage>
 
     /**
+     * Up to [limit] sols in [minSol]..[maxSol] that have cached photos of the rover, nearest to
+     * [sol] first (the later sol wins a tie). The offline fallback of a sol feed walks them.
+     */
+    @Query(
+        "SELECT DISTINCT sol FROM images WHERE roverId = :roverId AND sol BETWEEN :minSol AND :maxSol " +
+            "ORDER BY ABS(sol - :sol) ASC, sol DESC LIMIT :limit"
+    )
+    suspend fun nearestCachedSols(roverId: Long, sol: Long, minSol: Long, maxSol: Long, limit: Int): List<Long>
+
+    /**
      * Cached photos of one rover whose feed position `order` is in [fromOrder, toOrder), for a page
      * feed whose network refresh failed. Popular rows are excluded: their `order` is a position in
      * the popular list, not in the feed.
@@ -146,6 +156,16 @@ interface ImagesDao {
             "AND `order` >= :fromOrder AND `order` < :toOrder ORDER BY `order` ASC, id ASC"
     )
     suspend fun loadCachedOrderRange(roverId: Long, fromOrder: Int, toOrder: Int): List<MarsImage>
+
+    /**
+     * The cached feed position `order` of the rover nearest to [order], or null when nothing is
+     * cached. Popular rows are excluded, as in [loadCachedOrderRange].
+     */
+    @Query(
+        "SELECT `order` FROM images WHERE roverId = :roverId AND popular = 0 " +
+            "ORDER BY ABS(`order` - :order) ASC, `order` ASC LIMIT 1"
+    )
+    suspend fun nearestCachedOrder(roverId: Long, order: Int): Int?
 
     // TODO: Re-enable when Room KMP fixes Kotlin/Native @Transaction support
     // Do not name it 'withTransaction' see more here: https://issuetracker.google.com/issues/275678088

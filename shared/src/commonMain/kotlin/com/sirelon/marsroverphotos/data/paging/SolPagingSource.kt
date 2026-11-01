@@ -47,10 +47,11 @@ import kotlin.math.abs
  * are merged back, so the cache stays a passive side-store (this remains a network-driven source)
  * while the viewer shows correct favorite state.
  *
- * Offline fallback: when a Refresh fails, the cached photos of the anchor sol are served instead of
- * the error, if Room has any (camera filter applied). Only that exact sol: the feed must not jump
- * to a different day just because the network is down. The page keeps live keys, so scrolling
- * retries the network. [onRefreshServed] tells the caller which kind of refresh it got.
+ * Offline fallback: when a Refresh fails, Room's cached photos of the sol nearest to the anchor are
+ * served instead of the error (camera filter applied; the anchor itself when it is cached). A
+ * first open anchors on a sol that is rarely cached, so an exact-sol match alone would almost never
+ * help. The page keeps live keys, so scrolling retries the network. [onRefreshServed] tells the
+ * caller which kind of refresh it got.
  */
 class SolPagingSource(
     private val photosRepository: PhotosRepository,
@@ -105,15 +106,21 @@ class SolPagingSource(
         }
     }
 
-    /** The anchor sol's cached photos as a page with live keys, or null when Room has none. */
-    private suspend fun cachedPage(sol: Long): LoadResult.Page<Long, MarsImage>? {
-        val photos = try {
-            imagesDao.loadCachedSol(roverId, sol).filterByCameras(cameras)
-        } catch (e: Exception) {
-            Logger.e("SolPagingSource", e) { "Reading the offline cache failed" }
-            return null
-        }
-        return photos.takeIf { it.isNotEmpty() }?.let { Day(sol, it).toPage() }
+    /**
+     * The cached sol nearest to [anchor] that has photos for this camera set, as a page with live
+     * keys; null when Room has none. Checks at most [OFFLINE_SOL_CANDIDATES] cached sols.
+     */
+    private suspend fun cachedPage(anchor: Long): LoadResult.Page<Long, MarsImage>? = try {
+        imagesDao.nearestCachedSols(roverId, anchor, minSol, maxSol, OFFLINE_SOL_CANDIDATES)
+            .firstNotNullOfOrNull { sol ->
+                imagesDao.loadCachedSol(roverId, sol)
+                    .filterByCameras(cameras)
+                    .takeIf { it.isNotEmpty() }
+                    ?.let { Day(sol, it).toPage() }
+            }
+    } catch (e: Exception) {
+        Logger.e("SolPagingSource", e) { "Reading the offline cache failed" }
+        null
     }
 
     /**
@@ -333,5 +340,7 @@ class SolPagingSource(
         private const val CACHE_KEEP_LIMIT = 2000
         /** Run cache eviction once every this many cached pages (keeps it off the hot path). */
         private const val EVICT_EVERY_N_LOADS = 20
+        /** Cached sols the offline fallback checks for photos matching the camera filter. */
+        private const val OFFLINE_SOL_CANDIDATES = 30
     }
 }

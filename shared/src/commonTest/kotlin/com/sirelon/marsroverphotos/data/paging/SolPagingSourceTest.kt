@@ -253,12 +253,42 @@ class SolPagingSourceTest {
         assertIs<IOException>(served.single())
     }
 
-    // Only the exact anchor sol: a cached neighbour sol does not stand in for it.
+    // An uncached anchor (a first open's random sol) falls back to the nearest cached sol.
     @Test
-    fun refresh_networkFailureWithoutCachedAnchorSolIsAnError() = runTest {
-        val cached = listOf(marsImage("other-sol", 43).copy(roverId = CURIOSITY_ID))
+    fun refresh_networkFailureServesNearestCachedSol() = runTest {
+        val cached = listOf(
+            marsImage("far", 10).copy(roverId = CURIOSITY_ID),
+            marsImage("near", 45).copy(roverId = CURIOSITY_ID),
+            marsImage("other-rover", 42).copy(roverId = 999L),
+        )
+        val src = offlineSource(FakeImagesDao(cached = cached), onRefreshServed = {})
+
+        val p = page(src.load(PagingSource.LoadParams.Refresh(42L, 20, false)))
+
+        assertEquals(listOf("near"), p.data.map { it.id })
+        assertEquals(44L, p.prevKey)
+        assertEquals(46L, p.nextKey)
+    }
+
+    // With a camera filter, a nearer cached sol without that camera is skipped.
+    @Test
+    fun refresh_networkFailureSkipsCachedSolsWithoutTheFilteredCamera() = runTest {
+        val cached = listOf(
+            marsImage("navcam", 43, cameraName = "NAVCAM").copy(roverId = CURIOSITY_ID),
+            marsImage("fhaz", 50, cameraName = "FHAZ").copy(roverId = CURIOSITY_ID),
+        )
+        val src = offlineSource(FakeImagesDao(cached = cached), onRefreshServed = {}, cameras = setOf("FHAZ"))
+
+        val p = page(src.load(PagingSource.LoadParams.Refresh(42L, 20, false)))
+
+        assertEquals(listOf("fhaz"), p.data.map { it.id })
+    }
+
+    // Nothing cached for the rover: the error stands.
+    @Test
+    fun refresh_networkFailureWithEmptyCacheIsAnError() = runTest {
         val served = mutableListOf<Throwable?>()
-        val src = offlineSource(FakeImagesDao(cached = cached), onRefreshServed = { served += it })
+        val src = offlineSource(FakeImagesDao(), onRefreshServed = { served += it })
 
         assertIs<PagingSource.LoadResult.Error<Long, MarsImage>>(
             src.load(PagingSource.LoadParams.Refresh(42L, 20, false))
@@ -286,14 +316,18 @@ class SolPagingSourceTest {
         assertEquals(listOf<Throwable?>(null), served)
     }
 
-    private fun offlineSource(dao: FakeImagesDao, onRefreshServed: (Throwable?) -> Unit) = SolPagingSource(
+    private fun offlineSource(
+        dao: FakeImagesDao,
+        onRefreshServed: (Throwable?) -> Unit,
+        cameras: Set<String> = emptySet(),
+    ) = SolPagingSource(
         photosRepository = object : PhotosRepository {
             override suspend fun refreshImages(query: PhotosQueryRequest): List<MarsImage> =
                 throw IOException("Unable to resolve host")
         },
         imagesDao = dao,
         roverId = CURIOSITY_ID,
-        cameras = emptySet(),
+        cameras = cameras,
         initialSol = 42,
         minSol = 0,
         maxSol = 100,

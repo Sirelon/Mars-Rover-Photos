@@ -34,10 +34,10 @@ import kotlin.random.Random
  * every fetch so the caller can cache it and feed the page picker. Write-through cache and
  * favorite/stats merge mirror [SolPagingSource].
  *
- * Offline fallback: when a Refresh fails after its target page is known, that page's cached photos
- * are served instead of the error, if Room has them (rows whose `order` falls in the page). Only
- * that exact page, with live keys so scrolling retries the network. A random-anchor refresh with
- * no [totalHitsHint] has no target before its first request, so it has no fallback.
+ * Offline fallback: when a Refresh fails, Room's cached photos of the page nearest to its target
+ * are served instead of the error (the target itself when it is cached). A cached row's page comes
+ * from its `order`. A random-anchor refresh with no [totalHitsHint] fails before it has a target,
+ * so it takes the first cached page. The page keeps live keys, so scrolling retries the network.
  * [onRefreshServed] tells the caller which kind of refresh it got.
  *
  * @param fetchPage Async function that fetches one page. Receives the 1-based page number
@@ -85,9 +85,8 @@ class ImagesSearchPagingSource(
             }
         } catch (e: Exception) {
             Logger.e("ImagesSearchPagingSource", e) { "Error loading page" }
-            val target = refreshTarget
-            if (params is LoadParams.Refresh && target != null && e !is CancellationException) {
-                cachedPage(target)?.let { cached ->
+            if (params is LoadParams.Refresh && e !is CancellationException) {
+                cachedPage(refreshTarget ?: 1)?.let { cached ->
                     onRefreshServed(e)
                     return cached
                 }
@@ -96,10 +95,16 @@ class ImagesSearchPagingSource(
         }
     }
 
-    /** The cached photos of [page] as a page with live keys, or null when Room has none. */
-    private suspend fun cachedPage(page: Int): LoadResult.Page<Int, MarsImage>? {
-        val from = (page - 1) * pageSize
+    /**
+     * The cached photos of the page nearest to [target] as a page with live keys, or null when
+     * Room has none for this rover.
+     */
+    private suspend fun cachedPage(target: Int): LoadResult.Page<Int, MarsImage>? {
+        val page: Int
         val photos = try {
+            val order = imagesDao.nearestCachedOrder(roverId, (target - 1) * pageSize) ?: return null
+            page = order / pageSize + 1
+            val from = (page - 1) * pageSize
             imagesDao.loadCachedOrderRange(roverId, fromOrder = from, toOrder = from + pageSize)
         } catch (e: Exception) {
             Logger.e("ImagesSearchPagingSource", e) { "Reading the offline cache failed" }
