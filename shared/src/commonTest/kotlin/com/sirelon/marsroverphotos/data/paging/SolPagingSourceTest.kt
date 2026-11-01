@@ -3,6 +3,9 @@ package com.sirelon.marsroverphotos.data.paging
 import androidx.paging.PagingSource
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.domain.models.CURIOSITY_ID
+import kotlinx.io.IOException
+import com.sirelon.marsroverphotos.domain.repositories.PhotosRepository
+import com.sirelon.marsroverphotos.domain.models.PhotosQueryRequest
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -231,4 +234,69 @@ class SolPagingSourceTest {
         assertEquals(10L, p.prevKey)
         assertEquals(12L, p.nextKey)
     }
+
+    // Offline fallback: a failed Refresh serves the anchor sol's cached photos with live keys.
+    @Test
+    fun refresh_networkFailureServesCachedAnchorSol() = runTest {
+        val cached = listOf(
+            marsImage("c1", 42).copy(roverId = CURIOSITY_ID),
+            marsImage("other-sol", 43).copy(roverId = CURIOSITY_ID),
+        )
+        val served = mutableListOf<Throwable?>()
+        val src = offlineSource(FakeImagesDao(cached = cached), onRefreshServed = { served += it })
+
+        val p = page(src.load(PagingSource.LoadParams.Refresh(42L, 20, false)))
+
+        assertEquals(listOf("c1"), p.data.map { it.id })
+        assertEquals(41L, p.prevKey)
+        assertEquals(43L, p.nextKey)
+        assertIs<IOException>(served.single())
+    }
+
+    // Only the exact anchor sol: a cached neighbour sol does not stand in for it.
+    @Test
+    fun refresh_networkFailureWithoutCachedAnchorSolIsAnError() = runTest {
+        val cached = listOf(marsImage("other-sol", 43).copy(roverId = CURIOSITY_ID))
+        val served = mutableListOf<Throwable?>()
+        val src = offlineSource(FakeImagesDao(cached = cached), onRefreshServed = { served += it })
+
+        assertIs<PagingSource.LoadResult.Error<Long, MarsImage>>(
+            src.load(PagingSource.LoadParams.Refresh(42L, 20, false))
+        )
+        assertTrue(served.isEmpty())
+    }
+
+    // A network refresh reports that no cache was involved.
+    @Test
+    fun refresh_fromNetworkReportsNoError() = runTest {
+        val served = mutableListOf<Throwable?>()
+        val src = SolPagingSource(
+            photosRepository = FakePhotosRepository(mapOf(42L to listOf(marsImage("n", 42)))),
+            imagesDao = FakeImagesDao(),
+            roverId = CURIOSITY_ID,
+            cameras = emptySet(),
+            initialSol = 42,
+            minSol = 0,
+            maxSol = 100,
+            onRefreshServed = { served += it },
+        )
+
+        page(src.load(PagingSource.LoadParams.Refresh(42L, 20, false)))
+
+        assertEquals(listOf<Throwable?>(null), served)
+    }
+
+    private fun offlineSource(dao: FakeImagesDao, onRefreshServed: (Throwable?) -> Unit) = SolPagingSource(
+        photosRepository = object : PhotosRepository {
+            override suspend fun refreshImages(query: PhotosQueryRequest): List<MarsImage> =
+                throw IOException("Unable to resolve host")
+        },
+        imagesDao = dao,
+        roverId = CURIOSITY_ID,
+        cameras = emptySet(),
+        initialSol = 42,
+        minSol = 0,
+        maxSol = 100,
+        onRefreshServed = onRefreshServed,
+    )
 }

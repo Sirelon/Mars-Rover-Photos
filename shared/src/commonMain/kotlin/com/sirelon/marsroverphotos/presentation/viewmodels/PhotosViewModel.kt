@@ -26,6 +26,7 @@ import com.sirelon.marsroverphotos.domain.settings.AppSettings
 import com.sirelon.marsroverphotos.platform.Tracker
 import com.sirelon.marsroverphotos.presentation.models.GridItem
 import com.sirelon.marsroverphotos.presentation.navigation.ScreenNames
+import com.sirelon.marsroverphotos.presentation.screens.feedModeParam
 import com.sirelon.marsroverphotos.utils.Logger
 import com.sirelon.marsroverphotos.utils.RoverDateUtil
 import com.sirelon.marsroverphotos.utils.formatDisplayDate
@@ -301,7 +302,24 @@ class PhotosViewModel(
      */
     fun onFeedSettled(itemCount: Int) {
         val rover = roverStateFlow.value ?: return
-        feedLoadTimer.onSettled(itemCount, rover.name, tracker)
+        val networkError = roverFeedPager.refreshNetworkError.value
+        if (networkError == null) {
+            feedLoadTimer.onSettled(itemCount, rover.name, tracker)
+            return
+        }
+        // Saved photos covered for a failed network refresh: that is a feed_error, and its load
+        // time would only measure Room. The tracker drops repeats of the same failure.
+        feedLoadTimer.cancel()
+        tracker.trackFeedError(
+            ScreenNames.PHOTOS,
+            networkError,
+            mapOf(
+                "rover_id" to rover.id.toString(),
+                "feed_mode" to feedModeParam(rover.id),
+                "has_camera_filter" to cameraFilterEmitter.value.isNotEmpty().toString(),
+                "served_cache" to "true",
+            ),
+        )
     }
 
     val favoriteOverrides get() = roverFeedPager.favoriteOverrides
@@ -529,7 +547,12 @@ data class PhotosUiState(
 class FeedLoadTimer(private val startMark: TimeMark = TimeSource.Monotonic.markNow()) {
     private var reported = false
 
-    /** No-op once already reported, or while [itemCount] is still zero. */
+    /** Stops this entry from reporting a load time at all. */
+    fun cancel() {
+        reported = true
+    }
+
+    /** No-op once already reported or cancelled, or while [itemCount] is still zero. */
     fun onSettled(itemCount: Int, rover: String, tracker: Tracker) {
         if (reported || itemCount <= 0) return
         reported = true

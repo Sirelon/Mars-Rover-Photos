@@ -77,4 +77,15 @@ class FeedLoadTimerTest {
 
         assertEquals(1, tracker.feedLoadedCalls.size)
     }
+
+    @Test
+    fun aCancelledTimerNeverReports() {
+        val tracker = RecordingTracker()
+        val timer = FeedLoadTimer()
+
+        timer.cancel()
+        timer.onSettled(itemCount = 20, rover = "Curiosity", tracker = tracker)
+
+        assertTrue(tracker.feedLoadedCalls.isEmpty())
+    }
 }

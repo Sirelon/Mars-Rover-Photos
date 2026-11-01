@@ -9,6 +9,7 @@ import androidx.paging.compose.LazyPagingItems
 import com.sirelon.marsroverphotos.data.paging.usesPageFeed
 import com.sirelon.marsroverphotos.platform.Tracker
 import com.sirelon.marsroverphotos.presentation.review.ReviewPrompter
+import kotlinx.io.IOException
 import org.koin.compose.koinInject
 
 /**
@@ -20,8 +21,8 @@ import org.koin.compose.koinInject
  * "has this actually finished?" question the empty states themselves ask, kept in one place so
  * the two screens cannot drift apart on the answer.
  *
- * A failed retry reports again on purpose — one failure is a flaky connection, a second is the
- * source being down.
+ * The tracker sends a `feed_error` once per process session for each screen, rover and error
+ * type, so a retry that fails the same way is not counted again.
  */
 @Composable
 fun TrackEmptyFeed(
@@ -81,3 +82,9 @@ fun TrackFeedLoaded(
  * this line points at a source rather than at the app.
  */
 fun feedModeParam(roverId: Long): String = if (roverId.usesPageFeed()) "page" else "sol"
+
+/**
+ * True when the request never got an answer: DNS, connect, socket or timeout failures. Ktor
+ * reports all of them as an [IOException] on every engine; an HTTP error status is not one.
+ */
+fun Throwable.isConnectionError(): Boolean = generateSequence(this) { it.cause }.any { it is IOException }

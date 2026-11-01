@@ -132,6 +132,21 @@ interface ImagesDao {
     """)
     suspend fun deleteNonUserImagesBeyondCount(keepCount: Int)
 
+    /** Cached photos of one rover's sol, for a sol feed whose network refresh failed. */
+    @Query("SELECT * FROM images WHERE roverId = :roverId AND sol = :sol ORDER BY `order` ASC, id ASC")
+    suspend fun loadCachedSol(roverId: Long, sol: Long): List<MarsImage>
+
+    /**
+     * Cached photos of one rover whose feed position `order` is in [fromOrder, toOrder), for a page
+     * feed whose network refresh failed. Popular rows are excluded: their `order` is a position in
+     * the popular list, not in the feed.
+     */
+    @Query(
+        "SELECT * FROM images WHERE roverId = :roverId AND popular = 0 " +
+            "AND `order` >= :fromOrder AND `order` < :toOrder ORDER BY `order` ASC, id ASC"
+    )
+    suspend fun loadCachedOrderRange(roverId: Long, fromOrder: Int, toOrder: Int): List<MarsImage>
+
     // TODO: Re-enable when Room KMP fixes Kotlin/Native @Transaction support
     // Do not name it 'withTransaction' see more here: https://issuetracker.google.com/issues/275678088
     // @Transaction

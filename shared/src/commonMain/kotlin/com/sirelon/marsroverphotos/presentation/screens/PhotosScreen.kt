@@ -88,6 +88,7 @@ import com.sirelon.marsroverphotos.presentation.viewmodels.PhotosViewModel
 import com.sirelon.marsroverphotos.shared.resources.Res
 import com.sirelon.marsroverphotos.shared.resources.did_you_know
 import com.sirelon.marsroverphotos.shared.resources.educational_fact
+import com.sirelon.marsroverphotos.shared.resources.no_connection_title
 import com.sirelon.marsroverphotos.shared.resources.no_photos_title
 import com.sirelon.marsroverphotos.shared.resources.page_of_fmt
 import com.sirelon.marsroverphotos.shared.resources.tap_to_retry
@@ -333,7 +334,11 @@ private fun PhotosScreen(
                     refresh is LoadState.Loading && pagingItems.itemCount == 0 -> CenteredProgress()
 
                     refresh is LoadState.Error && pagingItems.itemCount == 0 -> EmptyPhotos(
-                        title = stringResource(Res.string.no_photos_title),
+                        title = if (refresh.error.isConnectionError()) {
+                            stringResource(Res.string.no_connection_title)
+                        } else {
+                            stringResource(Res.string.no_photos_title)
+                        },
                         btnTitle = stringResource(Res.string.tap_to_retry),
                         callback = { pagingItems.retry() }
                     )

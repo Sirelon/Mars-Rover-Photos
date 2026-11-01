@@ -26,12 +26,19 @@ class FirebaseTracker(private val analytics: FirebaseAnalytics) : Tracker {
         )
     }
 
+    /** (screen, rover_id, error_type) of every feed_error sent by this process. */
+    private val reportedFeedErrors = mutableSetOf<Triple<String, String?, String>>()
+
     override fun trackFeedError(screen: String, error: Throwable, params: Map<String, String>) {
+        val errorType = error::class.simpleName ?: "Unknown"
+        // Once per process session: a retry that fails the same way is the same failure, so
+        // feed_error counts distinct failures, not retry taps.
+        if (!reportedFeedErrors.add(Triple(screen, params["rover_id"], errorType))) return
         analytics.logEvent(
             "feed_error",
             params + buildMap {
                 put("screen", screen)
-                put("error_type", error::class.simpleName ?: "Unknown")
+                put("error_type", errorType)
                 // GA4 truncates string params at 100 chars. The head of the message carries the
                 // status code / host that identifies which backend broke; the tail does not.
                 error.message?.takeIf { it.isNotBlank() }?.let { put("reason", it.take(100)) }

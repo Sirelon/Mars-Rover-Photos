@@ -36,7 +36,15 @@ class FakePhotosRepository(
  */
 class FakeImagesDao(
     private val persistedById: Map<String, MarsImage> = emptyMap(),
+    /** Rows the offline fallback reads ([loadCachedSol], [loadCachedOrderRange]). */
+    private val cached: List<MarsImage> = emptyList(),
 ) : ImagesDao {
+
+    override suspend fun loadCachedSol(roverId: Long, sol: Long): List<MarsImage> =
+        cached.filter { it.roverId == roverId && it.sol == sol }
+
+    override suspend fun loadCachedOrderRange(roverId: Long, fromOrder: Int, toOrder: Int): List<MarsImage> =
+        cached.filter { it.roverId == roverId && !it.popular && it.order >= fromOrder && it.order < toOrder }
     val insertedIds = mutableListOf<String>()
     var evictionCalls = 0
 

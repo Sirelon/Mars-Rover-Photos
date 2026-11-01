@@ -5,6 +5,7 @@ import androidx.paging.PagingState
 import com.sirelon.marsroverphotos.data.database.dao.ImagesDao
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.utils.Logger
+import kotlinx.coroutines.CancellationException
 import kotlin.random.Random
 
 /**
@@ -33,6 +34,12 @@ import kotlin.random.Random
  * every fetch so the caller can cache it and feed the page picker. Write-through cache and
  * favorite/stats merge mirror [SolPagingSource].
  *
+ * Offline fallback: when a Refresh fails after its target page is known, that page's cached photos
+ * are served instead of the error, if Room has them (rows whose `order` falls in the page). Only
+ * that exact page, with live keys so scrolling retries the network. A random-anchor refresh with
+ * no [totalHitsHint] has no target before its first request, so it has no fallback.
+ * [onRefreshServed] tells the caller which kind of refresh it got.
+ *
  * @param fetchPage Async function that fetches one page. Receives the 1-based page number
  *                  and returns a [PageResult]. Decoupled from the network layer for testability.
  */
@@ -43,8 +50,17 @@ class ImagesSearchPagingSource(
     private val onTotalHits: ((Int) -> Unit)? = null,
     private val random: Random = Random.Default,
     private val pageSize: Int = PAGE_SIZE,
+    private val roverId: Long = 0L,
+    /**
+     * Called after every successful Refresh: with the network error the cache covered for, or
+     * null when the photos came from the network.
+     */
+    private val onRefreshServed: (networkError: Throwable?) -> Unit = {},
     private val fetchPage: suspend (page: Int) -> PageResult,
 ) : PagingSource<Int, MarsImage>() {
+
+    /** The page the running Refresh is fetching, once known; the offline fallback serves it. */
+    private var refreshTarget: Int? = null
 
     data class PageResult(
         val images: List<MarsImage>,
@@ -60,14 +76,41 @@ class ImagesSearchPagingSource(
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, MarsImage> {
         return try {
             when (params) {
-                is LoadParams.Refresh -> loadRefresh(params.key)
+                is LoadParams.Refresh -> {
+                    refreshTarget = null
+                    loadRefresh(params.key).also { onRefreshServed(null) }
+                }
                 is LoadParams.Append -> loadPage(params.key)
                 is LoadParams.Prepend -> loadPage(params.key)
             }
         } catch (e: Exception) {
             Logger.e("ImagesSearchPagingSource", e) { "Error loading page" }
+            val target = refreshTarget
+            if (params is LoadParams.Refresh && target != null && e !is CancellationException) {
+                cachedPage(target)?.let { cached ->
+                    onRefreshServed(e)
+                    return cached
+                }
+            }
             LoadResult.Error(e)
         }
+    }
+
+    /** The cached photos of [page] as a page with live keys, or null when Room has none. */
+    private suspend fun cachedPage(page: Int): LoadResult.Page<Int, MarsImage>? {
+        val from = (page - 1) * pageSize
+        val photos = try {
+            imagesDao.loadCachedOrderRange(roverId, fromOrder = from, toOrder = from + pageSize)
+        } catch (e: Exception) {
+            Logger.e("ImagesSearchPagingSource", e) { "Reading the offline cache failed" }
+            return null
+        }
+        if (photos.isEmpty()) return null
+        return LoadResult.Page(
+            data = photos,
+            prevKey = (page - 1).takeIf { it >= 1 },
+            nextKey = (page + 1).takeIf { totalHitsHint == null || it <= totalPages(totalHitsHint) },
+        )
     }
 
     private suspend fun loadRefresh(key: Int?): LoadResult<Int, MarsImage> {
@@ -76,6 +119,7 @@ class ImagesSearchPagingSource(
             val clamped = totalHitsHint
                 ?.let { requested.coerceIn(1, totalPages(it)) }
                 ?: requested.coerceAtLeast(1)
+            refreshTarget = clamped
             return loadPage(clamped)
         }
         // Random anchor: the total page count must be known to pick one. Use the cached hint
@@ -85,6 +129,7 @@ class ImagesSearchPagingSource(
         val totalHits = totalHitsHint ?: fetchPage(1).also { bootstrap = it }.totalHits
         val totalPages = totalPages(totalHits)
         val target = if (totalPages <= 1) 1 else random.nextInt(1, totalPages + 1)
+        refreshTarget = target
         val result = bootstrap.takeIf { target == 1 } ?: fetchPage(target)
         return result.toLoadPage(target)
     }
