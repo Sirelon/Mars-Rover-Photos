@@ -1,7 +1,9 @@
 package com.sirelon.marsroverphotos.data.network
 
+import com.sirelon.marsroverphotos.utils.nasaImageChainWorkingFirst
 import com.sirelon.marsroverphotos.utils.nasaImageLargeFallbackUrls
 import com.sirelon.marsroverphotos.utils.nasaImageSmallFallbackUrls
+import com.sirelon.marsroverphotos.utils.nasaImageVariantLoaded
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -96,5 +98,19 @@ class NasaImageFallbackUrlsTest {
     fun small_chain_noSizeToken_singleElementUnchanged() {
         val solUrl = "https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/03456/opgs/edr/ncam/NRB_720505614EDR_F1010502NCAM00595M_.JPG"
         assertEquals(listOf(solUrl), nasaImageSmallFallbackUrls(solUrl))
+    }
+
+    @Test
+    fun workingVariantIsTriedFirstOnTheNextLoad() {
+        val chain = nasaImageLargeFallbackUrls("https://images-assets.nasa.gov/image/MEM01/MEM01~small.jpg")
+        assertEquals(chain, nasaImageChainWorkingFirst(chain))
+
+        nasaImageVariantLoaded(preferredUrl = chain[0], loadedUrl = chain[2])
+
+        assertEquals(listOf(chain[2], chain[0], chain[1]), nasaImageChainWorkingFirst(chain))
+
+        // The preferred rung loading again clears the memory.
+        nasaImageVariantLoaded(preferredUrl = chain[0], loadedUrl = chain[0])
+        assertEquals(chain, nasaImageChainWorkingFirst(chain))
     }
 }
