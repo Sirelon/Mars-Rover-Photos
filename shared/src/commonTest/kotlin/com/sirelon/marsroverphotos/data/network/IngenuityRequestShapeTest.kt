@@ -79,6 +79,18 @@ class IngenuityRequestShapeTest {
     }
 
     @Test
+    fun fullFramesOnly_filtersThumbnailsWithOneExtendedParameter() = runTest {
+        val urls = mutableListOf<Url>()
+
+        apiRecording(urls).getPerseveranceRawImages(count = 1, category = "ingenuity", fullFramesOnly = true)
+
+        val params = urls.single().parameters
+        assertEquals(listOf("sample_type::full,"), params.getAll("extended"))
+        assertEquals(listOf("ingenuity"), params.getAll("category"))
+        assertEquals(listOf("1"), params.getAll("num"))
+    }
+
+    @Test
     fun nearestSolLookup_asksForAscendingOrderExactlyOnce() = runTest {
         val urls = mutableListOf<Url>()
 

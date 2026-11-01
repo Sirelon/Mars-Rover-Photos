@@ -307,9 +307,13 @@ The rover list row (`screens/RoversScreen.kt` → `RoverItem`). Anatomy, top→b
 
 - **Base:** `AppCard` (elevated, large radius). The whole card is clickable via `AppCard(onClick = …)`
   → `onNavigateToPhotos` (the card owns the `clickable` + hover-lift; the row no longer wraps it).
-- **Thumbnail:** full-height portrait `Image`, fixed width `AppSize.roverThumbWidth`,
-  `ContentScale.Crop`, clipped to `shapes.medium`. The row uses `height(IntrinsicSize.Min)` so the
-  thumb fills the text column's height.
+- **Thumbnail:** `RoverThumbnail` — full-height portrait box, fixed width `AppSize.roverThumbWidth`,
+  `ContentScale.Crop`, clipped to `shapes.large`. The row uses `height(IntrinsicSize.Min)` so the
+  thumb fills the text column's height. The static artwork always draws and sizes the box; the
+  rover's latest real photo (`RoversViewModel.coverUrls`, from `RoverCoversRepository`) crossfades
+  over it with `matchParentSize()`, so a tall photo cannot stretch the card through the intrinsic
+  measure. A failed or missing photo leaves the artwork — the card has no error state — and a newer
+  photo loads behind the previous one (its painter is the placeholder), never back to the artwork.
 - **Title line:** a `FlowRow` of the coral rover name (`colorScheme.secondary`, `titleLarge`, 1 line +
   ellipsis) followed by an Active/Complete `StatusBadge` — `FlowRow` (not `Row`) so a long name + chip
   wrap gracefully instead of squeezing. The line reserves `AppSize.roverInfoReserve` trailing padding

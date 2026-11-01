@@ -100,6 +100,15 @@ class VikingCatalogTest {
     }
 
     @Test
+    fun `the latest photo is the last frame of the last imaging sol`() = runTest {
+        val photo = assertNotNull(catalog.latestPhoto(VIKING_1_ID))
+
+        assertEquals(2230L, photo.sol)
+        assertEquals("1982-10-28", photo.earthDate)
+        assertEquals(VIKING_1_ID, photo.roverId)
+    }
+
+    @Test
     fun `the repository routes Viking to the catalogue and everything else to the api`() = runTest {
         val repository = PhotosRepositoryImpl(api = RestApi(), vikingCatalog = catalog)
 

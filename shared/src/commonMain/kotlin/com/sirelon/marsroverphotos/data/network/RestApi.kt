@@ -155,6 +155,29 @@ class RestApi {
     suspend fun getIngenuityNearestSolAtOrAfter(fromSol: Long): Long? =
         nasaApi.getIngenuityNearestSolAtOrAfter(fromSol)
 
+    /**
+     * The newest full-frame photo of a raw-feed mission (Perseverance, Ingenuity, InSight,
+     * Curiosity), or null for any other rover id. One item per request, thumbnails excluded.
+     *
+     * For the closed missions (Ingenuity, InSight) this is their final photo. Never writes to
+     * [_perseveranceTotalImages]: the Ingenuity response counts Ingenuity's images (SIR-80).
+     */
+    suspend fun getLatestFullFramePhoto(roverId: Long): MarsImage? = when (roverId) {
+        PERSEVERANCE_ID, INGENUITY_ID -> nasaApi.getPerseveranceRawImages(
+            count = 1,
+            category = if (roverId == INGENUITY_ID) "ingenuity" else "mars2020",
+            fullFramesOnly = true,
+        ).photos.preveranceToUI(roverId).firstOrNull()
+
+        INSIGHT_ID -> nasaApi.getRawImages("insight", perPage = 1, fullFramesOnly = true)
+            .list.mapToUi(roverId).firstOrNull()
+
+        CURIOSITY_ID -> nasaApi.getRawImages("msl", perPage = 1, fullFramesOnly = true)
+            .list.mapToUiMsl(roverId).firstOrNull()
+
+        else -> null
+    }
+
     suspend fun getInsightLatestPhotos(): List<MarsImage> {
         return nasaApi.getRawImages("insight").list.mapToUi(INSIGHT_ID)
     }
@@ -174,7 +197,8 @@ class RestApi {
         page: Int,
         pageSize: Int = 100,
         keywords: String? = null,
-    ): NasaImagesSearchResponse = nasaApi.searchImages(query, page, pageSize, keywords)
+        yearStart: Int? = null,
+    ): NasaImagesSearchResponse = nasaApi.searchImages(query, page, pageSize, keywords, yearStart)
 
     suspend fun getPerseveranceLatestPhotos(count: Int = 1): List<MarsImage> {
         val response = nasaApi.getPerseveranceRawImages(count = count)
