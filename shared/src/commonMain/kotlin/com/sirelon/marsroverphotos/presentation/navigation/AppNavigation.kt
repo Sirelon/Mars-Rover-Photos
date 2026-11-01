@@ -37,6 +37,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
+import com.sirelon.marsroverphotos.domain.settings.AppSettings
 import com.sirelon.marsroverphotos.platform.BuildInfo
 import com.sirelon.marsroverphotos.presentation.review.ReviewPrompter
 import com.sirelon.marsroverphotos.presentation.viewmodels.SupportViewModel
@@ -169,6 +170,10 @@ fun AppNavigation(
     // Owning any Support tier turns the ad slot off — live, the moment the purchase completes.
     val supportViewModel: SupportViewModel = koinViewModel()
     val isAdFree by supportViewModel.isAdFree.collectAsStateWithLifecycle()
+    // No banner until the user has opened a rover once (persisted): a first launch shows the bare
+    // rover list, not an ad.
+    val appSettings: AppSettings = koinInject()
+    val roverOpenCount by appSettings.roverOpenCountFlow.collectAsStateWithLifecycle()
     // Screens self-register as fullscreen by implementing the marker interface, so a new one can't
     // ship with the chrome still drawn over it (this flag drives chromeVisible, the status-bar
     // inset animation and the Ukraine banner).
@@ -289,7 +294,7 @@ fun AppNavigation(
                 },
                 resetScrollKey = chromeDestination,
                 chromeVisible = !isFullscreen,
-                bottomChrome = { if (!BuildInfo.hideAds && !isAdFree) AdSlot(modifier = Modifier.fillMaxWidth()) },
+                bottomChrome = { if (!BuildInfo.hideAds && !isAdFree && roverOpenCount > 0) AdSlot(modifier = Modifier.fillMaxWidth()) },
             ) {
                 val statusBarTop = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
                 val topPadding by animateDpAsState(
