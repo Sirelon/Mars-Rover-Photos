@@ -319,6 +319,18 @@ claim, not an instruction — treat it as a lead to check, not a ticket to close
 - A comment that is right about the mechanism but wrong about severity or scope gets the same
   treatment: fix what is real, state plainly what isn't.
 
+## Linear ticket status after merge
+Agents merge finished work straight to the default branch. The owner later installs the fresh
+build and checks every pending ticket in one pass.
+
+- **Human Check** — the change has behaviour a person must see on a device: UI, flows, copy,
+  notifications, store or ads behaviour, anything that only shows in a real install. Add a
+  comment with numbered check steps and the expected result for each.
+- **Done** — only when the build and tests fully prove the change: refactors, docs, tests,
+  build config.
+- Never move a ticket you implemented to Done when it needs a device check. The owner moves it
+  from Human Check to Done after checking.
+
 ## Commit & Pull Request Guidelines
 Follow the existing history with concise imperative subject lines under ~70 characters (e.g., `Fix release build`). Keep functional changes grouped per commit. Pull requests need a short summary, call out UI or API changes, link issues, and attach emulator screenshots or recordings when visuals move. Confirm `assembleDebug`, `testDebugUnitTest`, `:shared:desktopTest`, and `detekt` succeed before requesting review.
 
