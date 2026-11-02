@@ -50,6 +50,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
@@ -409,9 +410,15 @@ private fun RoverThumbnail(
             val chain = remember(photoUrl) { nasaImageSmallFallbackUrls(photoUrl) }
             var attempt by remember(photoUrl) { mutableIntStateOf(0) }
             var shownPhoto by remember { mutableStateOf<Painter?>(null) }
-            val request = remember(chain, attempt) {
+            // A fixed request size, rather than one Coil resolves after layout, lets Coil answer
+            // from its memory cache in the first frame. Without it a card scrolled back into view
+            // shows the artwork for a frame or two and then crossfades to the photo again. Twice
+            // the width covers the portrait box, so a cropped landscape frame stays sharp.
+            val sizePx = with(LocalDensity.current) { AppSize.roverThumbWidth.roundToPx() }
+            val request = remember(chain, attempt, sizePx) {
                 ImageRequest.Builder(context)
                     .data(chain[attempt])
+                    .size(width = sizePx, height = sizePx * 2)
                     .crossfade(true)
                     .build()
             }

@@ -314,6 +314,8 @@ The rover list row (`screens/RoversScreen.kt` → `RoverItem`). Anatomy, top→b
   over it with `matchParentSize()`, so a tall photo cannot stretch the card through the intrinsic
   measure. A failed or missing photo leaves the artwork — the card has no error state — and a newer
   photo loads behind the previous one (its painter is the placeholder), never back to the artwork.
+  The request has a fixed size, so a card scrolled back into view gets its photo from Coil's memory
+  cache in the first frame, with no artwork flash and no second crossfade.
 - **Title line:** a `FlowRow` of the coral rover name (`colorScheme.secondary`, `titleLarge`, 1 line +
   ellipsis) followed by an Active/Complete `StatusBadge` — `FlowRow` (not `Row`) so a long name + chip
   wrap gracefully instead of squeezing. The line reserves `AppSize.roverInfoReserve` trailing padding
