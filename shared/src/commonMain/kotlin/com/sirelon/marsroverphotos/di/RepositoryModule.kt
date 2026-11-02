@@ -4,6 +4,7 @@ import com.sirelon.marsroverphotos.platform.ConsentPromptGate
 import com.sirelon.marsroverphotos.presentation.review.ReviewPrompter
 import com.sirelon.marsroverphotos.data.LastViewedPhotoStore
 import com.sirelon.marsroverphotos.data.paging.RoverFeedPager
+import com.sirelon.marsroverphotos.data.repositories.CoverFrameCheck
 import com.sirelon.marsroverphotos.data.repositories.FactsRepositoryImpl
 import com.sirelon.marsroverphotos.data.repositories.ImagesRepositoryImpl
 import com.sirelon.marsroverphotos.data.repositories.PhotosRepositoryImpl
@@ -37,7 +38,11 @@ val repositoryModule = module {
 
     // Repositories
     single<PhotosRepository> {
-        PhotosRepositoryImpl(api = get(), vikingCatalog = get())
+        PhotosRepositoryImpl(
+            api = get(),
+            vikingCatalog = get(),
+            isGoodCover = CoverFrameCheck(api = get())::isGoodCover,
+        )
     }
 
     // Shared rover-feed pager — one instance feeds both the photos list and the detail pager

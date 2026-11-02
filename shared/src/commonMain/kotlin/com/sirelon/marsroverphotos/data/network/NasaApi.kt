@@ -18,7 +18,8 @@ internal class NasaApi(private val ktor: HttpClient) {
      * One page of the MSL / InSight raw-image feed, newest first.
      *
      * [fullFramesOnly] drops the feed's 64px thumbnails, which otherwise lead every freshly
-     * downlinked sol: the newest MSL item is usually one of them.
+     * downlinked sol: the newest MSL item is usually one of them. [instruments] keeps only those
+     * cameras (e.g. `MAST_LEFT`).
      */
     suspend fun getRawImages(
         mission: String,
@@ -27,6 +28,7 @@ internal class NasaApi(private val ktor: HttpClient) {
         page: Int = 0,
         perPage: Int = 100,
         fullFramesOnly: Boolean = false,
+        instruments: List<String>? = null,
     ): PhotosResponse {
         return ktor.get("https://mars.nasa.gov/api/v1/raw_image_items/?order=sol+desc%2Cdate_taken+desc&condition_1=$mission:mission") {
             parameter("condition_2", from)
@@ -34,6 +36,8 @@ internal class NasaApi(private val ktor: HttpClient) {
             parameter("page", page)
             parameter("per_page", perPage)
             parameter("extended", if (fullFramesOnly) "thumbnail::sample_type::noteq" else null)
+            // condition_4, so it never collides with the from/to conditions above.
+            parameter("condition_4", instruments?.let { "${it.joinToString(",")}:instrument:in" })
         }.body()
     }
 

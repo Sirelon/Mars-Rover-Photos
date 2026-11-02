@@ -134,4 +134,18 @@ class IngenuityRequestShapeTest {
 
         assertNull(sol)
     }
+
+    // The MSL cover candidates filter by camera in condition_4, clear of the from/to conditions.
+    @Test
+    fun mslInstrumentFilter_usesItsOwnConditionSlot() = runTest {
+        val urls = mutableListOf<Url>()
+
+        apiRecording(urls, body = """{"items":[]}""")
+            .getRawImages("msl", perPage = 50, fullFramesOnly = true, instruments = listOf("MAST_LEFT", "MAST_RIGHT"))
+
+        val params = urls.single().parameters
+        assertEquals(listOf("MAST_LEFT,MAST_RIGHT:instrument:in"), params.getAll("condition_4"))
+        assertNull(params["condition_2"])
+        assertEquals(listOf("50"), params.getAll("per_page"))
+    }
 }
