@@ -86,6 +86,15 @@ class RoverFeedPager(
      */
     val currentRoverId: StateFlow<Long?> = _currentRoverId.asStateFlow()
 
+    private val _refreshNetworkError = MutableStateFlow<Throwable?>(null)
+
+    /**
+     * The network error behind the current feed's last refresh when Room's cached photos were
+     * served in its place; null when that refresh came from the network. The photos screen reads
+     * it to show the offline snackbar and to report the failure instead of a load time.
+     */
+    val refreshNetworkError: StateFlow<Throwable?> = _refreshNetworkError.asStateFlow()
+
     /**
      * Id of the photo most recently shown in the fullscreen detail pager. The list reads (and
      * clears) this via [consumeLastViewedPhotoId] when the viewer is closed so it can restore its
@@ -127,6 +136,7 @@ class RoverFeedPager(
                             initialSol = mode.anchorSol,
                             minSol = mode.minSol,
                             maxSol = mode.maxSol,
+                            onRefreshServed = { _refreshNetworkError.value = it },
                         )
                     },
                 ).flow
@@ -141,6 +151,8 @@ class RoverFeedPager(
                             imagesDao = imagesDao,
                             anchorPage = mode.anchorPage,
                             totalHitsHint = totalHitsCache[query],
+                            roverId = p.roverId,
+                            onRefreshServed = { _refreshNetworkError.value = it },
                             onTotalHits = { hits ->
                                 totalHitsCache[query] = hits
                                 _totalPagePhotos.value = hits
@@ -173,6 +185,7 @@ class RoverFeedPager(
         // any optimistic overrides are stale/redundant — clear them to keep the map from growing.
         // setFeed is only called from main-thread ViewModel code, so this mutation is safe.
         favoriteOverrides.clear()
+        _refreshNetworkError.value = null
         val params = Params(roverId = roverId, mode = mode)
         latestParams = params
         paramsFlow.tryEmit(params)

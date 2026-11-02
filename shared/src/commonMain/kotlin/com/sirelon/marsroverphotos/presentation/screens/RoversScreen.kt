@@ -36,6 +36,7 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -46,10 +47,16 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import com.sirelon.marsroverphotos.domain.models.Rover
@@ -80,6 +87,7 @@ import com.sirelon.marsroverphotos.shared.resources.rovers_subtitle_fmt
 import com.sirelon.marsroverphotos.shared.resources.rovers_title
 import com.sirelon.marsroverphotos.utils.formatCompact
 import com.sirelon.marsroverphotos.utils.formatDisplayDate
+import com.sirelon.marsroverphotos.utils.nasaImageSmallFallbackUrls
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -95,6 +103,7 @@ fun RoversScreen(
     val rovers by viewModel.rovers.collectAsStateWithLifecycle()
     val filteredRovers by viewModel.filteredRovers.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
+    val coverUrls by viewModel.coverUrls.collectAsStateWithLifecycle()
 
     // The release card lives here, at the top of the list, rather than as a launch dialog: the
     // decision of which card (if any) is the ViewModel's, this screen only renders it.
@@ -110,6 +119,7 @@ fun RoversScreen(
     RoversContent(
         rovers = filteredRovers,
         allRovers = rovers,
+        coverUrls = coverUrls,
         searchQuery = searchQuery,
         onSearchQueryChange = viewModel::onSearchQueryChange,
         onClick = { rover ->
@@ -137,6 +147,7 @@ fun RoversScreen(
 fun RoversContent(
     rovers: List<Rover>,
     allRovers: List<Rover>,
+    coverUrls: Map<Long, String>,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     onClick: (rover: Rover) -> Unit,
@@ -282,6 +293,7 @@ fun RoversContent(
                         RoverItem(
                             modifier = Modifier.fillMaxWidth(),
                             rover = item,
+                            photoUrl = coverUrls[item.id],
                             onClick = onClick,
                             onMissionInfoClick = onMissionInfoClick
                         )
@@ -311,7 +323,8 @@ fun RoverItem(
     rover: Rover,
     onClick: (rover: Rover) -> Unit,
     onMissionInfoClick: (rover: Rover) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    photoUrl: String? = null,
 ) {
     AppCard(
         modifier = modifier.testTag("roverCard"),
@@ -325,10 +338,9 @@ fun RoverItem(
                     .padding(AppSpacing.md),
                 horizontalArrangement = Arrangement.spacedBy(AppSpacing.md)
             ) {
-                Image(
-                    painter = rover.painter(),
-                    contentDescription = rover.name,
-                    contentScale = ContentScale.Crop,
+                RoverThumbnail(
+                    rover = rover,
+                    photoUrl = photoUrl,
                     modifier = Modifier
                         .width(AppSize.roverThumbWidth)
                         .fillMaxHeight()
@@ -363,6 +375,64 @@ fun RoverItem(
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+        }
+    }
+}
+
+/**
+ * The rover's static artwork, with its latest real photo crossfaded over it once that loads.
+ *
+ * The artwork is drawn first and always: it is the image while the photo loads, and it stays the
+ * image when the photo fails or never arrives — there is no error state. It also stays the child
+ * that sizes the box, because the row measures at `IntrinsicSize.Min`: the photo fills the box
+ * with `matchParentSize()`, so a tall Viking frame cannot stretch the card.
+ *
+ * When [photoUrl] changes (a newer photo on refresh), the previous photo stays up as the
+ * placeholder until the new one has loaded, so the card never flashes back to the artwork.
+ */
+@Composable
+private fun RoverThumbnail(
+    rover: Rover,
+    photoUrl: String?,
+    modifier: Modifier = Modifier,
+) {
+    Box(modifier = modifier) {
+        Image(
+            painter = rover.painter(),
+            contentDescription = rover.name,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+        if (photoUrl != null) {
+            val context = LocalPlatformContext.current
+            // Spirit/Opportunity ~small URLs can 403; walk the same chain as the photo grid. Any
+            // other URL is a one-element chain.
+            val chain = remember(photoUrl) { nasaImageSmallFallbackUrls(photoUrl) }
+            var attempt by remember(photoUrl) { mutableIntStateOf(0) }
+            var shownPhoto by remember { mutableStateOf<Painter?>(null) }
+            // A fixed request size, rather than one Coil resolves after layout, lets Coil answer
+            // from its memory cache in the first frame. Without it a card scrolled back into view
+            // shows the artwork for a frame or two and then crossfades to the photo again. Twice
+            // the width covers the portrait box, so a cropped landscape frame stays sharp.
+            val sizePx = with(LocalDensity.current) { AppSize.roverThumbWidth.roundToPx() }
+            val request = remember(chain, attempt, sizePx) {
+                ImageRequest.Builder(context)
+                    .data(chain[attempt])
+                    .size(width = sizePx, height = sizePx * 2)
+                    .crossfade(true)
+                    .build()
+            }
+            AsyncImage(
+                model = request,
+                // Decorative: the artwork underneath already names the rover.
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                placeholder = shownPhoto,
+                error = shownPhoto,
+                onSuccess = { shownPhoto = it.painter },
+                onError = { if (attempt < chain.lastIndex) attempt += 1 },
+                modifier = Modifier.matchParentSize()
+            )
         }
     }
 }

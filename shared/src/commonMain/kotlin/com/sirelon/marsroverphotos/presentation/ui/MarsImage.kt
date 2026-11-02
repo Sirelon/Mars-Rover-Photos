@@ -44,6 +44,8 @@ import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
 import com.sirelon.marsroverphotos.shared.resources.Res
 import com.sirelon.marsroverphotos.shared.resources.img_placeholder
 import com.sirelon.marsroverphotos.utils.formatThousands
+import com.sirelon.marsroverphotos.utils.nasaImageChainWorkingFirst
+import com.sirelon.marsroverphotos.utils.nasaImageVariantLoaded
 import org.jetbrains.compose.resources.painterResource
 
 /**
@@ -253,10 +255,12 @@ fun NetworkImage(
     // The chain — and which rung we're on — resets whenever the requested image or its fallback
     // chain changes (a different photo, or the fullscreen viewer swapping ~large for ~orig on
     // zoom), so each image walks its own chain once rather than carrying over a prior failure.
-    val chain = remember(imageUrl, fallbackUrls) { listOf(imageUrl) + fallbackUrls }
+    // A variant that already loaded for this photo goes first, so a revisit skips the 403 rungs.
+    val chain = remember(imageUrl, fallbackUrls) { nasaImageChainWorkingFirst(listOf(imageUrl) + fallbackUrls) }
     var attempt by remember(imageUrl, fallbackUrls) { mutableStateOf(0) }
     val currentUrl = chain[attempt.coerceIn(0, chain.lastIndex)]
     val advanceToNextVariant = { if (attempt < chain.lastIndex) attempt += 1 }
+    val rememberLoadedVariant = { if (chain.size > 1) nasaImageVariantLoaded(imageUrl, currentUrl) }
 
     // cacheKey/placeholderCacheKey stay fixed across attempts regardless of currentUrl, so a
     // bitmap that only loaded via a fallback variant is still stored under the same shared key
@@ -278,6 +282,7 @@ fun NetworkImage(
             modifier = modifier,
             contentScale = contentScale,
             placeholder = painterResource(Res.drawable.img_placeholder),
+            onSuccess = { rememberLoadedVariant() },
             onError = { advanceToNextVariant() },
         )
     } else if (placeholderCacheKey != null) {
@@ -289,6 +294,7 @@ fun NetworkImage(
             contentDescription = contentDescription,
             modifier = modifier,
             contentScale = contentScale,
+            onSuccess = { rememberLoadedVariant() },
             onError = { advanceToNextVariant() },
         )
     } else {
@@ -299,7 +305,10 @@ fun NetworkImage(
                 contentDescription = contentDescription,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = contentScale,
-                onSuccess = { isLoading = false },
+                onSuccess = {
+                    isLoading = false
+                    rememberLoadedVariant()
+                },
                 onError = {
                     if (attempt < chain.lastIndex) advanceToNextVariant() else isLoading = false
                 },

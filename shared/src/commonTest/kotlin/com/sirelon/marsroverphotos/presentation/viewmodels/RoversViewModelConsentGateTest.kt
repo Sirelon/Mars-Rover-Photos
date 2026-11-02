@@ -1,6 +1,7 @@
 package com.sirelon.marsroverphotos.presentation.viewmodels
 
 import com.sirelon.marsroverphotos.domain.models.Rover
+import com.sirelon.marsroverphotos.domain.repositories.RoverCoversRepository
 import com.sirelon.marsroverphotos.domain.repositories.RoversRepository
 import com.sirelon.marsroverphotos.domain.settings.AppSettings
 import com.sirelon.marsroverphotos.platform.ConsentPromptGate
@@ -9,6 +10,8 @@ import com.sirelon.marsroverphotos.platform.RecordingTracker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -39,6 +42,11 @@ private class FakeRoversRepository : RoversRepository {
     override suspend fun updateRoverCountPhotos(roverId: Long, photos: Long) = Unit
 }
 
+private class FakeRoverCoversRepository : RoverCoversRepository {
+    override val coverUrls: StateFlow<Map<Long, String>> = MutableStateFlow(emptyMap())
+    override fun refreshOnce() = Unit
+}
+
 /**
  * The consent prompts key off this one signal, so what matters is that it cannot fire before the
  * user's second rover, that taps from earlier sessions count, and that only a tap — never a launch
@@ -53,7 +61,7 @@ class RoversViewModelConsentGateTest {
     }
 
     private fun viewModel(gate: ConsentPromptGate, settings: AppSettings) =
-        RoversViewModel(FakeRoversRepository(), RecordingTracker(), settings, gate)
+        RoversViewModel(FakeRoversRepository(), RecordingTracker(), settings, gate, FakeRoverCoversRepository())
 
     @Test
     fun staysClosedThroughTheFirstEverRoverTap() = runTest {

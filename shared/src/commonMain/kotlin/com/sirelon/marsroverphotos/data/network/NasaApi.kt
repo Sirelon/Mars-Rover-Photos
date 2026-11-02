@@ -14,16 +14,30 @@ import io.ktor.client.request.parameter
  */
 internal class NasaApi(private val ktor: HttpClient) {
 
+    /**
+     * One page of the MSL / InSight raw-image feed, newest first.
+     *
+     * [fullFramesOnly] drops the feed's 64px thumbnails, which otherwise lead every freshly
+     * downlinked sol: the newest MSL item is usually one of them. [instruments] keeps only those
+     * cameras (e.g. `MAST_LEFT`).
+     */
     suspend fun getRawImages(
         mission: String,
         from: String? = null,
         to: String? = null,
         page: Int = 0,
+        perPage: Int = 100,
+        fullFramesOnly: Boolean = false,
+        instruments: List<String>? = null,
     ): PhotosResponse {
-        return ktor.get("https://mars.nasa.gov/api/v1/raw_image_items/?order=sol+desc%2Cdate_taken+desc&per_page=100&page=0&condition_1=$mission:mission") {
+        return ktor.get("https://mars.nasa.gov/api/v1/raw_image_items/?order=sol+desc%2Cdate_taken+desc&condition_1=$mission:mission") {
             parameter("condition_2", from)
             parameter("condition_3", to)
             parameter("page", page)
+            parameter("per_page", perPage)
+            parameter("extended", if (fullFramesOnly) "thumbnail::sample_type::noteq" else null)
+            // condition_4, so it never collides with the from/to conditions above.
+            parameter("condition_4", instruments?.let { "${it.joinToString(",")}:instrument:in" })
         }.body()
     }
 
@@ -32,6 +46,7 @@ internal class NasaApi(private val ktor: HttpClient) {
         page: Int,
         pageSize: Int = 100,
         keywords: String? = null,
+        yearStart: Int? = null,
     ): NasaImagesSearchResponse {
         return ktor.get("https://images-api.nasa.gov/search") {
             parameter("q", q)
@@ -40,6 +55,7 @@ internal class NasaApi(private val ktor: HttpClient) {
             parameter("page_size", pageSize)
             // Ktor drops null parameters, so keywords is only sent when provided.
             parameter("keywords", keywords)
+            parameter("year_start", yearStart)
         }.body()
     }
 
@@ -52,12 +68,15 @@ internal class NasaApi(private val ktor: HttpClient) {
      * silently falls back to its own default (`mars2020`, `sol desc`). A second `category` here
      * would therefore return Perseverance photos for an Ingenuity request, with no error, and
      * they would be cached under the wrong rover id. Never reintroduce either into the literal.
+     *
+     * [fullFramesOnly] drops the 192px thumbnails that often lead a fresh sol.
      */
     suspend fun getPerseveranceRawImages(
         count: Int = 100,
         sol: String? = null,
         category: String = "mars2020",
         page: Int? = null,
+        fullFramesOnly: Boolean = false,
     ): PerseverancePhotosResponse {
         return ktor.get("https://mars.nasa.gov/rss/api/?feed=raw_images&feedtype=json") {
             parameter("category", category)
@@ -65,6 +84,7 @@ internal class NasaApi(private val ktor: HttpClient) {
             parameter("num", count)
             parameter("condition_3", sol)
             parameter("page", page)
+            parameter("extended", if (fullFramesOnly) "sample_type::full," else null)
         }.body()
     }
 

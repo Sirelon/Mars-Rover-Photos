@@ -36,7 +36,27 @@ class FakePhotosRepository(
  */
 class FakeImagesDao(
     private val persistedById: Map<String, MarsImage> = emptyMap(),
+    /** Rows the offline fallback reads ([loadCachedSol], [loadCachedOrderRange]). */
+    private val cached: List<MarsImage> = emptyList(),
 ) : ImagesDao {
+
+    override suspend fun loadCachedSol(roverId: Long, sol: Long): List<MarsImage> =
+        cached.filter { it.roverId == roverId && it.sol == sol }
+
+    override suspend fun loadCachedOrderRange(roverId: Long, fromOrder: Int, toOrder: Int): List<MarsImage> =
+        cached.filter { it.roverId == roverId && !it.popular && it.order >= fromOrder && it.order < toOrder }
+
+    override suspend fun nearestCachedSols(roverId: Long, sol: Long, minSol: Long, maxSol: Long, limit: Int): List<Long> =
+        cached.filter { it.roverId == roverId && it.sol in minSol..maxSol }
+            .map { it.sol }
+            .distinct()
+            .sortedWith(compareBy<Long> { kotlin.math.abs(it - sol) }.thenByDescending { it })
+            .take(limit)
+
+    override suspend fun nearestCachedOrder(roverId: Long, order: Int): Int? =
+        cached.filter { it.roverId == roverId && !it.popular }
+            .map { it.order }
+            .minWithOrNull(compareBy<Int> { kotlin.math.abs(it - order) }.thenBy { it })
     val insertedIds = mutableListOf<String>()
     var evictionCalls = 0
 

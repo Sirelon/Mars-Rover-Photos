@@ -7,6 +7,7 @@ import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.domain.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.domain.repositories.PhotosRepository
 import com.sirelon.marsroverphotos.utils.Logger
+import kotlinx.coroutines.CancellationException
 import kotlin.math.abs
 
 /**
@@ -45,6 +46,12 @@ import kotlin.math.abs
  * Fetched photos are **written through** to Room ([cacheAndMerge]) and any persisted favorite/stats
  * are merged back, so the cache stays a passive side-store (this remains a network-driven source)
  * while the viewer shows correct favorite state.
+ *
+ * Offline fallback: when a Refresh fails, Room's cached photos of the sol nearest to the anchor are
+ * served instead of the error (camera filter applied; the anchor itself when it is cached). A
+ * first open anchors on a sol that is rarely cached, so an exact-sol match alone would almost never
+ * help. The page keeps live keys, so scrolling retries the network. [onRefreshServed] tells the
+ * caller which kind of refresh it got.
  */
 class SolPagingSource(
     private val photosRepository: PhotosRepository,
@@ -54,6 +61,11 @@ class SolPagingSource(
     private val initialSol: Long,
     private val minSol: Long,
     private val maxSol: Long,
+    /**
+     * Called after every successful Refresh: with the network error the cache covered for, or
+     * null when the photos came from the network.
+     */
+    private val onRefreshServed: (networkError: Throwable?) -> Unit = {},
 ) : PagingSource<Long, MarsImage>() {
 
     /** Inserts since the last cache eviction; eviction runs only every [EVICT_EVERY_N_LOADS]. */
@@ -80,11 +92,35 @@ class SolPagingSource(
                 is LoadParams.Append -> findNextPage(params.key, step = +1)
                 is LoadParams.Prepend -> findNextPage(params.key, step = -1)
                 is LoadParams.Refresh -> loadRefresh(params.key ?: initialSol)
+                    .also { onRefreshServed(null) }
             }
         } catch (e: Exception) {
             Logger.e("SolPagingSource", e) { "Error loading sol page (rover=$roverId)" }
+            if (params is LoadParams.Refresh && e !is CancellationException) {
+                cachedPage(params.key ?: initialSol)?.let { cached ->
+                    onRefreshServed(e)
+                    return cached
+                }
+            }
             LoadResult.Error(e)
         }
+    }
+
+    /**
+     * The cached sol nearest to [anchor] that has photos for this camera set, as a page with live
+     * keys; null when Room has none. Checks at most [OFFLINE_SOL_CANDIDATES] cached sols.
+     */
+    private suspend fun cachedPage(anchor: Long): LoadResult.Page<Long, MarsImage>? = try {
+        imagesDao.nearestCachedSols(roverId, anchor, minSol, maxSol, OFFLINE_SOL_CANDIDATES)
+            .firstNotNullOfOrNull { sol ->
+                imagesDao.loadCachedSol(roverId, sol)
+                    .filterByCameras(cameras)
+                    .takeIf { it.isNotEmpty() }
+                    ?.let { Day(sol, it).toPage() }
+            }
+    } catch (e: Exception) {
+        Logger.e("SolPagingSource", e) { "Reading the offline cache failed" }
+        null
     }
 
     /**
@@ -304,5 +340,7 @@ class SolPagingSource(
         private const val CACHE_KEEP_LIMIT = 2000
         /** Run cache eviction once every this many cached pages (keeps it off the hot path). */
         private const val EVICT_EVERY_N_LOADS = 20
+        /** Cached sols the offline fallback checks for photos matching the camera filter. */
+        private const val OFFLINE_SOL_CANDIDATES = 30
     }
 }

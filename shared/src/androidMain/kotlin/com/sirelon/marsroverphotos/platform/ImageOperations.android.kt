@@ -16,6 +16,8 @@ import coil3.request.SuccessResult
 import coil3.request.allowHardware
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.utils.Logger
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 
 /**
@@ -43,29 +45,32 @@ class AndroidImageOperations(private val context: Context) : ImageOperations {
             val bitmap = (drawable as? BitmapDrawable)?.bitmap
                 ?: return ImageOperationResult.Error("Failed to convert image to bitmap")
 
-            // Save to MediaStore
-            val contentValues = ContentValues().apply {
-                put(MediaStore.MediaColumns.DISPLAY_NAME, "MarsPhoto_${photo.id}.jpg")
-                put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    put(
-                        MediaStore.MediaColumns.RELATIVE_PATH,
-                        "${Environment.DIRECTORY_PICTURES}${File.separator}MarsRoverPhotos"
-                    )
+            // MediaStore insert and the full-quality JPEG encode are blocking I/O; off the caller's
+            // (Main) dispatcher, they were an ANR source.
+            withContext(Dispatchers.IO) {
+                val contentValues = ContentValues().apply {
+                    put(MediaStore.MediaColumns.DISPLAY_NAME, "MarsPhoto_${photo.id}.jpg")
+                    put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        put(
+                            MediaStore.MediaColumns.RELATIVE_PATH,
+                            "${Environment.DIRECTORY_PICTURES}${File.separator}MarsRoverPhotos"
+                        )
+                    }
                 }
+
+                val imageUri = context.contentResolver.insert(
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    contentValues
+                ) ?: return@withContext ImageOperationResult.Error("Failed to create MediaStore entry")
+
+                context.contentResolver.openOutputStream(imageUri)?.use { outputStream ->
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                } ?: return@withContext ImageOperationResult.Error("Failed to open output stream")
+
+                Logger.d("AndroidImageOperations") { "Image saved successfully: $imageUri" }
+                ImageOperationResult.Success(imageUri.toString())
             }
-
-            val imageUri = context.contentResolver.insert(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                contentValues
-            ) ?: return ImageOperationResult.Error("Failed to create MediaStore entry")
-
-            context.contentResolver.openOutputStream(imageUri)?.use { outputStream ->
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
-            } ?: return ImageOperationResult.Error("Failed to open output stream")
-
-            Logger.d("AndroidImageOperations") { "Image saved successfully: $imageUri" }
-            ImageOperationResult.Success(imageUri.toString())
         } catch (e: Exception) {
             Logger.e("AndroidImageOperations", e) { "Error saving image" }
             ImageOperationResult.Error(e.message ?: "Unknown error while saving image")

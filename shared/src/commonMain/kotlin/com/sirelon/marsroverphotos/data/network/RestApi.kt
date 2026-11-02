@@ -9,9 +9,11 @@ import com.sirelon.marsroverphotos.domain.models.PERSEVERANCE_ID
 import com.sirelon.marsroverphotos.domain.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.platform.createHttpClientEngine
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.request.get
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -22,6 +24,9 @@ import kotlin.random.Random
 
 /** Pages of Ingenuity's closed archive: 14,553 images at the feed's cap of 100 per page. */
 private const val INGENUITY_FEED_PAGES = 146
+
+/** Newest feed items scanned for an active rover's cover candidates, before camera filtering. */
+private const val COVER_SCAN_SIZE = 50
 
 /**
  * @author romanishin
@@ -155,6 +160,43 @@ class RestApi {
     suspend fun getIngenuityNearestSolAtOrAfter(fromSol: Long): Long? =
         nasaApi.getIngenuityNearestSolAtOrAfter(fromSol)
 
+    /**
+     * The newest full frames of a raw-feed mission (Perseverance, Ingenuity, InSight, Curiosity),
+     * newest first; empty for any other rover id. Thumbnails are excluded.
+     *
+     * The active rovers return several candidates from their main color cameras, because their
+     * newest frame is often unusable as a cover: partly downlinked, or a grey raw frame. The
+     * caller picks one. Perseverance: Mastcam-Z only (its API has no camera filter, so the list
+     * is filtered here). Curiosity: Mastcam, without the raw Bayer frames (file name `…C00_…`),
+     * which are greyscale. The closed missions (Ingenuity, InSight) return their final photo.
+     *
+     * Never writes to [_perseveranceTotalImages]: the Ingenuity response counts Ingenuity's
+     * images (SIR-80).
+     */
+    suspend fun getLatestFullFrames(roverId: Long): List<MarsImage> = when (roverId) {
+        PERSEVERANCE_ID -> nasaApi.getPerseveranceRawImages(count = COVER_SCAN_SIZE, fullFramesOnly = true)
+            .photos.preveranceToUI(roverId)
+            .filter { it.camera?.fullName?.startsWith("MCZ_") == true }
+
+        INGENUITY_ID -> nasaApi.getPerseveranceRawImages(count = 1, category = "ingenuity", fullFramesOnly = true)
+            .photos.preveranceToUI(roverId)
+
+        INSIGHT_ID -> nasaApi.getRawImages("insight", perPage = 1, fullFramesOnly = true)
+            .list.mapToUi(roverId)
+
+        CURIOSITY_ID -> nasaApi.getRawImages(
+            "msl",
+            perPage = COVER_SCAN_SIZE,
+            fullFramesOnly = true,
+            instruments = listOf("MAST_LEFT", "MAST_RIGHT"),
+        ).list.mapToUiMsl(roverId).filterNot { "C00_" in it.imageUrl.substringAfterLast('/') }
+
+        else -> emptyList()
+    }
+
+    /** Raw bytes at [url], for the cover check that has to look at a frame's pixels. */
+    suspend fun downloadBytes(url: String): ByteArray = ktor.get(url).body()
+
     suspend fun getInsightLatestPhotos(): List<MarsImage> {
         return nasaApi.getRawImages("insight").list.mapToUi(INSIGHT_ID)
     }
@@ -174,7 +216,8 @@ class RestApi {
         page: Int,
         pageSize: Int = 100,
         keywords: String? = null,
-    ): NasaImagesSearchResponse = nasaApi.searchImages(query, page, pageSize, keywords)
+        yearStart: Int? = null,
+    ): NasaImagesSearchResponse = nasaApi.searchImages(query, page, pageSize, keywords, yearStart)
 
     suspend fun getPerseveranceLatestPhotos(count: Int = 1): List<MarsImage> {
         val response = nasaApi.getPerseveranceRawImages(count = count)

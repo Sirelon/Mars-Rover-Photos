@@ -48,6 +48,10 @@ class VikingCatalog {
         return if (camera == null) photos else photos.filter { it.camera?.name == camera }
     }
 
+    /** The last photo of the lander's last imaging sol. */
+    suspend fun latestPhoto(roverId: Long): MarsImage? =
+        catalog(roverId).maxByOrNull { it.key }?.value?.lastOrNull()
+
     /** A random photo from the whole mission, for surfaces that want "something to show". */
     suspend fun randomPhoto(roverId: Long): MarsImage? =
         catalog(roverId).values.flatten().randomOrNull()
