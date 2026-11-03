@@ -22,6 +22,7 @@ fun supportModule(revenueCatApiKey: String): Module = module {
             isDebug = BuildInfo.isDebug,
             scope = get(),
             preferences = get(),
+            tracker = get(),
         )
     }
     single<FeatureFlags> { FirebaseFeatureFlags(isDebug = BuildInfo.isDebug, scope = get()) }

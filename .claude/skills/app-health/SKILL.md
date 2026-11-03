@@ -77,8 +77,10 @@ Artifact page built from the snapshot.
 - Performance network hosts are aggregated (`host/**`), so per-endpoint breakdowns are impossible.
 - Crashlytics installs and GA4 users are different ids; crash-free rate is an approximation.
 - `app_remove` / `app_clear_data` exist on Android only.
-- Revenue truth is RevenueCat. The GA4 `support_purchase` event miscounts (Oct 2026: 2 events vs
-  4 real transactions; Sep 2026: 9 events vs $0, i.e. sandbox purchases).
+- Revenue truth is RevenueCat. In GA4, `support_purchase` is the purchase *attempt* funnel
+  (`result` = success / cancelled / failed, sent from the Support screen); `support_transaction`
+  is one event per completed store transaction (any path, incl. App Store promoted purchases).
+  Drop `test_store=true` rows. Builds before `support_transaction` shipped missed purchases.
 - Google Play pre-launch-report devices and test devices inflate new users from one country with
   near-zero retention; check that before calling it growth.
 - The Firebase MCP cannot read Crashlytics here (its `firebasecrashlytics.googleapis.com` host

@@ -18,11 +18,14 @@ import com.revenuecat.purchases.kmp.models.PurchasesTransactionException
 import com.revenuecat.purchases.kmp.models.StoreProduct
 import com.revenuecat.purchases.kmp.models.StoreTransaction
 import com.sirelon.marsroverphotos.domain.repositories.SupportRepository
+import com.sirelon.marsroverphotos.domain.support.StorePurchase
 import com.sirelon.marsroverphotos.domain.support.SupportPurchaseResult
 import com.sirelon.marsroverphotos.domain.support.SupportTier
 import com.sirelon.marsroverphotos.domain.support.SupportTierKind
+import com.sirelon.marsroverphotos.domain.support.purchasesToReport
 import com.sirelon.marsroverphotos.domain.support.tipAdFreeUntil
 import com.sirelon.marsroverphotos.platform.PlatformPreferences
+import com.sirelon.marsroverphotos.platform.Tracker
 import com.sirelon.marsroverphotos.utils.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -50,18 +53,26 @@ import kotlin.time.Clock
  * The current offering is fetched once per process behind a [Mutex]: every Nav3 entry builds its
  * own ViewModel, so without this the About row, the ad gate and the Support screen would each hit
  * the store. An empty result is not cached so a flaky launch retries on the next call.
+ *
+ * Every completed purchase is reported as `support_transaction`, once per store transaction, from
+ * the customer-info update rather than the Support screen: promoted App Store purchases, payments
+ * that clear later (Ask to Buy) and purchases that finish after the screen closed all land here.
  */
 class RevenueCatSupportRepository(
     apiKey: String,
-    isDebug: Boolean,
+    private val isDebug: Boolean,
     private val scope: CoroutineScope,
     private val preferences: PlatformPreferences,
+    private val tracker: Tracker,
 ) : SupportRepository {
 
     private companion object {
         const val TAG = "SupportRepository"
         const val AD_FREE_ENTITLEMENT = "ad_free"
         const val KEY_PURCHASES_SYNCED = "supportPurchasesSynced"
+        const val KEY_TRACKING_SINCE = "supportTransactionsTrackedSince"
+        const val KEY_REPORTED_TRANSACTIONS = "supportReportedTransactions"
+        const val EVENT_TRANSACTION = "support_transaction"
 
         /** The store titles are "Support: Lunch" / "Tip: Coffee"; the screen already says "Support". */
         val TITLE_PREFIXES = listOf("Support: ", "Tip: ")
@@ -86,6 +97,11 @@ class RevenueCatSupportRepository(
 
     private val offeringMutex = Mutex()
     private var cachedPackages: List<Package>? = null
+
+    /** Purchases older than this install's first launch with tracking are history, not news. */
+    private val trackingSinceMillis: Long =
+        preferences.getLong(KEY_TRACKING_SINCE, 0L).takeIf { it > 0 }
+            ?: Clock.System.now().toEpochMilliseconds().also { preferences.setLong(KEY_TRACKING_SINCE, it) }
 
     init {
         if (!Purchases.isConfigured) {
@@ -200,6 +216,7 @@ class RevenueCatSupportRepository(
      * Coffee is kept off the entitlement on purpose: RevenueCat would report it as unlocked forever.
      */
     private fun apply(customerInfo: CustomerInfo) {
+        reportNewPurchases(customerInfo)
         val owned = customerInfo.entitlements.active.containsKey(AD_FREE_ENTITLEMENT)
         val tipUntil = tipAdFreeUntil(
             customerInfo.nonSubscriptionTransactions
@@ -214,6 +231,27 @@ class RevenueCatSupportRepository(
                 delay(remaining)
                 apply(customerInfo)
             }
+        }
+    }
+
+    private fun reportNewPurchases(customerInfo: CustomerInfo) {
+        val reported = preferences.getString(KEY_REPORTED_TRANSACTIONS, "").split(',').filterTo(mutableSetOf()) { it.isNotEmpty() }
+        val owned = customerInfo.nonSubscriptionTransactions.map {
+            StorePurchase(it.transactionIdentifier, it.productIdentifier, it.purchaseDateMillis)
+        }
+        val fresh = purchasesToReport(owned, reported, trackingSinceMillis)
+        if (fresh.isEmpty()) return
+        preferences.setString(KEY_REPORTED_TRANSACTIONS, (reported + fresh.map { it.transactionId }).joinToString(","))
+        fresh.forEach { purchase ->
+            tracker.trackEvent(
+                EVENT_TRANSACTION,
+                buildMap {
+                    put("product", purchase.productId)
+                    put("kind", if (purchase.productId == TIP_PRODUCT) "tip" else "ad_free")
+                    // Debug builds buy from RevenueCat's Test Store; keep them out of revenue counts.
+                    if (isDebug) put("test_store", "true")
+                },
+            )
         }
     }
 
