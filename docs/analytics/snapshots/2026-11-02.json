@@ -2871,6 +2871,32 @@
     "requests": 27,
     "w": "prev"
    }
-  ]
+  ],
+  "revenuecat": {
+   "currency": "USD",
+   "cur": {
+    "revenue": 4.96,
+    "transactions": 4,
+    "by_product": {
+     "tip_coffee": {
+      "revenue": 2.97,
+      "transactions": 3
+     },
+     "support_medium": {
+      "revenue": 1.99,
+      "transactions": 1
+     }
+    },
+    "by_store": {
+     "app_store": 4.96
+    }
+   },
+   "prev": {
+    "revenue": 0,
+    "transactions": 0
+   },
+   "active_users_28d": 96,
+   "new_customers_28d": 96
+  }
  }
 }

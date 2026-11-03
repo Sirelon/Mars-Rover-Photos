@@ -17,7 +17,10 @@ import sys
 
 PROJECT = "mars-rover-photos"
 GA = f"`{PROJECT}.analytics_153659024.events_*`"
-CRASH = f"`{PROJECT}.firebase_crashlytics.com_sirelon_marsroverphotos_ANDROID`"
+CRASH = {
+    "ANDROID": f"`{PROJECT}.firebase_crashlytics.com_sirelon_marsroverphotos_ANDROID`",
+    "IOS": f"`{PROJECT}.firebase_crashlytics.com_sirelon_marsroverphotos_IOS`",
+}
 PERF = {
     "ANDROID": f"`{PROJECT}.firebase_performance.com_sirelon_marsroverphotos_ANDROID`",
     "IOS": f"`{PROJECT}.firebase_performance.com_sirelon_marsroverphotos_IOS`",
@@ -146,16 +149,21 @@ def main():
       FROM {GA} WHERE {ga_range} AND event_name='first_open' GROUP BY 1, 2, 3, 4
       ORDER BY new_users DESC"""
 
-    # Android crashes (iOS Crashlytics is not exported to BigQuery).
-    q["crashes_android"] = f"""
-      SELECT {ts_win} w, is_fatal, COUNT(*) events, COUNT(DISTINCT installation_uuid) installs
-      FROM {CRASH} WHERE {ts_range} GROUP BY 1, 2 ORDER BY 1, 2"""
-    q["crash_issues_android"] = f"""
-      SELECT {ts_win} w, issue_id, ANY_VALUE(issue_title) title, ANY_VALUE(issue_subtitle) subtitle,
-        LOGICAL_OR(is_fatal) fatal, COUNT(*) events, COUNT(DISTINCT installation_uuid) installs,
-        STRING_AGG(DISTINCT application.display_version, ', ') versions
-      FROM {CRASH} WHERE {ts_range} GROUP BY 1, 2
-      QUALIFY ROW_NUMBER() OVER (PARTITION BY w ORDER BY events DESC) <= 8 ORDER BY w, events DESC"""
+    # Crashes, per platform whose Crashlytics export table exists.
+    crash_tables = bq("SELECT table_name FROM `mars-rover-photos.firebase_crashlytics.INFORMATION_SCHEMA.TABLES`")
+    exported = {r["table_name"].rsplit("_", 1)[-1] for r in crash_tables}
+    for plat, table in CRASH.items():
+        if plat not in exported:
+            continue
+        q[f"crashes_{plat.lower()}"] = f"""
+          SELECT {ts_win} w, is_fatal, COUNT(*) events, COUNT(DISTINCT installation_uuid) installs
+          FROM {table} WHERE {ts_range} GROUP BY 1, 2 ORDER BY 1, 2"""
+        q[f"crash_issues_{plat.lower()}"] = f"""
+          SELECT {ts_win} w, issue_id, ANY_VALUE(issue_title) title, ANY_VALUE(issue_subtitle) subtitle,
+            LOGICAL_OR(is_fatal) fatal, COUNT(*) events, COUNT(DISTINCT installation_uuid) installs,
+            STRING_AGG(DISTINCT application.display_version, ', ') versions
+          FROM {table} WHERE {ts_range} GROUP BY 1, 2
+          QUALIFY ROW_NUMBER() OVER (PARTITION BY w ORDER BY events DESC) <= 8 ORDER BY w, events DESC"""
 
     # Performance: cold start and network failures.
     for plat, table in PERF.items():

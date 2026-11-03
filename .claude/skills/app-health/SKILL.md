@@ -29,10 +29,14 @@ snapshot file exists.
   this is the first report; say so.
 - **Releases**: `git tag --sort=-creatordate --format='%(refname:short) %(creatordate:short)' | head`
   — a release inside a window explains many shifts.
-- **iOS crashes** (not exported to BigQuery): Firebase MCP `crashlytics_get_report` for the iOS
-  app (`firebase_list_apps` gives the app id). Unavailable → note "iOS crashes: not checked".
-- **Revenue**: RevenueCat MCP (project `projf1deab13`) for purchases in the window, if it is
-  authenticated. Otherwise use the `support_purchase` event count from the snapshot.
+- **iOS crashes**: `crashes_ios` / `crash_issues_ios` appear in the snapshot once the iOS
+  Crashlytics BigQuery export has data. Missing → report "iOS crashes: not exported".
+- **Revenue**: RevenueCat MCP `get-chart-data`, project `projf1deab13`, chart `revenue`,
+  currency USD, `aggregate: ["total"]`, once per window (`start_date`/`end_date` from the
+  snapshot), plus `segment: product_id` and `segment: store` for `cur`. Write the totals into
+  the snapshot as `data.revenuecat` = `{currency, cur: {revenue, transactions, by_product,
+  by_store}, prev: {revenue, transactions}}`. RevenueCat unauthenticated → run its
+  `authenticate` tool and hand the user the URL.
 
 ## 3. Write the report
 
@@ -41,7 +45,7 @@ Write `docs/analytics/reports/<end-date>.md` with these sections, in order:
 1. **Verdict** — one line: growing / flat / declining, and the single biggest reason.
 2. **Scorecard** — table with columns Metric · Now · Prev window · Δ · Last report. Rows:
    active users, new users, avg DAU, DAU/MAU, sessions per user, engagement min per user,
-   D1 and week-1 retention, activation (new users who reached `PhotoSeen`), uninstalls ÷ new
+   D1 and week-1 retention, revenue and transactions, activation (new users who reached `PhotoSeen`), uninstalls ÷ new
    users, Android crashed installs, app-start p50 per platform. Split Android / iOS where they
    differ. Derive avg DAU from `daily`, rates from their parts.
 3. **Funnel** — first_open → rover_selected → photo_seen → fullscreen → fav/save/share, % of step 1.
@@ -73,8 +77,10 @@ Artifact page built from the snapshot.
 - Performance network hosts are aggregated (`host/**`), so per-endpoint breakdowns are impossible.
 - Crashlytics installs and GA4 users are different ids; crash-free rate is an approximation.
 - `app_remove` / `app_clear_data` exist on Android only.
+- Revenue truth is RevenueCat. The GA4 `support_purchase` event miscounts (Oct 2026: 2 events vs
+  4 real transactions; Sep 2026: 9 events vs $0, i.e. sandbox purchases).
 - Google Play pre-launch-report devices and test devices inflate new users from one country with
   near-zero retention; check that before calling it growth.
-- The Firebase MCP returned HTTP 403 for this project on 2026-11-03; iOS crash numbers then
-  need the Crashlytics console.
+- The Firebase MCP cannot read Crashlytics here (its `firebasecrashlytics.googleapis.com` host
+  does not resolve); crash data comes from the BigQuery export only.
 - Performance tables expire after 60 days, so `--days` above 30 loses `prev` perf data.
