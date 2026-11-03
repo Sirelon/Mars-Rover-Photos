@@ -1,0 +1,80 @@
+---
+name: app-health
+description: Report how the app is doing from Firebase data (GA4, Crashlytics, Performance via BigQuery) — users, retention, activation funnel, crashes, performance — compared with the previous period and the last stored report, plus insights and actions. Use when the user asks "how is the app going", for an app health / analytics / metrics report, or what changed since the last check.
+---
+
+# App health report
+
+Each run stores a **snapshot** (raw numbers, JSON) and a **report** (readable Markdown) under
+`docs/analytics/`, both committed. The next run reads the newest older ones, so every report
+states the change since the last look.
+
+- `docs/analytics/snapshots/<end-date>.json` — written by `collect.py`
+- `docs/analytics/reports/<end-date>.md` — written by you
+
+## 1. Collect
+
+```
+python3 .claude/skills/app-health/collect.py            # last 28 days ending at the newest export day
+python3 .claude/skills/app-health/collect.py --days 7   # weekly view
+```
+
+It prints the snapshot path. Each snapshot holds two equal windows: `cur` and `prev` (the window
+just before). `bq` auth errors → ask the user to run `! gcloud auth login`. Done when the
+snapshot file exists.
+
+## 2. Gather the baseline and extra sources
+
+- **Last run**: the newest snapshot and report in `docs/analytics/` older than this one. None →
+  this is the first report; say so.
+- **Releases**: `git tag --sort=-creatordate --format='%(refname:short) %(creatordate:short)' | head`
+  — a release inside a window explains many shifts.
+- **iOS crashes** (not exported to BigQuery): Firebase MCP `crashlytics_get_report` for the iOS
+  app (`firebase_list_apps` gives the app id). Unavailable → note "iOS crashes: not checked".
+- **Revenue**: RevenueCat MCP (project `projf1deab13`) for purchases in the window, if it is
+  authenticated. Otherwise use the `support_purchase` event count from the snapshot.
+
+## 3. Write the report
+
+Write `docs/analytics/reports/<end-date>.md` with these sections, in order:
+
+1. **Verdict** — one line: growing / flat / declining, and the single biggest reason.
+2. **Scorecard** — table with columns Metric · Now · Prev window · Δ · Last report. Rows:
+   active users, new users, avg DAU, DAU/MAU, sessions per user, engagement min per user,
+   D1 and week-1 retention, activation (new users who reached `PhotoSeen`), uninstalls ÷ new
+   users, Android crashed installs, app-start p50 per platform. Split Android / iOS where they
+   differ. Derive avg DAU from `daily`, rates from their parts.
+3. **Funnel** — first_open → rover_selected → photo_seen → fullscreen → fav/save/share, % of step 1.
+4. **Reliability** — crash issues (new in `cur`, gone since `prev`), feed_error / feed_loaded,
+   ad_load_failed rate, network hosts with failed share > 5 %.
+5. **Audience** — version adoption of the latest release, top countries, acquisition sources.
+6. **Insights** — 3–6 findings. Each one: the observation with its numbers → the likely cause
+   (marked _hypothesis_ when unverified) → a concrete action.
+7. **Watch list** — items to re-check next run, each with the number to beat.
+8. **Since last report** — every Watch list item from the previous report: resolved, worse, or
+   unchanged, with numbers.
+
+Insight quality bar: a finding names a number and a delta; a cause traces to a release, a
+country, a version, or an event; an action names a file, a store setting, or an experiment.
+Anomalies (a country or source that jumps from ~0, a metric that moves > 50 %) get a drill-down
+`bq` query before you explain them.
+
+## 4. Deliver
+
+Commit the snapshot and the report together (`Add app health report <date>`). Reply with the
+verdict, the top 3 insights, and the report path, within 8 lines. For a visual view, offer an
+Artifact page built from the snapshot.
+
+## Gotchas
+
+- Always pass `bq --project_id=mars-rover-photos`; the gcloud default project is another one.
+- The user base is ~100–300 MAU: treat percentages as directional and show raw counts beside them.
+- Named Compose `screen_view` is reliable only from 5.1.0; funnels use version-stable events.
+- Performance network hosts are aggregated (`host/**`), so per-endpoint breakdowns are impossible.
+- Crashlytics installs and GA4 users are different ids; crash-free rate is an approximation.
+- `app_remove` / `app_clear_data` exist on Android only.
+- Google Play pre-launch-report devices and test devices inflate new users from one country with
+  near-zero retention; check that before calling it growth.
+- The Firebase MCP returned HTTP 403 for this project on 2026-11-03; iOS crash numbers then
+  need the Crashlytics console.
+- Performance tables expire after 60 days, so `--days` above 30 loses `prev` perf data.
