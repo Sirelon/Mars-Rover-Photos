@@ -4,8 +4,9 @@ Compose Multiplatform app for browsing Mars rover imagery on Android, iOS, and d
 The shared Kotlin module provides the app's data, navigation, view models, and Compose UI; platform
 modules host it for each target.
 
-Photo feeds use NASA Mars imagery sources. Curiosity, Perseverance, and InSight use the Mars raw-image
-service; Spirit and Opportunity use the curated NASA Images library.
+Photo feeds use NASA Mars imagery sources. Curiosity, Perseverance, InSight, and Ingenuity use the
+Mars raw-image service; Spirit and Opportunity use the curated NASA Images library. Viking 1 and
+Viking 2 use bundled catalogs generated from the static PDS archive.
 
 ## Development
 

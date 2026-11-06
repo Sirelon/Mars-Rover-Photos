@@ -107,8 +107,8 @@ coral **accent/secondary** (`#FC6C4B`, "the Mars accent"). Light theme is white-
 ### Motion & shared-element transitions
 - **Tokens:** `AppMotion` (`theme/AppMotion.kt`) — `ScreenEnterMs`/`ScreenExitFadeMs` (standard slide
   nav), `SharedContainerMs` (photo grid/list ↔ fullscreen viewer), `Emphasized` easing, and
-  `PhotoBoundsTransform`/`FavoriteBoundsTransform`. The container fade and the shared-bounds morph
-  **must share one duration** (`SharedContainerMs`) or they desync.
+  `PhotoBoundsTransform`/`FavoriteBoundsTransform`/`TextBoundsTransform`. The container fade and the
+  shared-bounds morph **must share one duration** (`SharedContainerMs`) or they desync.
 - **Photo ↔ viewer container transform:** apply `Modifier.sharedPhoto(id)` (grid/list item) and
   `Modifier.sharedFavorite(id)` (corner heart) from `ui/SharedPhotoTransition.kt` — the single source of
   truth for keys (`photo_<id>` / `photo_favorite_<id>`), resize mode (`scaleToBounds(Fit)` — the two ends

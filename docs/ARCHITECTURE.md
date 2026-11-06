@@ -16,7 +16,7 @@ All shared code lives in `shared/src/commonMain/kotlin/com/sirelon/marsroverphot
 | `domain/` | models, repository *interfaces*, `AppSettings` | nothing in this app — pure Kotlin + kotlinx |
 | `data/` | network, database, paging, repository implementations | `domain` |
 | `presentation/` | `screens/`, `viewmodels/`, `ui/` (the design system), `navigation/`, `theme/` | `domain` |
-| `platform/` | `expect`/`actual` services: `Tracker`, `AppReview`, `BuildInfo` | — |
+| `platform/` | platform services and adapters: `Tracker`, `AppReview`, `BuildInfo`, `PushNotifications`, storage, networking | — |
 | `di/` | Koin modules — the only place that wires the layers together | everything |
 
 Imports point **inward**: `presentation` → `domain`, never the reverse.
@@ -42,13 +42,13 @@ Imports point **inward**: `presentation` → `domain`, never the reverse.
   against a hardcoded release list and later moved to `ReleaseNotesRepository` (Firestore) without any
   screen being rewritten — the whole point of the indirection.
 - Injecting a **platform service** directly into a composable is fine and established — `Tracker` in
-  `AppNavigation.kt`, `AppReview` in `AboutScreen.kt`. Injecting a **domain service so the composable
+  `AppNavigation.kt`, `PushNotifications` in `App.kt`. Injecting a **domain service so the composable
   can decide what to show** is not: that decision is the ViewModel's job.
 
 ### ViewModel state is observable — always
 - Expose `StateFlow` for state, `Flow` for paging streams. **Never a plain `val`.** A `val` on a
   ViewModel is a constant with extra steps: the UI can't observe it, and the day the source becomes
-  async the ViewModel's public API has to be rewritten. All nine ViewModels follow this today.
+  async the ViewModel's public API has to be rewritten. All ten ViewModels follow this today.
 - One screen's state → one `data class XUiState` exposed as `StateFlow<XUiState>` and collected with
   `collectAsStateWithLifecycle()`. See `PhotosUiState`, `WhatsNewUiState`.
 - Genuinely independent streams may stay separate flows when they change independently —
