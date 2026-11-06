@@ -45,6 +45,8 @@ core-splashscreen = "1.2.0"
 benchmark = "1.5.0"
 # https://developer.android.com/jetpack/androidx/releases/profileinstaller
 profileinstaller = "1.4.1"
+# https://developer.android.com/jetpack/androidx/releases/window
+androidx-window = "1.5.0"
 # https://developer.android.com/jetpack/androidx/releases/test-uiautomator
 uiautomator = "2.4.0"
 # https://developer.android.com/jetpack/androidx/releases/test
@@ -120,6 +122,7 @@ androidx-sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", 
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "core-splashscreen" }
 androidx-profileinstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "profileinstaller" }
+androidx-window = { module = "androidx.window:window", version.ref = "androidx-window" }
 
 # Baseline Profile generation + startup benchmarks (:baselineprofile)
 androidx-benchmark-macro-junit4 = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmark" }
