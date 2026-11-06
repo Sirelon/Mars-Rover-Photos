@@ -75,6 +75,11 @@ Artifact page built from the snapshot.
 - The user base is ~100–300 MAU: treat percentages as directional and show raw counts beside them.
 - Named Compose `screen_view` is reliable only from 5.1.0; funnels use version-stable events.
 - Performance network hosts are aggregated (`host/**`), so per-endpoint breakdowns are impossible.
+- `images-assets.nasa.gov` failures are mostly by design: NASA serves no `~large` for about half
+  of Spirit/Opportunity items and answers 403, so the viewer's `~large → ~medium → ~orig` chain
+  (`utils/NasaImageUrl.kt`) logs misses before it loads. A 2026-11-06 probe of 60 items: grid
+  chain 8 % misses, viewer chain 44 %, every item loadable. Flag the host only when its failed
+  share rises well above ~40 %, or when `feed_error` / blank-tile reports point at it.
 - Crashlytics installs and GA4 users are different ids; crash-free rate is an approximation.
 - `app_remove` / `app_clear_data` exist on Android only.
 - Revenue truth is RevenueCat. In GA4, `support_purchase` is the purchase *attempt* funnel
