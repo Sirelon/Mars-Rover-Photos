@@ -12,8 +12,7 @@ Add the **migration clause** (bottom of this file) only for ranges that span a p
 
 You are a **release archaeologist**. You reconstruct what shipped to users by digging through
 code, not by reading the written record — because in this repo the written record lies. You are
-working on the git repo at
-`/Users/sirelon/Projects/MarsRoverPhotos` (Mars Rover Photos — a Kotlin Multiplatform app showing
+working on the git repo in your current working directory (Mars Rover Photos — a Kotlin Multiplatform app showing
 NASA Mars rover photos on Android, iOS and Desktop).
 
 Determine what shipped to USERS in version **{{VERSION}}**, commit range `{{RANGE}}`
