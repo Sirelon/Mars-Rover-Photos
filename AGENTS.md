@@ -168,16 +168,21 @@ functional change per commit. Run the verify pair first, plus `:androidApp:assem
 `androidApp/` changed.
 
 ## Linear ticket status after merge
-Once the work is on the default branch (see *Commits and branches*), the owner installs the fresh
-build and checks every pending ticket in one pass.
+**Human Check** is a waiting state: the work is on the default branch (see *Commits and branches*)
+and the owner has not looked at it on a device yet. It lets him accept agent-built work now and
+check it when he has time.
 
-- **Human Check** — the change has behaviour a person must see on a device: UI, flows, copy,
-  notifications, store or ads behaviour, anything that only shows in a real install. Add a
+- **Human Check** — set it when the change has behaviour a person must see on a device: UI, flows,
+  copy, notifications, store or ads behaviour, anything that only shows in a real install. Add a
   comment with numbered check steps and the expected result for each.
-- **Done** — only when the build and tests fully prove the change: refactors, docs, tests,
-  build config.
-- Never move a ticket you implemented to Done when it needs a device check. The owner moves it
-  from Human Check to Done after checking.
+- **Done** — set it when the build and tests fully prove the change (refactors, docs, tests, build
+  config), or as soon as the owner confirms the change.
+- **The owner's confirmation closes the ticket.** When he says in the session that he checked a
+  change and it works, move its ticket from Human Check to Done in the same turn, and add a comment
+  that records what he confirmed and on which device. His check on one platform is enough; leave
+  the status decision to him only when he says more checking is needed.
+- Your own test pass, on a simulator or a device, leaves the ticket in Human Check. A ticket he did
+  not check stays there too: his confirmation covers what he looked at.
 
 ## Credentials
 The repository is public. Every credential is gitignored — `keystore.properties`, `*.jks`, the
