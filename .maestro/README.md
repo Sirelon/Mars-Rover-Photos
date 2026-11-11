@@ -66,6 +66,26 @@ The capture order isn't the listing order. For the storefront, arrange them as a
 
 Dark-theme frames are optional extras — drop in one or two if the listing benefits.
 
+## Driving the app by hand (Maestro MCP)
+
+For an ad-hoc pass outside the screenshot flow: call `inspect_screen` before every interaction and
+copy selectors from the hierarchy, never from a screenshot.
+
+- **Launch without `clearState`.** It wipes the favorites and settings on the device. Navigate back
+  to the Rovers tab instead; ask the owner before any run that resets app data.
+- **Icons are text.** `MaterialSymbolIcon` renders a Material Symbols ligature, so an icon shows up
+  as a text node named after the glyph (`info`, `favorite`, `tune`, `arrow_back`). Several can share
+  one name: add `index:` or anchor against a unique label beside it.
+- **`text:` is a full-string regex**, case-insensitive. A partial string does not match; end it with
+  `.*` when the on-device text carries a trailing space or a changing tail.
+- **Test tags are resource ids** on Android (`testTagsAsResourceId`): `photoCard`, `photoItem`,
+  `photoGrid`, `roverCard` work as `id:`. Everything else is addressed by text.
+- **Bottom tabs** match by label: `Rovers`, `Favorites`, `Popular`, `About`.
+- **Use system back** (`pressKey: Back`) to leave a screen or dismiss a sheet.
+- **Stay inside the app's subtree.** System accessibility strings come in the device language, and
+  OEM overlays (Samsung's Edge-panel handle on the right edge) can intercept a tap near the edge.
+- **Prefer `scroll` over `swipe`** for scanning content: it stops at the end of the list.
+
 ## Troubleshooting
 
 - **A wait times out** (slow network): bump the `timeout` values in `store-screenshots.yaml`.
