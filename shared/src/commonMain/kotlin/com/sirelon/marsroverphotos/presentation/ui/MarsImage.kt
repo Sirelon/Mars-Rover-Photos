@@ -1,21 +1,11 @@
 package com.sirelon.marsroverphotos.presentation.ui
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,9 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.memory.MemoryCache
@@ -40,7 +28,6 @@ import com.sirelon.marsroverphotos.domain.models.PERSEVERANCE_ID
 import com.sirelon.marsroverphotos.domain.models.SPIRIT_ID
 import com.sirelon.marsroverphotos.domain.models.VIKING_1_ID
 import com.sirelon.marsroverphotos.domain.models.VIKING_2_ID
-import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
 import com.sirelon.marsroverphotos.shared.resources.Res
 import com.sirelon.marsroverphotos.shared.resources.img_placeholder
 import com.sirelon.marsroverphotos.utils.formatThousands
@@ -93,119 +80,6 @@ private fun roverDisplayName(roverId: Long): String? = when (roverId) {
     VIKING_2_ID -> "Viking 2"
     INGENUITY_ID -> "Ingenuity Helicopter"
     else -> null
-}
-
-/**
- * Created on 01.03.2021 22:33 for Mars-Rover-Photos.
- * Ported to Compose Multiplatform (KMP).
- */
-@Composable
-fun MarsImageComposable(
-    modifier: Modifier = Modifier,
-    marsImage: MarsImage,
-    onClick: () -> Unit,
-    onFavoriteClick: () -> Unit
-) {
-    val imageUrl = marsImage.imageUrl
-    var showStats by remember(imageUrl) { mutableStateOf(false) }
-
-    AppCard(
-        modifier = modifier
-            .padding(vertical = AppSpacing.sm)
-            .fillMaxWidth()
-            .testTag("photoItem")
-            .clickable(onClick = onClick),
-    ) {
-        Column {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalPlatformContext.current)
-                    .data(imageUrl)
-                    .crossfade(true)
-                    // Writer: same shared key the fullscreen viewer reads as its instant placeholder.
-                    .memoryCacheKey("photo_${marsImage.id}")
-                    .build(),
-                contentDescription = marsImage.photoContentDescription(),
-                modifier = Modifier
-                    .defaultMinSize(minHeight = 100.dp)
-                    .fillMaxWidth()
-                    // Shared-element source for Favorite/Popular → fullscreen viewer.
-                    .sharedPhoto(marsImage.id),
-                contentScale = ContentScale.FillWidth,
-                alignment = Alignment.TopCenter,
-                placeholder = painterResource(Res.drawable.img_placeholder),
-                onSuccess = { showStats = true },
-            )
-
-            if (showStats) {
-                PhotoStats(
-                    marsImage = marsImage,
-                    onFavoriteClick = { onFavoriteClick() },
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun PhotoStats(
-    marsImage: MarsImage,
-    onFavoriteClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val stats = marsImage.stats
-
-    Column(
-        modifier = modifier
-            .padding(horizontal = AppSpacing.sm, vertical = AppSpacing.xs)
-            .fillMaxWidth(),
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            StatsInfoText(stats.see, MaterialSymbol.Visibility, "Views")
-            StatsInfoText(stats.scale, MaterialSymbol.ZoomIn, "Zooms")
-            StatsInfoText(stats.save, MaterialSymbol.Save, "Saves")
-            StatsInfoText(stats.share, MaterialSymbol.Share, "Shares")
-        }
-        LikeAction(
-            count = stats.favorite,
-            checked = marsImage.favorite,
-            onClick = onFavoriteClick,
-        )
-    }
-}
-
-@Composable
-private fun LikeAction(
-    count: Long,
-    checked: Boolean,
-    onClick: () -> Unit,
-) {
-    val tint = if (checked) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
-    ) {
-        MaterialSymbolIcon(
-            symbol = MaterialSymbol.Favorite,
-            contentDescription = if (checked) "Unlike" else "Like",
-            filled = checked,
-            tint = tint,
-            size = 22.dp,
-        )
-        Spacer(modifier = Modifier.width(AppSpacing.sm))
-        Text(
-            text = if (count > 0) "Like · ${compactCount(count)}" else "Like",
-            style = MaterialTheme.typography.labelLarge,
-            color = tint,
-        )
-    }
 }
 
 @Composable
@@ -319,25 +193,6 @@ fun NetworkImage(
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun StatsInfoText(counter: Long, symbol: MaterialSymbol, desc: String) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        MaterialSymbolIcon(
-            symbol = symbol,
-            contentDescription = desc,
-            size = 16.dp,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Spacer(modifier = Modifier.width(2.dp))
-        Text(
-            text = if (counter > 0) compactCount(counter) else "0",
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1,
-        )
     }
 }
 

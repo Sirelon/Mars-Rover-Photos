@@ -30,6 +30,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,13 +38,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImage
-import coil3.compose.LocalPlatformContext
-import coil3.request.ImageRequest
-import coil3.request.crossfade
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.presentation.theme.AppSize
 import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
@@ -52,15 +49,14 @@ import com.sirelon.marsroverphotos.presentation.ui.AppEmptyState
 import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
+import com.sirelon.marsroverphotos.presentation.ui.NetworkImage
 import com.sirelon.marsroverphotos.presentation.ui.compactCount
 import com.sirelon.marsroverphotos.presentation.ui.sharedPhoto
-import com.sirelon.marsroverphotos.shared.resources.Res
-import com.sirelon.marsroverphotos.shared.resources.img_placeholder
+import com.sirelon.marsroverphotos.presentation.viewmodels.PopularPhotosViewModel
+import com.sirelon.marsroverphotos.utils.nasaImageSmallFallbackUrls
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withTimeoutOrNull
-import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
-import com.sirelon.marsroverphotos.presentation.viewmodels.PopularPhotosViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -222,25 +218,25 @@ private fun HeroCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // NASA does not generate every size variant: try the next one when a load fails.
+    val imageChain = remember(photo.imageUrl) { nasaImageSmallFallbackUrls(photo.imageUrl) }
     Box(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(AppSize.cardRadius))
+            .testTag("photoItem")
             .clickable(onClick = onClick),
     ) {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalPlatformContext.current)
-                .data(photo.imageUrl)
-                .crossfade(true)
-                .memoryCacheKey("photo_${photo.id}")
-                .build(),
-            contentDescription = null,
+        NetworkImage(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(16f / 9f)
                 .sharedPhoto(photo.id),
-            contentScale = ContentScale.Crop,
-            placeholder = painterResource(Res.drawable.img_placeholder),
+            imageUrl = imageChain.first(),
+            fallbackUrls = imageChain.drop(1),
+            contentDescription = null,
+            // Writer: cache the tile under the shared key the viewer reads instantly.
+            cacheKey = "photo_${photo.id}",
         )
         // Dual vignette: top-left corner (for badge) + bottom (for info)
         Box(
@@ -362,25 +358,25 @@ private fun RunnerUpCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // NASA does not generate every size variant: try the next one when a load fails.
+    val imageChain = remember(photo.imageUrl) { nasaImageSmallFallbackUrls(photo.imageUrl) }
     Box(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(14.dp))
+            .testTag("photoItem")
             .clickable(onClick = onClick),
     ) {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalPlatformContext.current)
-                .data(photo.imageUrl)
-                .crossfade(true)
-                .memoryCacheKey("photo_${photo.id}")
-                .build(),
-            contentDescription = null,
+        NetworkImage(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(1f)
                 .sharedPhoto(photo.id),
-            contentScale = ContentScale.Crop,
-            placeholder = painterResource(Res.drawable.img_placeholder),
+            imageUrl = imageChain.first(),
+            fallbackUrls = imageChain.drop(1),
+            contentDescription = null,
+            // Writer: cache the tile under the shared key the viewer reads instantly.
+            cacheKey = "photo_${photo.id}",
         )
         // Bottom vignette
         Box(
@@ -496,25 +492,25 @@ private fun PopularGridCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // NASA does not generate every size variant: try the next one when a load fails.
+    val imageChain = remember(photo.imageUrl) { nasaImageSmallFallbackUrls(photo.imageUrl) }
     Box(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
+            .testTag("photoItem")
             .clickable(onClick = onClick),
     ) {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalPlatformContext.current)
-                .data(photo.imageUrl)
-                .crossfade(true)
-                .memoryCacheKey("photo_${photo.id}")
-                .build(),
-            contentDescription = null,
+        NetworkImage(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(1f)
                 .sharedPhoto(photo.id),
-            contentScale = ContentScale.Crop,
-            placeholder = painterResource(Res.drawable.img_placeholder),
+            imageUrl = imageChain.first(),
+            fallbackUrls = imageChain.drop(1),
+            contentDescription = null,
+            // Writer: cache the tile under the shared key the viewer reads instantly.
+            cacheKey = "photo_${photo.id}",
         )
         // Bottom vignette
         Box(

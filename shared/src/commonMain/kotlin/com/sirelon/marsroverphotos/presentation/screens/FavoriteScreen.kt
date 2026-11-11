@@ -45,16 +45,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import coil3.compose.AsyncImage
-import coil3.compose.LocalPlatformContext
-import coil3.request.ImageRequest
-import coil3.request.crossfade
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.domain.repositories.FavoriteSortOrder
 import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
@@ -63,15 +59,14 @@ import com.sirelon.marsroverphotos.presentation.ui.AppEmptyState
 import com.sirelon.marsroverphotos.presentation.ui.AppTopBar
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
+import com.sirelon.marsroverphotos.presentation.ui.NetworkImage
 import com.sirelon.marsroverphotos.presentation.ui.compactCount
 import com.sirelon.marsroverphotos.presentation.ui.photoContentDescription
 import com.sirelon.marsroverphotos.presentation.ui.sharedPhoto
 import com.sirelon.marsroverphotos.presentation.viewmodels.FavoriteImagesViewModel
-import com.sirelon.marsroverphotos.shared.resources.Res
-import com.sirelon.marsroverphotos.shared.resources.img_placeholder
+import com.sirelon.marsroverphotos.utils.nasaImageSmallFallbackUrls
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withTimeoutOrNull
-import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -289,28 +284,28 @@ private fun FavoritePhotoCard(
     onFavoriteClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // NASA does not generate every size variant: try the next one when a load fails.
+    val imageChain = remember(photo.imageUrl) { nasaImageSmallFallbackUrls(photo.imageUrl) }
     Box(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
+            .testTag("photoItem")
             .clickable(onClick = onClick),
     ) {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalPlatformContext.current)
-                .data(photo.imageUrl)
-                .crossfade(true)
-                .memoryCacheKey("photo_${photo.id}")
-                .build(),
-            // No sibling text on this card names the rover/camera/sol (only a view count below),
-            // so the image itself carries the label — unlike the Popular cards, which already
-            // show that info as visible text merged into the same clickable node.
-            contentDescription = photo.photoContentDescription(),
+        NetworkImage(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(1f)
                 .sharedPhoto(photo.id),
-            contentScale = ContentScale.Crop,
-            placeholder = painterResource(Res.drawable.img_placeholder),
+            imageUrl = imageChain.first(),
+            fallbackUrls = imageChain.drop(1),
+            // No sibling text on this card names the rover/camera/sol (only a view count below),
+            // so the image itself carries the label — unlike the Popular cards, which already
+            // show that info as visible text merged into the same clickable node.
+            contentDescription = photo.photoContentDescription(),
+            // Writer: cache the tile under the shared key the viewer reads instantly.
+            cacheKey = "photo_${photo.id}",
         )
         // Bottom vignette
         Box(
