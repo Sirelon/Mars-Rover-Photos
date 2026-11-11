@@ -4,7 +4,8 @@
 Usage:
   python3 .claude/skills/app-health/collect.py [--end YYYYMMDD] [--days 28]
 
-Writes docs/analytics/snapshots/<end-date>.json and prints its path.
+Writes <store>/snapshots/<end-date>.json and prints its path. The store sits
+outside the repository (the repo is public) at a path every worktree shares.
 The snapshot holds two windows of equal length: `cur` (ending at --end,
 default = newest GA4 export day) and `prev` (the window right before it).
 """
@@ -25,8 +26,9 @@ PERF = {
     "ANDROID": f"`{PROJECT}.firebase_performance.com_sirelon_marsroverphotos_ANDROID`",
     "IOS": f"`{PROJECT}.firebase_performance.com_sirelon_marsroverphotos_IOS`",
 }
-ROOT = pathlib.Path(__file__).resolve().parents[3]
-OUT_DIR = ROOT / "docs" / "analytics" / "snapshots"
+STORE = (pathlib.Path.home() / ".claude" / "projects"
+         / "-Users-sirelon-Projects-MarsRoverPhotos" / "app-health")
+OUT_DIR = STORE / "snapshots"
 
 
 def bq(sql: str) -> list[dict]:
@@ -194,7 +196,7 @@ def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     path = OUT_DIR / f"{end}.json"
     path.write_text(json.dumps(snap, indent=1, ensure_ascii=False) + "\n")
-    print(path.relative_to(ROOT))
+    print(path)
 
 
 if __name__ == "__main__":

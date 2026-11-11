@@ -5,12 +5,16 @@ description: Report how the app is doing from Firebase data (GA4, Crashlytics, P
 
 # App health report
 
-Each run stores a **snapshot** (raw numbers, JSON) and a **report** (readable Markdown) under
-`docs/analytics/`, both committed. The next run reads the newest older ones, so every report
-states the change since the last look.
+Each run stores a **snapshot** (raw numbers, JSON) and a **report** (readable Markdown). The next
+run reads the newest older ones, so every report states the change since the last look.
 
-- `docs/analytics/snapshots/<end-date>.json` — written by `collect.py`
-- `docs/analytics/reports/<end-date>.md` — written by you
+The store is `~/.claude/projects/-Users-sirelon-Projects-MarsRoverPhotos/app-health/`, called
+`<store>` below. It sits outside the repository because the repository is public and these are the
+app's user and revenue numbers; one fixed path also gives every worktree the same baseline. Keep
+both files out of git.
+
+- `<store>/snapshots/<end-date>.json` — written by `collect.py`
+- `<store>/reports/<end-date>.md` — written by you
 
 ## 1. Collect
 
@@ -25,7 +29,7 @@ snapshot file exists.
 
 ## 2. Gather the baseline and extra sources
 
-- **Last run**: the newest snapshot and report in `docs/analytics/` older than this one. None →
+- **Last run**: the newest snapshot and report in `<store>` older than this one. None →
   this is the first report; say so.
 - **Releases**: `git tag --sort=-creatordate --format='%(refname:short) %(creatordate:short)' | head`
   — a release inside a window explains many shifts.
@@ -40,7 +44,7 @@ snapshot file exists.
 
 ## 3. Write the report
 
-Write `docs/analytics/reports/<end-date>.md` with these sections, in order:
+Write `<store>/reports/<end-date>.md` with these sections, in order:
 
 1. **Verdict** — one line: growing / flat / declining, and the single biggest reason.
 2. **Scorecard** — table with columns Metric · Now · Prev window · Δ · Last report. Rows:
@@ -65,8 +69,7 @@ Anomalies (a country or source that jumps from ~0, a metric that moves > 50 %) g
 
 ## 4. Deliver
 
-Commit the snapshot and the report together (`Add app health report <date>`). Reply with the
-verdict, the top 3 insights, and the report path, within 8 lines. For a visual view, offer an
+Reply with the verdict, the top 3 insights, and the report path, within 8 lines. For a visual view, offer an
 Artifact page built from the snapshot.
 
 ## Gotchas

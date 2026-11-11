@@ -156,6 +156,10 @@ androidApp/src/main/assets/debug_label.txt
 # Claude Code session artifacts
 .claude/tmp/
 
+# App-health snapshots and reports hold user and revenue numbers; the repo is public.
+# The app-health skill keeps them outside the repository.
+docs/analytics/
+
 # Claude Design handoff bundle (local only)
 .design-bundle/
 
