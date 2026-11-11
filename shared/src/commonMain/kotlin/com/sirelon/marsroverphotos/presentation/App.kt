@@ -63,8 +63,9 @@ fun App(
     // holds its place, so the first visible index jumps by a whole page while the window start
     // stays put: every prepended cell is composed, reads its item, and makes Paging prepend again.
     // The loop runs until the app is out of memory. The classic prefetcher has no such window.
-    // Set here, before any grid composes.
-    ComposeFoundationFlags.isPreferDefaultCacheWindowOverPrefetchStrategy = false
+    // Set here, before any grid composes. Lists get the same prefetcher so both behave alike.
+    ComposeFoundationFlags.isPreferDefaultCacheWindowOverPrefetchStrategyLazyGrid = false
+    ComposeFoundationFlags.isPreferDefaultCacheWindowOverPrefetchStrategyLazyList = false
 
     // Keep the in-memory image cache large enough that the fullscreen viewer's big bitmaps don't
     // evict the list/grid thumbnails. The list screens are disposed while the viewer is on top (a

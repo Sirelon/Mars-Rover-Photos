@@ -3,9 +3,6 @@ pluginManagement {
         google()
         mavenCentral()
         gradlePluginPortal()
-        maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/dev") }
-        // Compose Hot Reload dev builds (see gradle/libs.versions.toml, compose-hot-reload)
-        maven { url = uri("https://packages.jetbrains.team/maven/p/firework/dev") }
     }
 }
 plugins {
@@ -16,9 +13,6 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/dev") }
-        // Compose Hot Reload dev builds (see gradle/libs.versions.toml, compose-hot-reload)
-        maven { url = uri("https://packages.jetbrains.team/maven/p/firework/dev") }
     }
 }
 

@@ -22,7 +22,10 @@ kotlin {
     // jvmToolchain(17) above already covers the JVM target for this Android compilation.
     android {
         namespace = "com.sirelon.marsroverphotos.shared"
-        compileSdk = 37
+        // 37.1: androidx.compose 1.13 (pulled in by Compose Multiplatform 1.13) requires it.
+        compileSdk {
+            version = release(37) { minorApiLevel = 1 }
+        }
         minSdk = 24
     }
 

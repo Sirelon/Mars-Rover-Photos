@@ -24,7 +24,10 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.sirelon.marsroverphotos"
-    compileSdk = 37
+    // 37.1: androidx.compose 1.13 (pulled in by Compose Multiplatform 1.13) requires it.
+    compileSdk {
+        version = release(37) { minorApiLevel = 1 }
+    }
 
     signingConfigs {
         create("release") {

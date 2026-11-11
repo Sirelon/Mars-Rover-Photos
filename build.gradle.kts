@@ -54,9 +54,6 @@ allprojects {
     repositories {
         mavenCentral()
         maven { url = uri("https://jitpack.io") }
-        maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/dev") }
-        // Compose Hot Reload dev builds (runtime/agent side; the plugin repo is in settings.gradle.kts)
-        maven { url = uri("https://packages.jetbrains.team/maven/p/firework/dev") }
         google()
     }
 

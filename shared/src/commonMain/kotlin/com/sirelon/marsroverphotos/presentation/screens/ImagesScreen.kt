@@ -6,7 +6,7 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.MutableTransform
 import androidx.compose.animation.core.DeferredTransitionState
-import androidx.compose.animation.core.ExperimentalDeferredTransitionApi
+import androidx.compose.animation.core.ExperimentalTransitionApi
 import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.rememberDeferredTransition
 import androidx.compose.animation.core.tween
@@ -294,7 +294,7 @@ private fun ImagesEmptyStatePreview() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalDeferredTransitionApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalTransitionApi::class)
 @Composable
 private fun ImagesPagerContent(
     uiEvent: UiEvent?,
