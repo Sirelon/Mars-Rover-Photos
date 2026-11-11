@@ -16,7 +16,7 @@ All shared code lives in `shared/src/commonMain/kotlin/com/sirelon/marsroverphot
 | `domain/` | models, repository *interfaces*, `AppSettings` | nothing in this app — pure Kotlin + kotlinx |
 | `data/` | network, database, paging, repository implementations | `domain` |
 | `presentation/` | `screens/`, `viewmodels/`, `ui/` (the design system), `navigation/`, `theme/` | `domain` |
-| `platform/` | platform services and adapters: `Tracker`, `AppReview`, `BuildInfo`, `PushNotifications`, storage, networking | — |
+| `platform/` | platform services and adapters: `Tracker`, `AppReview`, `AppUpdate`, `BuildInfo`, `PushNotifications`, storage, networking | — |
 | `di/` | Koin modules — the only place that wires the layers together | everything |
 
 Imports point **inward**: `presentation` → `domain`, never the reverse.

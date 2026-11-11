@@ -26,6 +26,8 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
+import androidx.compose.runtime.rememberCoroutineScope
+import com.sirelon.marsroverphotos.platform.AppUpdate
 import com.sirelon.marsroverphotos.presentation.ui.AppCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -88,7 +90,9 @@ import com.sirelon.marsroverphotos.shared.resources.rovers_title
 import com.sirelon.marsroverphotos.utils.formatCompact
 import com.sirelon.marsroverphotos.utils.formatDisplayDate
 import com.sirelon.marsroverphotos.utils.nasaImageSmallFallbackUrls
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 private const val WHATS_NEW_CARD_KEY = "whats-new-card"
@@ -112,6 +116,8 @@ fun RoversScreen(
     val whatsNewCard = whatsNewState.card
     val storeUrl = LocalAboutCallbacks.current.rateAppUrl
     val uriHandler = rememberPlatformUriHandler()
+    val appUpdate: AppUpdate = koinInject()
+    val scope = rememberCoroutineScope()
     LaunchedEffect(whatsNewCard) {
         if (whatsNewCard != null) whatsNewViewModel.onCardShown(whatsNewCard)
     }
@@ -134,7 +140,10 @@ fun RoversScreen(
         onWhatsNewCardClick = { card ->
             whatsNewViewModel.onCardOpened(card)
             when (card) {
-                is WhatsNewCard.UpdateAvailable -> if (storeUrl.isNotBlank()) uriHandler.openUri(storeUrl)
+                // Android runs Play's own update screen; anywhere it is not on offer, the store opens.
+                is WhatsNewCard.UpdateAvailable -> scope.launch {
+                    if (!appUpdate.startUpdate() && storeUrl.isNotBlank()) uriHandler.openUri(storeUrl)
+                }
                 is WhatsNewCard.Highlights -> onOpenWhatsNewStory(card.release.version)
             }
         },

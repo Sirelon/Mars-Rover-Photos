@@ -6,6 +6,8 @@ import com.sirelon.marsroverphotos.data.repositories.MissionRepositoryImpl
 import com.sirelon.marsroverphotos.domain.repositories.MissionRepository
 import com.sirelon.marsroverphotos.domain.settings.AppSettings
 import com.sirelon.marsroverphotos.platform.AndroidAppReview
+import com.sirelon.marsroverphotos.platform.AppUpdate
+import com.sirelon.marsroverphotos.platform.AndroidAppUpdate
 import com.sirelon.marsroverphotos.platform.AndroidPlatformPreferences
 import com.sirelon.marsroverphotos.platform.AndroidPushNotifications
 import com.sirelon.marsroverphotos.platform.AppReview
@@ -63,6 +65,9 @@ val platformModule = module {
 
     // In-app review (Play Core)
     single<AppReview> { AndroidAppReview(context = androidContext()) }
+
+    // In-app update (Play Core)
+    single<AppUpdate> { AndroidAppUpdate(context = androidContext()) }
 
     // Push notifications (FCM topic + POST_NOTIFICATIONS)
     single<PushNotifications> {

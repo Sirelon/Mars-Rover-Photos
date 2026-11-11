@@ -25,7 +25,9 @@ Publishing is a step of its own: `bumpVersion` does not do it. Release notes sur
 dismissible card at the top of the Rovers list, from the second launch on and never as a launch
 dialog: an update card toward the newest `active` release (`active: false` for a build pushed ahead
 of store approval — see the `store-release` skill) when that version is newer than the installed
-build, otherwise a what's-new card for the installed build once after an update. The update card does
+build, otherwise a what's-new card for the installed build once after an update. Tapping the
+update card on Android starts Play's own in-app update screen (`platform/AppUpdate`); where Play
+offers none, and on iOS, the tap opens the store listing. The update card does
 not require an entry matching the installed version exactly, but with nothing published at all there
 is no release to nudge toward. Each change names its icon with a Material Symbols ligature (`"rocket_launch"`); the
 script warns for

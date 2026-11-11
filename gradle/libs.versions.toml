@@ -101,6 +101,8 @@ userMessagingPlatform = "4.0.0"
 zoomable = "2.15.0"
 # https://developer.android.com/guide/playcore/in-app-review/release-notes
 playReview = "2.0.2"
+# https://developer.android.com/reference/com/google/android/play/core/release-notes-in_app_updates
+playAppUpdate = "2.1.0"
 
 # Navigation 3
 navigation3 = "1.1.7"
@@ -213,6 +215,7 @@ play-services-ads = { module = "com.google.android.gms:play-services-ads", versi
 user-messaging-platform = { module = "com.google.android.ump:user-messaging-platform", version.ref = "userMessagingPlatform" }
 zoomable = { module = "net.engawapg.lib:zoomable", version.ref = "zoomable" }
 play-review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "playReview" }
+play-app-update-ktx = { module = "com.google.android.play:app-update-ktx", version.ref = "playAppUpdate" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

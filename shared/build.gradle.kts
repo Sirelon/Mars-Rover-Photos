@@ -171,6 +171,8 @@ kotlin {
 
             // Google Play in-app review (Android only)
             implementation(libs.play.review.ktx)
+            // Google Play in-app update (Android only)
+            implementation(libs.play.app.update.ktx)
         }
 
         // Android + iOS only (see the hierarchy template above)
