@@ -77,6 +77,10 @@ Artifact page built from the snapshot.
 - Always pass `bq --project_id=mars-rover-photos`; the gcloud default project is another one.
 - The user base is ~100–300 MAU: treat percentages as directional and show raw counts beside them.
 - Named Compose `screen_view` is reliable only from 5.1.0; funnels use version-stable events.
+- Seven event names are PascalCase and frozen: `PhotoSeen`, `Scale`, `SavePhoto`, `SharePhoto`,
+  `FavoritePhoto`, `UnFavoritePhoto` and the click `UkraineBanner_Root`. Every app version sends them under these
+  names, and the funnels here read `PhotoSeen` and `SavePhoto`. Query them as they are; new events
+  use snake_case (`platform/FirebaseTracker.kt`).
 - Performance network hosts are aggregated (`host/**`), so per-endpoint breakdowns are impossible.
 - `images-assets.nasa.gov` failures are mostly by design: NASA serves no `~large` for about half
   of Spirit/Opportunity items and answers 403, so the viewer's `~large → ~medium → ~orig` chain

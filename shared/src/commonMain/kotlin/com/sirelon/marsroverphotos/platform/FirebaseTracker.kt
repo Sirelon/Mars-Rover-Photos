@@ -5,6 +5,11 @@ import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 /**
  * Tracker implementation backed by FirebaseAnalytics.
  * Shared by Android and iOS — platform differences are handled inside FirebaseAnalytics itself.
+ *
+ * Event names are snake_case. Seven names are PascalCase and frozen: `PhotoSeen`, `Scale`,
+ * `SavePhoto`, `SharePhoto`, `FavoritePhoto`, `UnFavoritePhoto`, and the click `UkraineBanner_Root`
+ * (`AppNavigation`). Every released version sends them under these names and the app-health
+ * funnels read them, so a rename would split the history. Leave them; name new events snake_case.
  */
 class FirebaseTracker(private val analytics: FirebaseAnalytics) : Tracker {
 
