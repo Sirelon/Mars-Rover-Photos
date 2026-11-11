@@ -66,10 +66,10 @@ way — link to the mission instead.
 
 ## Platform behavior
 
-- Android — custom scheme and HTTPS intent filters are declared in [`androidApp/src/main/AndroidManifest.xml`](/Users/sirelon/Projects/MarsRoverPhotos/androidApp/src/main/AndroidManifest.xml).
-- iOS — custom scheme `marsrover://` is registered in [`iosApp/iosApp/Info.plist`](/Users/sirelon/Projects/MarsRoverPhotos/iosApp/iosApp/Info.plist), and `MarsRoverApp.swift` forwards incoming URLs to Kotlin.
+- Android — custom scheme and HTTPS intent filters are declared in [`androidApp/src/main/AndroidManifest.xml`](../androidApp/src/main/AndroidManifest.xml).
+- iOS — custom scheme `marsrover://` is registered in [`iosApp/iosApp/Info.plist`](../iosApp/iosApp/Info.plist), and `MarsRoverApp.swift` forwards incoming URLs to Kotlin.
 - Desktop — no checked-in protocol-handler registration yet.
-- Web — no published deep-link contract yet; see [`WASM_WEB_SUPPORT.md`](/Users/sirelon/Projects/MarsRoverPhotos/WASM_WEB_SUPPORT.md).
+- Web — no published deep-link contract yet; see [`WASM_WEB_SUPPORT.md`](WASM_WEB_SUPPORT.md).
 
 ## Test locally
 
@@ -99,8 +99,8 @@ xcrun simctl openurl booted "marsrover://whatsnew"
 
 ## Implementation notes
 
-- The shared deep-link model lives in [`shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/DeepLink.kt`](/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/DeepLink.kt).
-- All URI parsing goes through `parseDeepLink` in [`shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/DeepLinkParser.kt`](/Users/sirelon/Projects/MarsRoverPhotos/shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/DeepLinkParser.kt), shared by Android intents, the iOS `onOpenURL` bridge and notification taps. A new link form is added there once.
-- iOS dispatch into the running Compose content lives in [`shared/src/iosMain/kotlin/Main.ios.kt`](/Users/sirelon/Projects/MarsRoverPhotos/shared/src/iosMain/kotlin/Main.ios.kt).
-- Notification taps carry their target as a `link` value in the message's data payload — see [`docs/PUSH_NOTIFICATIONS.md`](/Users/sirelon/Projects/MarsRoverPhotos/docs/PUSH_NOTIFICATIONS.md).
+- The shared deep-link model lives in [`shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/DeepLink.kt`](../shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/DeepLink.kt).
+- All URI parsing goes through `parseDeepLink` in [`shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/DeepLinkParser.kt`](../shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation/navigation/DeepLinkParser.kt), shared by Android intents, the iOS `onOpenURL` bridge and notification taps. A new link form is added there once.
+- iOS dispatch into the running Compose content lives in [`shared/src/iosMain/kotlin/Main.ios.kt`](../shared/src/iosMain/kotlin/Main.ios.kt).
+- Notification taps carry their target as a `link` value in the message's data payload — see [`docs/PUSH_NOTIFICATIONS.md`](PUSH_NOTIFICATIONS.md).
 - The home-screen widget can navigate internally to a specific image via `DeepLink.Image`, but that is not a documented public URI format yet.

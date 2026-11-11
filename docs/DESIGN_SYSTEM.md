@@ -95,9 +95,8 @@ coral **accent/secondary** (`#FC6C4B`, "the Mars accent"). Light theme is white-
   paid for and costs a fresh request — and an empty slot — every time a photo closes.
 
 ### Process
-- Run `./gradlew detekt` before review; `./gradlew testDebugUnitTest` (JVM) and
-  `:shared:desktopTest` run the shared logic tests. There is **no Compose UI-test infra** in `shared`
-  yet — styling-only changes are verified by compile + visual smoke test, not unit tests.
+- `./gradlew :shared:desktopTest` runs the shared logic tests. There is **no Compose UI-test infra**
+  in `shared` — styling-only changes are verified by compile + visual smoke test, not unit tests.
 - **If a UI fix took more than a couple of rounds, write down what you learned** as a short note in
   **Insights / gotchas** below — descriptive, not a new rule. Lead with the symptom as it was
   reported ("laggy", "bounces back", "small pause"), then the cause, so the next reader matches on the
@@ -395,77 +394,3 @@ wrapper and no screen-level type scale** here.
   full-width table and keeps `formatThousands`.
 - **Bottom padding.** The trailing `x3l` is breathing room only — see the no-ad/nav-padding rule
   under **Adaptive layout & navigation**.
-
----
-
-## History
-- 2026-06-03 — Created during the **About screen redesign**. Captured the dark surface==background,
-  no-green-slot, theme-aware-hero, full-icon-font, and in-app-review insights; established the
-  no-raw-`.dp` / `AppSize` rule and the "generalize, don't screen-prefix" component rule.
-- 2026-06-03 — Backfilled the component index with the pieces the About redesign generalized:
-  `AppIconBox`, `AppOutlinedCard`, `AppBadge`/`StatusBadge`/`BadgeRow`, animated+swipeable
-  `SegmentedControl<T>`, and the `AppSize` token class. Added the adaptive-centering pattern
-  (`windowSizeClass.isWidthAtLeastBreakpoint`).
-- 2026-06-04 — Fixed `SegmentedControl` drag gesture on iOS CMP: replaced `pointerInput`/
-  `awaitEachGesture` with `draggable` + `rememberDraggableState`. Root cause: `pointerInput` keys
-  included `offsets.toList()`, so each recomposition triggered by `onSelect` restarted the gesture
-  coroutine mid-drag. `rememberDraggableState` is stable across recompositions and immune to this.
-- 2026-06-07 — **Rovers redesign (Variant A "Refined List")**. Generalized `activeStatusColor()` into
-  `theme/AppColors.kt` (was AboutScreen-local `liveColor`) and added `AppMetricItem` to the index.
-  Added `MaterialSymbol` glyphs (Collections/Schedule/Event/Search), `AppSize` tokens
-  (`roverThumbWidth`, `roverInfoReserve`, `cardElevation{Resting,Hover}`), and `formatCompact`
-  (`utils/NumberFormat.kt`). New "Rovers — Variant A row" section (row anatomy, tap isolation,
-  hover-lift, blurb/search provenance) + the handoff token-mapping table. Generalized the
-  adaptive-centering note into the columns-from-MEDIUM / cap-from-EXPANDED pattern. Recorded that
-  `./gradlew detekt` does not lint `shared/commonMain`.
-- 2026-06-15 — **Shared-element photo transition refactor.** Added `AppMotion` motion tokens and the
-  `sharedPhoto`/`sharedFavorite`/`navFadeEnter` `Modifier` extensions (`ui/SharedPhotoTransition.kt`),
-  centralizing the grid/list ↔ fullscreen-viewer container transform (was duplicated inline in
-  `PhotosScreen`/`ImagesScreen`). Fixed the blank-flash root cause by splitting `NetworkImage` into a
-  writer `cacheKey` + reader `placeholderCacheKey`; made `LocalSharedTransitionScope` nullable/`static`
-  (kills the dead `else` branch + preview crash); coordinated the open (`NavigationModule`) and pop
-  (`AppNavigation`) fades with the bounds via `AppMotion.SharedContainerMs`; extended the effect to
-  Favorite/Popular (`MarsImageComposable`); added `~large`→`~orig` progressive loading
-  (`nasaImageLargeUrl`). Reviewed by a 2-member committee before implementation.
-- 2026-08-08 — **What's New story screen motion.** Added the "driven progress / pager timers" notes to
-  Insights (draw-phase reads, one continuous progress value, `targetPage` vs `settledPage`, springs on
-  clamped values) — all four came from separate rounds on the same progress bar. Added
-  `AppSize.progressTrack`; the story content's swipe parallax reuses `AppSpacing.x3l` as its travel
-  base rather than introducing a token. Also spelled out the forced-dark-screen answer under **Color**
-  (a themed wrapper, not file-level color constants) after that screen first shipped with hardcoded
-  hex values.
-- 2026-08-09 — **What's New review pass.** Renamed `SettingsComponents.kt` → `ui/AppRow.kt` (no
-  `Settings*` symbol was left after the `App*` rename) and documented the row family, including
-  `AppSection`'s `header`/`footer`/`onClick` slots and `AppRowIndent`, in the component index.
-  Feature rows that take domain types (`WhatsNewRow`, `ReleaseCard`) moved out of `ui/` to
-  `screens/whatsnew/`. Tightened the forced-dark rule to `MarsRoverPhotosTheme(darkTheme = true)`
-  (the bare-palette form skips brand overrides + dynamic color) and added the matching status-bar
-  rule. New tokens: `AppMotion.StoryPageMs` / `StoryCatchUpMs` / `StoryEnterMs`,
-  `AppTypography.storyVersionGhost` / `storyTitle` — the story screen's raw `tween(...)` durations
-  and `fontSize = 96.sp` / `38.sp` overrides now resolve through tokens. `AppSection(onClick)` clips
-  to `CardShape` before `clickable` so the ripple follows the card's corners.
-- 2026-08-09 — **Mission Info compact pass.** Replaced the horizontally-scrolling timeline card row
-  with the vertical `MissionTimeline` (now shared with the expanded layout, which lost its private
-  `DesktopTimeline`); merged the hero's two stacked gradients into one `scrim` brush parameter on
-  `RoverImageCard` and put the hero region under `MarsRoverPhotosTheme(darkTheme = true)` so its
-  scrim, title and badges are theme-driven and legible in light theme; made the
-  statistic values single-line, equal-height and `formatCompact` for photos. Fixed `formatCompact`
-  rounding `999,500`→`"1000K"` instead of `"1.0M"`.
-  Took three rounds to land, and the two wrong turns are the notes worth keeping: it first shipped a
-  private `MissionInfoTheme` (bare `MaterialTheme` + copied palette + shrunken `Typography`) that
-  overrode the user's theme setting for one screen, and four new `AppSize` tokens transcribed
-  straight from a px design brief. Both are recorded above — Insights (screen-level theme wrappers;
-  "the white hero text looks awful in light theme"), **Color** (forced-dark *regions*), and the
-  handoff-mapping note that a px brief is not a licence to mint tokens. Also promoted the
-  "don't pad for the ad slot / nav bar" fact into **Adaptive layout & navigation** and the
-  unit-carry trap into **Number formatting**. New **Mission Info** section.
-- 2026-09-24 — **Photo accessibility fix.** `NetworkImage` and the other photo composables in
-  `MarsImage.kt` were passing the raw image URL (or nothing) as `contentDescription`, so TalkBack/
-  VoiceOver read out URLs. Added `MarsImage.photoContentDescription()` (component index above) and
-  gave `NetworkImage` a `contentDescription: String?` parameter (default `null`, for decorative
-  loads or a call site whose parent already merges a label — e.g. the Popular cards, which already
-  show rover/sol/camera as visible `Text`). Reuses `formatThousands` for the sol's thousands
-  separator; the rover id → name table is duplicated in `ui/MarsImage.kt` (private
-  `roverDisplayName`) rather than imported from `data/repositories/RoversRepositoryImpl`, because
-  `presentation` may only depend on `domain` — same pattern as `RoverPainter.kt`'s id → drawable
-  dispatch.

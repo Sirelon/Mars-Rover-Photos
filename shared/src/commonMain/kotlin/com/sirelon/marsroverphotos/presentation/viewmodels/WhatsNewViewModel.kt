@@ -37,7 +37,7 @@ data class WhatsNewUiState(
     val card: WhatsNewCard? = null,
 )
 
-/** Numeric `major.minor.patch` comparison — versions in this repo are always that shape (see AGENTS.md › Versioning), so a plain dotted split is enough; no need for a general semver parser. */
+/** Numeric `major.minor.patch` comparison — versions in this repo are always that shape (see docs/RELEASE.md › Versioning), so a plain dotted split is enough; no need for a general semver parser. */
 private fun compareVersions(a: String, b: String): Int {
     val partsA = a.split(".")
     val partsB = b.split(".")

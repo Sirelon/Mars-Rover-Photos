@@ -37,7 +37,7 @@ list, so it is safe to announce a release to users who haven't updated yet.
 Rover IDs: Perseverance 3, InSight 4, Curiosity 5, Opportunity 6, Spirit 7, Viking 1 8, Viking 2 9,
 Ingenuity 10.
 
-Taps route through the same path as any other deep link — see [DEEP_LINKING.md](/DEEP_LINKING.md).
+Taps route through the same path as any other deep link — see [DEEP_LINKING.md](DEEP_LINKING.md).
 
 ## Opt-in
 

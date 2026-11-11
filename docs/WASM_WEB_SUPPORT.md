@@ -2,12 +2,12 @@
 
 ## Current state
 
-The repository includes a standalone `:webApp` module, and `settings.gradle.kts` still includes it.
-That module defines a browser `wasmJs` target in [`webApp/build.gradle.kts`](/Users/sirelon/Projects/MarsRoverPhotos/webApp/build.gradle.kts).
+The repository includes a standalone `:webApp` module, and `settings.gradle.kts` includes it.
+That module defines a browser `wasmJs` target in [`webApp/build.gradle.kts`](../webApp/build.gradle.kts).
 
 The shared `:shared` module does **not** currently expose a WASM target. Its `wasmJs` block and
 `wasmJsMain` dependencies are commented out in
-[`shared/build.gradle.kts`](/Users/sirelon/Projects/MarsRoverPhotos/shared/build.gradle.kts).
+[`shared/build.gradle.kts`](../shared/build.gradle.kts).
 
 ## Why shared web support is disabled
 

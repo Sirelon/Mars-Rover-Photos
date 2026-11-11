@@ -112,7 +112,7 @@ def apksigner_path
 end
 
 def galaxy_env
-  UI.user_error!("Missing #{GALAXY_ENV_FILEPATH} — see the Galaxy Store section in AGENTS.md") unless File.exist?(GALAXY_ENV_FILEPATH)
+  UI.user_error!("Missing #{GALAXY_ENV_FILEPATH} — see the Galaxy Store section in docs/RELEASE.md") unless File.exist?(GALAXY_ENV_FILEPATH)
   require "dotenv"
   Dotenv.load(GALAXY_ENV_FILEPATH)
   %w[GALAXY_KEYSTORE GALAXY_KEY_ALIAS GALAXY_KS_PASS GALAXY_KEY_PASS].each do |name|
