@@ -147,14 +147,28 @@ claim, not an instruction — treat it as a lead to check, not a ticket to close
 - A comment that is right about the mechanism but wrong about severity or scope gets the same
   treatment: fix what is real, state plainly what isn't.
 
-## Commits
-Finished work lands on `master` directly; open a branch or a pull request only when the owner asks.
+## Commits and branches
+Where the work lands depends on where the session runs. This rule is strict.
+
+- **Main checkout, on `master`.** Commit on `master`. Stay there unless the owner asks for a branch
+  or a worktree.
+- **A worktree** — any checkout a tool created for the session, such as Conductor or Paseo. Create a
+  branch for the work and commit there. The change reaches `master` only through a pull request
+  (merge request) from that branch. From a worktree, never commit to `master`, merge into it, or push
+  to it.
+
+Check which case applies before the first commit:
+
+```bash
+[ "$(git rev-parse --git-dir)" = "$(git rev-parse --git-common-dir)" ] && echo "main checkout" || echo "worktree"
+```
+
 Write a concise imperative subject under ~70 characters (`Fix release build`) and keep one
 functional change per commit. Run the verify pair first, plus `:androidApp:assembleDebug` when
 `androidApp/` changed.
 
 ## Linear ticket status after merge
-Agents merge finished work straight to the default branch. The owner later installs the fresh
+Once the work is on the default branch (see *Commits and branches*), the owner installs the fresh
 build and checks every pending ticket in one pass.
 
 - **Human Check** — the change has behaviour a person must see on a device: UI, flows, copy,
