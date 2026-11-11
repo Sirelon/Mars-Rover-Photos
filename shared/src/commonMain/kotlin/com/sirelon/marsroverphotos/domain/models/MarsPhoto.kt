@@ -43,7 +43,13 @@ data class MarsPhoto(
     // Flat instrument identifier used by mars.nasa.gov raw-image feeds (e.g. "MAST_RIGHT").
     // Absent in the old mars-photos API responses; defaults to null for backward compatibility.
     @SerialName(value = "instrument")
-    val instrument: String? = null
+    val instrument: String? = null,
+
+    // When the photo was taken, as the MSL raw-image feed reports it. That feed has no
+    // `earth_date`, so [earthDate] falls back to `created_at` there — the time NASA stored the
+    // record, which can be years after the sol. Prefer this field when it is present.
+    @SerialName(value = "date_taken")
+    val dateTaken: String? = null,
 )
 
 private object StringOrNumberAsStringSerializer : KSerializer<String> {
