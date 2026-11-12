@@ -78,7 +78,7 @@ the data is currently static; ViewModel state is always observable (`StateFlow`/
 plain `val`) with one-shot signals as `Channel`/`SharedFlow`; navigation composables route but never
 make business decisions; top-level type names must stand alone (`Release.Change`, not `Change`); and
 behaviour goes in `commonMain` even when one platform's data found the problem — a platform source
-set holds only what common code cannot express (every `HttpClient` comes from `createAppHttpClient()`).
+set holds only what common code cannot express, and an engine setting goes into every `actual`.
 It ends with a pre-review self-check list.
 
 ## Design System & UI/UX

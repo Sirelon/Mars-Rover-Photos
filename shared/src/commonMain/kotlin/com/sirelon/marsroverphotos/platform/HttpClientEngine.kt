@@ -4,9 +4,9 @@ import io.ktor.client.engine.HttpClientEngine
 
 /**
  * Platform-specific HTTP client engine for Ktor: OkHttp on Android and desktop, Darwin on iOS.
- *
- * Only the engine choice belongs here. Request behaviour — per-host limits, retries, timeouts —
- * goes in `createAppHttpClient` (commonMain), so it applies on every platform. Call that, not
- * `HttpClient(createHttpClientEngine())`.
+ * Every engine applies [MAX_REQUESTS_PER_HOST]; a setting added to one engine goes into all three.
  */
 expect fun createHttpClientEngine(): HttpClientEngine
+
+/** A photo grid asks for dozens of images at once; more than this per host gets 429s back. */
+internal const val MAX_REQUESTS_PER_HOST = 4
