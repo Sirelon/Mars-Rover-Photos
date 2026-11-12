@@ -259,6 +259,10 @@ Stable design-system pieces (path = `shared/src/commonMain/kotlin/com/sirelon/ma
 **New `MaterialSymbol` glyphs (Rovers):** `Collections`, `Schedule`, `Event`, `Search` — added to the
 enum in `ui/MaterialSymbolIcon.kt` (the bundled full variable font renders them).
 
+**`MaterialSymbol` glyph (photo viewer):** `Wallpaper` — the "Set as wallpaper" action in the
+viewer top bar, between Save and Share. The ViewModel's `canSetWallpaper` hides it where the platform
+has no wallpaper route (desktop).
+
 **`MaterialSymbol` glyphs (Support the developer):** `VolunteerActivism`, `Coffee`, `LunchDining`,
 `DinnerDining`, `Celebration`, `Restore`. The Support screen (`screens/support/SupportScreen.kt`) is
 built entirely from the row family: `AppSection` + `AppRow` with a price in the `trailing` slot for the

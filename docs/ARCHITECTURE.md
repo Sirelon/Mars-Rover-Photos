@@ -99,6 +99,16 @@ Imports point **inward**: `presentation` → `domain`, never the reverse.
   (`ReleaseChange`) when it's referenced widely enough that nesting reads noisy.
 - Design-system components use the `App*` convention instead — see DESIGN_SYSTEM.md.
 
+### Behaviour is common; platform code only adapts
+- A fix or rule that should hold on every platform goes in `commonMain`, even when the data that
+  found it came from one platform. Android and iOS run different engines under the same library
+  (OkHttp vs Darwin under Ktor), so the same server or the same load hits both.
+- A platform source set holds only what common code cannot express: an engine setting, an OS API,
+  a platform SDK. When the fix is an engine setting, set it in **every** `actual` — the
+  `createHttpClientEngine()` actuals all apply `MAX_REQUESTS_PER_HOST`.
+- Every `HttpClient` comes from `createAppHttpClient()` (`data/network/AppHttpClient.kt`), which adds
+  the 429/5xx retry on top of the platform engine.
+
 ---
 
 ## Self-check before review
@@ -111,3 +121,6 @@ Imports point **inward**: `presentation` → `domain`, never the reverse.
 - [ ] checked `presentation/ui/` for an existing component before writing a new one — DESIGN_SYSTEM.md
 - [ ] remote content is cached in the repository, not per-ViewModel; loading and empty states exist
 - [ ] no hardcoded theme colors, no raw `.dp` — DESIGN_SYSTEM.md
+- [ ] a change in `androidMain` / `iosMain` / `desktopMain` is something common code cannot express,
+      and an engine setting added to one `actual` is in all of them
+- [ ] every new `HttpClient` is built with `createAppHttpClient()`

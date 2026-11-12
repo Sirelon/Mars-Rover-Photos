@@ -32,6 +32,7 @@ enum class MaterialSymbol(val iconName: String) {
     Favorite("favorite"),
     Save("save"),
     Share("share"),
+    Wallpaper("wallpaper"),
     Visibility("visibility"),
     ZoomIn("zoom_in"),
     Autorenew("autorenew"),

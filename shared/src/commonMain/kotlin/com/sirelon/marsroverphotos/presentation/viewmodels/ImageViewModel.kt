@@ -16,6 +16,7 @@ import com.sirelon.marsroverphotos.domain.repositories.RoversRepository
 import com.sirelon.marsroverphotos.platform.ImageOperationResult
 import com.sirelon.marsroverphotos.platform.ImageOperations
 import com.sirelon.marsroverphotos.platform.Tracker
+import com.sirelon.marsroverphotos.platform.WallpaperResult
 import com.sirelon.marsroverphotos.presentation.review.ReviewPrompter
 import com.sirelon.marsroverphotos.presentation.navigation.AppDestination
 import com.sirelon.marsroverphotos.presentation.navigation.ScreenNames
@@ -26,6 +27,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
@@ -63,6 +65,9 @@ class ImageViewModel(
 
     /** Flow of UI events (photo saved, errors, etc.). */
     val uiEvent: Flow<UiEvent> = uiEventEmitter.receiveAsFlow()
+
+    /** Whether this platform offers "Set as wallpaper" (not on desktop). */
+    val canSetWallpaper: StateFlow<Boolean> = MutableStateFlow(imageOperations.canSetWallpaper).asStateFlow()
 
     /** Whether to hide UI chrome (toolbar, controls). */
     val hideUi: StateFlow<Boolean> = hideUiEmitter
@@ -200,6 +205,24 @@ class ImageViewModel(
         }
     }
 
+    /** Offer the full-resolution photo as the wallpaper; see [ImageOperations.setAsWallpaper]. */
+    fun setAsWallpaper(photo: MarsImage) {
+        val fullResPhoto = photo.copy(imageUrl = nasaImageOrigUrl(photo.imageUrl))
+        viewModelScope.launch {
+            when (val result = imageOperations.setAsWallpaper(fullResPhoto)) {
+                WallpaperResult.Opened, WallpaperResult.SavedToPhotos -> {
+                    tracker.trackEvent("set_wallpaper", mapOf("photo_id" to photo.id))
+                    reviewPrompter.onDelightAction()
+                    if (result == WallpaperResult.SavedToPhotos) uiEventEmitter.send(UiEvent.WallpaperSavedToPhotos)
+                }
+                is WallpaperResult.Error -> {
+                    Logger.e("ImageViewModel", null) { "Error setting wallpaper: ${result.error}" }
+                    uiEventEmitter.send(UiEvent.WallpaperError(result.error))
+                }
+            }
+        }
+    }
+
     /** Share an image via platform share mechanisms. */
     fun shareMarsImage(marsImage: MarsImage) {
         val fullResImage = marsImage.copy(imageUrl = nasaImageOrigUrl(marsImage.imageUrl))
@@ -264,4 +287,10 @@ sealed class UiEvent {
 
     /** Error occurred while sharing photo. */
     data class ShareError(val errorMessage: String) : UiEvent()
+
+    /** iOS saved the photo to Photos for the user to set as wallpaper there. */
+    data object WallpaperSavedToPhotos : UiEvent()
+
+    /** Error occurred while preparing the wallpaper. */
+    data class WallpaperError(val errorMessage: String) : UiEvent()
 }

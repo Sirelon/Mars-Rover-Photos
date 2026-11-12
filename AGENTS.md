@@ -76,7 +76,9 @@ slug (`sol-feed`, `dark-theme`). The file is gitignored and the next `assembleDe
 layer); every screen that shows data gets a ViewModel registered with `viewModelOf(::X)`, even when
 the data is currently static; ViewModel state is always observable (`StateFlow`/`Flow`, never a
 plain `val`) with one-shot signals as `Channel`/`SharedFlow`; navigation composables route but never
-make business decisions; and top-level type names must stand alone (`Release.Change`, not `Change`).
+make business decisions; top-level type names must stand alone (`Release.Change`, not `Change`); and
+behaviour goes in `commonMain` even when one platform's data found the problem — a platform source
+set holds only what common code cannot express, and an engine setting goes into every `actual`.
 It ends with a pre-review self-check list.
 
 ## Design System & UI/UX
