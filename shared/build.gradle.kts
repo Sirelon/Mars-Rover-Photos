@@ -155,6 +155,8 @@ kotlin {
             implementation(libs.firebase.firestore.versioned)
             implementation(libs.firebase.messaging.versioned)
             implementation(libs.firebase.config.versioned)
+            // Custom trace for per-phase HTTP timings (SIR-167)
+            implementation(libs.firebase.perf.versioned)
 
             // GitLive Firebase KMP (analytics + crashlytics — Android + iOS only)
             implementation(libs.gitlive.firebase.analytics)

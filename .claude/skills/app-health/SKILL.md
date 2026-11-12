@@ -82,6 +82,12 @@ Artifact page built from the snapshot.
   names, and the funnels here read `PhotoSeen` and `SavePhoto`. Query them as they are; new events
   use snake_case (`platform/FirebaseTracker.kt`).
 - Performance network hosts are aggregated (`host/**`), so per-endpoint breakdowns are impossible.
+- From the release after 5.3.0, Android sends the custom trace `http_phases` (SIR-167): every call
+  of 5 s or more plus a 5 % sample of the rest. Attributes: `host`, `content` (image/json/other),
+  `outcome`, `protocol`, `slow`. Metrics in ms: `total_ms`, `acquire_ms`, `dns_ms`, `connect_ms`,
+  `tls_ms`, `ttfb_ms`, `body_ms`; counters `connect_attempts`, `reused`, `ipv6`. The trace's own
+  duration is ~0; read `total_ms`. Compare the `slow=true` rows with the sample to see which phase
+  holds the stall (`data/network/RequestPhaseTimings.kt`).
 - `images-assets.nasa.gov` failures are mostly by design: NASA serves no `~large` for about half
   of Spirit/Opportunity items and answers 403, so the viewer's `~large → ~medium → ~orig` chain
   (`utils/NasaImageUrl.kt`) logs misses before it loads. A 2026-11-06 probe of 60 items: grid
