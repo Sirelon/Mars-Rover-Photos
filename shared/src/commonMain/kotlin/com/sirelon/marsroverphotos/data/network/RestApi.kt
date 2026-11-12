@@ -7,8 +7,6 @@ import com.sirelon.marsroverphotos.domain.models.INGENUITY_ID
 import com.sirelon.marsroverphotos.domain.models.INSIGHT_ID
 import com.sirelon.marsroverphotos.domain.models.PERSEVERANCE_ID
 import com.sirelon.marsroverphotos.domain.models.PhotosQueryRequest
-import com.sirelon.marsroverphotos.platform.createHttpClientEngine
-import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -55,7 +53,7 @@ class RestApi {
         explicitNulls = false
     }
 
-    private val ktor = HttpClient(createHttpClientEngine()) {
+    private val ktor = createAppHttpClient {
         // default validation to throw exceptions for non-2xx responses
         expectSuccess = true
 

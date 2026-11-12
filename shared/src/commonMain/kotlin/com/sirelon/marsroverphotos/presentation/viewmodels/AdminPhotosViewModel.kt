@@ -5,9 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.sirelon.marsroverphotos.domain.models.FirebasePhoto
 import com.sirelon.marsroverphotos.platform.IFirebasePhotos
 import com.sirelon.marsroverphotos.platform.IFirebasePhotos.PopularCursor
-import com.sirelon.marsroverphotos.platform.createHttpClientEngine
+import com.sirelon.marsroverphotos.data.network.createAppHttpClient
 import com.sirelon.marsroverphotos.utils.Logger
-import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.request.head
 import io.ktor.http.isSuccess
@@ -50,7 +49,7 @@ class AdminPhotosViewModel(
     private val firebasePhotos: IFirebasePhotos
 ) : ViewModel() {
 
-    private val httpClient = HttpClient(createHttpClientEngine()) {
+    private val httpClient = createAppHttpClient {
         expectSuccess = false
         install(HttpTimeout) {
             requestTimeoutMillis = 15_000

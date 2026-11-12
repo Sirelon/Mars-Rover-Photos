@@ -35,8 +35,7 @@ import com.sirelon.marsroverphotos.presentation.navigation.AppNavigation
 import com.sirelon.marsroverphotos.presentation.navigation.DeepLink
 import com.sirelon.marsroverphotos.presentation.navigation.LocalAboutCallbacks
 import com.sirelon.marsroverphotos.platform.PushNotifications
-import com.sirelon.marsroverphotos.platform.createHttpClientEngine
-import io.ktor.client.HttpClient
+import com.sirelon.marsroverphotos.data.network.createAppHttpClient
 import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
 import com.sirelon.marsroverphotos.presentation.theme.MarsRoverPhotosTheme
 import com.sirelon.marsroverphotos.presentation.theme.isSystemInDarkTheme
@@ -79,8 +78,8 @@ fun App(
                     .maxSizePercent(context, 0.40)
                     .build()
             }
-            // Images go through the app's own engine, so Android's per-host request cap applies to them.
-            .components { add(KtorNetworkFetcherFactory(httpClient = { HttpClient(createHttpClientEngine()) })) }
+            // Images go through the app's own client, so its per-host cap and retry apply to them.
+            .components { add(KtorNetworkFetcherFactory(httpClient = { createAppHttpClient() })) }
             .build()
     }
 

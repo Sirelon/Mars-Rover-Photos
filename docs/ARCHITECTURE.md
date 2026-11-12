@@ -99,6 +99,20 @@ Imports point **inward**: `presentation` → `domain`, never the reverse.
   (`ReleaseChange`) when it's referenced widely enough that nesting reads noisy.
 - Design-system components use the `App*` convention instead — see DESIGN_SYSTEM.md.
 
+### Behaviour is common; platform code only adapts
+- A fix or rule that should hold on every platform goes in `commonMain`, even when the data that
+  found it came from one platform. Android and iOS run different engines under the same library
+  (OkHttp vs Darwin under Ktor, Coil, Room), so the same server or the same load hits both.
+- A platform source set holds only what common code cannot express: the engine choice, an OS API,
+  a platform SDK. Before you put a behaviour there, check whether a common hook exists — a Ktor
+  plugin, a Coil interceptor, a repository — and use it.
+- Every `HttpClient` comes from `createAppHttpClient()` (`data/network/AppHttpClient.kt`). It adds
+  the per-host request cap and the 429/5xx retry. The platform `createHttpClientEngine()` only picks
+  the engine. An engine setting such as OkHttp's `maxRequestsPerHost` covers one platform only, and
+  Darwin's per-host limit counts connections, which HTTP/2 multiplexes.
+- When behaviour must differ per platform, say why in a KDoc on the `actual`, and say what the
+  other platforms do instead.
+
 ---
 
 ## Self-check before review
@@ -111,3 +125,6 @@ Imports point **inward**: `presentation` → `domain`, never the reverse.
 - [ ] checked `presentation/ui/` for an existing component before writing a new one — DESIGN_SYSTEM.md
 - [ ] remote content is cached in the repository, not per-ViewModel; loading and empty states exist
 - [ ] no hardcoded theme colors, no raw `.dp` — DESIGN_SYSTEM.md
+- [ ] a change in `androidMain` / `iosMain` / `desktopMain` is something common code cannot express;
+      a fix found on one platform was checked on the others
+- [ ] every new `HttpClient` is built with `createAppHttpClient()`
