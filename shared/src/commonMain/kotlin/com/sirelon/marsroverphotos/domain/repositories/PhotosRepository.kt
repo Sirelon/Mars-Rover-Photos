@@ -24,4 +24,11 @@ interface PhotosRepository {
      * scan find the photos, which is slower but equally correct.
      */
     suspend fun nearestSolWithPhotosAtOrAfter(roverId: Long, fromSol: Long): Long? = null
+
+    /**
+     * One recent photo of the rover, for its card on the rovers list: the newest full frame
+     * where the source has a "newest", a stand-in where it does not. Null when there is none.
+     * May throw on a network failure.
+     */
+    suspend fun latestPhoto(roverId: Long): MarsImage? = null
 }

@@ -46,7 +46,8 @@ the moment the editorial pass runs, and it goes stale the instant anyone re-runs
 durable record is `EDITORIAL_NOTES.md` (why each decision was made) plus git itself (the evidence
 the findings were derived from) — both survive without it.
 
-Evidence packs are scratch too: `/tmp/release-packs/*.txt` and `/tmp/ranges.tsv`. Regenerate them
+Evidence packs are scratch too: `.claude/tmp/release-notes/packs/*.txt` and
+`.claude/tmp/release-notes/ranges.tsv`. Regenerate them
 with the Step 3 bash rather than keeping them.
 
 Because the raw JSON is disposable, **nothing durable may reference it by path.** Do not cite
@@ -173,7 +174,7 @@ died that way. They are not retryable in place, so after each batch diff the exp
 against `.claude/tmp/release-notes/raw/*.json` and re-spawn whatever is missing:
 
 ```bash
-cut -f1 /tmp/ranges.tsv | while read v; do [ -f ".claude/tmp/release-notes/raw/$v.json" ] || echo "missing: $v"; done
+cut -f1 .claude/tmp/release-notes/ranges.tsv | while read v; do [ -f ".claude/tmp/release-notes/raw/$v.json" ] || echo "missing: $v"; done
 ```
 
 Also validate every file parses — a killed agent can leave a truncated write:
@@ -228,7 +229,7 @@ node scripts/publish-release-notes.mjs            # one atomic commit of every r
 
 Publishing is what ships the notes. A release left unpublished shows no What's New card at all.
 
-Then delete the scratch — `.claude/tmp/release-notes/`, `/tmp/release-packs/`, `/tmp/ranges.tsv`.
+Then delete the scratch — `.claude/tmp/release-notes/`.
 Keep only the three committed docs. Re-running the pipeline regenerates everything else.
 
 ## Hard rules

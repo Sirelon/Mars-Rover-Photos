@@ -26,6 +26,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
 import coil3.memory.MemoryCache
+import coil3.network.ktor3.KtorNetworkFetcherFactory
 import com.sirelon.marsroverphotos.domain.settings.AppSettings
 import com.sirelon.marsroverphotos.domain.settings.Theme
 import com.sirelon.marsroverphotos.platform.BuildInfo
@@ -34,6 +35,7 @@ import com.sirelon.marsroverphotos.presentation.navigation.AppNavigation
 import com.sirelon.marsroverphotos.presentation.navigation.DeepLink
 import com.sirelon.marsroverphotos.presentation.navigation.LocalAboutCallbacks
 import com.sirelon.marsroverphotos.platform.PushNotifications
+import com.sirelon.marsroverphotos.data.network.createAppHttpClient
 import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
 import com.sirelon.marsroverphotos.presentation.theme.MarsRoverPhotosTheme
 import com.sirelon.marsroverphotos.presentation.theme.isSystemInDarkTheme
@@ -60,8 +62,9 @@ fun App(
     // holds its place, so the first visible index jumps by a whole page while the window start
     // stays put: every prepended cell is composed, reads its item, and makes Paging prepend again.
     // The loop runs until the app is out of memory. The classic prefetcher has no such window.
-    // Set here, before any grid composes.
-    ComposeFoundationFlags.isPreferDefaultCacheWindowOverPrefetchStrategy = false
+    // Set here, before any grid composes. Lists get the same prefetcher so both behave alike.
+    ComposeFoundationFlags.isPreferDefaultCacheWindowOverPrefetchStrategyLazyGrid = false
+    ComposeFoundationFlags.isPreferDefaultCacheWindowOverPrefetchStrategyLazyList = false
 
     // Keep the in-memory image cache large enough that the fullscreen viewer's big bitmaps don't
     // evict the list/grid thumbnails. The list screens are disposed while the viewer is on top (a
@@ -75,6 +78,8 @@ fun App(
                     .maxSizePercent(context, 0.40)
                     .build()
             }
+            // Images go through the app's own client, so its per-host cap and retry apply to them.
+            .components { add(KtorNetworkFetcherFactory(httpClient = { createAppHttpClient() })) }
             .build()
     }
 

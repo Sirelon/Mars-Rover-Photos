@@ -1,15 +1,20 @@
 # Repository Guidelines
 
-## Project Structure & Module Organization
-This is a Kotlin Multiplatform project. The module layout:
+Mars Rover Photos is a Kotlin Multiplatform app (Android, iOS, desktop) that shows NASA Mars rover
+photos. One owner; agents do most of the work and the owner checks builds on a device.
+
+## Modules
 - `shared/` — all shared code: domain, data, repositories, view models, common Compose UI, navigation, DI
 - `androidApp/` — Android shell: `MainActivity`, `MarsRoverApplication`, widget, GDPR helper, app icons
-- `baselineprofile/` — Android Baseline Profile generator and cold-startup Macrobenchmark for `androidApp` (see *Baseline Profile* below)
-- `desktopApp/` — Desktop shell
+- `baselineprofile/` — Baseline Profile generator and cold-startup Macrobenchmark for `androidApp`
+- `desktopApp/` — Desktop shell, wired for Compose Hot Reload
 - `iosApp/` — Swift/iOS shell, Xcode project, Firebase config
-- `webApp/` — experimental standalone WASM shell; shared web support is still disabled (see `WASM_WEB_SUPPORT.md`)
+- `webApp/` — experimental standalone WASM shell, not wired to `shared`
 
-Feature screens and view models live in `shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/presentation`. Android-specific implementations go in `shared/src/androidMain` or `androidApp/`. Static-analysis configuration is stored under `config/detekt/`.
+Shared code lives in `shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/`. Screens go in
+`presentation/screens/` (a multi-file feature gets its own subpackage, like `screens/whatsnew/`), view
+models in `presentation/viewmodels/`. Android-specific implementations go in `shared/src/androidMain`
+or `androidApp/`.
 
 `shared/src/mobileMain` is the intermediate source set shared by Android and iOS but not desktop
 (declared with `applyDefaultHierarchyTemplate` in `shared/build.gradle.kts`). It holds what only the
@@ -19,260 +24,75 @@ fakes for the same interfaces (`FakeSupportRepository`, `StaticFeatureFlags`), s
 consumer never knows which it got. Put code here when its dependency has no JVM variant — check the
 artifact's Gradle module metadata before assuming.
 
-## Support tiers, ad-free and feature flags
-"Support the developer" sells four tiers through RevenueCat (project `Mars Rover Photos`), one
-package each (`support_small` … `support_huge`). Coffee (`support_small`, store product `tip_coffee`,
-$0.99) is a consumable tip: buyable any number of times, each purchase removes ads for 30 days, and
-purchases stack (`tipAdFreeUntil`). Lunch, Dinner and Feast (`support_medium` $1.99, `support_large`
-$4.99, `support_huge` $9.99) are non-consumables that activate the `ad_free` entitlement for good and
-restore on a new device. `tip_coffee` stays off that entitlement: RevenueCat would report it as
-permanent, and App Review expects a permanent unlock to be a restorable non-consumable. The repository
-derives the Coffee window from `CustomerInfo.nonSubscriptionTransactions`. `SupportRepository.isAdFree`
-combines both, and the navigation root reads it to drop the ad slot. The UI keys icons and wording on the package id, not the
-store product id, so a store-side rename never reaches the screen. Price, type and tier changes are
-the owner's decision — propose, do not implement. The
-Android and iOS entry points also skip the consent (UMP) and ATT prompts for supporters. Public SDK
-keys are per build type: `BuildConfig.REVENUECAT_API_KEY` on Android, the `#if DEBUG` branch in
-`MarsRoverApp.swift` on iOS — debug builds talk to RevenueCat's Test Store, so nothing is charged and
-purchases can be made on any device with no store account setup.
+## Read before you touch
+Each row is binding for the work it names. Read the doc first; it carries invariants the code does
+not show.
 
-User-facing copy says "support" or "tip", never "donation": both stores classify in-app donations as
-a restricted category, and the purchase must not be tied to a cause.
+| Work | Read |
+|---|---|
+| A screen, ViewModel, domain model or repository | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
+| Any Compose UI | [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md), then run the `compose-design-system` skill on the diff |
+| Paging, `NasaApi`, a rover's photo source, the Viking catalogue | [docs/PHOTO_FEED.md](docs/PHOTO_FEED.md) |
+| Support screen, RevenueCat, feature flags, ads, UMP / ATT prompts | [docs/MONETIZATION.md](docs/MONETIZATION.md) |
+| Version number, release notes, fastlane lanes, Galaxy Store | [docs/RELEASE.md](docs/RELEASE.md); cut a release with the `store-release` skill |
+| Looking at or driving the UI | [docs/DESKTOP_HOT_RELOAD.md](docs/DESKTOP_HOT_RELOAD.md) |
+| iOS build, Xcode project, SwiftPM linkage | [iosApp/README.md](iosApp/README.md) |
+| Startup path, photo grid, the `roverCard` / `photoGrid` test tags | [baselineprofile/README.md](baselineprofile/README.md) |
+| Deep links, notification tap targets | [docs/DEEP_LINKING.md](docs/DEEP_LINKING.md), [docs/PUSH_NOTIFICATIONS.md](docs/PUSH_NOTIFICATIONS.md) |
+| Store screenshots | [.maestro/README.md](.maestro/README.md) |
+| Web / WASM target | [docs/WASM_WEB_SUPPORT.md](docs/WASM_WEB_SUPPORT.md) |
 
-The feature sits behind the Remote Config boolean `support_tiers_enabled` (`FeatureFlag.SUPPORT_TIERS`,
-default `false`). The About row and the Support screen entry point are hidden while it is off; the
-ad-free gate is not, so an owner keeps ad-free whatever the flag says. Flip it in the Firebase console
-(project `mars-rover-photos`); debug builds pin it on (`FeatureFlag.enabledInDebug`) and refetch every
-launch, release builds honour the remote value and refetch at most every 12 hours. The flag must be
-on in production before a build carrying the in-app purchases is submitted to App Review, and the
-review notes must say where the purchase UI is (About → Support the Developer): reviewers who cannot
-reach an IAP reject the submission. Desktop has no Remote Config and no store: the flag is forced on and billing is faked so the
-screen can be iterated through Compose Hot Reload.
+## Commands
+Run from the repository root so the Gradle wrapper supplies the pinned toolchain.
 
-The KMP migration is complete. The legacy `app/` module has been deleted.
+- `./gradlew :shared:desktopTest :shared:compileAndroidMain` — the **verify pair**: every common test
+  on the desktop JVM plus an Android-target compile of shared code. Run it before every commit.
+  (AGP 9 KMP task naming; there is no `compileDebugKotlinAndroid` on `:shared`.)
+- `./gradlew :androidApp:assembleDebug` — the debuggable APK. Run it when `androidApp/` changed.
+- `./gradlew :shared:assembleSharedDebugXCFramework` — the framework Xcode links. Run it after a
+  shared change that iOS must pick up.
+- `./gradlew :desktopApp:hotRun` — the desktop app with hot reload.
+- `./gradlew detekt` — lints and autocorrects `androidApp` and the root project per
+  `config/detekt/detekt.yml`. It does not source `shared/`, so a clean run says nothing about shared
+  code; check shared UI against the design-system rules by reading the diff.
 
-## Photo Feed & Data Sources
-The heart of the app is the shared rover photo feed in `shared/.../data/paging/`: an app-singleton `RoverFeedPager` exposes one cached `PagingData` stream collected by both the list grid and the fullscreen viewer, with a per-rover `FeedMode` seam — sol-keyed (`SolPagingSource`: Curiosity, Perseverance, Ingenuity, InSight, Viking 1, Viking 2) vs page-keyed with a random anchor (`ImagesSearchPagingSource`: Spirit, Opportunity). The class KDocs there document the non-obvious invariants (continuation pages, anchor resolution, write-through cache merge rules) — read them before touching paging. Data-source constraints: the classic `api.nasa.gov/mars-photos` API is permanently dead; Spirit/Opportunity only exist in the curated images.nasa.gov library (no raw archive API); each rover's source is mapped in the repository/network layer.
+## Debug build label
+Before building a debug APK, write a short feature name to
+`androidApp/src/main/assets/debug_label.txt`:
 
-Two things about the Mars 2020 raw-image feed (`mars.nasa.gov/rss/api`), which serves both Perseverance and Ingenuity, are worth knowing before you touch `NasaApi`. First, it does not resolve a duplicated query parameter as "last wins" — it discards both and falls back to its own default. `category` and `order` are therefore passed as parameters and must never be reintroduced into the URL literal: a second `category` silently answers an Ingenuity request with Perseverance photos, which then cache under the wrong rover id. Second, the sol filter is `condition_3=<sol>:sol:in`; the `sol=<n>:sol:in` form looks equivalent but is ignored on an empty sol, returning the entire unfiltered feed instead.
+```bash
+mkdir -p androidApp/src/main/assets
+echo "your-feature-name" > androidApp/src/main/assets/debug_label.txt
+```
 
-Ingenuity is also the app's one genuinely sparse sol feed: 14,553 images spread over 162 sols, running from sol 43 — the day it was set down on the surface, its first images long predating its first flight — to sol 1069, with the largest gap running 76 sols. A uniform random anchor lands on an empty sol six times out of seven, and `SolPagingSource` resolves those by probing forward one network request per sol. `PhotosViewModel.randomize()` therefore asks `PhotosRepository.nearestSolWithPhotosAtOrAfter` for a photo-bearing sol first, which the feed's undocumented `gte` range operator answers in a single request. That lookup is Ingenuity-only and falls back to the plain scan on any failure; `SolPagingSource` itself is deliberately untouched by it.
-
-The two Viking landers are the exception to "the source is an API": their 1976-1982 archive is a static PDS file tree with nothing to query, so the app ships the index. `scripts/generate-viking-catalog.mjs` turns the PDS `index.tab` volumes into the two `composeResources/files/viking*_catalog.txt` resources — verifying every derived image URL against the live archive before it writes — and `data/viking/VikingCatalog` parses them behind `PhotosRepository`. Because the catalogue carries a real sol per photo, Viking reuses the sol feed unchanged. The generator also drops what is not worth looking at: frames narrower than 100px (`MIN_BROWSABLE_WIDTH`) and a short list of blank diagnostics (`NON_PHOTOGRAPHIC_NOTES`). The Viking cameras were facsimile scanners that built an image one 512-pixel column at a time while turning, so width is purely how far the camera swept, and the sub-100px band is entirely optical-depth readings and calibration rather than photographs. That is why the seeded `totalPhotos` (1333 / 1581) is far smaller than the archive (3542 / 3043). Regenerate with the script; never hand-edit the resources.
-
-## Dependency Versions
-Beta, alpha, and RC dependency versions are acceptable in this project. Prefer the version that unlocks a needed multiplatform capability over waiting for a stable release (e.g., `lifecycle-viewmodel-navigation3` requires `2.11.0+` for the iOS/Desktop/Web ViewModelStore Nav3 APIs; `2.10.0` was Android-only). When pinning a pre-release, record why it is required so the choice stays revisitable, but do not reject a pre-release on stability grounds alone.
-
-## Build, Test, and Development Commands
-- `./gradlew assembleDebug` — build the debuggable APK with the repository Compose compiler flags.
-- `./gradlew testDebugUnitTest` — run Android-side JVM unit tests.
-- `./gradlew :shared:desktopTest` — run the shared KMP/common tests on the desktop JVM target.
-- `./gradlew connectedDebugAndroidTest` — launch instrumentation tests on an attached emulator or device.
-- `./gradlew detekt` — lint and autocorrect according to `config/detekt/detekt.yml`.
-- `./gradlew :shared:compileAndroidMain` — quick Android-target compile check of shared code (AGP 9 KMP task naming; there is no `compileDebugKotlinAndroid` on `:shared`).
-Run commands from the repository root so the Gradle wrapper can supply the pinned toolchain.
-
-### Baseline Profile (Android)
-The release build ships a Baseline Profile and a startup profile from
-`androidApp/src/release/generated/baselineProfiles/`, so ART compiles the startup path and the photo
-grid ahead of time instead of interpreting them on first launch. `:baselineprofile` produces them by
-driving two journeys (`Journeys.kt`): cold start until the rover list shows, then opening Curiosity and
-flinging the photo grid. The UI is found by Compose `testTag` (`roverCard`, `photoGrid`),
-so renaming one of those tags breaks generation.
-
-- `./gradlew :androidApp:generateBaselineProfile` — regenerates both files; commit the result. It runs
-  on the Gradle-managed `pixel6Api37` emulator, never on a connected device, because installing the
-  benchmark build replaces whatever copy of the app is on the device. The photo journey needs network.
-- `./gradlew :baselineprofile:pixel6Api37BenchmarkReleaseAndroidTest -Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.suppressErrors=EMULATOR`
-  — `StartupBenchmarks` measures cold start with and without the profile. Emulator timings are only
-  meaningful relative to each other.
-
-Regenerate after substantial changes to startup or the photo feed; a stale profile still helps, but
-less.
-
-### Desktop hot reload & the Compose Hot Reload MCP server
-The desktop target is the fastest place to see and drive shared UI, and it is wired for
-[Compose Hot Reload](https://kotlinlang.org/docs/multiplatform/compose-hot-reload.html): the
-`org.jetbrains.compose.hot-reload` plugin is applied to `desktopApp`, and `.mcp.json` at the repo root
-registers its MCP server (`compose-hot-reload`, backed by `./gradlew :desktopApp:hotMcpServer`) so an
-agent can look at and interact with the running app instead of guessing from code. Use it whenever a
-change touches Compose UI, navigation or ViewModel state that the desktop app can reach; it replaces
-"build, install on a phone, describe what you think you'd see".
-
-1. **Start the app once** and leave it running for the session: `./gradlew :desktopApp:hotRun`
-   (blocking — run it as a background task; first run provisions a JetBrains Runtime via the foojay
-   resolver, later runs start in seconds). The MCP server needs no running app up front: it waits and
-   attaches when the window appears, and `status` flips to `connected: true`.
-2. **Edit, then `reload`.** The `reload` tool recompiles and swaps the changed classes into the live
-   process (`{"reloaded": true}`); when compilation fails, `status` carries the compiler output in
-   `lastErrorDetails`. Batch related edits and reload once. Alternative: start with
-   `hotRun --auto` and call `await_reload` after saving — the build watches the sources and reloads by
-   itself (`status.buildContinuous` tells you which mode is active). Do not `restart` for UI edits;
-   only when you changed `main`, DI wiring, or something a class swap cannot express. `restart` keeps
-   the same mode, but the original `hotRun` Gradle invocation exits — the app lives on.
-3. **Verify with `take_screenshot` and `get_semantic_tree`.** The screenshot is captured in-process
-   from the Compose scene at the window's density (pass `save_to` to keep it as PR evidence), so it is
-   correct even when the window is hidden behind other windows. The tree returns roles, text,
-   `testTag`s, `actions` and `nodeId`s, with a separate root for each open dialog / sheet / popup. If a
-   screenshot ever shows the desktop wallpaper, the runtime has fallen back to a screen grab — check
-   that `compose-hot-reload` and `compose-multiplatform` in the catalog still satisfy the requirement
-   recorded next to them (Hot Reload with `ComposeDesktopEntryPoint` capture + Compose 1.13+).
-4. **Drive the UI** with `click` / `long_click` / `type_text` / `scroll` / `scroll_to_index`,
-   targeting `nodeId`s whose `actions` contain `onClick`; `resize_window` exercises the adaptive
-   breakpoints from `docs/DESIGN_SYSTEM.md` without a tablet; `reset_ui` returns to the initial
-   composition.
-5. **Before declaring a change working**, check `get_ui_error` (a composable threw while rendering;
-   `status.uiErrorWindows` lists affected windows) and `get_logs` (`Logger.d` output and exceptions).
-
-Desktop is the JVM target, so it exercises everything in `commonMain` plus `desktopMain` actuals;
-Android-only (`androidMain`, `androidApp/`) and iOS-only code still needs a device. Firebase runs
-against the desktop shim (Firestore reads are real; the Realtime Database URL is deactivated and logs
-a one-line warning), and `BuildInfo.versionName` is `"unknown"`, so version-gated features
-(What's New) will not trigger there. The hot-reload run does not go through `assembleDebug`, so the
-`debug_label.txt` badge rule does not apply to it.
-
-### iOS dev builds
-The Xcode project consumes a prebuilt framework whose location follows the configuration via the `KMP_XCFRAMEWORK_DIR` build setting: Debug links `shared/build/XCFrameworks/debug/shared.xcframework`, Release links `.../release/...`, and the "Build KMP Framework" phase assembles whichever matches. Xcode resolves that framework while planning the build, before script phases run, so in a fresh clone/worktree run the matching task by hand once — `./gradlew :shared:assembleSharedDebugXCFramework` for dev work — or Xcode fails with "There is no XCFramework found". `iosApp/iosApp/GoogleService-Info.plist` is gitignored; copy it from an existing checkout or Firebase console, otherwise the build fails on a missing input file.
-
-## Versioning
-The app version lives in **one place**: `buildSrc/src/main/kotlin/AppVersion.kt` (`name` = marketing version, `code` = build number). Android (`androidApp/build.gradle.kts`) and Desktop (`desktopApp/build.gradle.kts`) read it directly at build time. iOS can't read Kotlin, so it's kept in sync via Gradle tasks (group `versioning`, defined in `gradle/versioning.gradle.kts`):
-
-- `./gradlew bumpVersion` — increments `code` by 1 and bumps the **minor** part of `name`, resetting patch (e.g. `3.0.0` → `3.1.0`). Updates `AppVersion.kt` and the iOS project in one shot.
-- `./gradlew bumpVersion -PversionName=5.0.0` — same, but sets `name` to the value you pass (must be `major.minor.patch`); `code` is still incremented by 1.
-- `./gradlew syncIosVersion` — pushes the current `AppVersion.kt` values into `iosApp/iosApp.xcodeproj/project.pbxproj` (`MARKETING_VERSION` ← `name`, `CURRENT_PROJECT_VERSION` ← `code`). Use this only if you edit `AppVersion.kt` by hand; `bumpVersion` already does it.
-
-Never hand-edit the version in `project.pbxproj` — it is overwritten on the next sync/bump.
-
-## Release notes
-The What's New screens read the `release-notes` Firestore collection, not the app binary, so a
-version's notes can be written or corrected after that build is already on people's phones.
-
-`scripts/release-notes.json` is the authored source of truth (git-reviewed, one entry per release);
-`node scripts/publish-release-notes.mjs` pushes it to Firestore in a single atomic commit and is
-idempotent. Add `--dry-run` to inspect the payload first. It authenticates with Application Default
-Credentials, so `gcloud auth application-default login` must have been run.
-
-Publishing is a step of its own: `bumpVersion` does not do it. Release notes surface as one
-dismissible card at the top of the Rovers list, from the second launch on and never as a launch
-dialog: an update card toward the newest `active` release (`active: false` for a build pushed ahead
-of store approval — see the `store-release` skill) when that version is newer than the installed
-build, otherwise a what's-new card for the installed build once after an update. The update card does
-not require an entry matching the installed version exactly, but with nothing published at all there
-is no release to nudge toward. Each change names its icon with a Material Symbols ligature (`"rocket_launch"`); the
-script warns for
-any name missing from the `MaterialSymbol` enum, which would silently render the default symbol.
-Regenerate the JSON with the `release-notes` skill.
-
-## Store releases
-Cutting a release goes through the `store-release` skill (`.claude/skills/store-release/SKILL.md`),
-which owns the whole sequence: bump the version, build and upload Android to the Play internal track,
-generate and publish this release's notes concurrently, upload iOS to TestFlight with the same
-changelog, then commit and tag locally. Promoting to Play production and submitting to the App Store
-stay manual.
-
-App Store header and search-results banners come from the global `store-banners` skill; campaigns
-live in `Design/store-banners/<slug>/`. Their imagery source is NASA's public-domain library: search
-`https://images-api.nasa.gov/search?q=<query>&media_type=image`, take the original at
-`https://images-assets.nasa.gov/image/<nasa_id>/<nasa_id>~orig.jpg` (check its size in the
-`metadata.json` beside it), and use mission photos only, never NASA logos or insignia.
-
-Two ordering constraints matter beyond that skill. The bump must precede both builds, because
-`versionCode`/`versionName` are compiled in from `AppVersion.kt`. And the two builds cannot run
-concurrently: both drive Gradle in this project directory — Android via `:androidApp:bundleRelease`,
-iOS via the Xcode "Build KMP Framework" phase, which shells out to `./gradlew` for the XCFramework
-matching the configuration.
-
-Releases are tagged on the version-bump commit (`git tag 5.0.0`), which is what makes
-`<prev tag>..HEAD` a trustworthy range for the next release's notes. Tags are created locally;
-pushing one needs explicit permission.
-
-`fastlane/Fastfile` carries the lanes: `android beta` (build + upload AAB), `android changelog`
-(attach release notes to that upload — a separate call because supply skips all metadata when no
-`metadata_path` resolves — then run `android listing`), `android listing` (Play title and
-descriptions), `android release` (promote to production), `ios beta` (TestFlight), `ios release`
-(App Store binary) and `ios release_notes` (App Store "What's New", promotional text, name,
-subtitle, keywords and description; metadata only).
-
-### Samsung Galaxy Store
-`fastlane android galaxy` is the whole Samsung release in one lane: it builds the release APK,
-re-signs it, pushes the Play listing text plus the staged changelog as the store's "What's New",
-attaches the binary and submits the listing for Samsung's review. `skip_build:true` reuses the APK
-already in `androidApp/build/outputs/apk/release/`. It runs after the Play upload of the same
-version, never concurrently (same Gradle directory), and only when the Galaxy listing is not
-already in review; it also refuses a version code the listing already holds.
-
-Samsung has no equivalent of Play App Signing, so the listing still expects the certificate the
-app was first published with: `anyNew2.jks`, alias `marsrovers`, not `upload.jks`. The lane
-re-signs the Play-signed APK with apksigner rather than building twice. Credentials, all
-gitignored:
-
-- `fastlane/galaxy-store.env` — `GALAXY_KEYSTORE`, `GALAXY_KEY_ALIAS`, `GALAXY_KS_PASS`,
-  `GALAXY_KEY_PASS`. The passwords are never on the command line; apksigner reads them from the
-  environment.
-- `fastlane/galaxy-store-key.pem` — private key of the Seller Portal service account (Seller Portal
-  → Assistance → API Service → Create Service Account, Content Publish API scope). Samsung shows the
-  key once; the service account id and the listing's content id are constants in the Fastfile.
-
-Existing binaries on the listing are left attached: Samsung serves each binary to the devices it
-targets, and the two from 2016 and 2019 may be the only builds still offered to very old Android
-versions. Removing one is a Seller Portal decision, not the lane's.
-
-The store listing text lives in `fastlane/listing/{android,ios}/en-US/*.txt`, one file per field,
-and is committed. Every release uploads it through `android changelog` and `ios release_notes`, so
-to change what the store pages say, edit those files and it ships with the next release. The lanes
-refuse a field over the store's limit (Play title 30, short description 80, full description 4000;
-Apple name and subtitle 30, keywords 100 bytes, description 4000).
-The Android lanes refuse to build without a resolvable keystore and the iOS lanes without the App
-Store Connect key and `GoogleService-Info.plist`, so a missing credential fails in a second rather
-than after an archive.
-
-The store changelog is a separate artifact from the in-app What's New above — written to the
-gitignored `.claude/tmp/release-metadata/` and uploaded by fastlane — but both carry the same text,
-derived from the same `scripts/release-notes.json` entry. Every credential the release path needs
-(`keystore.properties`, `fastlane/google-play-key.json`, `fastlane/AuthKey_*.p8`,
-`iosApp/iosApp/GoogleService-Info.plist`) is gitignored, so a fresh worktree has none of them.
-Without `keystore.properties` in particular, `bundleRelease` succeeds and produces an unsigned AAB
-that Play rejects.
-
-## Ads & consent prompts
-Banner ads (AdMob) sit in the app chrome on every non-fullscreen screen and load only once consent
-is on record: `AndroidAdConsent.canRequestAds` on Android, `IosAdSlot.factory` on iOS. The consent
-state is refreshed on every launch (`GdprHelper.init()` from `MainActivity`, `refreshConsent()` in
-`MarsRoverApp.swift`), so a returning user gets ads at once. The prompts themselves — the UMP consent
-form for EEA/UK users on both platforms, then App Tracking Transparency on iOS — wait for the
-second rover the user opens, counted across sessions in `AppSettings` (`platform/ConsentPromptGate`,
-opened by `RoversViewModel` on that tap and never at launch), so a first launch shows the rover
-list and a whole first visit before any sheet. The iOS order is fixed: UMP before ATT before
-`MobileAds.start`, and both prompts need the app foreground-active. Debug builds force EEA geography
-so the form is always testable; the `hideAds` launch argument (store screenshots) skips the ads and
-both prompts entirely.
-
-## Coding Style & Naming Conventions
-Kotlin files use four-space indentation, `val` first, and explicit visibility for public APIs. Compose functions and classes stay in PascalCase, constants in `UPPER_SNAKE_CASE`, and extension files match their receiver (`ImageRequestExt.kt`). Keep packages cohesive; add a `feature/*` subpackage for new screens. Run `./gradlew detekt` before review instead of hand-tuning formatting.
+The app shows it as a badge in the top-right corner of every debug build, so the owner can tell
+which feature is installed when several agents build in parallel. Use the branch name or a 1–3 word
+slug (`sol-feed`, `dark-theme`). The file is gitignored and the next `assembleDebug` picks it up.
 
 ## Architecture & Layering
-Before adding a screen, ViewModel, or domain model, read **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**.
-It carries the layer map (`domain` ← `data` / `presentation`, wired only in `di/`) and the prescriptive
-rules that reviews keep catching: `domain/` never imports `presentation/` (map domain values to UI types
-with an extension in the UI layer); every screen that shows data gets a ViewModel registered with
-`viewModelOf(::X)`, even when the data is currently static; ViewModel state is always observable
-(`StateFlow`/`Flow`, never a plain `val`) with one-shot signals as `Channel`/`SharedFlow`; navigation
-composables route but never make business decisions; and top-level type names must stand alone
-(`Release.Change`, not `Change`). It ends with a pre-review self-check list.
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) carries the layer map (`domain` ← `data` /
+`presentation`, wired only in `di/`) and the prescriptive rules that reviews keep catching:
+`domain/` never imports `presentation/` (map domain values to UI types with an extension in the UI
+layer); every screen that shows data gets a ViewModel registered with `viewModelOf(::X)`, even when
+the data is currently static; ViewModel state is always observable (`StateFlow`/`Flow`, never a
+plain `val`) with one-shot signals as `Channel`/`SharedFlow`; navigation composables route but never
+make business decisions; top-level type names must stand alone (`Release.Change`, not `Change`); and
+behaviour goes in `commonMain` even when one platform's data found the problem — a platform source
+set holds only what common code cannot express, and an engine setting goes into every `actual`.
+It ends with a pre-review self-check list.
 
 ## Design System & UI/UX
-Before writing or changing any Compose UI, read **[docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md)** — the
-living design-system doc. It carries the prescriptive UI/UX rules (token usage, the `App*` component
-family, adaptive-nav ownership), a component index with file links, and the non-obvious insights
-(e.g. dark `surface` == `background`, no green slot in the M3 palette, the full Material Symbols font).
-Reuse the `App*` components in `presentation/ui/` before adding new ones; prefer `AppSpacing` /
-`AppSize` over adding new raw `.dp` literals, and use `MaterialTheme.colorScheme` instead of hardcoded theme colors.
-The same reuse-first rule applies **within** the token scales: check `AppSpacing` / `AppSize` / `AppMotion`
-for a value that fits before adding an entry, and don't borrow a token whose name belongs to another
-component just because the number matches. **Keep the doc updated**: when you add a reusable component,
-a token, or learn a UI gotcha, record it there — and when a UI fix takes several rounds to land, leave a
-short symptom-first note in that doc's *Insights / gotchas* section so the next reader recognizes it from
-the behavior.
+[docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md) carries the prescriptive UI/UX rules (token usage,
+the `App*` component family, adaptive-nav ownership), a component index with file links, and the
+non-obvious insights (e.g. dark `surface` == `background`, no green slot in the M3 palette, the full
+Material Symbols font). Reuse the `App*` components in `presentation/ui/` before adding new ones;
+prefer `AppSpacing` / `AppSize` over raw `.dp` literals, and use `MaterialTheme.colorScheme` instead
+of hardcoded theme colors. The same reuse-first rule applies **within** the token scales: check
+`AppSpacing` / `AppSize` / `AppMotion` for a value that fits before adding an entry, and don't borrow
+a token whose name belongs to another component just because the number matches. **Keep the doc
+updated**: when you add a reusable component, a token, or learn a UI gotcha, record it there — and
+when a UI fix takes several rounds to land, leave a short symptom-first note in that doc's
+*Insights / gotchas* section so the next reader recognizes it from the behavior.
 
 ## Strings & Localization
 **The app is English-only and there is no localization.** `shared/src/commonMain/composeResources/`
@@ -287,17 +107,27 @@ for reviews and new code:
   shared across several call sites; inline it when it isn't.
 - The same applies to English-language copy on a domain model (`Release.Change.title/summary/detail`
   in `domain/releasenotes/`, filled from Firestore). What `domain/` must not hold is a **Compose/UI
-  type** — see the
-  domain-never-imports-presentation rule in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). A `String` is
-  not that.
+  type** — see the domain-never-imports-presentation rule in
+  [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). A `String` is not that.
 - Plural/count copy may be built inline (`"$n change${if (n != 1) "s" else ""}"`); no plural resource
   needed.
 
 If translations are ever added, this section is the thing to revisit — at that point the copy does need
 to be pulled into resources, and this note should be replaced rather than quietly ignored.
 
-## Testing Guidelines
-Place unit specs in `shared/src/commonTest` (or `androidTest` for Android-instrumented tests), mirroring the source package and ending class names with `*Test`. Common tests use `kotlin.test` + `kotlinx-coroutines-test` with hand-rolled fakes (see `data/paging/Fakes.kt`) — no mocking library in commonTest; JUnit4 and Mockito-Kotlin apply to Android-instrumented tests only. Paging behavior should be verified at two levels: `PagingSource.load()` unit tests, plus `TestPager` (androidx.paging:paging-testing, KMP) for Pager-level invariants like continuation pages and end-of-pagination. Compose UI or Room integration checks belong in `androidApp/src/androidTest` and should describe the scenario in the test name. Cover paging boundaries, offline caching, and error flows whenever you touch those areas.
+## Dependency Versions
+Beta, alpha, and RC dependency versions are acceptable in this project. Prefer the version that unlocks a needed multiplatform capability over waiting for a stable release (e.g., `lifecycle-viewmodel-navigation3` requires `2.11.0+` for the iOS/Desktop/Web ViewModelStore Nav3 APIs; `2.10.0` was Android-only). When pinning a pre-release, record why it is required so the choice stays revisitable, but do not reject a pre-release on stability grounds alone.
+
+## Testing
+Tests live in `shared/src/commonTest`, mirror the source package, end class names with `*Test`, and
+run through `:shared:desktopTest`. They use `kotlin.test` + `kotlinx-coroutines-test` with
+hand-rolled fakes (see `data/paging/Fakes.kt`) and no mocking library. Verify paging behavior at two
+levels: `PagingSource.load()` unit tests, plus `TestPager` (`androidx.paging:paging-testing`, KMP)
+for Pager-level invariants like continuation pages and end-of-pagination. Cover paging boundaries,
+offline caching, and error flows whenever you touch those areas.
+
+The repo has no Android-instrumented and no Compose UI test suite. Verify a UI change by looking at
+it: desktop hot reload first, a device for Android-only or iOS-only code.
 
 ## Acting on Code-Review Comments
 **Verify every review comment against the current code before changing anything.** A comment is a
@@ -319,8 +149,54 @@ claim, not an instruction — treat it as a lead to check, not a ticket to close
 - A comment that is right about the mechanism but wrong about severity or scope gets the same
   treatment: fix what is real, state plainly what isn't.
 
-## Commit & Pull Request Guidelines
-Follow the existing history with concise imperative subject lines under ~70 characters (e.g., `Fix release build`). Keep functional changes grouped per commit. Pull requests need a short summary, call out UI or API changes, link issues, and attach emulator screenshots or recordings when visuals move. Confirm `assembleDebug`, `testDebugUnitTest`, `:shared:desktopTest`, and `detekt` succeed before requesting review.
+## Commits and branches
+Where the work lands depends on where the session runs. This rule is strict.
 
-## Security & Configuration Tips
-Signing data comes from `keystore.properties`; keep it local and out of version control. Avoid committing `local.properties`, API keys, or regenerated `*.jks` files. Prefer runtime configuration or encrypted storage for new secrets and alert maintainers immediately if a credential leaks.
+- **Main checkout, on `master`.** Commit on `master`. Stay there unless the owner asks for a branch
+  or a worktree.
+- **A worktree** — any checkout a tool created for the session, such as Conductor or Paseo. Create a
+  branch for the work and commit there. The change reaches `master` only through a pull request
+  (merge request) from that branch. From a worktree, never commit to `master`, merge into it, or push
+  to it.
+
+Check which case applies before the first commit:
+
+```bash
+[ "$(git rev-parse --git-dir)" = "$(git rev-parse --git-common-dir)" ] && echo "main checkout" || echo "worktree"
+```
+
+Write a concise imperative subject under ~70 characters (`Fix release build`) and keep one
+functional change per commit. Run the verify pair first, plus `:androidApp:assembleDebug` when
+`androidApp/` changed.
+
+## Linear ticket status after merge
+**Human Check** is a waiting state: the work is on the default branch (see *Commits and branches*)
+and the owner has not looked at it on a device yet. It lets him accept agent-built work now and
+check it when he has time.
+
+- **Human Check** — set it when the change has behaviour a person must see on a device: UI, flows,
+  copy, notifications, store or ads behaviour, anything that only shows in a real install. Add a
+  comment with numbered check steps and the expected result for each.
+- **Done** — set it when the build and tests fully prove the change (refactors, docs, tests, build
+  config), or as soon as the owner confirms the change.
+- **The owner's confirmation closes the ticket.** When he says in the session that he checked a
+  change and it works, move its ticket from Human Check to Done in the same turn, and add a comment
+  that records what he confirmed and on which device. His check on one platform is enough; leave
+  the status decision to him only when he says more checking is needed.
+- Your own test pass, on a simulator or a device, leaves the ticket in Human Check. A ticket he did
+  not check stays there too: his confirmation covers what he looked at.
+
+## Credentials
+The repository is public. Every credential is gitignored — `keystore.properties`, `*.jks`, the
+`fastlane/` keys, `iosApp/iosApp/GoogleService-Info.plist` — so a fresh worktree has none of them;
+[docs/RELEASE.md](docs/RELEASE.md) lists each one and what fails without it. Keep new secrets out of
+tracked files the same way.
+
+## Subagent limits
+Append this block to the brief of every subagent that can run commands or edit files:
+
+> Project limits: run `./gradlew :shared:desktopTest :shared:compileAndroidMain` before reporting
+> done. Leave releases to the main session: no `fastlane`, no `bumpVersion`, no
+> `publish-release-notes.mjs`, nothing that uploads to a store or writes to Firestore. Use the
+> desktop app or a simulator; do not install on, wipe, or automate a physical device. Do not run
+> `:shared:integrateLinkagePackage`. Report a design or scope fork upward instead of choosing.

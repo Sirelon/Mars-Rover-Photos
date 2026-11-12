@@ -79,6 +79,18 @@ class IngenuityRequestShapeTest {
     }
 
     @Test
+    fun fullFramesOnly_filtersThumbnailsWithOneExtendedParameter() = runTest {
+        val urls = mutableListOf<Url>()
+
+        apiRecording(urls).getPerseveranceRawImages(count = 1, category = "ingenuity", fullFramesOnly = true)
+
+        val params = urls.single().parameters
+        assertEquals(listOf("sample_type::full,"), params.getAll("extended"))
+        assertEquals(listOf("ingenuity"), params.getAll("category"))
+        assertEquals(listOf("1"), params.getAll("num"))
+    }
+
+    @Test
     fun nearestSolLookup_asksForAscendingOrderExactlyOnce() = runTest {
         val urls = mutableListOf<Url>()
 
@@ -121,5 +133,19 @@ class IngenuityRequestShapeTest {
         val sol = apiRecording(mutableListOf()).getIngenuityNearestSolAtOrAfter(1070L)
 
         assertNull(sol)
+    }
+
+    // The MSL cover candidates filter by camera in condition_4, clear of the from/to conditions.
+    @Test
+    fun mslInstrumentFilter_usesItsOwnConditionSlot() = runTest {
+        val urls = mutableListOf<Url>()
+
+        apiRecording(urls, body = """{"items":[]}""")
+            .getRawImages("msl", perPage = 50, fullFramesOnly = true, instruments = listOf("MAST_LEFT", "MAST_RIGHT"))
+
+        val params = urls.single().parameters
+        assertEquals(listOf("MAST_LEFT,MAST_RIGHT:instrument:in"), params.getAll("condition_4"))
+        assertNull(params["condition_2"])
+        assertEquals(listOf("50"), params.getAll("per_page"))
     }
 }

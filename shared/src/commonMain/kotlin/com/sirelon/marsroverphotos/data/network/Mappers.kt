@@ -140,7 +140,7 @@ fun List<MarsPhoto>.mapToUiMsl(roverId: Long): List<MarsImage> {
             sol = marsPhoto.sol,
             name = marsPhoto.name,
             imageUrl = marsPhoto.imageUrl,
-            earthDate = marsPhoto.earthDate,
+            earthDate = marsPhoto.dateTaken ?: marsPhoto.earthDate,
             roverId = roverId,
             camera = marsPhoto.instrument?.let { instrument ->
                 val token = instrument.mslInstrumentToken()

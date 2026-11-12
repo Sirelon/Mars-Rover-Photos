@@ -41,6 +41,7 @@ class MarsRoverApplication : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
+        WindowMetricsFallback.install()
 
         Logger.d("MarsRoverApplication") { "App starting" }
 

@@ -16,7 +16,7 @@ All shared code lives in `shared/src/commonMain/kotlin/com/sirelon/marsroverphot
 | `domain/` | models, repository *interfaces*, `AppSettings` | nothing in this app — pure Kotlin + kotlinx |
 | `data/` | network, database, paging, repository implementations | `domain` |
 | `presentation/` | `screens/`, `viewmodels/`, `ui/` (the design system), `navigation/`, `theme/` | `domain` |
-| `platform/` | `expect`/`actual` services: `Tracker`, `AppReview`, `BuildInfo` | — |
+| `platform/` | platform services and adapters: `Tracker`, `AppReview`, `AppUpdate`, `BuildInfo`, `PushNotifications`, storage, networking | — |
 | `di/` | Koin modules — the only place that wires the layers together | everything |
 
 Imports point **inward**: `presentation` → `domain`, never the reverse.
@@ -42,13 +42,13 @@ Imports point **inward**: `presentation` → `domain`, never the reverse.
   against a hardcoded release list and later moved to `ReleaseNotesRepository` (Firestore) without any
   screen being rewritten — the whole point of the indirection.
 - Injecting a **platform service** directly into a composable is fine and established — `Tracker` in
-  `AppNavigation.kt`, `AppReview` in `AboutScreen.kt`. Injecting a **domain service so the composable
+  `AppNavigation.kt`, `PushNotifications` in `App.kt`. Injecting a **domain service so the composable
   can decide what to show** is not: that decision is the ViewModel's job.
 
 ### ViewModel state is observable — always
 - Expose `StateFlow` for state, `Flow` for paging streams. **Never a plain `val`.** A `val` on a
   ViewModel is a constant with extra steps: the UI can't observe it, and the day the source becomes
-  async the ViewModel's public API has to be rewritten. All nine ViewModels follow this today.
+  async the ViewModel's public API has to be rewritten. All ten ViewModels follow this today.
 - One screen's state → one `data class XUiState` exposed as `StateFlow<XUiState>` and collected with
   `collectAsStateWithLifecycle()`. See `PhotosUiState`, `WhatsNewUiState`.
 - Genuinely independent streams may stay separate flows when they change independently —
@@ -99,6 +99,16 @@ Imports point **inward**: `presentation` → `domain`, never the reverse.
   (`ReleaseChange`) when it's referenced widely enough that nesting reads noisy.
 - Design-system components use the `App*` convention instead — see DESIGN_SYSTEM.md.
 
+### Behaviour is common; platform code only adapts
+- A fix or rule that should hold on every platform goes in `commonMain`, even when the data that
+  found it came from one platform. Android and iOS run different engines under the same library
+  (OkHttp vs Darwin under Ktor), so the same server or the same load hits both.
+- A platform source set holds only what common code cannot express: an engine setting, an OS API,
+  a platform SDK. When the fix is an engine setting, set it in **every** `actual` — the
+  `createHttpClientEngine()` actuals all apply `MAX_REQUESTS_PER_HOST`.
+- Every `HttpClient` comes from `createAppHttpClient()` (`data/network/AppHttpClient.kt`), which adds
+  the 429/5xx retry on top of the platform engine.
+
 ---
 
 ## Self-check before review
@@ -111,14 +121,6 @@ Imports point **inward**: `presentation` → `domain`, never the reverse.
 - [ ] checked `presentation/ui/` for an existing component before writing a new one — DESIGN_SYSTEM.md
 - [ ] remote content is cached in the repository, not per-ViewModel; loading and empty states exist
 - [ ] no hardcoded theme colors, no raw `.dp` — DESIGN_SYSTEM.md
-
----
-
-## History
-
-- 2026-08-08 — Created from the What's New session retro (`.claude/session-retro-whats-new.md`). That
-  feature took seven rounds of review corrections; five were architecture — a UI enum
-  (`MaterialSymbol`) inside a domain model, three screens with no ViewModel, then a ViewModel exposing
-  plain `val`s, the show-the-dialog decision living in a `LaunchedEffect` in the nav root, and a
-  top-level type named `Change`. The remaining two (duplicating an existing row component, hardcoded
-  color constants) were already covered by DESIGN_SYSTEM.md and simply not read.
+- [ ] a change in `androidMain` / `iosMain` / `desktopMain` is something common code cannot express,
+      and an engine setting added to one `actual` is in all of them
+- [ ] every new `HttpClient` is built with `createAppHttpClient()`

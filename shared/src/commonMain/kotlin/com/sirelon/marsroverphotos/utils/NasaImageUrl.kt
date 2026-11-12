@@ -70,6 +70,28 @@ fun nasaImageLargeFallbackUrls(href: String): List<String> =
 fun nasaImageSmallFallbackUrls(href: String): List<String> =
     nasaImageFallbackChain(href, "small", "thumb", "orig")
 
+/**
+ * Per-process memory of which rung of a fallback chain actually loaded, keyed by the chain's
+ * first (preferred) URL. A photo whose `~large` 403s is shown again whenever its tile scrolls back
+ * or the viewer reopens; without this every reload re-walks the same 403 rungs. In memory only —
+ * a restart forgets and re-learns, which costs one walk per photo viewed.
+ */
+private val workingVariantByPreferredUrl = HashMap<String, String>()
+
+/** Reorders [chain] so the rung that loaded last time for this asset is tried first. */
+internal fun nasaImageChainWorkingFirst(chain: List<String>): List<String> {
+    if (chain.size < 2) return chain
+    val working = workingVariantByPreferredUrl[chain.first()]
+    if (working == null || working !in chain) return chain
+    return listOf(working) + chain.filter { it != working }
+}
+
+/** Records that [loadedUrl] loaded for a chain whose preferred URL is [preferredUrl]. */
+internal fun nasaImageVariantLoaded(preferredUrl: String, loadedUrl: String) {
+    if (preferredUrl == loadedUrl) workingVariantByPreferredUrl.remove(preferredUrl)
+    else workingVariantByPreferredUrl[preferredUrl] = loadedUrl
+}
+
 private fun nasaImageFallbackChain(href: String, vararg variants: String): List<String> {
     if (SIZE_TOKEN_REGEX.find(href) == null) return listOf(href)
     return variants.map { variant -> nasaImageVariantUrl(href, variant) }

@@ -6,7 +6,7 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.MutableTransform
 import androidx.compose.animation.core.DeferredTransitionState
-import androidx.compose.animation.core.ExperimentalDeferredTransitionApi
+import androidx.compose.animation.core.ExperimentalTransitionApi
 import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.rememberDeferredTransition
 import androidx.compose.animation.core.tween
@@ -33,6 +33,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -192,6 +193,8 @@ fun ImagesScreen(
     val pagingItems = viewModel.pagedImages.collectAsLazyPagingItems()
     val hideUi by viewModel.hideUi.collectAsStateWithLifecycle()
     val uiEvent by viewModel.uiEvent.collectAsStateWithLifecycle(initialValue = null)
+    val canSetWallpaper by viewModel.canSetWallpaper.collectAsStateWithLifecycle()
+    val wallpaperClick: ((MarsImage) -> Unit)? = if (canSetWallpaper) viewModel::setAsWallpaper else null
 
     val refresh = pagingItems.loadState.refresh
 
@@ -261,6 +264,7 @@ fun ImagesScreen(
                     onFavoriteClick = viewModel::setFavorite,
                     onSaveClick = viewModel::saveImage,
                     onShareClick = viewModel::shareMarsImage,
+                    onWallpaperClick = wallpaperClick,
                 )
             }
         }
@@ -294,7 +298,7 @@ private fun ImagesEmptyStatePreview() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalDeferredTransitionApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalTransitionApi::class)
 @Composable
 private fun ImagesPagerContent(
     uiEvent: UiEvent?,
@@ -311,6 +315,7 @@ private fun ImagesPagerContent(
     onFavoriteClick: (MarsImage, Boolean) -> Unit,
     onSaveClick: (MarsImage) -> Unit,
     onShareClick: (MarsImage) -> Unit,
+    onWallpaperClick: ((MarsImage) -> Unit)?,
 ) {
     var titleState by remember { mutableStateOf("Mars Rover Photos") }
     var showInfoSheet by remember { mutableStateOf(false) }
@@ -507,6 +512,9 @@ private fun ImagesPagerContent(
                     actions = {
                         if (currentImage != null) {
                             SaveIcon(onClick = { onSaveClick(currentImage) })
+                            if (onWallpaperClick != null) {
+                                WallpaperIcon(onClick = { onWallpaperClick(currentImage) })
+                            }
                             ShareIcon(onClick = { onShareClick(currentImage) })
                         }
                     },
@@ -574,6 +582,24 @@ private fun BoxScope.OnEvent(uiEvent: UiEvent?) {
             }
         }
 
+        UiEvent.WallpaperSavedToPhotos -> {
+            LaunchedEffect(uiEvent) {
+                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                snackbarHostState.showSnackbar(
+                    message = "Saved to Photos. Open it in Photos, tap Share, then Use as Wallpaper.",
+                    duration = SnackbarDuration.Long,
+                )
+            }
+        }
+
+        is UiEvent.WallpaperError -> {
+            LaunchedEffect(uiEvent) {
+                snackbarHostState.showSnackbar(
+                    message = "Failed to set wallpaper: ${uiEvent.errorMessage}"
+                )
+            }
+        }
+
         is UiEvent.ShareError -> {
             LaunchedEffect(uiEvent) {
                 snackbarHostState.showSnackbar(
@@ -629,6 +655,13 @@ private fun BoxScope.SaveSuccessOverlay(visible: Boolean) {
 private fun SaveIcon(onClick: () -> Unit) {
     IconButton(onClick = onClick) {
         MaterialSymbolIcon(symbol = MaterialSymbol.Save, contentDescription = "Save")
+    }
+}
+
+@Composable
+private fun WallpaperIcon(onClick: () -> Unit) {
+    IconButton(onClick = onClick) {
+        MaterialSymbolIcon(symbol = MaterialSymbol.Wallpaper, contentDescription = "Set as wallpaper")
     }
 }
 

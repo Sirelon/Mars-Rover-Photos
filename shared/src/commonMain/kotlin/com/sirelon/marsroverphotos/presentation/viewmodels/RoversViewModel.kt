@@ -3,6 +3,7 @@ package com.sirelon.marsroverphotos.presentation.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sirelon.marsroverphotos.domain.models.Rover
+import com.sirelon.marsroverphotos.domain.repositories.RoverCoversRepository
 import com.sirelon.marsroverphotos.domain.repositories.RoversRepository
 import com.sirelon.marsroverphotos.domain.settings.AppSettings
 import com.sirelon.marsroverphotos.platform.ConsentPromptGate
@@ -21,6 +22,7 @@ class RoversViewModel(
     private val tracker: Tracker,
     private val appSettings: AppSettings,
     private val consentPromptGate: ConsentPromptGate,
+    roverCoversRepository: RoverCoversRepository,
 ) : ViewModel() {
 
     val rovers: StateFlow<List<Rover>> = roversRepository.getRovers()
@@ -33,6 +35,16 @@ class RoversViewModel(
             started = SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS),
             initialValue = emptyList()
         )
+
+    /**
+     * Latest real photo per rover id, shown on its card over the static artwork. Starts with the
+     * photos saved by the last launch; the repository refreshes them once per process.
+     */
+    val coverUrls: StateFlow<Map<Long, String>> = roverCoversRepository.coverUrls
+
+    init {
+        roverCoversRepository.refreshOnce()
+    }
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()

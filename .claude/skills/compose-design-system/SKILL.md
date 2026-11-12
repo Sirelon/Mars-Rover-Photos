@@ -1,6 +1,6 @@
 ---
 name: compose-design-system
-description: Use when writing, changing, or reviewing Compose Multiplatform UI in this repo — to check that it consumes the existing design system instead of rebuilding it. Covers reimplementation of existing `presentation/ui` App* components, AppSpacing / AppSize / AppTypography / AppMotion token usage, hardcoded colors and strings, adaptive layout + nav-chrome ownership, insets, and the ViewModel/composition boundary. Run before creating a new widget and when reviewing a UI diff.
+description: Use when writing, changing, or reviewing Compose Multiplatform UI in this repo — to check that it consumes the existing design system instead of rebuilding it. Covers reimplementation of existing `presentation/ui` App* components, AppSpacing / AppSize / AppTypography / AppMotion token usage, hardcoded colors, repeated copy, adaptive layout + nav-chrome ownership, insets, and the ViewModel/composition boundary. Run before creating a new widget and when reviewing a UI diff.
 ---
 
 # Compose design system compliance
@@ -11,8 +11,8 @@ index** live in [docs/DESIGN_SYSTEM.md](../../../docs/DESIGN_SYSTEM.md) (plus th
 second copy of the rules — when a check fires, cite the owning doc section.
 
 **Why mechanical checks matter here:** `./gradlew detekt` does **not** lint `shared/commonMain`
-(it sources `androidApp` + root only). Raw `.dp`, hardcoded colors, and hardcoded strings in shared
-UI are caught by *this* review or not at all. A green detekt run is not evidence.
+(it sources `androidApp` + root only). Raw `.dp` and hardcoded colors in shared UI are caught by
+*this* review or not at all. A green detekt run is not evidence.
 
 ## Scope gate
 
@@ -23,13 +23,18 @@ Build the file list (include untracked — a brand-new screen or component file 
 `git diff`):
 
 ```bash
+SCRATCH=$(mktemp -d)   # one per run, so parallel sessions never share a file list
 { git diff --name-only "${BASE:-origin/master}"...HEAD; git ls-files --others --exclude-standard; } \
-  | grep '\.kt$' | sort -u > /tmp/compose.txt
-xargs git grep --no-index -l -E '@Composable|@Preview' -- < /tmp/compose.txt > /tmp/compose_ui.txt
+  | grep '\.kt$' | sort -u > "$SCRATCH/compose.txt"
+xargs git grep --no-index -l -E '@Composable|@Preview' -- < "$SCRATCH/compose.txt" > "$SCRATCH/compose_ui.txt"
+echo "$SCRATCH"
 ```
 
+Shell state does not persist between commands: note the printed path and set `SCRATCH=<path>` at the
+start of each later command.
+
 Every grep below uses `git grep --no-index` (reaches untracked files) with
-`xargs … < /tmp/compose_ui.txt` (zsh does not word-split `$VAR`; BSD `xargs` has no `-a`).
+`xargs … < "$SCRATCH/compose_ui.txt"` (zsh does not word-split `$VAR`; BSD `xargs` has no `-a`).
 Substituting plain `grep` or a bare `$FILES` pathspec returns zero matches and reads as a clean pass.
 
 Route by location — these are different reviews:
@@ -111,13 +116,13 @@ test coverage for a styling change.
 
 ```bash
 # literal dimensions — theme/AppSpacing.kt and theme/AppSize.kt are the only legitimate sites
-xargs git grep --no-index -nE '[0-9]+\.dp|[0-9]+\.sp' -- < /tmp/compose_ui.txt
+xargs git grep --no-index -nE '[0-9]+\.dp|[0-9]+\.sp' -- < "$SCRATCH/compose_ui.txt"
 
 # hardcoded colors — theme/Theme.kt and theme/AppColors.kt are the only legitimate sites
-xargs git grep --no-index -nE 'Color\(0x|Color\.(Red|Green|Blue|White|Black|Gray)' -- < /tmp/compose_ui.txt
+xargs git grep --no-index -nE 'Color\(0x|Color\.(Red|Green|Blue|White|Black|Gray)' -- < "$SCRATCH/compose_ui.txt"
 
 # raw motion — theme/AppMotion.kt is the only legitimate site
-xargs git grep --no-index -nE 'tween\([0-9]|spring\(|durationMillis *= *[0-9]' -- < /tmp/compose_ui.txt
+xargs git grep --no-index -nE 'tween\([0-9]|spring\(|durationMillis *= *[0-9]' -- < "$SCRATCH/compose_ui.txt"
 ```
 
 Expected replacements: `AppSpacing` (8dp grid: `xs`4 `sm`8 `md`12 `lg`16 `xl`24 `xxl`32 `x3l`48) for
@@ -137,22 +142,25 @@ Colour gotchas that produce real bugs (details in DESIGN_SYSTEM.md § Insights):
 
 ## 5. Strings
 
-```bash
-# hardcoded user-facing copy
-xargs git grep --no-index -nE 'text = "|label = "|contentDescription = "|Text\(\s*"' -- < /tmp/compose_ui.txt
-```
-
-All user-facing copy belongs in
-`shared/src/commonMain/composeResources/values/strings.xml`, read via
-`stringResource(Res.string.<name>)`. Before accepting a **new** string, check for existing copy:
+Inline English copy in a composable is acceptable and is **not a finding** — the app is English-only
+([AGENTS.md](../../../AGENTS.md) § Strings & Localization). Leave existing `stringResource` call
+sites as they are. Check one thing: copy that repeats.
 
 ```bash
-git grep -in "<the exact copy>" -- shared/src/commonMain/composeResources/values/strings.xml
+# user-facing copy in the changed files
+xargs git grep --no-index -nE 'text = "|label = "|contentDescription = "|Text\(\s*"' -- < "$SCRATCH/compose_ui.txt"
 ```
 
-Naming is feature-first snake_case (`rovers_title`, `rovers_subtitle_fmt`); format strings end in
-`_fmt`. Count-dependent copy uses a plural resource, not `if (n == 1)` in composition. Repeated
-"verb + noun" labels become one parameterized string, not one per noun.
+For each new string, look for the same copy elsewhere:
+
+```bash
+git grep -in "<the exact copy>" -- shared/src/commonMain
+```
+
+Flag copy that now appears at several call sites: it becomes one entry in
+`shared/src/commonMain/composeResources/values/strings.xml`, or reuses the entry that already
+exists. Resource names are feature-first snake_case (`rovers_title`, `rovers_subtitle_fmt`); format
+strings end in `_fmt`.
 
 Presentation-only copy keyed on domain ids (rover mission blurbs, `ui/RoverBlurb.kt`) stays in the
 presentation layer — never add such a field to a domain model or the data/API layer.
@@ -196,7 +204,7 @@ why; a silent omission reads as a pass.
 
 Finish by asking whether DESIGN_SYSTEM.md needs an update: a new reusable component, a new
 `AppSize`/`AppSpacing`/`MaterialSymbol` entry, or a newly learned gotcha must be recorded there
-(index + History entry) — that's a repo rule, not an optional nicety.
+(index entry) — that's a repo rule, not an optional nicety.
 
 ## When NOT to apply
 

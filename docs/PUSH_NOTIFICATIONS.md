@@ -10,8 +10,9 @@ topic **`mars-updates`**. There is no device-token registry, no backend and no C
 app subscribes to the topic on opt-in, and messages are composed in the Firebase console or posted
 straight to the FCM API.
 
-Android and iOS only. Desktop and Web bind `NoOpPushNotifications`, so nothing on those targets
-reaches Cloud Messaging — which matters because the GitLive messaging JVM implementation throws.
+Android and iOS only. Desktop binds `NoOpPushNotifications`, so nothing on that target reaches Cloud
+Messaging — which matters because the GitLive messaging JVM implementation throws. The standalone
+web shell is not wired to `:shared` yet.
 
 ## Payload contract
 
@@ -33,9 +34,10 @@ Valid `link` values:
 A `whatsnew` link naming a version the installed build has no notes for falls back to the version
 list, so it is safe to announce a release to users who haven't updated yet.
 
-Rover IDs: Perseverance 3, InSight 4, Curiosity 5, Opportunity 6, Spirit 7.
+Rover IDs: Perseverance 3, InSight 4, Curiosity 5, Opportunity 6, Spirit 7, Viking 1 8, Viking 2 9,
+Ingenuity 10.
 
-Taps route through the same path as any other deep link — see [DEEP_LINKING.md](/DEEP_LINKING.md).
+Taps route through the same path as any other deep link — see [DEEP_LINKING.md](DEEP_LINKING.md).
 
 ## Opt-in
 

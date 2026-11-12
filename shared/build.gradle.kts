@@ -22,7 +22,10 @@ kotlin {
     // jvmToolchain(17) above already covers the JVM target for this Android compilation.
     android {
         namespace = "com.sirelon.marsroverphotos.shared"
-        compileSdk = 37
+        // 37.1: androidx.compose 1.13 (pulled in by Compose Multiplatform 1.13) requires it.
+        compileSdk {
+            version = release(37) { minorApiLevel = 1 }
+        }
         minSdk = 24
     }
 
@@ -152,6 +155,8 @@ kotlin {
             implementation(libs.firebase.firestore.versioned)
             implementation(libs.firebase.messaging.versioned)
             implementation(libs.firebase.config.versioned)
+            // Custom trace for per-phase HTTP timings (SIR-167)
+            implementation(libs.firebase.perf.versioned)
 
             // GitLive Firebase KMP (analytics + crashlytics — Android + iOS only)
             implementation(libs.gitlive.firebase.analytics)
@@ -168,6 +173,8 @@ kotlin {
 
             // Google Play in-app review (Android only)
             implementation(libs.play.review.ktx)
+            // Google Play in-app update (Android only)
+            implementation(libs.play.app.update.ktx)
         }
 
         // Android + iOS only (see the hierarchy template above)
@@ -185,7 +192,7 @@ kotlin {
             // GitLive Firebase KMP (analytics + crashlytics — Android + iOS only)
             implementation(libs.gitlive.firebase.analytics)
             implementation(libs.gitlive.firebase.crashlytics)
-            // Requires the FirebaseMessaging SPM product on the iOS app target — see iosApp/SETUP.md.
+            // Requires the FirebaseMessaging SPM product on the iOS app target — see iosApp/README.md.
             implementation(libs.gitlive.firebase.messaging)
         }
 

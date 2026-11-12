@@ -4,6 +4,8 @@ import com.sirelon.marsroverphotos.data.repositories.MissionRepositoryImpl
 import com.sirelon.marsroverphotos.domain.repositories.MissionRepository
 import com.sirelon.marsroverphotos.domain.settings.AppSettings
 import com.sirelon.marsroverphotos.platform.AppReview
+import com.sirelon.marsroverphotos.platform.NoOpAppUpdate
+import com.sirelon.marsroverphotos.platform.AppUpdate
 import com.sirelon.marsroverphotos.platform.FirebaseAnalytics
 import com.sirelon.marsroverphotos.platform.IosAppReview
 import com.sirelon.marsroverphotos.platform.IosPushNotifications
@@ -56,6 +58,9 @@ val platformModule = module {
 
     // In-app review — uses SKStoreReviewController; falls back to App Store URL if unavailable
     single<AppReview> { IosAppReview() }
+
+    // In-app update — none on iOS (caller opens the App Store listing)
+    single<AppUpdate> { NoOpAppUpdate() }
 
     // Push notifications (FCM topic + UNUserNotificationCenter authorization)
     single<PushNotifications> { IosPushNotifications() }

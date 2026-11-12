@@ -18,7 +18,7 @@ import kotlin.time.Duration.Companion.days
  * the whole policy is *when*, and the answer is a moment of delight once the app has earned it:
  *
  * - the fullscreen viewer was just closed after a favorite, save or share during that visit;
- * - this is at least the [MIN_LAUNCHES]th launch, [MIN_DAYS_SINCE_FIRST_LAUNCH] days after the first;
+ * - this is at least the [MIN_LAUNCHES]th launch, [MIN_DAYS_SINCE_FIRST_LAUNCH] day after the first;
  * - no prompt in the last [COOLDOWN_DAYS] days, and none yet on this build;
  * - nothing this session has soured the moment: no release card was shown, no feed failed.
  *
@@ -105,8 +105,8 @@ class ReviewPrompter(
 
     companion object {
         private const val TAG = "ReviewPrompter"
-        const val MIN_LAUNCHES = 3
-        const val MIN_DAYS_SINCE_FIRST_LAUNCH = 3
+        const val MIN_LAUNCHES = 2
+        const val MIN_DAYS_SINCE_FIRST_LAUNCH = 1
         const val COOLDOWN_DAYS = 120
 
         /** Longer than the viewer's pop fade (AppMotion.SharedContainerMs), so the grid is at rest. */

@@ -4,6 +4,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
+import kotlinx.io.IOException
 import kotlinx.coroutines.test.runTest
 import kotlin.random.Random
 import kotlin.test.Test
@@ -223,5 +224,81 @@ class ImagesSearchPagingSourceTest {
             leadingPlaceholderCount = 0,
         )
         assertEquals(3, src.getRefreshKey(state))
+    }
+
+    // Offline fallback: a failed Refresh of a known page serves that page's cached rows.
+    @Test
+    fun refresh_networkFailureServesCachedTargetPage() = runTest {
+        val cached = (200 until 300).map { marsImage("c$it", 0L).copy(roverId = 6L, order = it) } +
+            marsImage("popular", 0L).copy(roverId = 6L, order = 250, popular = true)
+        val served = mutableListOf<Throwable?>()
+        val src = ImagesSearchPagingSource(
+            imagesDao = FakeImagesDao(cached = cached),
+            anchorPage = 3,
+            totalHitsHint = totalHits,
+            pageSize = 100,
+            roverId = 6L,
+            onRefreshServed = { served += it },
+            fetchPage = { throw IOException("Unable to resolve host") },
+        )
+
+        val p = page(src.load(refresh()))
+
+        assertEquals(100, p.data.size)
+        assertEquals("c200", p.data.first().id)
+        assertEquals(2, p.prevKey)
+        assertEquals(4, p.nextKey)
+        assertIs<IOException>(served.single())
+    }
+
+    // An uncached target page falls back to the nearest cached page.
+    @Test
+    fun refresh_networkFailureServesNearestCachedPage() = runTest {
+        val cached = (400 until 450).map { marsImage("c$it", 0L).copy(roverId = 6L, order = it) }
+        val src = ImagesSearchPagingSource(
+            imagesDao = FakeImagesDao(cached = cached),
+            anchorPage = 2,
+            totalHitsHint = totalHits,
+            pageSize = 100,
+            roverId = 6L,
+            fetchPage = { throw IOException("Unable to resolve host") },
+        )
+
+        val p = page(src.load(refresh()))
+
+        assertEquals("c400", p.data.first().id)
+        assertEquals(4, p.prevKey)
+        assertNull(p.nextKey)
+    }
+
+    // A random anchor with no hint fails before it has a target: it takes the first cached page.
+    @Test
+    fun refresh_networkFailureBeforeATargetServesFirstCachedPage() = runTest {
+        val cached = (100 until 200).map { marsImage("c$it", 0L).copy(roverId = 6L, order = it) }
+        val src = ImagesSearchPagingSource(
+            imagesDao = FakeImagesDao(cached = cached),
+            pageSize = 100,
+            roverId = 6L,
+            fetchPage = { throw IOException("Unable to resolve host") },
+        )
+
+        val p = page(src.load(refresh()))
+
+        assertEquals("c100", p.data.first().id)
+        assertEquals(1, p.prevKey)
+        assertEquals(3, p.nextKey)
+    }
+
+    // Nothing cached for the rover: the error stands.
+    @Test
+    fun refresh_networkFailureWithEmptyCacheIsAnError() = runTest {
+        val src = ImagesSearchPagingSource(
+            imagesDao = FakeImagesDao(),
+            pageSize = 100,
+            roverId = 6L,
+            fetchPage = { throw IOException("Unable to resolve host") },
+        )
+
+        assertIs<PagingSource.LoadResult.Error<Int, MarsImage>>(src.load(refresh()))
     }
 }

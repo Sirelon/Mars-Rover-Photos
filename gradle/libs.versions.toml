@@ -1,22 +1,20 @@
 [versions]
 # Core
-kotlin = "2.4.20"
+kotlin = "2.4.21"
 androidGradlePlugin = "9.4.1"
 ksp = "2.3.12"
 
 # Compose Multiplatform
 # https://github.com/JetBrains/compose-multiplatform/releases
-# 1.13 dev build (compose dev repo): first line with ComposeDesktopEntryPoint.captureContentToImage(),
-# which Compose Hot Reload's take_screenshot MCP tool needs for an in-process capture instead of a
-# java.awt.Robot screen grab. Move to 1.13.0-alpha01 / stable once it reaches Maven Central.
-compose-multiplatform = "1.13.0-alpha01+dev4730"
-# Compose Hot Reload for the desktop target + its MCP server (hotMcpServer); needs CMP 1.10.0+.
-# Dev build from the firework repo (settings.gradle.kts): the MCP take_screenshot tool captures
-# in-process via ComposeDesktopEntryPoint only from the 2026-09-01 change, which no Maven Central
-# release carries yet. Move to the next 1.3.0 alpha/stable on Maven Central when it appears.
-compose-hot-reload = "1.3.0-alpha+220"
-# Compose Multiplatform material3 ships on its own, slower version line than the core artifacts
-compose-mp-material3 = "1.13.0-alpha01+dev4730"
+# 1.13 is the first line with ComposeDesktopEntryPoint.captureContentToImage(), which Compose Hot
+# Reload's take_screenshot MCP tool needs for an in-process capture instead of a java.awt.Robot
+# screen grab. Stay on 1.13+.
+compose-multiplatform = "1.13.0-beta02"
+# Compose Hot Reload for the desktop target + its MCP server (hotMcpServer). 1.3.0 is the first line
+# whose MCP take_screenshot tool captures in-process via ComposeDesktopEntryPoint. Stay on 1.3.0+.
+compose-hot-reload = "1.3.0-rc01"
+# Compose Multiplatform material3 is versioned separately from the core artifacts
+compose-mp-material3 = "1.13.0-beta02"
 
 # AndroidX
 # https://developer.android.com/jetpack/androidx/releases/activity
@@ -33,7 +31,7 @@ compose-material3 = "1.5.0-alpha29"
 # https://developer.android.com/jetpack/androidx/releases/glance
 glance = "1.3.0-alpha02"
 # https://developer.android.com/jetpack/androidx/releases/paging
-paging = "3.5.1"
+paging = "3.5.2"
 # https://developer.android.com/jetpack/androidx/releases/room3
 room = "3.0.3"
 # https://developer.android.com/jetpack/androidx/releases/work
@@ -45,6 +43,8 @@ core-splashscreen = "1.2.0"
 benchmark = "1.5.0"
 # https://developer.android.com/jetpack/androidx/releases/profileinstaller
 profileinstaller = "1.4.1"
+# https://developer.android.com/jetpack/androidx/releases/window
+androidx-window = "1.5.0"
 # https://developer.android.com/jetpack/androidx/releases/test-uiautomator
 uiautomator = "2.4.0"
 # https://developer.android.com/jetpack/androidx/releases/test
@@ -81,7 +81,7 @@ purchasesKmp = "3.11.0"
 
 # Firebase
 # https://firebase.google.com/support/release-notes/android
-firebaseBom = "34.19.0"
+firebaseBom = "35.0.0"
 firebaseAnalyticsVersion = "24.0.0"
 firebaseCrashlyticsVersion = "20.1.1"
 firebaseFirestoreVersion = "26.6.0"
@@ -90,6 +90,8 @@ firebaseFirestoreVersion = "26.6.0"
 firebaseMessagingVersion = "25.1.3"
 # Matches firebase-bom 34.19.0 (Remote Config, pulled in by the GitLive config artifact).
 firebaseConfigVersion = "23.1.0"
+# Matches firebase-bom 34.19.0; shared androidMain needs it versioned (no BOM there).
+firebasePerfVersion = "22.0.6"
 
 # Testing
 
@@ -98,9 +100,11 @@ playServicesAds = "25.5.0"
 # https://developers.google.com/admob/android/privacy/release-notes
 userMessagingPlatform = "4.0.0"
 # https://github.com/usuiat/Zoomable/releases
-zoomable = "2.15.0"
+zoomable = "2.16.0"
 # https://developer.android.com/guide/playcore/in-app-review/release-notes
 playReview = "2.0.2"
+# https://developer.android.com/reference/com/google/android/play/core/release-notes-in_app_updates
+playAppUpdate = "2.1.0"
 
 # Navigation 3
 navigation3 = "1.1.7"
@@ -120,6 +124,7 @@ androidx-sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", 
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "core-splashscreen" }
 androidx-profileinstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "profileinstaller" }
+androidx-window = { module = "androidx.window:window", version.ref = "androidx-window" }
 
 # Baseline Profile generation + startup benchmarks (:baselineprofile)
 androidx-benchmark-macro-junit4 = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmark" }
@@ -152,6 +157,7 @@ gitlive-firebase-config = { module = "dev.gitlive:firebase-config", version.ref 
 purchases-kmp-core = { module = "com.revenuecat.purchases:purchases-kmp-core", version.ref = "purchasesKmp" }
 # Firebase with explicit versions (for shared module without BOM)
 firebase-analytics-versioned = { module = "com.google.firebase:firebase-analytics", version.ref = "firebaseAnalyticsVersion" }
+firebase-perf-versioned = { module = "com.google.firebase:firebase-perf", version.ref = "firebasePerfVersion" }
 firebase-crashlytics-versioned = { module = "com.google.firebase:firebase-crashlytics", version.ref = "firebaseCrashlyticsVersion" }
 firebase-firestore-versioned = { module = "com.google.firebase:firebase-firestore", version.ref = "firebaseFirestoreVersion" }
 firebase-messaging-versioned = { module = "com.google.firebase:firebase-messaging", version.ref = "firebaseMessagingVersion" }
@@ -212,6 +218,7 @@ play-services-ads = { module = "com.google.android.gms:play-services-ads", versi
 user-messaging-platform = { module = "com.google.android.ump:user-messaging-platform", version.ref = "userMessagingPlatform" }
 zoomable = { module = "net.engawapg.lib:zoomable", version.ref = "zoomable" }
 play-review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "playReview" }
+play-app-update-ktx = { module = "com.google.android.play:app-update-ktx", version.ref = "playAppUpdate" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

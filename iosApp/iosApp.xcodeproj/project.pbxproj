@@ -237,6 +237,7 @@
 				9E2B4A2C2B8F3D0100C4A5E2,
 				9E2B4A2D2B8F3D0100C4A5E2,
 				9E2B4A2E2B8F3D0100C4A5E2,
+				9E2B4AF12B8F3D0100C4A5E2 /* Upload Crashlytics dSYMs */,
 			);
 			buildRules = (
 			);
@@ -331,6 +332,30 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Assemble the XCFramework matching this configuration. KMP_XCFRAMEWORK_DIR (set per\n# configuration in the project build settings) points the linked shared.xcframework at the\n# matching output dir, so Debug links the debug slices and Release links optimized ones.\nif [ \"$CONFIGURATION\" = \"Release\" ]; then\n  TASK=assembleSharedReleaseXCFramework\nelse\n  TASK=assembleSharedDebugXCFramework\nfi\ncd \"$SRCROOT/..\"\necho \"note: assembling :shared:$TASK for $CONFIGURATION\"\n./gradlew \":shared:$TASK\"\n";
+		};
+		9E2B4AF12B8F3D0100C4A5E2 /* Upload Crashlytics dSYMs */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
+				"$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)",
+			);
+			name = "Upload Crashlytics dSYMs";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Crashlytics holds Apple crash reports until it has the matching dSYM. Debug builds\n# use plain DWARF (no dSYM), so only Release uploads.\nif [ \"${CONFIGURATION}\" = \"Release\" ]; then\n  \"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

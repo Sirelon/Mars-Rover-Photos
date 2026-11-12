@@ -147,6 +147,11 @@ class AppSettings(
         }
     }
 
+    private val _roverOpenCountFlow = MutableStateFlow(preferences.getInt(KEY_ROVER_OPEN_COUNT, 0))
+
+    /** Live view of [roverOpenCount]; the ad slot stays hidden until it passes zero. */
+    val roverOpenCountFlow: StateFlow<Int> = _roverOpenCountFlow.asStateFlow()
+
     /** How many rovers the user has opened, across sessions, as counted by [recordRoverOpened]. */
     val roverOpenCount: Int
         get() = preferences.getInt(KEY_ROVER_OPEN_COUNT, 0)
@@ -155,6 +160,7 @@ class AppSettings(
     fun recordRoverOpened(): Int {
         val count = roverOpenCount + 1
         preferences.setInt(KEY_ROVER_OPEN_COUNT, count)
+        _roverOpenCountFlow.value = count
         return count
     }
 
