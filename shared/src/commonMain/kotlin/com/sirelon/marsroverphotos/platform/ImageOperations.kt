@@ -32,6 +32,29 @@ interface ImageOperations {
      * @return Result indicating success or failure
      */
     suspend fun shareImage(photo: MarsImage): ImageOperationResult
+
+    /** Whether [setAsWallpaper] does anything here; the viewer hides the action when false. */
+    val canSetWallpaper: Boolean
+
+    /**
+     * Offer the photo as the device wallpaper.
+     *
+     * Android opens the system wallpaper preview, where the user picks home screen, lock screen
+     * or both. iOS has no public API for an app to set the wallpaper, so it saves the photo to
+     * Photos and the viewer explains the remaining steps. Desktop does not support it.
+     */
+    suspend fun setAsWallpaper(photo: MarsImage): WallpaperResult
+}
+
+/** Result of [ImageOperations.setAsWallpaper]. */
+sealed interface WallpaperResult {
+    /** The system wallpaper screen opened; it reports nothing back. */
+    data object Opened : WallpaperResult
+
+    /** The photo is in Photos; the user sets it as wallpaper from there. */
+    data object SavedToPhotos : WallpaperResult
+
+    data class Error(val error: String) : WallpaperResult
 }
 
 /**

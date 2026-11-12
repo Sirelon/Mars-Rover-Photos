@@ -51,6 +51,20 @@ import kotlin.coroutines.resume
 class IosImageOperations : ImageOperations {
 
     // -------------------------------------------------------------------------
+    // Wallpaper
+    // -------------------------------------------------------------------------
+
+    // iOS has no public API for an app to set the wallpaper. Saving to Photos is the route every
+    // App Store wallpaper app takes; the viewer then tells the user how to finish in Photos.
+    override val canSetWallpaper: Boolean = true
+
+    override suspend fun setAsWallpaper(photo: MarsImage): WallpaperResult =
+        when (val result = saveImage(photo)) {
+            is ImageOperationResult.Success -> WallpaperResult.SavedToPhotos
+            is ImageOperationResult.Error -> WallpaperResult.Error(result.error)
+        }
+
+    // -------------------------------------------------------------------------
     // Save
     // -------------------------------------------------------------------------
 

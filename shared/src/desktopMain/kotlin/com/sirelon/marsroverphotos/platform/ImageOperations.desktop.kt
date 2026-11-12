@@ -17,6 +17,11 @@ import javax.swing.filechooser.FileNameExtensionFilter
  */
 class DesktopImageOperations : ImageOperations {
 
+    override val canSetWallpaper: Boolean = false
+
+    override suspend fun setAsWallpaper(photo: MarsImage): WallpaperResult =
+        WallpaperResult.Error("Setting the wallpaper is not supported on desktop")
+
     override suspend fun saveImage(photo: MarsImage): ImageOperationResult {
         return try {
             // Download image from URL
