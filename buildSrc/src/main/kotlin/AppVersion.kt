@@ -4,5 +4,5 @@
 // manual edit here.
 object AppVersion {
     const val name = "5.4.0"
-    const val code = 57
+    const val code = 58
 }

@@ -81,7 +81,11 @@ purchasesKmp = "3.11.0"
 
 # Firebase
 # https://firebase.google.com/support/release-notes/android
-firebaseBom = "35.0.0"
+# Held on 34.x: BoM 35 ships firebase-perf 23, built on protobuf-javalite 4.x, while the root
+# build.gradle.kts forces 3.25.9 (4.x collides with Firestore's protolite-well-known-types). The
+# mix compiles and then crashes at startup in release with NoClassDefFoundError on
+# com.google.protobuf.Internal$IntListAdapter$IntConverter. Move to 35 together with that pin.
+firebaseBom = "34.19.0"
 firebaseAnalyticsVersion = "23.2.0"
 firebaseCrashlyticsVersion = "20.1.1"
 firebaseFirestoreVersion = "26.6.0"
