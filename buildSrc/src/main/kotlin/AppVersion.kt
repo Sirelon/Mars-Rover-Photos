@@ -3,6 +3,6 @@
 // values into the Xcode project; use `./gradlew syncIosVersion` only after a
 // manual edit here.
 object AppVersion {
-    const val name = "5.3.0"
-    const val code = 56
+    const val name = "5.4.0"
+    const val code = 57
 }

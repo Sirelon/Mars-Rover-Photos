@@ -1,9 +1,51 @@
 {
   "releases": [
     {
+      "version": "5.4.0",
+      "date": "2026-11-12",
+      "active": false,
+      "changes": [
+        {
+          "id": "rover_cover_photos",
+          "icon": "photo_camera",
+          "title": "Fresh Photos on Every Mission Card",
+          "summary": "Each mission shows a recent real photo instead of artwork",
+          "detail": "The Missions list used to show the same illustration for each mission every day. Each card now fades in a recent real photo from that mission: the newest colour frame for Perseverance and Curiosity, and a photo from the archive for the missions that have ended. The photos are remembered, so they are there the moment the app opens, and the artwork stays if a photo cannot load."
+        },
+        {
+          "id": "set_as_wallpaper",
+          "icon": "wallpaper",
+          "title": "Set as Wallpaper",
+          "summary": "Put any Mars photo on your home or lock screen",
+          "detail": "The fullscreen viewer has a new wallpaper button next to Save and Share. On Android it opens the system wallpaper screen with the full-size photo, ready to crop. On iPhone and iPad the photo is saved to Photos and the app tells you how to set it from there, since iOS does not let apps change the wallpaper directly."
+        },
+        {
+          "id": "offline_saved_photos",
+          "icon": "cloud_off",
+          "title": "Saved Photos When You're Offline",
+          "summary": "A feed that can't load shows photos you've already seen",
+          "detail": "When a mission's feed cannot reach NASA, the app now shows the nearest photos it saved earlier, with an \"Offline — showing saved photos\" note and a Retry button, instead of an empty screen. If nothing is saved yet, the screen says \"No connection.\" so you know it's the network and not the mission."
+        },
+        {
+          "id": "in_app_update",
+          "icon": "autorenew",
+          "title": "Update Without Leaving the App",
+          "summary": "On Android, the update card installs the new version in place",
+          "detail": "Tapping the update card on Missions now opens Google Play's own update screen inside the app instead of sending you to the store page. Where Play can't offer that, and on iPhone and iPad, the card opens the store as before."
+        },
+        {
+          "id": "reliability_5_4",
+          "icon": "bug_report",
+          "title": "Loading and Fixes",
+          "summary": "Fewer broken tiles, a correct Curiosity date, a launch crash fixed",
+          "detail": "Favorites and Popular now fall back to another image size when NASA is missing one, the way the main grid does, so Spirit and Opportunity tiles no longer show as broken there. The app sends fewer requests at once and retries when a NASA server is busy, which cuts failed loads in large grids. Curiosity's date header shows the day the photo was taken. A crash on launch on some Android 14 devices is fixed."
+        }
+      ]
+    },
+    {
       "version": "5.3.0",
       "date": "2026-10-04",
-      "active": false,
+      "active": true,
       "changes": [
         {
           "id": "ingenuity_helicopter",

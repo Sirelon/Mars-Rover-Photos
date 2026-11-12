@@ -21,11 +21,13 @@ Step numbers refer to that file.
   reproduces the same OOM. Current setting:
 
   ```properties
-  kotlin.native.jvmArgs=-Xmx8G
+  kotlin.native.jvmArgs=-Xmx16G
   ```
 
   Confirmed 2026-08-31 under Kotlin 2.4.20-Beta1: 4G OOMs, 6G on the daemon (wrong knob) OOMs, 8G on
-  `kotlin.native.jvmArgs` links in ~6m. Run `./gradlew --stop` after editing, or the old daemon keeps
+  `kotlin.native.jvmArgs` links in ~6m. Confirmed 2026-11-12 under Kotlin 2.4.21 with Compose
+  Multiplatform 1.13.0-beta02: 12G OOMs in `DevirtualizationAnalysis`, 16G links in ~5m30s. The
+  need grows with the Kotlin and Compose versions, so expect to raise it again. Run `./gradlew --stop` after editing, or the old daemon keeps
   the previous value. Re-running unchanged sometimes passes, because the sibling link has already
   finished and freed memory — treat that as luck, not a fix. **Never read this as broken code**, and
   always pull the `e:` lines out of the full log rather than reading `tail`.

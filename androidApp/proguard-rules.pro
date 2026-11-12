@@ -142,3 +142,11 @@
 # ----------------------------------------------------------------------------
 -dontwarn kotlin.**
 -dontwarn javax.annotation.**
+
+# ----------------------------------------------------------------------------
+# Jackson, a transitive dependency of firebase-firestore 27 (Firebase BoM 35).
+# Its Java7SupportImpl references java.beans annotations that Android does not
+# have; Jackson loads that class reflectively and runs without it.
+# ----------------------------------------------------------------------------
+-dontwarn java.beans.ConstructorProperties
+-dontwarn java.beans.Transient
