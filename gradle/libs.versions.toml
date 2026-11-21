@@ -74,7 +74,7 @@ navigation-compose = "2.9.2"
 
 # GitLive Firebase KMP SDK
 # https://github.com/GitLiveApp/firebase-kotlin-sdk/releases
-gitliveFirebase = "3.0.0-alpha02"
+gitliveFirebase = "3.0.0-beta1"
 # RevenueCat Kotlin Multiplatform SDK (in-app purchases). Android + iOS only — no JVM target, so it
 # lives in the `mobileMain` source set. https://github.com/RevenueCat/purchases-kmp/releases
 purchasesKmp = "3.11.0"
