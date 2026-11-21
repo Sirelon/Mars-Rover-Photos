@@ -1,29 +1,29 @@
 // swift-tools-version: 5.9
 import PackageDescription
 let package = Package(
-  name: "dev_gitlive_firebase_crashlytics_3_0_0_alpha02",
+  name: "dev_gitlive_firebase_messaging_3_0_0_beta1",
   platforms: [
     .iOS("15.0")
   ],
   products: [
     .library(
-      name: "dev_gitlive_firebase_crashlytics_3_0_0_alpha02",
+      name: "dev_gitlive_firebase_messaging_3_0_0_beta1",
       type: .none,
-      targets: ["dev_gitlive_firebase_crashlytics_3_0_0_alpha02"]
+      targets: ["dev_gitlive_firebase_messaging_3_0_0_beta1"]
     )
   ],
   dependencies: [
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk.git",
-      from: "12.17.0"
+      from: "13.1.1"
     )
   ],
   targets: [
     .target(
-      name: "dev_gitlive_firebase_crashlytics_3_0_0_alpha02",
+      name: "dev_gitlive_firebase_messaging_3_0_0_beta1",
       dependencies: [
         .product(
-          name: "FirebaseCrashlytics",
+          name: "FirebaseMessaging",
           package: "firebase-ios-sdk"
         )
       ]
