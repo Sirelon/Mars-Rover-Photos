@@ -1,5 +1,7 @@
 package com.sirelon.marsroverphotos.presentation.viewmodels
 
+import com.sirelon.marsroverphotos.domain.featureflags.FeatureFlag
+import com.sirelon.marsroverphotos.domain.featureflags.FeatureFlags
 import com.sirelon.marsroverphotos.domain.models.Rover
 import com.sirelon.marsroverphotos.domain.repositories.RoverCoversRepository
 import com.sirelon.marsroverphotos.domain.repositories.RoversRepository
@@ -42,8 +44,12 @@ private class FakeRoversRepository : RoversRepository {
     override suspend fun updateRoverCountPhotos(roverId: Long, photos: Long) = Unit
 }
 
+private class DefaultFeatureFlags : FeatureFlags {
+    override fun isEnabled(flag: FeatureFlag): StateFlow<Boolean> = MutableStateFlow(flag.default)
+}
+
 private class FakeRoverCoversRepository : RoverCoversRepository {
-    override val coverUrls: StateFlow<Map<Long, String>> = MutableStateFlow(emptyMap())
+    override val covers: StateFlow<Map<Long, RoverCoversRepository.Cover>> = MutableStateFlow(emptyMap())
     override fun refreshOnce() = Unit
 }
 
@@ -61,7 +67,9 @@ class RoversViewModelConsentGateTest {
     }
 
     private fun viewModel(gate: ConsentPromptGate, settings: AppSettings) =
-        RoversViewModel(FakeRoversRepository(), RecordingTracker(), settings, gate, FakeRoverCoversRepository())
+        RoversViewModel(
+            FakeRoversRepository(), RecordingTracker(), settings, gate, FakeRoverCoversRepository(), DefaultFeatureFlags(),
+        )
 
     @Test
     fun staysClosedThroughTheFirstEverRoverTap() = runTest {
@@ -100,6 +108,19 @@ class RoversViewModelConsentGateTest {
         val viewModel = viewModel(gate, settings)
         assertFalse(gate.opened.value)
 
+        viewModel.onRoverClicked(curiosity)
+
+        assertTrue(gate.opened.value)
+    }
+
+    @Test
+    fun aTodayOnMarsTapCountsTowardTheGateLikeARoverTap() = runTest {
+        Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+        val gate = ConsentPromptGate()
+        val viewModel = viewModel(gate, AppSettings(FakePreferences()))
+        val today = TodayOnMars(curiosity, RoverCoversRepository.Cover("url", 4700, "2026-11-19"))
+
+        viewModel.onTodayOnMarsClicked(today)
         viewModel.onRoverClicked(curiosity)
 
         assertTrue(gate.opened.value)
