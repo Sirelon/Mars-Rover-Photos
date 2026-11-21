@@ -11,4 +11,10 @@ package com.sirelon.marsroverphotos.domain.featureflags
 enum class FeatureFlag(val key: String, val default: Boolean, val enabledInDebug: Boolean = default) {
     /** "Support the developer" tiers: the About row and the Support screen entry point. */
     SUPPORT_TIERS(key = "support_tiers_enabled", default = false, enabledInDebug = true),
+
+    /**
+     * The "Today on Mars" card at the top of the rovers list: the freshest photo of an active
+     * rover, one tap from its feed. On by default; the remote value is the off switch.
+     */
+    TODAY_ON_MARS(key = "today_on_mars_enabled", default = true),
 }

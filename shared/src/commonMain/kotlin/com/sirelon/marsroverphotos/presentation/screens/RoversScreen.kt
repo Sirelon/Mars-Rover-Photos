@@ -62,6 +62,7 @@ import coil3.request.crossfade
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import com.sirelon.marsroverphotos.domain.models.Rover
+import com.sirelon.marsroverphotos.domain.repositories.RoverCoversRepository
 import com.sirelon.marsroverphotos.presentation.theme.AppSize
 import com.sirelon.marsroverphotos.presentation.theme.AppSpacing
 import com.sirelon.marsroverphotos.presentation.theme.activeStatusColor
@@ -79,6 +80,7 @@ import com.sirelon.marsroverphotos.presentation.ui.StatusBadge
 import com.sirelon.marsroverphotos.presentation.ui.blurb
 import com.sirelon.marsroverphotos.presentation.ui.painter
 import com.sirelon.marsroverphotos.presentation.viewmodels.RoversViewModel
+import com.sirelon.marsroverphotos.presentation.viewmodels.TodayOnMars
 import com.sirelon.marsroverphotos.shared.resources.Res
 import com.sirelon.marsroverphotos.shared.resources.metric_label_last
 import com.sirelon.marsroverphotos.shared.resources.metric_label_photos
@@ -96,6 +98,7 @@ import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 private const val WHATS_NEW_CARD_KEY = "whats-new-card"
+private const val TODAY_ON_MARS_KEY = "today-on-mars"
 
 @Composable
 fun RoversScreen(
@@ -107,7 +110,8 @@ fun RoversScreen(
     val rovers by viewModel.rovers.collectAsStateWithLifecycle()
     val filteredRovers by viewModel.filteredRovers.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
-    val coverUrls by viewModel.coverUrls.collectAsStateWithLifecycle()
+    val covers by viewModel.covers.collectAsStateWithLifecycle()
+    val todayOnMars by viewModel.todayOnMars.collectAsStateWithLifecycle()
 
     // The release card lives here, at the top of the list, rather than as a launch dialog: the
     // decision of which card (if any) is the ViewModel's, this screen only renders it.
@@ -125,7 +129,12 @@ fun RoversScreen(
     RoversContent(
         rovers = filteredRovers,
         allRovers = rovers,
-        coverUrls = coverUrls,
+        covers = covers,
+        todayOnMars = todayOnMars,
+        onTodayOnMarsClick = { today ->
+            viewModel.onTodayOnMarsClicked(today)
+            onNavigateToPhotos(today.rover.id)
+        },
         searchQuery = searchQuery,
         onSearchQueryChange = viewModel::onSearchQueryChange,
         onClick = { rover ->
@@ -156,7 +165,7 @@ fun RoversScreen(
 fun RoversContent(
     rovers: List<Rover>,
     allRovers: List<Rover>,
-    coverUrls: Map<Long, String>,
+    covers: Map<Long, RoverCoversRepository.Cover>,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     onClick: (rover: Rover) -> Unit,
@@ -165,6 +174,8 @@ fun RoversContent(
     whatsNewCard: WhatsNewCard? = null,
     onWhatsNewCardClick: (WhatsNewCard) -> Unit = {},
     onWhatsNewCardDismiss: (WhatsNewCard) -> Unit = {},
+    todayOnMars: TodayOnMars? = null,
+    onTodayOnMarsClick: (TodayOnMars) -> Unit = {},
 ) {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     // 1 column on compact, 2 on medium AND expanded — same adaptive source as the nav suite.
@@ -298,11 +309,21 @@ fun RoversContent(
                             )
                         }
                     }
+                    // Hidden while searching: the user is looking for a rover by name.
+                    if (todayOnMars != null && !showSearch) {
+                        item(key = TODAY_ON_MARS_KEY, span = { GridItemSpan(maxLineSpan) }) {
+                            TodayOnMarsCard(
+                                today = todayOnMars,
+                                onClick = { onTodayOnMarsClick(todayOnMars) },
+                                modifier = Modifier.animateItem(),
+                            )
+                        }
+                    }
                     items(rovers, key = { it.id }) { item ->
                         RoverItem(
                             modifier = Modifier.fillMaxWidth(),
                             rover = item,
-                            photoUrl = coverUrls[item.id],
+                            photoUrl = covers[item.id]?.imageUrl,
                             onClick = onClick,
                             onMissionInfoClick = onMissionInfoClick
                         )

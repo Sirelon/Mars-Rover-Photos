@@ -90,4 +90,7 @@ object AppSize {
 
     /** 2dp — stroke of a small inline circular progress indicator sized to an icon. */
     val inlineProgressStroke: Dp = 2.dp
+
+    /** 200dp — height of a full-width photo card with text over it (the "Today on Mars" card). */
+    val photoCardHeight: Dp = 200.dp
 }
