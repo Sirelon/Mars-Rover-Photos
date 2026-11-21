@@ -50,12 +50,21 @@ class PerseverancePhotoItemResponse(
     @SerialName(value = "image_files")
     val imageSourceResponse: ImageSourceResponse?,
 
-    @JsonNames("date_taken_utc", "date_received")
-    val earthDate: String?,
+    // Two fields, not one property with @JsonNames: the feed sends both keys, and @JsonNames lets
+    // the later one, date_received (when NASA got the frame, often days after), overwrite the
+    // date the photo was taken.
+    @SerialName(value = "date_taken_utc")
+    val dateTaken: String? = null,
+
+    @SerialName(value = "date_received")
+    val dateReceived: String? = null,
 
     @SerialName(value = "camera")
     val camera: PerseveranceCameraResponse?
-)
+) {
+    /** When the photo was taken; the receive date only when the feed has no taken date. */
+    val earthDate: String? get() = dateTaken ?: dateReceived
+}
 
 @Serializable
 class PerseveranceCameraResponse(
