@@ -272,7 +272,17 @@ for an icon-sized `CircularProgressIndicator`).
 
 **New `AppSize` tokens (Rovers):** `roverThumbWidth` (112dp portrait-thumb fixed width),
 `roverInfoReserve` (40dp title-line trailing reserve clearing the overlaid info button),
-`cardElevationResting` (2dp) / `cardElevationHover` (6dp) for the hover-lift.
+`cardElevationResting` (2dp) / `cardElevationHover` (6dp) for the hover-lift, `photoCardHeight`
+(200dp full-width photo card with text over it).
+
+**"Today on Mars" card (`screens/TodayOnMarsCard.kt`):** the first grid item on Rovers, spanning
+the full line and hidden while search is open. An `AppCard(onClick)` holding a `photoCardHeight` box:
+the freshest active-rover photo (`RoversViewModel.todayOnMars`, picked from the same covers the
+rover rows show — no extra request) via `NetworkImage`, a bottom `colorScheme.scrim` gradient, and a
+label / rover / "Sol N · date" column plus a chevron. Photo and overlay run inside
+`MarsRoverPhotosTheme(darkTheme = true)` (the dark-region rule under **Color**). A tap opens that
+rover's feed and logs `rover_selected` with `source = today_on_mars`. Remote Config
+`today_on_mars_enabled` (`FeatureFlag.TODAY_ON_MARS`, default on) switches it off.
 
 **Number formatting** (`utils/NumberFormat.kt`): `formatThousands` → grouped (`74,525`) for exact
 counts; `formatCompact` → abbreviated K/M (`1.5K`, `134K`, `1.2M`) for tight metric strips. Use
@@ -313,7 +323,7 @@ The rover list row (`screens/RoversScreen.kt` → `RoverItem`). Anatomy, top→b
 - **Thumbnail:** `RoverThumbnail` — full-height portrait box, fixed width `AppSize.roverThumbWidth`,
   `ContentScale.Crop`, clipped to `shapes.large`. The row uses `height(IntrinsicSize.Min)` so the
   thumb fills the text column's height. The static artwork always draws and sizes the box; the
-  rover's latest real photo (`RoversViewModel.coverUrls`, from `RoverCoversRepository`) crossfades
+  rover's latest real photo (`RoversViewModel.covers`, from `RoverCoversRepository`) crossfades
   over it with `matchParentSize()`, so a tall photo cannot stretch the card through the intrinsic
   measure. A failed or missing photo leaves the artwork — the card has no error state — and a newer
   photo loads behind the previous one (its painter is the placeholder), never back to the artwork.

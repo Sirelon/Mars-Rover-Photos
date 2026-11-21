@@ -3,6 +3,7 @@ package com.sirelon.marsroverphotos.data.repositories
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.domain.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.domain.repositories.PhotosRepository
+import com.sirelon.marsroverphotos.domain.repositories.RoverCoversRepository.Cover
 import com.sirelon.marsroverphotos.platform.FakePreferences
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.TestScope
@@ -14,13 +15,13 @@ import kotlin.test.assertEquals
 private const val ROVER_A = 1L
 private const val ROVER_B = 2L
 
-private fun photo(roverId: Long, url: String) = MarsImage(
+private fun photo(roverId: Long, url: String, sol: Long = 0, earthDate: String = "") = MarsImage(
     id = url,
     order = 0,
-    sol = 0,
+    sol = sol,
     name = null,
     imageUrl = url,
-    earthDate = "",
+    earthDate = earthDate,
     roverId = roverId,
     camera = null,
     stats = MarsImage.Stats(0, 0, 0, 0, 0),
@@ -63,7 +64,7 @@ class RoverCoversRepositoryImplTest {
         val photos = FakeLatestPhotos(emptyMap())
         val nextLaunch = repository(photos, preferences)
 
-        assertEquals(mapOf(ROVER_A to "new-a"), nextLaunch.coverUrls.value)
+        assertEquals(mapOf(ROVER_A to "new-a"), nextLaunch.covers.value.mapValues { it.value.imageUrl })
         assertEquals(emptyList<Long>(), photos.calls)
     }
 
@@ -81,7 +82,7 @@ class RoverCoversRepositoryImplTest {
         runCurrent()
 
         assertEquals(listOf(ROVER_A, ROVER_B), photos.calls.sorted())
-        assertEquals(mapOf(ROVER_A to "a", ROVER_B to "b"), repository.coverUrls.value)
+        assertEquals(mapOf(ROVER_A to "a", ROVER_B to "b"), repository.covers.value.mapValues { it.value.imageUrl })
     }
 
     @Test
@@ -95,7 +96,7 @@ class RoverCoversRepositoryImplTest {
         repository.refreshOnce()
         runCurrent()
 
-        assertEquals(mapOf(ROVER_A to "a", ROVER_B to "saved-b"), repository.coverUrls.value)
+        assertEquals(mapOf(ROVER_A to "a", ROVER_B to "saved-b"), repository.covers.value.mapValues { it.value.imageUrl })
     }
 
     @Test
@@ -109,10 +110,27 @@ class RoverCoversRepositoryImplTest {
 
         repository.refreshOnce()
         runCurrent()
-        assertEquals(mapOf(ROVER_B to "b"), repository.coverUrls.value)
+        assertEquals(mapOf(ROVER_B to "b"), repository.covers.value.mapValues { it.value.imageUrl })
 
         slow.complete(photo(ROVER_A, "a"))
         runCurrent()
-        assertEquals(mapOf(ROVER_A to "a", ROVER_B to "b"), repository.coverUrls.value)
+        assertEquals(mapOf(ROVER_A to "a", ROVER_B to "b"), repository.covers.value.mapValues { it.value.imageUrl })
+    }
+
+    @Test
+    fun keepsSolAndDateAcrossLaunches() = runTest {
+        val preferences = FakePreferences()
+        repository(
+            FakeLatestPhotos(mapOf(ROVER_A to { photo(ROVER_A, "a", sol = 1702, earthDate = "2026-11-19T10:00:00") })),
+            preferences,
+        ).apply { refreshOnce() }
+        runCurrent()
+
+        val nextLaunch = repository(FakeLatestPhotos(emptyMap()), preferences)
+
+        assertEquals(
+            mapOf(ROVER_A to Cover("a", sol = 1702, earthDate = "2026-11-19T10:00:00")),
+            nextLaunch.covers.value,
+        )
     }
 }
