@@ -13,7 +13,7 @@ buildscript {
                 "io.netty:netty-codec:4.2.19.Final",
                 "io.netty:netty-common:4.2.19.Final",
                 "io.netty:netty-handler:4.2.19.Final",
-                "com.google.guava:guava:33.7.2-android",
+                "com.google.guava:guava:33.8.0-android",
                 // Pinned to the 3.25.x line: protobuf-javalite 4.x bundles
                 // com.google.protobuf.DescriptorProtos, which collides with the copy inside
                 // com.google.firebase:protolite-well-known-types (pulled in by Firestore) and fails
@@ -72,7 +72,7 @@ allprojects {
                 "io.netty:netty-common:4.2.19.Final",
                 "io.netty:netty-handler:4.2.19.Final",
                 // Google libraries
-                "com.google.guava:guava:33.7.2-android",
+                "com.google.guava:guava:33.8.0-android",
                 // Pinned to the 3.25.x line: protobuf-javalite 4.x bundles
                 // com.google.protobuf.DescriptorProtos, which collides with the copy inside
                 // com.google.firebase:protolite-well-known-types (pulled in by Firestore) and fails
