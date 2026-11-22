@@ -55,8 +55,9 @@ pushing one needs explicit permission.
 (attach release notes to that upload — a separate call because supply skips all metadata when no
 `metadata_path` resolves — then run `android listing`), `android listing` (Play title and
 descriptions), `android release` (promote to production), `ios beta` (TestFlight), `ios release`
-(App Store binary) and `ios release_notes` (App Store "What's New", promotional text, name,
-subtitle, keywords and description; metadata only).
+(App Store binary), `ios release_notes` (App Store "What's New", promotional text, name,
+subtitle, keywords and description; metadata only) and `ios submit` (attach the TestFlight build
+with the current version code and submit for review, released automatically on approval).
 
 ## Samsung Galaxy Store
 `fastlane android galaxy` is the whole Samsung release in one lane: it builds the release APK,
@@ -78,9 +79,11 @@ gitignored:
   → Assistance → API Service → Create Service Account, Content Publish API scope). Samsung shows the
   key once; the service account id and the listing's content id are constants in the Fastfile.
 
-Existing binaries on the listing are left attached: Samsung serves each binary to the devices it
-targets, and the two from 2016 and 2019 may be the only builds still offered to very old Android
-versions. Removing one is a Seller Portal decision, not the lane's.
+Samsung refuses a second binary for the same devices (`5021 This binary is already in use`, not in
+Samsung's error list), so the lane deletes the binary whose minSdk matches the new APK's — the
+previous release — before attaching the new one. Binaries with an older minSdk stay attached:
+Samsung serves each binary to the devices it targets, and the builds from 2016 (minSdk 14) and 2019
+(minSdk 16) may be the only ones still offered to very old Android versions.
 
 The store listing text lives in `fastlane/listing/{android,ios}/en-US/*.txt`, one file per field,
 and is committed. Every release uploads it through `android changelog` and `ios release_notes`, so

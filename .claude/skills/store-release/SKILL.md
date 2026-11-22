@@ -2,21 +2,28 @@
 name: store-release
 description: >-
   Cut a release end to end: bump the version, generate and publish this release's What's New notes,
-  build both apps, upload to Google Play internal testing and TestFlight, and tag the release commit
-  locally. Use when the user says "we're ready for release", "release a new version", "ship version
-  X.Y", "cut a release", "publish an update", or "bump the version and publish". Covers
-  internal/TestFlight only — promoting to Play production and submitting to the App Store are
-  separate manual steps this skill never runs.
+  build both apps, upload to Google Play internal testing and TestFlight, submit the iOS version for
+  App Store review with automatic release, submit to Samsung Galaxy Store review, and tag the
+  release commit locally. Use when the user says "we're ready for release", "release a new
+  version", "ship version X.Y", "cut a release", "publish an update", or "bump the version and
+  publish". Promoting the Play build to production is the one store step it leaves to the owner.
 ---
 
 # Release
 
 One entry point for shipping. It owns the version bump, this release's release notes (both the
-in-app What's New and the store changelog), both builds, both uploads, and the local tag.
+in-app What's New and the store changelog), the builds, the uploads, the review submissions, and
+the local tag.
 
-**Scope is beta/internal.** `fastlane android beta` (Play internal track) and `fastlane ios beta`
-(TestFlight). Never `android release` (promote to production) or `ios release` (App Store upload) —
-the user triggers those when ready.
+**Scope: three stores, every release.** The owner set this on 2026-11-22: a release goes to all
+three stores without asking, and the App Store version is submitted for review with automatic
+release — he does not want to create or submit it by hand.
+
+- Google Play: `android beta` (internal track) + `android changelog`. Never `android release`
+  (promote to production) — the owner does that.
+- App Store: `ios beta` (TestFlight) + `ios release_notes` + `ios submit` (review, automatic
+  release on approval). `ios release` (a second binary upload) is not used.
+- Samsung Galaxy Store: `android galaxy` (build, re-sign, submit to Samsung review).
 
 **This is a skill, not a Workflow**, because the long steps are shell builds and a Firestore push,
 which only the main loop can run in the background. The one genuinely delegatable piece — digging
@@ -109,9 +116,10 @@ git status --short                                    # a release wants a clean 
   `app_store_connect_api_key` when it's missing, which is why `ensure_credentials` checks for it
   explicitly rather than letting a finished archive fail at upload.
 - `iosApp/iosApp/GoogleService-Info.plist` — copy from `GoogleService-Info.template.plist`.
-- `fastlane/galaxy-store.env` + `fastlane/galaxy-store-key.pem` — only for `android galaxy`
-  (Samsung Galaxy Store; see `docs/RELEASE.md`). Not part of this skill's beta flow: the Samsung lane
-  submits straight to review, so it runs by hand once the Play build is approved.
+- `fastlane/galaxy-store.env` + `fastlane/galaxy-store-key.pem` — for `android galaxy` (Samsung
+  Galaxy Store; see `docs/RELEASE.md`). Add both to the loop above. All four `GALAXY_*` values must
+  be set; the two passwords are the same as `storePassword` / `keyPassword` in
+  `keystore.properties`, so copy them from there without printing them.
 
 Ask the user to copy in whatever is missing. Never regenerate a keystore.
 
@@ -312,8 +320,7 @@ Background it; this is usually the longest step. The lane runs `syncIosVersion`,
 set the changelog, and skip the rest. So the text does land and the run stays short.
 
 Once that succeeds, immediately follow with the App Store Connect metadata push — it's metadata
-only (`skip_binary_upload`, `submit_for_review: false`), so it stays inside this skill's
-beta/internal scope; it does not submit anything:
+only (`skip_binary_upload`, `submit_for_review: false`):
 
 ```bash
 bundle exec fastlane ios release_notes
@@ -328,6 +335,30 @@ already matches the current marketing version right after `ios beta` alone — `
 separate, still-manual App Store binary upload) is **not** a prerequisite, contrary to what an
 earlier version of this doc assumed. If the lane ever reports the version doesn't match, that's a
 real anomaly worth investigating, not the expected case.
+
+Then submit the version for review:
+
+```bash
+bundle exec fastlane ios submit
+```
+
+It attaches the TestFlight build with this version code to the version, and submits it with
+`automatic_release: true`, so the version goes live as soon as Apple approves it. It uploads no
+binary and no metadata. Export compliance comes from `ITSAppUsesNonExemptEncryption` in
+`Info.plist`. Confirmed 2026-11-22: it selected build 59 about ten minutes after `ios beta` and
+submitted in 17 seconds.
+
+## Step 5b — Samsung Galaxy Store
+
+After the iOS build has finished with Gradle (the lane runs `:androidApp:assembleRelease`):
+
+```bash
+bundle exec fastlane android galaxy                  # skip_build:true reuses an APK already built
+```
+
+It updates the listing text and "What's New", re-signs the APK with `anyNew2.jks`, replaces the
+binary that has the same minSdk (the previous release), and submits to Samsung review. A run that
+fails after the listing moved to UPDATING can be re-run; the lane accepts that state.
 
 ## Step 6 — commit and tag
 
@@ -347,13 +378,13 @@ permission, and the user verifies a release on-device first.
 ## Step 7 — report
 
 - The version, and the store text, once — both stores got the same string.
-- Which of the six things landed: Play internal upload, Play changelog, Play listing text,
-  TestFlight, Firestore, App Store Connect metadata (What's New, Promotional Text and the listing
-  text on the version draft).
+- Which things landed: Play internal upload, Play changelog, Play listing text, TestFlight,
+  Firestore, App Store Connect metadata (What's New, Promotional Text and the listing text on the
+  version draft), App Store review submission, Galaxy Store review submission.
 - That the release commit and tag are **local and unpushed**.
-- Anything still manual: production promotion, App Store submission, flipping this release to
-  `active: true` in Firestore once both of those land (see "Marking a release available" in step 3),
-  and the outstanding items below.
+- Anything still manual: Play production promotion, flipping this release to `active: true` in
+  Firestore once Play production and the App Store release are both live (see "Marking a release
+  available" in step 3), and the outstanding items below.
 
 ## When a step fails
 

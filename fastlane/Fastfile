@@ -136,6 +136,13 @@ def galaxy_sign(apk)
   out
 end
 
+# minSdk declared in an APK's manifest, read with the newest aapt2 next to apksigner.
+def apk_min_sdk(apk)
+  aapt2 = File.join(File.dirname(apksigner_path), "aapt2")
+  badging = sh(aapt2, "dump", "badging", apk, log: false)
+  badging[/^(?:min)?sdkVersion:'(\d+)'/i, 1] || UI.user_error!("No minSdkVersion in aapt2 badging for #{apk}")
+end
+
 def galaxy_token
   unless File.exist?(GALAXY_KEY_FILEPATH)
     UI.user_error!("Missing #{GALAXY_KEY_FILEPATH} — download it from Seller Portal > Assistance > API Service")
@@ -302,6 +309,25 @@ platform :ios do
     )
   end
 
+  desc "Attach this version's TestFlight build to the App Store version and submit it for review, released automatically on approval"
+  lane :submit do
+    ensure_credentials
+    upload_to_app_store(
+      app_identifier: APP_IDENTIFIER,
+      app_version: app_version("name"),
+      build_number: app_version("code"),
+      skip_binary_upload: true, # the build is the one `ios beta` uploaded to TestFlight
+      skip_metadata: true,      # `ios release_notes` already set it on the version draft
+      skip_screenshots: true,
+      submit_for_review: true,
+      automatic_release: true,
+      force: true,
+      # Same API-key precheck limitation as release_notes. Export compliance comes from
+      # ITSAppUsesNonExemptEncryption in Info.plist, so no submission_information is needed for it.
+      run_precheck_before_submit: false
+    )
+  end
+
   desc "Upload the listing text, 'What's New' and promotional text to the current version draft (metadata only, no binary)"
   lane :release_notes do
     ensure_credentials
@@ -462,8 +488,10 @@ platform :android do
 
     token = galaxy_token
     info = galaxy_content_info(token)
-    # Anything else means Samsung is reviewing a submission, and a second one is refused.
-    unless %w[FOR_SALE REGISTERING].include?(info["contentStatus"])
+    # Anything else means Samsung is reviewing a submission, and a second one is refused. UPDATING is
+    # what contentInfo reports after contentUpdate (the docs call it REGISTERING): a run that failed
+    # after that call resumes from there.
+    unless %w[FOR_SALE REGISTERING UPDATING].include?(info["contentStatus"])
       UI.user_error!("Galaxy Store listing is #{info['contentStatus']} — wait for the current review to finish")
     end
     code = app_version("code").to_i
@@ -488,9 +516,17 @@ platform :android do
       newFeature: changelog
     })
 
+    # Samsung refuses a second binary for the same devices ("5021 This binary is already in use"),
+    # so the binary with this APK's minSdk — the previous release — is replaced. Binaries for older
+    # minSdk values stay attached on purpose: they may be the only build left for very old Android
+    # versions.
+    min_sdk = apk_min_sdk(apk)
+    (info["binaryList"] || []).select { |b| b["apiminSdkVersion"].to_s == min_sdk }.each do |old|
+      UI.message("Removing binary seq #{old['binarySeq']} (#{old['versionName']}, minSdk #{min_sdk}) — replaced by #{code}")
+      galaxy_request(:delete, "/seller/v2/content/binary?contentId=#{GALAXY_CONTENT_ID}&binarySeq=#{old['binarySeq']}", token: token)
+    end
+
     file_key = galaxy_upload(token, apk)
-    # Existing binaries stay attached on purpose: Samsung serves each to the devices it targets, and
-    # the old ones may be the only build left for very old Android versions.
     added = galaxy_request(:post, "/seller/v2/content/binary", token: token, json: {
       contentId: GALAXY_CONTENT_ID, filekey: file_key, gms: "Y"
     })
