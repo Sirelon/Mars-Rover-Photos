@@ -57,15 +57,26 @@ final class BannerAdFactoryImpl: NSObject, AdBannerFactory, BannerViewDelegate {
         banner.adUnitID = Self.bannerListUnitID
         banner.delegate = self
         banner.paidEventHandler = { [weak banner] adValue in
+            let precision = Self.precisionName(adValue.precision)
             // The only report of what an impression was actually worth for this user and session;
             // the AdMob console breaks revenue down by day and ad unit, and no further.
             Main_iosKt.trackAdImpression(
-                adSource: banner?.responseInfo?.loadedAdNetworkResponseInfo?.adSourceName ?? "unknown",
+                adSource: banner.flatMap(Self.networkName) ?? "unknown",
                 adFormat: Self.adFormat,
                 adUnitName: Self.bannerListUnitID,
                 value: adValue.value.doubleValue,
                 currencyCode: adValue.currencyCode,
-                precision: Self.precisionName(adValue.precision)
+                precision: precision
+            )
+            // iOS reports a decimal amount; RevenueCat takes micros, as Android reports them.
+            let micros = adValue.value.multiplying(byPowerOf10: 6)
+            Main_iosKt.trackRevenueCatAdRevenue(
+                adUnitId: Self.bannerListUnitID,
+                networkName: banner.flatMap(Self.networkName),
+                impressionId: banner.map(Self.impressionId) ?? "",
+                revenueMicros: micros.int64Value,
+                currency: adValue.currencyCode,
+                precision: precision
             )
         }
         retained[key] = banner
@@ -85,10 +96,40 @@ final class BannerAdFactoryImpl: NSObject, AdBannerFactory, BannerViewDelegate {
         retained.first { $0.value === bannerView }?.key
     }
 
+    private static func networkName(_ bannerView: BannerView) -> String? {
+        bannerView.responseInfo?.loadedAdNetworkResponseInfo?.adSourceName
+    }
+
+    /// AdMob's id for the loaded response: one per ad, so RevenueCat can join its events.
+    private static func impressionId(_ bannerView: BannerView) -> String {
+        bannerView.responseInfo?.responseIdentifier ?? ""
+    }
+
     // MARK: - BannerViewDelegate
 
     func bannerViewDidReceiveAd(_ bannerView: BannerView) {
         Main_iosKt.trackAdEvent(event: "ad_loaded", params: ["ad_format": Self.adFormat])
+        Main_iosKt.trackRevenueCatAdLoaded(
+            adUnitId: Self.bannerListUnitID,
+            networkName: Self.networkName(bannerView),
+            impressionId: Self.impressionId(bannerView)
+        )
+    }
+
+    func bannerViewDidRecordImpression(_ bannerView: BannerView) {
+        Main_iosKt.trackRevenueCatAdDisplayed(
+            adUnitId: Self.bannerListUnitID,
+            networkName: Self.networkName(bannerView),
+            impressionId: Self.impressionId(bannerView)
+        )
+    }
+
+    func bannerViewDidRecordClick(_ bannerView: BannerView) {
+        Main_iosKt.trackRevenueCatAdOpened(
+            adUnitId: Self.bannerListUnitID,
+            networkName: Self.networkName(bannerView),
+            impressionId: Self.impressionId(bannerView)
+        )
     }
 
     func bannerView(_ bannerView: BannerView, didFailToReceiveAdWithError error: Error) {
@@ -96,6 +137,10 @@ final class BannerAdFactoryImpl: NSObject, AdBannerFactory, BannerViewDelegate {
             requested.remove(key)
         }
         let nsError = error as NSError
+        Main_iosKt.trackRevenueCatAdFailedToLoad(
+            adUnitId: Self.bannerListUnitID,
+            errorCode: Int32(truncatingIfNeeded: nsError.code)
+        )
         Main_iosKt.trackAdEvent(
             event: "ad_load_failed",
             params: [

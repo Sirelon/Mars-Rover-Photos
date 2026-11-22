@@ -27,6 +27,7 @@ import com.google.android.gms.ads.AdValue
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.OnPaidEventListener
+import com.sirelon.marsroverphotos.data.support.RevenueCatAdEvents
 import com.sirelon.marsroverphotos.platform.AndroidAdConsent
 import com.sirelon.marsroverphotos.platform.Tracker
 import org.koin.compose.koinInject
@@ -118,7 +119,7 @@ private object RetainedBanner {
         created.setAdSize(AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(context, widthDp))
         created.adUnitId = BANNER_AD_UNIT_ID
         created.onPaidEventListener = paidEventListener(created, tracker)
-        created.adListener = adListener(tracker)
+        created.adListener = adListener(created, tracker)
         view = created
         owner = context
         this.widthDp = widthDp
@@ -156,23 +157,42 @@ private object RetainedBanner {
      * worth — the AdMob console reports it per day and per unit, never per user or per session.
      */
     private fun paidEventListener(adView: AdView, tracker: Tracker) = OnPaidEventListener { adValue ->
+        val precision = adValue.precisionName()
         tracker.trackAdImpression(
-            adSource = adView.responseInfo?.loadedAdapterResponseInfo?.adSourceName ?: "unknown",
+            adSource = adView.networkName() ?: "unknown",
             adFormat = AD_FORMAT,
             adUnitName = BANNER_AD_UNIT_ID,
             value = adValue.valueMicros / MICROS_PER_CURRENCY_UNIT,
             currencyCode = adValue.currencyCode,
-            precision = adValue.precisionName(),
+            precision = precision,
+        )
+        RevenueCatAdEvents.revenue(
+            adUnitId = BANNER_AD_UNIT_ID,
+            networkName = adView.networkName(),
+            impressionId = adView.impressionId(),
+            revenueMicros = adValue.valueMicros,
+            currency = adValue.currencyCode,
+            precision = precision,
         )
     }
 
     /** Loads and failures are the fill rate; without both, an empty slot looks like no traffic. */
-    private fun adListener(tracker: Tracker) = object : AdListener() {
+    private fun adListener(adView: AdView, tracker: Tracker) = object : AdListener() {
         override fun onAdLoaded() {
             tracker.trackEvent("ad_loaded", mapOf("ad_format" to AD_FORMAT))
+            RevenueCatAdEvents.loaded(BANNER_AD_UNIT_ID, adView.networkName(), adView.impressionId())
+        }
+
+        override fun onAdImpression() {
+            RevenueCatAdEvents.displayed(BANNER_AD_UNIT_ID, adView.networkName(), adView.impressionId())
+        }
+
+        override fun onAdClicked() {
+            RevenueCatAdEvents.opened(BANNER_AD_UNIT_ID, adView.networkName(), adView.impressionId())
         }
 
         override fun onAdFailedToLoad(error: LoadAdError) {
+            RevenueCatAdEvents.failedToLoad(BANNER_AD_UNIT_ID, error.code)
             // Let the next entry retry: otherwise one flaky request leaves the slot empty for the
             // rest of the session, because the retained view never asks again.
             loadedPersonalized = null
@@ -188,6 +208,11 @@ private object RetainedBanner {
         }
     }
 }
+
+private fun AdView.networkName(): String? = responseInfo?.loadedAdapterResponseInfo?.adSourceName
+
+/** AdMob's id for the loaded response: one per ad, so RevenueCat can join its events. */
+private fun AdView.impressionId(): String = responseInfo?.responseId ?: ""
 
 private fun AdView.detachFromParent() {
     (parent as? ViewGroup)?.removeView(this)

@@ -45,3 +45,14 @@ list and a whole first visit before any sheet. The iOS order is fixed: UMP befor
 `MobileAds.start`, and both prompts need the app foreground-active. Debug builds force EEA geography
 so the form is always testable; the `hideAds` launch argument (store screenshots) skips the ads and
 both prompts entirely.
+
+### Ad revenue reporting
+Each banner reports to two places. Firebase gets the `ad_impression` event with its paid value
+(`Tracker.trackAdImpression`). RevenueCat's Ads dashboard gets the load, display, click, revenue
+and load-failure events through `data/support/RevenueCatAdEvents` (`mobileMain`). RevenueCat has no
+AdMob adapter for Kotlin Multiplatform, so the Android slot calls it directly and
+`BannerAdFactory.swift` reaches it through the `trackRevenueCatAd*` functions in `Main.ios.kt`.
+The dashboard needs all five events: revenue alone shows money but no impressions, clicks or fill
+rate. AdMob's response id is the impression id that joins them. The events also need AdMob's
+"Impression-level ad revenue" setting turned on. Data from debug builds shows up under the
+dashboard's "Sandbox data" toggle.

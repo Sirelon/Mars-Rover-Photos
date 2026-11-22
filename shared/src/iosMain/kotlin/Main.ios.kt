@@ -1,6 +1,7 @@
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.window.ComposeUIViewController
+import com.sirelon.marsroverphotos.data.support.RevenueCatAdEvents
 import com.sirelon.marsroverphotos.domain.settings.AppSettings
 import com.sirelon.marsroverphotos.platform.BuildInfo
 import com.sirelon.marsroverphotos.platform.ConsentPromptGate
@@ -85,6 +86,31 @@ fun trackAdImpression(
         precision = precision,
     )
 }
+
+/**
+ * Banner lifecycle events from `BannerAdFactory.swift`, forwarded to RevenueCat's Ads dashboard.
+ * The Swift side has no RevenueCat SDK of its own; the KMP one lives here.
+ */
+fun trackRevenueCatAdLoaded(adUnitId: String, networkName: String?, impressionId: String) =
+    RevenueCatAdEvents.loaded(adUnitId, networkName, impressionId)
+
+fun trackRevenueCatAdDisplayed(adUnitId: String, networkName: String?, impressionId: String) =
+    RevenueCatAdEvents.displayed(adUnitId, networkName, impressionId)
+
+fun trackRevenueCatAdOpened(adUnitId: String, networkName: String?, impressionId: String) =
+    RevenueCatAdEvents.opened(adUnitId, networkName, impressionId)
+
+fun trackRevenueCatAdFailedToLoad(adUnitId: String, errorCode: Int) =
+    RevenueCatAdEvents.failedToLoad(adUnitId, errorCode)
+
+fun trackRevenueCatAdRevenue(
+    adUnitId: String,
+    networkName: String?,
+    impressionId: String,
+    revenueMicros: Long,
+    currency: String,
+    precision: String,
+) = RevenueCatAdEvents.revenue(adUnitId, networkName, impressionId, revenueMicros, currency, precision)
 
 /** Banner load outcomes from the same Swift factory — the fill rate the console can't break down. */
 fun trackAdEvent(event: String, params: Map<String, String>) {
