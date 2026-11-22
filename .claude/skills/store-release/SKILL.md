@@ -211,18 +211,21 @@ recommending it: nothing to update to shows nothing.
 
 ### Marking a release available
 
-Once you've promoted this version to Play production **and** Apple has approved the App Store
-release — i.e. once a member of the public, not just an internal/TestFlight tester, can actually
-install it — flip that entry to `active: true` and republish:
+The `Activate live releases` GitHub Actions workflow does this step. Every three hours it runs
+`scripts/activate-live-releases.mjs`. When Play production and the App Store both serve this version,
+the script sets only `active: true` on this version's Firestore document. `scripts/release-notes.json`
+keeps `active: false` for it. That is expected: `publish-release-notes.mjs` keeps an `active: true` it
+finds in Firestore, so a later publish does not switch the release back off.
+
+Check what it would do, or activate at once instead of waiting for the schedule:
 
 ```bash
-# edit scripts/release-notes.json: this version's "active" → true
-node scripts/publish-release-notes.mjs
+node scripts/activate-live-releases.mjs --dry-run   # what is live where, what it would activate
+gh workflow run activate-live-releases.yml           # run the scheduled job now
 ```
 
-This is a separate, later action — often days after this skill's run finishes, once both stores'
-review/promotion has actually happened — so it isn't a step this skill executes itself; do it (or
-remind the user to) when the production promotion and App Store approval are confirmed.
+The script considers only inactive releases newer than the newest active one. To retract a release
+that is already live, the script would switch it on again, so fix its content and republish instead.
 
 ## Step 4 — store changelog, and the Play upload of it
 
@@ -382,9 +385,9 @@ permission, and the user verifies a release on-device first.
   Firestore, App Store Connect metadata (What's New, Promotional Text and the listing text on the
   version draft), App Store review submission, Galaxy Store review submission.
 - That the release commit and tag are **local and unpushed**.
-- Anything still manual: Play production promotion, flipping this release to `active: true` in
-  Firestore once Play production and the App Store release are both live (see "Marking a release
-  available" in step 3), and the outstanding items below.
+- Anything still manual: Play production promotion and the outstanding items below. The scheduled
+  workflow sets `active: true` once both stores serve the version (see "Marking a release
+  available" in step 3).
 
 ## When a step fails
 

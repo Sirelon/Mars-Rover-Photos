@@ -34,6 +34,16 @@ script warns for
 any name missing from the `MaterialSymbol` enum, which would silently render the default symbol.
 Regenerate the JSON with the `release-notes` skill.
 
+A new release starts as `active: false`. The `Activate live releases` workflow
+(`.github/workflows/activate-live-releases.yml`, every three hours) runs
+`scripts/activate-live-releases.mjs`. It sets `active: true` in Firestore once Play production and
+the App Store both serve the version. The publish script keeps a Firestore `active: true`, so the
+JSON may still say `false` for a live release. The workflow needs three repository secrets:
+`GOOGLE_PLAY_KEY_JSON` (the contents of `fastlane/google-play-key.json`), `ASC_PRIVATE_KEY` (the
+contents of `fastlane/AuthKey_G5TTXS7GV3.p8`) and `FIRESTORE_KEY_JSON` (a service account key with
+the `roles/datastore.user` role on `mars-rover-photos`). If a secret is missing, the run fails and
+GitHub sends the owner an email.
+
 ## Store releases
 Cutting a release goes through the `store-release` skill (`.claude/skills/store-release/SKILL.md`),
 which owns the whole sequence: bump the version, build and upload Android to the Play internal track,

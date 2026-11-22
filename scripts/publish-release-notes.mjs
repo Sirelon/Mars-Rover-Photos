@@ -95,6 +95,31 @@ if (dryRun) {
 }
 
 const token = execFileSync('gcloud', ['auth', 'print-access-token'], { encoding: 'utf8' }).trim()
+
+// The JSON's `active` is the value a release starts with. activate-live-releases.mjs flips it to
+// true in Firestore once both stores serve the version, so a true there wins over a false here.
+const listing = await fetch(
+  `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/${COLLECTION}` +
+    '?pageSize=300&mask.fieldPaths=active',
+  { headers: { Authorization: `Bearer ${token}` } },
+)
+if (!listing.ok) {
+  console.error(`Firestore list failed (${listing.status}):\n${await listing.text()}`)
+  process.exit(1)
+}
+const liveActive = new Set(
+  ((await listing.json()).documents ?? [])
+    .filter((d) => d.fields?.active?.booleanValue === true)
+    .map((d) => d.name.split('/').pop()),
+)
+for (const write of writes) {
+  const version = write.update.name.split('/').pop()
+  if (write.update.fields.active?.booleanValue === false && liveActive.has(version)) {
+    write.update.fields.active = { booleanValue: true }
+    console.log(`  ${version}: already active in Firestore, kept active`)
+  }
+}
+
 const response = await fetch(
   `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents:commit`,
   {

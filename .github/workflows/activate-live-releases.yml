@@ -1,0 +1,32 @@
+name: Activate live releases
+
+# Marks a release `active` in Firestore once Play production and the App Store both serve it,
+# which turns on the in-app update and What's New cards. See docs/RELEASE.md.
+
+on:
+  schedule:
+    - cron: "17 */3 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: activate-live-releases
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  activate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Activate releases live on both stores
+        run: node scripts/activate-live-releases.mjs
+        env:
+          GOOGLE_PLAY_KEY_JSON: ${{ secrets.GOOGLE_PLAY_KEY_JSON }}
+          ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
+          FIRESTORE_KEY_JSON: ${{ secrets.FIRESTORE_KEY_JSON }}
