@@ -21,16 +21,32 @@ Step numbers refer to that file.
   reproduces the same OOM. Current setting:
 
   ```properties
-  kotlin.native.jvmArgs=-Xmx16G
+  kotlin.native.jvmArgs=-Xmx20G
   ```
 
   Confirmed 2026-08-31 under Kotlin 2.4.20-Beta1: 4G OOMs, 6G on the daemon (wrong knob) OOMs, 8G on
   `kotlin.native.jvmArgs` links in ~6m. Confirmed 2026-11-12 under Kotlin 2.4.21 with Compose
-  Multiplatform 1.13.0-beta02: 12G OOMs in `DevirtualizationAnalysis`, 16G links in ~5m30s. The
+  Multiplatform 1.13.0-beta02: 12G OOMs in `DevirtualizationAnalysis`, 16G links in ~5m30s.
+  Confirmed 2026-11-22 after the GitLive Firebase 3.0.0-beta1 bump: 16G OOMs on
+  `linkReleaseFrameworkIosSimulatorArm64`, 20G links in ~5m50s. Two concurrent 20G links do not
+  fit in the build Mac's 32 GB, so when a link OOMs, prebuild with
+  `./gradlew :shared:assembleSharedReleaseXCFramework --max-workers=1` before `ios beta`; the
+  Xcode phase then finds it up to date. The
   need grows with the Kotlin and Compose versions, so expect to raise it again. Run `./gradlew --stop` after editing, or the old daemon keeps
   the previous value. Re-running unchanged sometimes passes, because the sibling link has already
   finished and freed memory — treat that as luck, not a fix. **Never read this as broken code**, and
   always pull the `e:` lines out of the full log rather than reading `tail`.
+- **`ios beta` fails at "Resolve Package Graph" after a GitLive Firebase bump.** The error reads
+  `'dev_gitlive_firebase_app_<ver>' depends on 'firebase-ios-sdk' X..<Y and root depends on
+  'firebase-ios-sdk' A..<B`. The regenerated linkage packages under
+  `iosApp/KotlinMultiplatformLinkedPackage/subpackages/` carry GitLive's own `firebase-ios-sdk`
+  minimum, but the app's root requirement in `iosApp/iosApp.xcodeproj/project.pbxproj`
+  (`XCRemoteSwiftPackageReference` for `firebase-ios-sdk`, `minimumVersion`) does not move with
+  it. Dependabot bumps `gitliveFirebase` in `libs.versions.toml` and never touches that pin.
+  Fix: set the root `minimumVersion` to the version the subpackage `Package.swift` asks for, then
+  `xcodebuild -project iosApp/iosApp.xcodeproj -scheme iosApp -resolvePackageDependencies` to
+  update `Package.resolved`. Confirmed 2026-11-22: GitLive 3.0.0-beta1 needs 13.1.1; the root pin
+  was 12.13.0.
 - iOS release builds link optimized Kotlin: the framework resolves through the per-configuration
   `KMP_XCFRAMEWORK_DIR` build setting, so Release uses `XCFrameworks/release` and Debug uses
   `XCFrameworks/debug`, and the "Build KMP Framework" phase assembles whichever matches

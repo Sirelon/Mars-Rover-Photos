@@ -1,6 +1,27 @@
 {
   "releases": [
     {
+      "version": "5.5.0",
+      "date": "2026-11-22",
+      "active": false,
+      "changes": [
+        {
+          "id": "today_on_mars",
+          "icon": "public",
+          "title": "Today on Mars",
+          "summary": "The newest photo from Mars, right at the top of Missions",
+          "detail": "Missions now opens with a large card showing the freshest photo from a rover that is still working, with the rover, sol and date over it. Tap it to go straight to that rover’s photos. The card hides while you search for a mission."
+        },
+        {
+          "id": "perseverance_dates_5_5",
+          "icon": "calendar_month",
+          "title": "Correct Perseverance Photo Dates",
+          "summary": "Perseverance photos show the day they were taken",
+          "detail": "Perseverance photos used to show the day NASA received them on Earth, which is often several days after the rover took them. They now show the day the photo was taken."
+        }
+      ]
+    },
+    {
       "version": "5.4.0",
       "date": "2026-11-12",
       "active": false,
