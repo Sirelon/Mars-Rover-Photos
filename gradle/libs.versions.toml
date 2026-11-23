@@ -46,7 +46,7 @@ profileinstaller = "1.4.1"
 # https://developer.android.com/jetpack/androidx/releases/window
 androidx-window = "1.5.0"
 # https://developer.android.com/jetpack/androidx/releases/test-uiautomator
-uiautomator = "2.4.0"
+uiautomator = "2.4.1"
 # https://developer.android.com/jetpack/androidx/releases/test
 androidx-test-junit = "1.3.0"
 
