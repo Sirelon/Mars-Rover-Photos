@@ -1,9 +1,11 @@
 package com.sirelon.marsroverphotos.data.repositories
 
 import com.sirelon.marsroverphotos.data.network.models.ReleaseDto
+import com.sirelon.marsroverphotos.data.network.models.isActiveOn
 import com.sirelon.marsroverphotos.data.network.models.toDomain
 import com.sirelon.marsroverphotos.domain.releasenotes.Release
 import com.sirelon.marsroverphotos.domain.repositories.ReleaseNotesRepository
+import com.sirelon.marsroverphotos.platform.AppStore
 import com.sirelon.marsroverphotos.utils.Logger
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.firestore.firestore
@@ -25,7 +27,7 @@ import kotlinx.coroutines.sync.withLock
  * What's New dialog, story pager and version list each construct their own `WhatsNewViewModel`.
  * Without the cache and the [Mutex] serialising first access, each would issue its own query.
  */
-class ReleaseNotesRepositoryImpl : ReleaseNotesRepository {
+class ReleaseNotesRepositoryImpl(private val store: AppStore?) : ReleaseNotesRepository {
 
     private companion object {
         const val TAG = "ReleaseNotesRepository"
@@ -52,10 +54,10 @@ class ReleaseNotesRepositoryImpl : ReleaseNotesRepository {
                     .onFailure { Logger.w(TAG) { "Skipping malformed release note ${document.id}" } }
                     .getOrNull()
             }
-            // `active` gates both a malformed/retracted document and a version pushed ahead of
-            // store approval — either way there is nothing to show or update to yet, so it must
-            // stay invisible until flipped to true. See `store-release/SKILL.md`.
-            .filter { it.active }
+            // The active flags gate both a malformed/retracted document and a version this build's
+            // store does not serve yet — either way there is nothing to show or update to, so it
+            // stays invisible until flipped to true. See `store-release/SKILL.md`.
+            .filter { it.isActiveOn(store) }
             .mapNotNull { it.toDomain() }
             .sortedByDescending { it.date }
             .toImmutableList()

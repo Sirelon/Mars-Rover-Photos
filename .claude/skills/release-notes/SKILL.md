@@ -19,8 +19,8 @@ update to it. Backfilling or correcting a version that already shipped, which is
 directly, means it's already live — leave `active: true`. `store-release` is the one that writes
 `active: false` for a brand-new release, since it publishes before the store promotion/review that
 would make the build actually reachable. `scripts/activate-live-releases.mjs` (scheduled in GitHub
-Actions) sets `active: true` in Firestore once both stores serve it, and `publish-release-notes.mjs`
-never turns a Firestore `active: true` back off.
+Actions) sets `activeAndroid` / `activeIos` in Firestore as each store serves it, and `active` once
+both do. `publish-release-notes.mjs` never turns a flag that is true in Firestore back off.
 
 **Cutting a release enters through [`store-release`](../store-release/SKILL.md), not here.** That
 skill orchestrates the bump, the builds, the uploads and the tag, and calls into this one for a

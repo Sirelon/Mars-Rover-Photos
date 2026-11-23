@@ -96,27 +96,33 @@ if (dryRun) {
 
 const token = execFileSync('gcloud', ['auth', 'print-access-token'], { encoding: 'utf8' }).trim()
 
-// The JSON's `active` is the value a release starts with. activate-live-releases.mjs flips it to
-// true in Firestore once both stores serve the version, so a true there wins over a false here.
+// The JSON's flags are the values a release starts with. activate-live-releases.mjs turns them on
+// in Firestore as the stores serve the version, so a true there wins over the JSON. A full-document
+// write would otherwise reset them, since the JSON carries no store flags at all.
+const FLAGS = ['active', 'activeAndroid', 'activeIos']
 const listing = await fetch(
   `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/${COLLECTION}` +
-    '?pageSize=300&mask.fieldPaths=active',
+    '?pageSize=300' +
+    FLAGS.map((f) => `&mask.fieldPaths=${f}`).join(''),
   { headers: { Authorization: `Bearer ${token}` } },
 )
 if (!listing.ok) {
   console.error(`Firestore list failed (${listing.status}):\n${await listing.text()}`)
   process.exit(1)
 }
-const liveActive = new Set(
-  ((await listing.json()).documents ?? [])
-    .filter((d) => d.fields?.active?.booleanValue === true)
-    .map((d) => d.name.split('/').pop()),
+const liveFlags = new Map(
+  ((await listing.json()).documents ?? []).map((d) => [
+    d.name.split('/').pop(),
+    FLAGS.filter((f) => d.fields?.[f]?.booleanValue === true),
+  ]),
 )
 for (const write of writes) {
   const version = write.update.name.split('/').pop()
-  if (write.update.fields.active?.booleanValue === false && liveActive.has(version)) {
-    write.update.fields.active = { booleanValue: true }
-    console.log(`  ${version}: already active in Firestore, kept active`)
+  for (const flag of liveFlags.get(version) ?? []) {
+    if (write.update.fields[flag]?.booleanValue !== true) {
+      write.update.fields[flag] = { booleanValue: true }
+      console.log(`  ${version}: ${flag} already on in Firestore, kept on`)
+    }
   }
 }
 

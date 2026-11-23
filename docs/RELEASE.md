@@ -34,11 +34,15 @@ script warns for
 any name missing from the `MaterialSymbol` enum, which would silently render the default symbol.
 Regenerate the JSON with the `release-notes` skill.
 
-A new release starts as `active: false`. The `Activate live releases` workflow
+Each store has its own flag. An Android build shows a release when `activeAndroid` is true, and an
+iOS build when `activeIos` is true. A document without that flag falls back to `active`, which
+desktop and builds up to 5.5.0 read (`ReleaseDto.isActiveOn`). A new release starts with
+`active: false` and no store flags. The `Activate live releases` workflow
 (`.github/workflows/activate-live-releases.yml`, every three hours) runs
-`scripts/activate-live-releases.mjs`. It sets `active: true` in Firestore once Play production and
-the App Store both serve the version. The publish script keeps a Firestore `active: true`, so the
-JSON may still say `false` for a live release. The workflow needs three repository secrets:
+`scripts/activate-live-releases.mjs`. In Firestore it sets `activeAndroid` once Play production
+serves the version, `activeIos` once the App Store does, and `active` once both do. The publish
+script keeps any of these flags it finds true in Firestore, so the JSON may still say
+`active: false` for a live release. The workflow needs three repository secrets:
 `GOOGLE_PLAY_KEY_JSON` (the contents of `fastlane/google-play-key.json`), `ASC_PRIVATE_KEY` (the
 contents of `fastlane/AuthKey_G5TTXS7GV3.p8`) and `FIRESTORE_KEY_JSON` (a service account key with
 the `roles/datastore.user` role on `mars-rover-photos`). If a secret is missing, the run fails and

@@ -1,18 +1,18 @@
 #!/usr/bin/env node
-// Marks a release `active: true` in the `release-notes` Firestore collection once the public can
-// install it from both stores. Runs on a schedule from .github/workflows/activate-live-releases.yml;
-// safe to run by hand and to run repeatedly.
+// Turns a release on in the `release-notes` Firestore collection once the public can install it.
+// Runs on a schedule from .github/workflows/activate-live-releases.yml; safe to run by hand and to
+// run repeatedly.
 //
 //   node scripts/activate-live-releases.mjs [--dry-run] [--project <id>]
 //
 // A version counts as live on a store when the newest version that store serves is the same or
 // newer: Play's production track (status `completed` or `inProgress`), the App Store's versions in
-// READY_FOR_DISTRIBUTION. A release becomes active only when both stores pass. Only inactive
-// releases newer than the newest active one are candidates, so an older release set to
-// `active: false` by hand stays off.
+// READY_FOR_DISTRIBUTION. `activeAndroid` turns on when Play serves it, `activeIos` when the App
+// Store does, `active` when both do (see FLAGS). For each flag, only releases newer than the newest
+// one with that flag on are candidates, so an older release switched off by hand stays off.
 //
-// The script writes only the `active` field. publish-release-notes.mjs keeps an `active: true` it
-// finds in Firestore, so the two scripts never undo each other.
+// The script writes only these flags. publish-release-notes.mjs keeps any of them it finds true in
+// Firestore, so the two scripts never undo each other.
 //
 // Credentials come from the environment in CI and from the gitignored fastlane/ files locally:
 //   GOOGLE_PLAY_KEY_JSON   Play service account JSON (default: fastlane/google-play-key.json)
@@ -31,6 +31,19 @@ const PACKAGE = 'com.sirelon.marsroverphotos'
 const ASC_KEY_ID = 'G5TTXS7GV3' // also in fastlane/Fastfile
 const ASC_ISSUER_ID = '8873b38c-775e-4a3e-baf5-4e2bada765a8'
 const COLLECTION = 'release-notes'
+
+// Each flag and the store version that must reach a release before the flag turns on. The app reads
+// its own store's flag (ReleaseDto.isActiveOn); `active` is for builds without store flags, and
+// desktop, so it waits for both stores.
+const FLAGS = [
+  { field: 'activeAndroid', label: 'Play', live: ({ play }) => play },
+  { field: 'activeIos', label: 'the App Store', live: ({ appStore }) => appStore },
+  {
+    field: 'active',
+    label: 'both stores',
+    live: ({ play, appStore }) => (play && appStore ? (compareVersions(play, appStore) <= 0 ? play : appStore) : null),
+  },
+]
 
 const args = process.argv.slice(2)
 const dryRun = args.includes('--dry-run')
@@ -145,30 +158,44 @@ const [play, appStore, token] = await Promise.all([playLiveVersion(), appStoreLi
 console.log(`Live on Play: ${play ?? 'none'}  ·  live on the App Store: ${appStore ?? 'none'}`)
 
 const { documents = [] } = await request(
-  `${documentsUrl}/${COLLECTION}?pageSize=300&mask.fieldPaths=active`,
+  `${documentsUrl}/${COLLECTION}?pageSize=300` + FLAGS.map((f) => `&mask.fieldPaths=${f.field}`).join(''),
   { headers: { Authorization: `Bearer ${token}` } },
   'Firestore list',
 )
-const releases = documents.map((d) => ({
-  version: d.name.split('/').pop(),
-  active: d.fields?.active?.booleanValue ?? true, // the app reads a missing `active` as true
-}))
-const newestActive = newest(releases.filter((r) => r.active).map((r) => r.version))
-const liveEverywhere = (version) =>
-  play && appStore && compareVersions(play, version) >= 0 && compareVersions(appStore, version) >= 0
+const releases = documents.map((d) => {
+  const read = (field) => d.fields?.[field]?.booleanValue
+  const active = read('active') ?? true // the app reads a missing `active` as true
+  // A missing store flag falls back to `active`, exactly as ReleaseDto.isActiveOn does in the app.
+  return {
+    version: d.name.split('/').pop(),
+    flags: { active, activeAndroid: read('activeAndroid') ?? active, activeIos: read('activeIos') ?? active },
+  }
+})
 
-const candidates = releases.filter(
-  (r) => !r.active && (!newestActive || compareVersions(r.version, newestActive) > 0),
-)
-const toActivate = candidates.filter((r) => liveEverywhere(r.version)).map((r) => r.version)
-for (const r of candidates) if (!toActivate.includes(r.version)) console.log(`  ${r.version}: not live on both stores yet`)
+// version → the flags to set true on it
+const updates = new Map()
+for (const { field, label, live } of FLAGS) {
+  const liveVersion = live({ play, appStore })
+  const newestOn = newest(releases.filter((r) => r.flags[field]).map((r) => r.version))
+  const candidates = releases.filter(
+    (r) => !r.flags[field] && (!newestOn || compareVersions(r.version, newestOn) > 0),
+  )
+  for (const r of candidates) {
+    if (liveVersion && compareVersions(liveVersion, r.version) >= 0) {
+      updates.set(r.version, [...(updates.get(r.version) ?? []), field])
+    } else {
+      console.log(`  ${r.version}: not live on ${label} yet`)
+    }
+  }
+}
 
-if (toActivate.length === 0) {
+const summary = [...updates].map(([version, fields]) => `${version} (${fields.join(', ')})`).join('; ')
+if (updates.size === 0) {
   console.log('Nothing to activate.')
   process.exit(0)
 }
 if (dryRun) {
-  console.log(`[dry run] would activate: ${toActivate.join(', ')}`)
+  console.log(`[dry run] would set: ${summary}`)
   process.exit(0)
 }
 
@@ -178,13 +205,16 @@ const result = await request(
     method: 'POST',
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      writes: toActivate.map((version) => ({
-        update: { name: `${documentsUrl.split('/v1/')[1]}/${COLLECTION}/${version}`, fields: { active: { booleanValue: true } } },
-        updateMask: { fieldPaths: ['active'] },
+      writes: [...updates].map(([version, fields]) => ({
+        update: {
+          name: `${documentsUrl.split('/v1/')[1]}/${COLLECTION}/${version}`,
+          fields: Object.fromEntries(fields.map((f) => [f, { booleanValue: true }])),
+        },
+        updateMask: { fieldPaths: fields },
         currentDocument: { exists: true },
       })),
     }),
   },
   'Firestore commit',
 )
-console.log(`Activated ${result.writeResults?.length ?? 0}: ${toActivate.join(', ')}`)
+console.log(`Set ${result.writeResults?.length ?? 0} document(s): ${summary}`)

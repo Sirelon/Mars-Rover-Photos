@@ -1,6 +1,7 @@
 package com.sirelon.marsroverphotos.data.network.models
 
 import com.sirelon.marsroverphotos.domain.releasenotes.Release
+import com.sirelon.marsroverphotos.platform.AppStore
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
@@ -14,14 +15,29 @@ import kotlinx.serialization.Serializable
  *
  * `active: false` covers two cases the app treats identically — a malformed/retracted document, and
  * notes pushed ahead of store approval (nothing to update to yet). See `store-release/SKILL.md`.
+ * [activeAndroid] and [activeIos] say the same per store, so one store's approval does not wait for
+ * the other's; see [isActiveOn].
  */
 @Serializable
 data class ReleaseDto(
     val version: String = "",
     val date: String = "",
     val active: Boolean = true,
+    val activeAndroid: Boolean? = null,
+    val activeIos: Boolean? = null,
     val changes: List<ReleaseChangeDto> = emptyList(),
 )
+
+/**
+ * Whether this release is visible to a build from [store]: that store's own flag, or [ReleaseDto.active]
+ * when the document has none. `active` alone (true only once both stores serve the version) is what
+ * builds without per-store flags read, and what desktop reads.
+ */
+fun ReleaseDto.isActiveOn(store: AppStore?): Boolean = when (store) {
+    AppStore.GOOGLE_PLAY -> activeAndroid ?: active
+    AppStore.APP_STORE -> activeIos ?: active
+    null -> active
+}
 
 @Serializable
 data class ReleaseChangeDto(

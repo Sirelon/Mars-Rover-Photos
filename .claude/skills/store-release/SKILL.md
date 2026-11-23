@@ -212,10 +212,12 @@ recommending it: nothing to update to shows nothing.
 ### Marking a release available
 
 The `Activate live releases` GitHub Actions workflow does this step. Every three hours it runs
-`scripts/activate-live-releases.mjs`. When Play production and the App Store both serve this version,
-the script sets only `active: true` on this version's Firestore document. `scripts/release-notes.json`
-keeps `active: false` for it. That is expected: `publish-release-notes.mjs` keeps an `active: true` it
-finds in Firestore, so a later publish does not switch the release back off.
+`scripts/activate-live-releases.mjs`. On this version's Firestore document it sets `activeAndroid`
+once Play production serves it, `activeIos` once the App Store does, and `active` once both do. Each
+app reads its own store's flag, so Android users see the release as soon as Play has it.
+`scripts/release-notes.json` keeps `active: false` for it. That is expected:
+`publish-release-notes.mjs` keeps any flag it finds true in Firestore, so a later publish does not
+switch the release back off.
 
 Check what it would do, or activate at once instead of waiting for the schedule:
 
@@ -224,7 +226,7 @@ node scripts/activate-live-releases.mjs --dry-run   # what is live where, what i
 gh workflow run activate-live-releases.yml           # run the scheduled job now
 ```
 
-The script considers only inactive releases newer than the newest active one. To retract a release
+For each flag, the script considers only releases newer than the newest one with that flag on. To retract a release
 that is already live, the script would switch it on again, so fix its content and republish instead.
 
 ## Step 4 — store changelog, and the Play upload of it

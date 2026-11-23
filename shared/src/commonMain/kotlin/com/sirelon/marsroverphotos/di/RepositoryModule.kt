@@ -16,6 +16,7 @@ import com.sirelon.marsroverphotos.domain.repositories.FactsRepository
 import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
 import com.sirelon.marsroverphotos.domain.repositories.PhotosRepository
 import com.sirelon.marsroverphotos.domain.repositories.ReleaseNotesRepository
+import com.sirelon.marsroverphotos.platform.currentAppStore
 import com.sirelon.marsroverphotos.domain.repositories.RoverCoversRepository
 import com.sirelon.marsroverphotos.domain.repositories.RoversRepository
 import kotlinx.coroutines.CoroutineScope
@@ -99,7 +100,7 @@ val repositoryModule = module {
 
     // Caches for the process — see the class KDoc on why one instance matters here.
     single<ReleaseNotesRepository> {
-        ReleaseNotesRepositoryImpl()
+        ReleaseNotesRepositoryImpl(currentAppStore)
     }
 
     // MissionRepository is expect/actual, provided by platform module
