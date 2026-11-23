@@ -8,7 +8,7 @@ buildscript {
     configurations.all {
         resolutionStrategy {
             force(
-                "io.netty:netty-codec-http:4.2.19.Final",
+                "io.netty:netty-codec-http:4.2.21.Final",
                 "io.netty:netty-codec-http2:4.2.20.Final",
                 "io.netty:netty-codec:4.2.19.Final",
                 "io.netty:netty-common:4.2.19.Final",
@@ -66,7 +66,7 @@ allprojects {
                 // Netty — various DoS / request-smuggling / cache-poisoning CVEs.
                 // Every io.netty artifact must be forced to the same version; Netty does not
                 // support mixing versions across its modules.
-                "io.netty:netty-codec-http:4.2.19.Final",
+                "io.netty:netty-codec-http:4.2.21.Final",
                 "io.netty:netty-codec-http2:4.2.20.Final",
                 "io.netty:netty-codec:4.2.19.Final",
                 "io.netty:netty-common:4.2.19.Final",
