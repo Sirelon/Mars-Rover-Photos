@@ -312,6 +312,16 @@ platform :ios do
   desc "Attach this version's TestFlight build to the App Store version and submit it for review, released automatically on approval"
   lane :submit do
     ensure_credentials
+    # deliver sets the release type only in its metadata step, which skip_metadata +
+    # skip_screenshots skip entirely, so `automatic_release: true` below is silently ignored and
+    # the version keeps the MANUAL type of earlier releases. Set it on the version directly.
+    version_name = app_version("name")
+    app = Spaceship::ConnectAPI::App.find(APP_IDENTIFIER)
+    version = app.get_edit_app_store_version(platform: Spaceship::ConnectAPI::Platform::IOS)
+    unless version && version.version_string == version_name
+      UI.user_error!("No editable App Store version #{version_name} (found #{version&.version_string || 'none'})")
+    end
+    version.update(attributes: { release_type: Spaceship::ConnectAPI::AppStoreVersion::ReleaseType::AFTER_APPROVAL })
     upload_to_app_store(
       app_identifier: APP_IDENTIFIER,
       app_version: app_version("name"),
