@@ -7,7 +7,8 @@
 //
 // A version counts as live on a store when the newest version that store serves is the same or
 // newer: Play's production track (status `completed` or `inProgress`), the App Store's versions in
-// READY_FOR_DISTRIBUTION. `activeAndroid` turns on when Play serves it, `activeIos` when the App
+// READY_FOR_DISTRIBUTION. A version Apple approved but nobody released (PENDING_DEVELOPER_RELEASE)
+// fails the run, so GitHub emails the owner. `activeAndroid` turns on when Play serves it, `activeIos` when the App
 // Store does, `active` when both do (see FLAGS). For each flag, only releases newer than the newest
 // one with that flag on are candidates, so an older release switched off by hand stays off.
 //
@@ -118,8 +119,11 @@ async function playLiveVersion() {
   }
 }
 
-/** Newest App Store version in READY_FOR_DISTRIBUTION. */
-async function appStoreLiveVersion() {
+/**
+ * Newest App Store version in READY_FOR_DISTRIBUTION, plus the versions Apple approved that still
+ * wait for someone to press Release (PENDING_DEVELOPER_RELEASE).
+ */
+async function appStoreVersions() {
   const key = createPrivateKey(fromEnvOrFile('ASC_PRIVATE_KEY', `fastlane/AuthKey_${ASC_KEY_ID}.p8`))
   const now = Math.floor(Date.now() / 1000)
   const unsigned = `${b64url({ alg: 'ES256', kid: ASC_KEY_ID, typ: 'JWT' })}.${b64url({
@@ -140,11 +144,9 @@ async function appStoreLiveVersion() {
     { headers },
     'App Store versions',
   )
-  return newest(
-    versions.data
-      .filter((v) => v.attributes.appVersionState === 'READY_FOR_DISTRIBUTION')
-      .map((v) => v.attributes.versionString),
-  )
+  const inState = (state) =>
+    versions.data.filter((v) => v.attributes.appVersionState === state).map((v) => v.attributes.versionString)
+  return { live: newest(inState('READY_FOR_DISTRIBUTION')), awaitingRelease: inState('PENDING_DEVELOPER_RELEASE') }
 }
 
 const firestoreToken = async () =>
@@ -154,8 +156,21 @@ const firestoreToken = async () =>
 
 const documentsUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents`
 
-const [play, appStore, token] = await Promise.all([playLiveVersion(), appStoreLiveVersion(), firestoreToken()])
+const [play, { live: appStore, awaitingRelease }, token] = await Promise.all([
+  playLiveVersion(),
+  appStoreVersions(),
+  firestoreToken(),
+])
 console.log(`Live on Play: ${play ?? 'none'}  ·  live on the App Store: ${appStore ?? 'none'}`)
+// An approved version that nobody released never goes live on its own. Fail the run so GitHub
+// emails the owner; activation below still runs.
+if (awaitingRelease.length > 0) {
+  console.log(
+    `::error::App Store ${awaitingRelease.join(', ')} is approved but waits for a manual release. ` +
+      'Press "Release this version" in App Store Connect.',
+  )
+  process.exitCode = 1
+}
 
 const { documents = [] } = await request(
   `${documentsUrl}/${COLLECTION}?pageSize=300` + FLAGS.map((f) => `&mask.fieldPaths=${f.field}`).join(''),
@@ -192,11 +207,11 @@ for (const { field, label, live } of FLAGS) {
 const summary = [...updates].map(([version, fields]) => `${version} (${fields.join(', ')})`).join('; ')
 if (updates.size === 0) {
   console.log('Nothing to activate.')
-  process.exit(0)
+  process.exit()
 }
 if (dryRun) {
   console.log(`[dry run] would set: ${summary}`)
-  process.exit(0)
+  process.exit()
 }
 
 const result = await request(

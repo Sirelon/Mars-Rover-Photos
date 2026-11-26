@@ -40,7 +40,9 @@ desktop and builds up to 5.5.0 read (`ReleaseDto.isActiveOn`). A new release sta
 `active: false` and no store flags. The `Activate live releases` workflow
 (`.github/workflows/activate-live-releases.yml`, every three hours) runs
 `scripts/activate-live-releases.mjs`. In Firestore it sets `activeAndroid` once Play production
-serves the version, `activeIos` once the App Store does, and `active` once both do. The publish
+serves the version, `activeIos` once the App Store does, and `active` once both do. When Apple has
+approved a version that nobody released (`PENDING_DEVELOPER_RELEASE`), the run still sets the flags,
+then fails, so GitHub emails the owner to press "Release this version". The publish
 script keeps any of these flags it finds true in Firestore, so the JSON may still say
 `active: false` for a live release. The workflow needs three repository secrets:
 `GOOGLE_PLAY_KEY_JSON` (the contents of `fastlane/google-play-key.json`), `ASC_PRIVATE_KEY` (the
