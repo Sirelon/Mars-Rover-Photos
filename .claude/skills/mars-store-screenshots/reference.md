@@ -66,6 +66,8 @@ or anything that reads as NASA's product.
 
 ## Console state
 
-Read it live with `bundle exec ruby store/tools/upload-screenshots.rb status`. On 2026-11-28:
-App Store 5.5.0 was READY_FOR_SALE (screenshots locked) with en-US sets `APP_IPHONE_65` (5) and
-`APP_IPAD_PRO_3GEN_129` (6); Play en-US had 7 phone, 6 seven-inch and 6 ten-inch screenshots.
+Read it live with `bundle exec ruby store/tools/upload-screenshots.rb status`. After the
+2026-11-28 upload: App Store 5.5.0 READY_FOR_SALE (locked, older set); draft 5.6.0
+PREPARE_FOR_SUBMISSION with en-US `APP_IPHONE_67` (8), `APP_IPHONE_65` (8) and
+`APP_IPAD_PRO_3GEN_129` (7), live with the next release. Play en-US: 8 phone, 7 seven-inch and
+7 ten-inch screenshots, live.

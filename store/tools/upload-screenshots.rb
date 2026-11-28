@@ -68,7 +68,9 @@ def status
   app = asc_app
   versions = app.get_app_store_versions(filter: { platform: "IOS" })
   versions.first(3).each { |v| puts "App Store #{v.version_string}: #{v.app_store_state}" }
-  versions.first.get_app_store_version_localizations.each do |loc|
+  shown = app.get_edit_app_store_version(platform: Spaceship::ConnectAPI::Platform::IOS) || versions.first
+  puts "Screenshot sets of #{shown.version_string}:"
+  shown.get_app_store_version_localizations.each do |loc|
     loc.get_app_screenshot_sets.each do |set|
       puts "  #{loc.locale} #{set.screenshot_display_type}: #{set.app_screenshots&.size || 0}"
     end
