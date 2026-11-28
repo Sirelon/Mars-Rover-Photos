@@ -38,7 +38,7 @@ class RoverDisplayOrderTest {
     @Test
     fun everyMissionIsListedExactlyOnce() {
         val all = listOf(
-            PERSEVERANCE_ID, INGENUITY_ID, INSIGHT_ID, CURIOSITY_ID,
+            PERSEVERANCE_ID, INGENUITY_ID, INSIGHT_ID, CURIOSITY_ID, PHOENIX_ID,
             OPPORTUNITY_ID, SPIRIT_ID, VIKING_1_ID, VIKING_2_ID,
         )
 
@@ -55,7 +55,16 @@ class RoverDisplayOrderTest {
             SPIRIT_ID, VIKING_1_ID, VIKING_2_ID,
         )
 
-        assertEquals(previousOrder, ROVER_DISPLAY_ORDER.filter { it != INGENUITY_ID })
+        assertEquals(previousOrder, ROVER_DISPLAY_ORDER.filter { it != INGENUITY_ID && it != PHOENIX_ID })
+    }
+
+    @Test
+    fun phoenixSitsBetweenCuriosityAndTheMerRovers() {
+        // The list runs newest landing first: Curiosity 2012, Phoenix 2008, Opportunity 2004.
+        val curiosity = ROVER_DISPLAY_ORDER.indexOf(CURIOSITY_ID)
+
+        assertEquals(PHOENIX_ID, ROVER_DISPLAY_ORDER[curiosity + 1])
+        assertEquals(OPPORTUNITY_ID, ROVER_DISPLAY_ORDER[curiosity + 2])
     }
 
     @Test

@@ -6,11 +6,13 @@ import com.sirelon.marsroverphotos.data.network.toMarsImages
 import com.sirelon.marsroverphotos.data.paging.MER_KEYWORDS
 import com.sirelon.marsroverphotos.data.paging.pageQuery
 import com.sirelon.marsroverphotos.data.paging.usesPageFeed
+import com.sirelon.marsroverphotos.data.phoenix.PhoenixCatalog
 import com.sirelon.marsroverphotos.data.viking.VikingCatalog
 import com.sirelon.marsroverphotos.domain.models.CURIOSITY_ID
 import com.sirelon.marsroverphotos.domain.models.INGENUITY_ID
 import com.sirelon.marsroverphotos.domain.models.OPPORTUNITY_ID
 import com.sirelon.marsroverphotos.domain.models.PERSEVERANCE_ID
+import com.sirelon.marsroverphotos.domain.models.PHOENIX_ID
 import com.sirelon.marsroverphotos.domain.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.domain.models.VIKING_1_ID
 import com.sirelon.marsroverphotos.domain.models.VIKING_2_ID
@@ -22,8 +24,8 @@ import kotlinx.coroutines.CancellationException
  * Implementation of PhotosRepository.
  *
  * Chooses where a rover's photos come from: the NASA raw-image APIs for every active or
- * recently-ended mission, and the bundled [VikingCatalog] for the two Viking landers, whose
- * 1976-1982 archive has no API to query.
+ * recently-ended mission, and the bundled [VikingCatalog] and [PhoenixCatalog] for the Viking and
+ * Phoenix landers, whose archives have no API to query.
  *
  * Created on 21.02.2021 20:19 for Mars-Rover-Photos.
  */
@@ -36,6 +38,7 @@ private const val MAX_COVER_CHECKS = 6
 class PhotosRepositoryImpl(
     private val api: RestApi,
     private val vikingCatalog: VikingCatalog,
+    private val phoenixCatalog: PhoenixCatalog = PhoenixCatalog(),
     /**
      * Judges a raw-feed candidate for a rover card ([CoverFrameCheck] in the app). Null takes the
      * newest candidate unchecked.
@@ -44,10 +47,10 @@ class PhotosRepositoryImpl(
 ) : PhotosRepository {
 
     override suspend fun refreshImages(query: PhotosQueryRequest): List<MarsImage> {
-        return if (query.roverId == VIKING_1_ID || query.roverId == VIKING_2_ID) {
-            vikingCatalog.photosForSol(query.roverId, query.sol, query.camera)
-        } else {
-            api.getRoversPhotos(query)
+        return when (query.roverId) {
+            VIKING_1_ID, VIKING_2_ID -> vikingCatalog.photosForSol(query.roverId, query.sol, query.camera)
+            PHOENIX_ID -> phoenixCatalog.photosForSol(query.sol, query.camera)
+            else -> api.getRoversPhotos(query)
         }
     }
 
@@ -65,14 +68,15 @@ class PhotosRepositoryImpl(
     /**
      * Per source: the active rovers (Perseverance, Curiosity) with their newest color-camera frame
      * that passes [isGoodCover] (complete and in color; at most [MAX_COVER_CHECKS] tried, none
-     * passing means null); the closed InSight and Ingenuity missions with their final frame; the Viking catalogue with the last
-     * frame of its last sol.
+     * passing means null); the closed InSight and Ingenuity missions with their final frame; the Viking
+     * and Phoenix catalogues with the last frame of their last sol.
      * images.nasa.gov has no date order for Spirit and Opportunity, so they take the top hit of
      * the same search their photo feed runs. Opportunity's search starts at 2018: its unfiltered
      * top hit is an artist's concept, and a cover must be a real rover photo.
      */
     override suspend fun latestPhoto(roverId: Long): MarsImage? = when {
         roverId == VIKING_1_ID || roverId == VIKING_2_ID -> vikingCatalog.latestPhoto(roverId)
+        roverId == PHOENIX_ID -> phoenixCatalog.latestPhoto()
         roverId.usesPageFeed() -> api
             .searchImages(
                 roverId.pageQuery(),

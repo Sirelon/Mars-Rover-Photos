@@ -20,6 +20,7 @@ import coil3.request.ImageRequest
 import coil3.toBitmap
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.data.network.RestApi
+import com.sirelon.marsroverphotos.data.phoenix.PhoenixCatalog
 import com.sirelon.marsroverphotos.data.viking.VikingCatalog
 import com.sirelon.marsroverphotos.data.network.toMarsImages
 import com.sirelon.marsroverphotos.data.paging.MER_KEYWORDS
@@ -29,6 +30,7 @@ import com.sirelon.marsroverphotos.domain.models.INGENUITY_ID
 import com.sirelon.marsroverphotos.domain.models.INSIGHT_ID
 import com.sirelon.marsroverphotos.domain.models.OPPORTUNITY_ID
 import com.sirelon.marsroverphotos.domain.models.PERSEVERANCE_ID
+import com.sirelon.marsroverphotos.domain.models.PHOENIX_ID
 import com.sirelon.marsroverphotos.domain.models.SPIRIT_ID
 import com.sirelon.marsroverphotos.domain.models.VIKING_1_ID
 import com.sirelon.marsroverphotos.domain.models.VIKING_2_ID
@@ -52,6 +54,7 @@ public class MarsPhotoWidgetWorker(
     private val imagesRepository: ImagesRepository by inject()
     private val api: RestApi by inject()
     private val vikingCatalog: VikingCatalog by inject()
+    private val phoenixCatalog: PhoenixCatalog by inject()
     @Suppress("UnusedPrivateProperty")
     private val tracker: Tracker by inject()
 
@@ -123,9 +126,11 @@ public class MarsPhotoWidgetWorker(
             SPIRIT_ID, OPPORTUNITY_ID ->
                 api.searchImages(roverId.pageQuery(), 1, 1, keywords = MER_KEYWORDS)
                     .toMarsImages(roverId = roverId).firstOrNull()
-            // The Viking missions ended in 1980/1982, so there is no "latest" to track — the
-            // widget shows a different frame from the archive on each refresh instead.
+            // The Viking (1980/1982) and Phoenix (2008) missions are long over, so there is no
+            // "latest" to track — the widget shows a different frame from the archive on each
+            // refresh instead.
             VIKING_1_ID, VIKING_2_ID -> vikingCatalog.randomPhoto(roverId)
+            PHOENIX_ID -> phoenixCatalog.randomPhoto()
             // Ingenuity stopped flying in 2024, so the same reasoning applies: draw a random
             // frame from the closed archive rather than pinning one final photo forever.
             INGENUITY_ID -> api.getIngenuityRandomPhoto().randomOrNull()

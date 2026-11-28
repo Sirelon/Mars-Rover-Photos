@@ -6,6 +6,7 @@ import com.sirelon.marsroverphotos.domain.models.INGENUITY_ID
 import com.sirelon.marsroverphotos.domain.models.INSIGHT_ID
 import com.sirelon.marsroverphotos.domain.models.OPPORTUNITY_ID
 import com.sirelon.marsroverphotos.domain.models.PERSEVERANCE_ID
+import com.sirelon.marsroverphotos.domain.models.PHOENIX_ID
 import com.sirelon.marsroverphotos.domain.models.Rover
 import com.sirelon.marsroverphotos.domain.models.SPIRIT_ID
 import com.sirelon.marsroverphotos.domain.models.VIKING_1_ID
@@ -16,6 +17,7 @@ import com.sirelon.marsroverphotos.shared.resources.rover_blurb_ingenuity
 import com.sirelon.marsroverphotos.shared.resources.rover_blurb_insight
 import com.sirelon.marsroverphotos.shared.resources.rover_blurb_opportunity
 import com.sirelon.marsroverphotos.shared.resources.rover_blurb_perseverance
+import com.sirelon.marsroverphotos.shared.resources.rover_blurb_phoenix
 import com.sirelon.marsroverphotos.shared.resources.rover_blurb_spirit
 import com.sirelon.marsroverphotos.shared.resources.rover_blurb_viking1
 import com.sirelon.marsroverphotos.shared.resources.rover_blurb_viking2
@@ -35,5 +37,6 @@ fun Rover.blurbResource(): StringResource? = when (id) {
     VIKING_1_ID -> Res.string.rover_blurb_viking1
     VIKING_2_ID -> Res.string.rover_blurb_viking2
     INGENUITY_ID -> Res.string.rover_blurb_ingenuity
+    PHOENIX_ID -> Res.string.rover_blurb_phoenix
     else -> null
 }

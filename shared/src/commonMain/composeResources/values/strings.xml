@@ -61,6 +61,7 @@
     <string name="rover_blurb_viking1">Sent the first photograph ever taken from the surface of Mars.</string>
     <string name="rover_blurb_viking2">Watched frost settle over Utopia Planitia for three Martian winters.</string>
     <string name="rover_blurb_ingenuity">The first aircraft to fly on another world.</string>
+    <string name="rover_blurb_phoenix">Dug through arctic soil to reach water ice below.</string>
 
     <!-- Rovers screen header + search -->
     <string name="rovers_title">Missions</string>

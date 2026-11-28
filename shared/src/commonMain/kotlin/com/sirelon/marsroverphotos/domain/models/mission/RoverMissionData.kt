@@ -20,6 +20,7 @@ object RoverMissionData {
             VIKING_1_ID -> vikingCameras
             VIKING_2_ID -> vikingCameras
             INGENUITY_ID -> ingenuityCameras
+            PHOENIX_ID -> phoenixCameras
             else -> emptyList()
         }
     }
@@ -47,6 +48,7 @@ object RoverMissionData {
         VIKING_1_ID     -> "Chryse Planitia, Mars"
         VIKING_2_ID     -> "Utopia Planitia, Mars"
         INGENUITY_ID    -> "Jezero Crater, Mars"
+        PHOENIX_ID      -> "Vastitas Borealis, Mars"
         else            -> "Mars"
     }
 
@@ -60,6 +62,7 @@ object RoverMissionData {
         VIKING_1_ID     -> "Returned the first photograph ever taken from the surface of Mars and went on to image Chryse Planitia for over six years — still the longest surface mission of the 20th century."
         VIKING_2_ID     -> "Photographed frost, dust storms and drifting soil across the northern plains of Utopia Planitia while searching alongside Viking 1 for signs of life."
         INGENUITY_ID    -> "A 1.8 kg technology demonstration that was meant to fly five times and flew 72, scouting ahead of Perseverance across Jezero Crater until a damaged rotor blade ended the mission in January 2024."
+        PHOENIX_ID      -> "Landed farther north than any mission before it, on the arctic plains of Vastitas Borealis, and dug with its robotic arm to confirm water ice just beneath the surface and find perchlorate in the soil."
         else            -> ""
     }
 
@@ -244,6 +247,23 @@ object RoverMissionData {
             name = "RTE",
             fullName = "HELI_RTE",
             description = "13-megapixel color camera angled at the horizon — the source of Ingenuity's much smaller color archive"
+        )
+    )
+
+    /**
+     * The two cameras whose frames the app shows. Phoenix also carried an optical microscope; its
+     * frames are left out of the catalogue (see `scripts/generate-phoenix-catalog.mjs`).
+     */
+    private val phoenixCameras = listOf(
+        CameraSpec(
+            name = "SSI",
+            fullName = "Surface Stereo Imager",
+            description = "Stereo camera on the lander's mast with a 12-position filter wheel for each eye; shot the panoramas of the landing site"
+        ),
+        CameraSpec(
+            name = "RAC",
+            fullName = "Robotic Arm Camera",
+            description = "Mounted on the robotic arm; watched the scoop dig trenches and imaged the soil it collected"
         )
     )
 }

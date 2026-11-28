@@ -25,6 +25,7 @@ import com.sirelon.marsroverphotos.domain.models.INGENUITY_ID
 import com.sirelon.marsroverphotos.domain.models.INSIGHT_ID
 import com.sirelon.marsroverphotos.domain.models.OPPORTUNITY_ID
 import com.sirelon.marsroverphotos.domain.models.PERSEVERANCE_ID
+import com.sirelon.marsroverphotos.domain.models.PHOENIX_ID
 import com.sirelon.marsroverphotos.domain.models.SPIRIT_ID
 import com.sirelon.marsroverphotos.domain.models.VIKING_1_ID
 import com.sirelon.marsroverphotos.domain.models.VIKING_2_ID
@@ -79,6 +80,7 @@ private fun roverDisplayName(roverId: Long): String? = when (roverId) {
     VIKING_1_ID -> "Viking 1"
     VIKING_2_ID -> "Viking 2"
     INGENUITY_ID -> "Ingenuity Helicopter"
+    PHOENIX_ID -> "Phoenix"
     else -> null
 }
 
