@@ -39,3 +39,21 @@ against the desktop shim (Firestore reads are real; the Realtime Database URL is
 a one-line warning), and `BuildInfo.versionName` is `"unknown"`, so version-gated features
 (What's New) will not trigger there. The hot-reload run does not go through `assembleDebug`, so the
 debug build label (`AGENTS.md` § Debug build label) does not apply to it.
+
+## Gotchas
+
+- **A `click` that does nothing while the window is unfocused.** Navigation callbacks are wrapped in
+  `dropUnlessResumed`, and a desktop window is RESUMED only while it has focus. The MCP `click`
+  reaches the node (the tracker logs `rover_selected`) but the screen does not change. Bring the app
+  to the front first. `osascript` needs Accessibility access that agents lack; `NSRunningApplication`
+  does not. Take the pid of the `"MainKt"` entry in `lsappinfo list`, not the dev-tools process,
+  whose command line also names `MainKt`:
+  a two-line Swift script calling
+  `NSRunningApplication(processIdentifier: pid)?.activate(options: [.activateAllWindows])` works.
+- **`restart` does not pick up resource changes.** It relaunches the same build snapshot, so an
+  edited `composeResources` file (strings, a bundled catalogue) only appears after a fresh
+  `./gradlew :desktopApp:hotRun`.
+- **The window crashes on start with `NoSuchFieldError ... SavedStateRegistryController.Companion`.**
+  `dev.gitlive:firebase-java-sdk` bundles an old copy of `androidx.savedstate`. `desktopApp/build.gradle.kts`
+  strips it with an artifact transform on every `*RuntimeClasspath` configuration, including hot
+  reload's own. If the crash returns, check that the transform still matches the jar name.
