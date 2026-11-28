@@ -77,6 +77,9 @@ private const val IMAGES_POP_FADE = AppMotion.SharedContainerMs
 fun AppNavigation(
     modifier: Modifier = Modifier,
     startDestination: AppDestination = AppDestination.Rovers,
+    // The whole stack to open with, bottom first. Store screenshots open a dialog over its parent
+    // screen this way; the app itself always starts from [startDestination] alone.
+    initialBackStack: List<AppDestination> = listOf(startDestination),
     deepLink: DeepLink? = null,
     onDeepLinkConsumed: (() -> Unit)? = null
 ) {
@@ -86,12 +89,12 @@ fun AppNavigation(
     // with an empty back stack and add the start destination only when truly empty.
     val backStack = rememberNavBackStack(configuration = navBackStackConfiguration)
     remember(backStack) {
-        if (backStack.isEmpty()) backStack.add(startDestination)
+        if (backStack.isEmpty()) backStack.addAll(initialBackStack)
     }
 
     val navigator = remember(backStack) { AppNavigator(backStack) }
     val entryDecorators = rememberAppNavEntryDecorators()
-    val currentDestination = backStack.lastOrNull() as? AppDestination ?: startDestination
+    val currentDestination = backStack.lastOrNull() as? AppDestination ?: initialBackStack.last()
     val chromeDestination = backStack.lastOrNull { it !is AppDestination.DialogDestination } as? AppDestination
         ?: currentDestination
     // The Photos flow (screen + Sol/Earth dialogs) shares one PhotosViewModel via the Photos

@@ -166,3 +166,8 @@ docs/analytics/
 # macOS log archives from `log collect` (can be gigabytes)
 system_logs.logarchive/
 *.logarchive/
+
+# Store screenshot pipeline (store/): renders, image cache and contact sheets are regenerated
+/store/captures/
+/store/cache/
+/store/previews/

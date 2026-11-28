@@ -1,0 +1,114 @@
+{
+  "_readme": "Which scene fills which store slot, in which theme, with which caption. Order = store order (the first three show in App Store search results). 'scene' + 'theme' name the capture store/captures/<device>/<scene>_<theme>.png; 'copy' is a key in store/copy/copy.json; 'why' says why the caption is true of this exact screen. If you cannot write an honest 'why', drop the scene. 'statusBar': 'light' draws white status-bar glyphs on a light-theme capture whose top strip is dark. Lists: 'phone' (iPhone, Android phone), 'tablet' (iPad, Android tablet).",
+  "phone": [
+    {
+      "id": "sol-by-sol",
+      "scene": "feed_perseverance",
+      "theme": "dark",
+      "copy": "sol_by_sol",
+      "why": "Perseverance's feed on sol 22: raw Mastcam-Z frames under a date header, each labelled with its camera; the sol chip steps day by day."
+    },
+    {
+      "id": "missions",
+      "scene": "rovers",
+      "theme": "light",
+      "copy": "missions",
+      "why": "The Missions screen reads '8 missions · 2 active' and lists Perseverance, Ingenuity, InSight, Curiosity and the rest, each with its photo count: eight missions in one app."
+    },
+    {
+      "id": "first-photo",
+      "scene": "feed_viking",
+      "theme": "light",
+      "copy": "first_photo",
+      "why": "Viking 1's feed opens on Sol 0, Jul 20, 1976, and its first tile is labelled 'First Lander 1 Image': the first photograph taken on the surface of Mars."
+    },
+    {
+      "id": "viewer",
+      "scene": "viewer",
+      "theme": "dark",
+      "statusBar": "light",
+      "copy": "hero",
+      "why": "The full-screen viewer on a real Perseverance Mastcam-Z photo (sol 48) from the Popular feed, with save, share, favorite and info actions; the viewer zooms with a pinch."
+    },
+    {
+      "id": "mission-story",
+      "scene": "mission",
+      "theme": "dark",
+      "copy": "mission_story",
+      "why": "Perseverance's mission screen: launch, landing and current day on a timeline, then total photos, sols and Earth days as statistics."
+    },
+    {
+      "id": "date-jump",
+      "scene": "date_jump",
+      "theme": "light",
+      "copy": "date_jump",
+      "why": "The 'Jump to a date' sheet over Perseverance's feed: a sol slider and an Earth-date picker kept in sync, with a 'Go to Sol' button for the chosen day."
+    },
+    {
+      "id": "favorites",
+      "scene": "favorites",
+      "theme": "dark",
+      "copy": "favorites",
+      "why": "Favorites with 12 saved photos, their view counts, a 'Recent' sort and 'All 12 / Perseverance 2' mission chips: saved photos, sorted by mission."
+    },
+    {
+      "id": "filters",
+      "scene": "filters",
+      "theme": "light",
+      "copy": "filters",
+      "why": "The Filters sheet over Perseverance's feed lists the rover's cameras as chips: FHAZ, RHAZ, NAVCAM, MCZ (Mastcam-Z), SHERLOC, SUPERCAM, SKYCAM."
+    }
+  ],
+  "tablet": [
+    {
+      "id": "viewer",
+      "scene": "viewer",
+      "theme": "dark",
+      "statusBar": "light",
+      "copy": "hero",
+      "why": "The full-screen viewer on a real Perseverance Mastcam-Z photo (sol 48) from the Popular feed, with save, share, favorite and info actions; the viewer zooms with a pinch."
+    },
+    {
+      "id": "mission-story",
+      "scene": "mission",
+      "theme": "dark",
+      "copy": "mission_story",
+      "why": "Perseverance's mission screen: launch, landing and current day on a timeline, then total photos, sols and Earth days as statistics."
+    },
+    {
+      "id": "sol-by-sol",
+      "scene": "feed_perseverance",
+      "theme": "dark",
+      "copy": "sol_by_sol",
+      "why": "Perseverance's feed on sol 22: raw Mastcam-Z frames under a date header, each labelled with its camera; the sol chip steps day by day."
+    },
+    {
+      "id": "first-photo",
+      "scene": "feed_viking",
+      "theme": "light",
+      "copy": "first_photo",
+      "why": "Viking 1's feed opens on Sol 0, Jul 20, 1976, and its first tile is labelled 'First Lander 1 Image': the first photograph taken on the surface of Mars."
+    },
+    {
+      "id": "missions",
+      "scene": "rovers",
+      "theme": "light",
+      "copy": "missions",
+      "why": "The Missions screen reads '8 missions · 2 active' and lists Perseverance, Ingenuity, InSight, Curiosity and the rest, each with its photo count: eight missions in one app."
+    },
+    {
+      "id": "date-jump",
+      "scene": "date_jump",
+      "theme": "light",
+      "copy": "date_jump",
+      "why": "The 'Jump to a date' sheet over Perseverance's feed: a sol slider and an Earth-date picker kept in sync, with a 'Go to Sol' button for the chosen day."
+    },
+    {
+      "id": "filters",
+      "scene": "filters",
+      "theme": "light",
+      "copy": "filters",
+      "why": "The Filters sheet over Perseverance's feed lists the rover's cameras as chips: FHAZ, RHAZ, NAVCAM, MCZ (Mastcam-Z), SHERLOC, SUPERCAM, SKYCAM."
+    }
+  ]
+}

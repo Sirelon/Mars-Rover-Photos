@@ -205,6 +205,14 @@ kotlin {
             }
         }
 
+        // The store-screenshot renderer runs the app's view models, whose viewModelScope needs a
+        // Main dispatcher; the desktop app gets Swing's from Compose Desktop at runtime.
+        val desktopTest by getting {
+            dependencies {
+                implementation(libs.kotlinx.coroutines.swing)
+            }
+        }
+
         // Web-specific dependencies (WASM disabled for now)
         // val wasmJsMain by getting {
         //     dependencies {
@@ -224,6 +232,19 @@ kotlin {
             implementation(libs.ktor.client.mock)
         }
     }
+}
+
+// The store-screenshot renderer (desktopTest, STORE_RENDER=1) shows the real version on About.
+tasks.withType<Test>().matching { it.name == "desktopTest" }.configureEach {
+    systemProperty("app.version", AppVersion.name)
+    // The fullscreen viewer's zoomable library ships Java 21 bytecode; the desktop app runs on 21 too.
+    javaLauncher.set(javaToolchains.launcherFor { languageVersion.set(JavaLanguageVersion.of(21)) })
+    // firebase-java-sdk bundles old copies of androidx.lifecycle / savedstate classes. First on the
+    // classpath, they shadow the real ones and Compose's headless scene fails with
+    // NoSuchFieldError: Companion. Last, the real classes win.
+    val testClasspath = classpath
+    classpath = testClasspath.filter { !it.name.startsWith("firebase-java-sdk") } +
+        testClasspath.filter { it.name.startsWith("firebase-java-sdk") }
 }
 
 compose.resources {
