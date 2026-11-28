@@ -73,6 +73,9 @@ enum class MaterialSymbol(val iconName: String) {
     NewReleases("new_releases"),
     Leaderboard("leaderboard"),
     SwipeDown("swipe_down"),
+    // Dig
+    Style("style"),
+    Undo("undo"),
     // Support the developer
     VolunteerActivism("volunteer_activism"),
     Coffee("coffee"),

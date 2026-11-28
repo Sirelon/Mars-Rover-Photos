@@ -28,6 +28,7 @@ class AppSettings(
         const val KEY_ROVER_OPEN_COUNT = "roverOpenCount"
         const val KEY_LAST_REVIEW_PROMPT_AT = "lastReviewPromptAt"
         const val KEY_LAST_REVIEW_PROMPT_VERSION = "lastReviewPromptVersion"
+        const val KEY_DIG_KEEP_NOTICE_SHOWN = "digKeepNoticeShown"
     }
 
     private val _notificationsEnabledFlow =
@@ -173,6 +174,14 @@ class AppSettings(
     var lastReviewPromptVersion: String?
         get() = preferences.getString(KEY_LAST_REVIEW_PROMPT_VERSION, "").takeIf { it.isNotEmpty() }
         set(value) { preferences.setString(KEY_LAST_REVIEW_PROMPT_VERSION, value.orEmpty()) }
+
+    /**
+     * Whether the Dig deck has told the user where a kept photo goes. The notice shows on the
+     * first Keep only; after that it is noise.
+     */
+    var digKeepNoticeShown: Boolean
+        get() = preferences.getBoolean(KEY_DIG_KEEP_NOTICE_SHOWN, false)
+        set(value) = preferences.setBoolean(KEY_DIG_KEEP_NOTICE_SHOWN, value)
 
     /**
      * App theme preference.

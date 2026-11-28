@@ -76,6 +76,7 @@
 
     <!-- Navigation labels -->
     <string name="nav_rovers">Missions</string>
+    <string name="nav_dig">Dig</string>
     <string name="nav_favorite">Favorites</string>
     <string name="nav_popular">Popular</string>
     <string name="nav_about">About</string>

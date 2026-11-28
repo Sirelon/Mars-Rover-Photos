@@ -21,6 +21,7 @@ class AppDestinationSerializationTest {
         AppDestination.Rovers,
         AppDestination.Photos(roverId = 5),
         AppDestination.Images(),
+        AppDestination.Dig,
         AppDestination.Favorite,
         AppDestination.Popular,
         AppDestination.Mission(roverId = 5),

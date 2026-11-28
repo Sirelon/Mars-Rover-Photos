@@ -10,6 +10,7 @@ import com.sirelon.marsroverphotos.presentation.viewmodels.RoversViewModel
 import com.sirelon.marsroverphotos.presentation.viewmodels.RoverMissionInfoViewModel
 import com.sirelon.marsroverphotos.presentation.viewmodels.SupportViewModel
 import com.sirelon.marsroverphotos.presentation.viewmodels.WhatsNewViewModel
+import com.sirelon.marsroverphotos.presentation.viewmodels.DigViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -21,6 +22,7 @@ val viewModelModule = module {
     // ViewModels - using Koin viewModelOf for automatic lifecycle management
     viewModelOf(::AboutViewModel)
     viewModelOf(::AdminPhotosViewModel)
+    viewModelOf(::DigViewModel)
     viewModelOf(::FavoriteImagesViewModel)
     viewModelOf(::ImageViewModel)
     viewModelOf(::PhotosViewModel)

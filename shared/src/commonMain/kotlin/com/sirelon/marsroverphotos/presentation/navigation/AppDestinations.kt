@@ -46,6 +46,10 @@ sealed interface AppDestination : NavKey {
         val cameras: Set<String> = emptySet(),
     ) : FullscreenDestination
 
+    /** Dig: a deck of random raw photos to keep or skip. A top-level tab. */
+    @Serializable
+    data object Dig : AppDestination
+
     @Serializable
     data object Favorite : AppDestination
 

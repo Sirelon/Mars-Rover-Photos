@@ -17,6 +17,7 @@ import com.sirelon.marsroverphotos.presentation.navigation.dropUnlessResumed
 import com.sirelon.marsroverphotos.presentation.screens.AboutScreen
 import com.sirelon.marsroverphotos.presentation.screens.AdminPhotosScreen
 import com.sirelon.marsroverphotos.presentation.screens.FavoriteScreen
+import com.sirelon.marsroverphotos.presentation.screens.dig.DigScreen
 import com.sirelon.marsroverphotos.presentation.screens.ImagesScreen
 import com.sirelon.marsroverphotos.presentation.screens.PopularScreen
 import com.sirelon.marsroverphotos.presentation.screens.RoverMissionInfoScreen
@@ -68,6 +69,10 @@ val navigationModule = module {
             cameras = destination.cameras,
             onBack = dropUnlessResumed { navigator.goBack() }
         )
+    }
+
+    navigation<AppDestination.Dig> {
+        DigScreen()
     }
 
     navigation<AppDestination.Favorite> {

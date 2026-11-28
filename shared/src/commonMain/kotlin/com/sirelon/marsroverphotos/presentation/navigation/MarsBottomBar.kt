@@ -33,6 +33,7 @@ import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.shared.resources.Res
 import com.sirelon.marsroverphotos.shared.resources.ic_rovers
 import com.sirelon.marsroverphotos.shared.resources.nav_about
+import com.sirelon.marsroverphotos.shared.resources.nav_dig
 import com.sirelon.marsroverphotos.shared.resources.nav_favorite
 import com.sirelon.marsroverphotos.shared.resources.nav_popular
 import com.sirelon.marsroverphotos.shared.resources.nav_rovers
@@ -199,6 +200,11 @@ private val marsNavigationItems = listOf(
         destination = AppDestination.Rovers,
         label = Res.string.nav_rovers,
         icon = MarsNavigationItemIcon.Drawable(Res.drawable.ic_rovers),
+    ),
+    MarsNavigationItem(
+        destination = AppDestination.Dig,
+        label = Res.string.nav_dig,
+        icon = MarsNavigationItemIcon.Symbol(MaterialSymbol.Style),
     ),
     MarsNavigationItem(
         destination = AppDestination.Favorite,

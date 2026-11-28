@@ -363,6 +363,7 @@ private fun AppDestination.topLevelDestination(): AppDestination {
         is AppDestination.PhotosDateJumpPicker,
         is AppDestination.PhotosFilters -> AppDestination.Rovers
 
+        AppDestination.Dig -> AppDestination.Dig
         AppDestination.Favorite -> AppDestination.Favorite
         AppDestination.Popular -> AppDestination.Popular
 
@@ -383,6 +384,7 @@ internal val navBackStackConfiguration = SavedStateConfiguration {
             subclass(AppDestination.Rovers::class, AppDestination.Rovers.serializer())
             subclass(AppDestination.Photos::class, AppDestination.Photos.serializer())
             subclass(AppDestination.Images::class, AppDestination.Images.serializer())
+            subclass(AppDestination.Dig::class, AppDestination.Dig.serializer())
             subclass(AppDestination.Favorite::class, AppDestination.Favorite.serializer())
             subclass(AppDestination.Popular::class, AppDestination.Popular.serializer())
             subclass(AppDestination.Mission::class, AppDestination.Mission.serializer())

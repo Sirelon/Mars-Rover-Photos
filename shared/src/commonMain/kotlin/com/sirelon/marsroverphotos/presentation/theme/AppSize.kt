@@ -93,4 +93,7 @@ object AppSize {
 
     /** 200dp — height of a full-width photo card with text over it (the "Today on Mars" card). */
     val photoCardHeight: Dp = 200.dp
+
+    /** 32dp — blur radius of a photo's own copy filling the space around it when shown uncropped. */
+    val photoBackdropBlur: Dp = 32.dp
 }
