@@ -274,7 +274,7 @@ private fun AboutContent(
                         iconContainer = live.copy(alpha = 0.15f),
                         iconTint = live,
                         label = "PDS Imaging Node",
-                        sub = "Viking lander archive, 1976-1982",
+                        sub = "Viking and Phoenix lander archives",
                         onClick = { uriHandler.openUri("https://pds-imaging.jpl.nasa.gov/") }
                     )
                     AppRowDivider()

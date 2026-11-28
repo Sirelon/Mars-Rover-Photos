@@ -7,6 +7,7 @@ import com.sirelon.marsroverphotos.domain.models.INGENUITY_ID
 import com.sirelon.marsroverphotos.domain.models.INSIGHT_ID
 import com.sirelon.marsroverphotos.domain.models.OPPORTUNITY_ID
 import com.sirelon.marsroverphotos.domain.models.PERSEVERANCE_ID
+import com.sirelon.marsroverphotos.domain.models.PHOENIX_ID
 import com.sirelon.marsroverphotos.domain.models.Rover
 import com.sirelon.marsroverphotos.domain.models.SPIRIT_ID
 import com.sirelon.marsroverphotos.domain.models.VIKING_1_ID
@@ -228,8 +229,22 @@ class RoversRepositoryImpl(
                 totalPhotos = 14553
             )
 
+            // Phoenix Mars Lander (complete). Like Viking, the bounds describe the bundled catalogue:
+            // its last photo is from sol 151, a week before the final contact on 2008-11-02.
+            val phoenix = Rover(
+                id = PHOENIX_ID,
+                name = "Phoenix",
+                drawableName = "img_phoenix",
+                landingDate = "2008-05-25",
+                launchDate = "2007-08-04",
+                status = "complete",
+                maxSol = 151,
+                maxDate = "2008-10-27",
+                totalPhotos = 1924
+            )
+
             roverDao.insertRovers(
-                perseverance, insight, curiosity, opportunity, spirit, viking1, viking2, ingenuity
+                perseverance, insight, curiosity, opportunity, spirit, viking1, viking2, ingenuity, phoenix
             )
             // Force-update Insight's mission-complete bounds for upgraded installs that
             // had stale active/wrong-sol data from a previous version (insertRovers ignores conflicts).

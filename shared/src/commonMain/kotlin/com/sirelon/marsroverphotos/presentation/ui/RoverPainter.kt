@@ -7,6 +7,7 @@ import com.sirelon.marsroverphotos.domain.models.INGENUITY_ID
 import com.sirelon.marsroverphotos.domain.models.INSIGHT_ID
 import com.sirelon.marsroverphotos.domain.models.OPPORTUNITY_ID
 import com.sirelon.marsroverphotos.domain.models.PERSEVERANCE_ID
+import com.sirelon.marsroverphotos.domain.models.PHOENIX_ID
 import com.sirelon.marsroverphotos.domain.models.Rover
 import com.sirelon.marsroverphotos.domain.models.SPIRIT_ID
 import com.sirelon.marsroverphotos.domain.models.VIKING_1_ID
@@ -17,6 +18,7 @@ import com.sirelon.marsroverphotos.shared.resources.img_ingenuity
 import com.sirelon.marsroverphotos.shared.resources.img_insight
 import com.sirelon.marsroverphotos.shared.resources.img_opportunity
 import com.sirelon.marsroverphotos.shared.resources.img_perseverance
+import com.sirelon.marsroverphotos.shared.resources.img_phoenix
 import com.sirelon.marsroverphotos.shared.resources.img_placeholder
 import com.sirelon.marsroverphotos.shared.resources.img_spirit
 import com.sirelon.marsroverphotos.shared.resources.img_viking1
@@ -48,6 +50,8 @@ private fun Rover.drawableResource(): DrawableResource {
         // Ingenuity could not photograph itself either: both its cameras pointed away from the
         // airframe. This is Perseverance's Mastcam-Z portrait of it parked on the surface.
         INGENUITY_ID -> Res.drawable.img_ingenuity
+        // NASA's artist concept (PIA09344): like Viking, Phoenix never photographed itself whole.
+        PHOENIX_ID -> Res.drawable.img_phoenix
         else -> Res.drawable.img_placeholder
     }
 }

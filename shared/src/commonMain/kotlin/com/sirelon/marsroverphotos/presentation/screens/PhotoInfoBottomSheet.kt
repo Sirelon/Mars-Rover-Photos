@@ -27,8 +27,8 @@ import kotlinx.datetime.toLocalDateTime
  * Bottom sheet displaying detailed information about a Mars rover photo.
  *
  * Shows:
- * - Description (Perseverance and Viking)
- * - Credit (Perseverance and Viking)
+ * - Description (Perseverance, Viking and Phoenix)
+ * - Credit (Perseverance, Viking and Phoenix)
  * - Camera information
  * - Sol and Earth date
  * - Usage statistics
@@ -56,12 +56,12 @@ fun PhotoInfoBottomSheet(
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            // Description section (Perseverance and Viking)
+            // Description section (Perseverance, Viking and Phoenix)
             image.description?.takeIf { it.isNotBlank() }?.let { description ->
                 InfoSection(title = "Description", content = description)
             }
 
-            // Credit section (Perseverance and Viking)
+            // Credit section (Perseverance, Viking and Phoenix)
             image.credit?.takeIf { it.isNotBlank() }?.let { credit ->
                 InfoSection(title = "Credit", content = credit)
             }

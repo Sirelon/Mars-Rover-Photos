@@ -11,6 +11,7 @@ const val PERSEVERANCE_ID = 3L
 const val VIKING_1_ID = 8L
 const val VIKING_2_ID = 9L
 const val INGENUITY_ID = 10L
+const val PHOENIX_ID = 11L
 
 /**
  * Order the missions are listed in.
@@ -26,6 +27,7 @@ val ROVER_DISPLAY_ORDER: List<Long> = listOf(
     INGENUITY_ID,
     INSIGHT_ID,
     CURIOSITY_ID,
+    PHOENIX_ID,
     OPPORTUNITY_ID,
     SPIRIT_ID,
     VIKING_1_ID,

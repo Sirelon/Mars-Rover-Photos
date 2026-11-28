@@ -5,8 +5,8 @@ The shared Kotlin module provides the app's data, navigation, view models, and C
 modules host it for each target.
 
 Photo feeds use NASA Mars imagery sources. Curiosity, Perseverance, InSight, and Ingenuity use the
-Mars raw-image service; Spirit and Opportunity use the curated NASA Images library. Viking 1 and
-Viking 2 use bundled catalogs generated from the static PDS archive.
+Mars raw-image service; Spirit and Opportunity use the curated NASA Images library. Viking 1,
+Viking 2 and Phoenix use bundled catalogs generated from the static PDS archive.
 
 ## Development
 

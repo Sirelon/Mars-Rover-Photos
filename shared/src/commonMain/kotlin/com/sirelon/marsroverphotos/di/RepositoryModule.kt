@@ -11,6 +11,7 @@ import com.sirelon.marsroverphotos.data.repositories.PhotosRepositoryImpl
 import com.sirelon.marsroverphotos.data.repositories.ReleaseNotesRepositoryImpl
 import com.sirelon.marsroverphotos.data.repositories.RoverCoversRepositoryImpl
 import com.sirelon.marsroverphotos.data.repositories.RoversRepositoryImpl
+import com.sirelon.marsroverphotos.data.phoenix.PhoenixCatalog
 import com.sirelon.marsroverphotos.data.viking.VikingCatalog
 import com.sirelon.marsroverphotos.domain.repositories.FactsRepository
 import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
@@ -36,12 +37,14 @@ val repositoryModule = module {
 
     // Parsed once per lander and held for the process — see the class KDoc.
     single { VikingCatalog() }
+    single { PhoenixCatalog() }
 
     // Repositories
     single<PhotosRepository> {
         PhotosRepositoryImpl(
             api = get(),
             vikingCatalog = get(),
+            phoenixCatalog = get(),
             isGoodCover = CoverFrameCheck(api = get())::isGoodCover,
         )
     }
