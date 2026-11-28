@@ -65,7 +65,19 @@ class DigViewModel(
     /** Fires on the user's first Keep ever, so the screen can say where the photo went. */
     val keepNotices: Flow<Unit> = _keepNotices.receiveAsFlow()
 
-    private class Swipe(val card: DigUiState.Card, val kept: Boolean)
+    private val _openPhoto = Channel<String>(Channel.CONFLATED)
+
+    /** The id of a photo to show in the full-screen viewer; it is in Room by the time it fires. */
+    val openPhoto: Flow<String> = _openPhoto.receiveAsFlow()
+
+    /**
+     * A swiped card. For a Keep, [favoriteJob] writes the favorite and sets [favorited] only when
+     * it changed something: the photo may already be a favorite, hearted in the full-screen viewer.
+     */
+    private class Swipe(val card: DigUiState.Card, val kept: Boolean) {
+        var favoriteJob: Job? = null
+        var favorited = false
+    }
 
     private val queue = ArrayDeque<DigUiState.Card>()
     private val shownIds = mutableSetOf<String>()
@@ -79,8 +91,14 @@ class DigViewModel(
 
     fun keep() {
         val card = queue.removeFirstOrNull() ?: return
-        lastSwipe = Swipe(card, kept = true)
-        viewModelScope.launch { imagesRepository.setFavorite(card.photo, true) }
+        val swipe = Swipe(card, kept = true)
+        lastSwipe = swipe
+        swipe.favoriteJob = viewModelScope.launch {
+            val stored = storedPhoto(card.photo.id)
+            if (stored?.favorite == true) return@launch
+            imagesRepository.setFavorite(stored ?: card.photo, true)
+            swipe.favorited = true
+        }
         tracker.trackFavorite(card.photo, from = ScreenNames.DIG, fav = true)
         trackSwipe(card, ACTION_KEEP)
         if (!appSettings.digKeepNoticeShown) {
@@ -106,15 +124,31 @@ class DigViewModel(
         queue.addFirst(swipe.card)
         if (swipe.kept) {
             val photo = swipe.card.photo
-            // setFavorite derives the new counter from the photo it is given; this one still
-            // carries the count from before the Keep added one.
-            val kept = photo.copy(favorite = true, stats = photo.stats.copy(favorite = photo.stats.favorite + 1))
-            viewModelScope.launch { imagesRepository.setFavorite(kept, false) }
+            viewModelScope.launch {
+                swipe.favoriteJob?.join()
+                if (!swipe.favorited) return@launch
+                // The Room row carries the counter the Keep raised, which setFavorite counts down from.
+                imagesRepository.setFavorite(storedPhoto(photo.id) ?: photo, false)
+            }
             tracker.trackFavorite(photo, from = ScreenNames.DIG, fav = false)
         }
         trackSwipe(swipe.card, ACTION_UNDO)
         publish()
     }
+
+    /**
+     * Opens [card]'s photo in the full-screen viewer. The viewer reads photos from Room, and a
+     * deck photo is not there until it is saved.
+     */
+    fun open(card: DigUiState.Card) {
+        viewModelScope.launch {
+            imagesRepository.saveImages(listOf(card.photo))
+            _openPhoto.send(card.photo.id)
+        }
+    }
+
+    private suspend fun storedPhoto(id: String): MarsImage? =
+        imagesRepository.loadImages(listOf(id)).first().firstOrNull()
 
     /** Starts over after every draw failed. */
     fun retry() {

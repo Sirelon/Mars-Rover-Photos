@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -77,17 +78,27 @@ private class FakeRandomPhotos(var failing: Boolean = false) : PhotosRepository 
     }
 }
 
-/** Records [setFavorite] calls; [stored] plays the Room rows [loadImages] finds. */
-private class FakeImages(private val stored: Map<String, MarsImage> = emptyMap()) : ImagesRepository {
+/**
+ * Plays Room: [stored] holds the rows [loadImages] finds. [setFavorite] and [saveImages] write
+ * them the way the real repository does, and are recorded.
+ */
+private class FakeImages(stored: Map<String, MarsImage> = emptyMap()) : ImagesRepository {
+    val stored = stored.toMutableMap()
     val favoriteCalls = mutableListOf<Pair<MarsImage, Boolean>>()
+    val savedIds = mutableListOf<String>()
 
     override suspend fun setFavorite(item: MarsImage, favorite: Boolean) {
         favoriteCalls += item to favorite
+        val counter = (item.stats.favorite + if (favorite) 1 else -1).coerceAtLeast(0)
+        val row = stored[item.id] ?: item
+        stored[item.id] = row.copy(favorite = favorite, stats = row.stats.copy(favorite = counter))
     }
 
     override fun loadImages(ids: List<String>): Flow<List<MarsImage>> = flowOf(ids.mapNotNull { stored[it] })
 
-    override suspend fun saveImages(photos: List<MarsImage>) = Unit
+    override suspend fun saveImages(photos: List<MarsImage>) {
+        photos.forEach { photo -> savedIds += photo.id; stored.getOrPut(photo.id) { photo } }
+    }
     override fun loadFavoriteImages(): Flow<List<MarsImage>> = emptyFlow()
     override fun loadPopularImages(): Flow<List<MarsImage>> = emptyFlow()
     override fun loadFavoritePaged(sort: FavoriteSortOrder, roverId: Long?): Flow<PagingData<MarsImage>> = emptyFlow()
@@ -180,7 +191,7 @@ class DigViewModelTest {
         val viewModel = viewModel()
         advanceUntilIdle()
         val notices = mutableListOf<Unit>()
-        backgroundScope.launch { viewModel.keepNotices.collect { notices += it } }
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.keepNotices.collect { notices += it } }
 
         viewModel.keep()
         advanceUntilIdle()
@@ -197,7 +208,7 @@ class DigViewModelTest {
         val viewModel = viewModel()
         advanceUntilIdle()
         val notices = mutableListOf<Unit>()
-        backgroundScope.launch { viewModel.keepNotices.collect { notices += it } }
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.keepNotices.collect { notices += it } }
 
         viewModel.keep()
         advanceUntilIdle()
@@ -222,9 +233,51 @@ class DigViewModelTest {
         val (undone, favorite) = images.favoriteCalls.last()
         assertFalse(favorite)
         assertEquals(top.photo.id, undone.id)
-        // setFavorite derives the new count from the photo it gets: one more than before the Keep,
-        // so the decrement lands back on the original count.
-        assertEquals(top.photo.stats.favorite + 1, undone.stats.favorite)
+        // The count is back where it was before the Keep.
+        assertEquals(top.photo.stats.favorite, images.stored.getValue(top.photo.id).stats.favorite)
+        assertFalse(images.stored.getValue(top.photo.id).favorite)
+    }
+
+    @Test
+    fun keepingAPhotoHeartedInTheViewerChangesNothingAndUndoLeavesIt() = runTest {
+        val images = FakeImages()
+        val viewModel = viewModel(images)
+        advanceUntilIdle()
+        val top = viewModel.uiState.value.cards.first()
+        // Opened full screen and hearted there before the swipe.
+        images.setFavorite(top.photo, true)
+        images.favoriteCalls.clear()
+
+        viewModel.keep()
+        advanceUntilIdle()
+        viewModel.undo()
+        advanceUntilIdle()
+
+        assertTrue(images.favoriteCalls.isEmpty())
+        assertTrue(images.stored.getValue(top.photo.id).favorite)
+        assertEquals(1, images.stored.getValue(top.photo.id).stats.favorite)
+    }
+
+    @Test
+    fun openingAPhotoSavesItBeforeAskingForTheViewer() = runTest {
+        val images = FakeImages()
+        val viewModel = viewModel(images)
+        advanceUntilIdle()
+        val top = viewModel.uiState.value.cards.first()
+        val opened = mutableListOf<String>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.openPhoto.collect { id ->
+                assertTrue(id in images.stored, "the viewer reads the photo from Room")
+                opened += id
+            }
+        }
+
+        viewModel.open(top)
+        advanceUntilIdle()
+
+        assertEquals(listOf(top.photo.id), opened)
+        assertEquals(listOf(top.photo.id), images.savedIds)
+        assertEquals(top, viewModel.uiState.value.cards.first())
     }
 
     @Test

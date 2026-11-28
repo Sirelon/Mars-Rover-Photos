@@ -278,7 +278,10 @@ of its width or on a fling (`AppMotion.CardSwipeMs`); the Keep / Skip buttons an
 fly it off the same way, and Undo flies the restored card back in from the side it left (ignored while a card is still flying off, so a pending swipe cannot land on the restored card). A "Keep" / "Skip" pill fades in while dragging and is hidden from screen
 readers, as are the cards under the top one. Two cards wait under the top one so their photos have
 loaded by the time they come up. The backdrop reads the photo's own bitmap through
-`placeholderCacheKey` (writer: the photo's `cacheKey` `dig_<id>`), so both appear together.
+`placeholderCacheKey` (writer: the photo's `cacheKey` `photo_<id>`), so both appear together. A tap
+on the top card opens that one photo in the full-screen viewer (`Images` with a single id): the
+photo carries `sharedPhoto(id)` and the shared `photo_<id>` key, like the photo grids, and
+`DigViewModel.open` saves it to Room first, because the viewer reads photos from Room.
 Glyphs: `Style` (tab icon, a stack of cards), `Undo`.
 
 **New `AppSize` tokens (Rovers):** `roverThumbWidth` (112dp portrait-thumb fixed width),

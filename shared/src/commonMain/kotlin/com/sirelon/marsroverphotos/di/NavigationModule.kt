@@ -72,7 +72,12 @@ val navigationModule = module {
     }
 
     navigation<AppDestination.Dig> {
-        DigScreen()
+        val navigator = LocalAppNavigator.current
+        DigScreen(
+            onOpenPhoto = dropUnlessResumed { photoId ->
+                navigator.navigate(AppDestination.Images(photoIds = listOf(photoId), selectedId = photoId))
+            },
+        )
     }
 
     navigation<AppDestination.Favorite> {

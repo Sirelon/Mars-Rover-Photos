@@ -33,6 +33,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -71,6 +72,7 @@ import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbol
 import com.sirelon.marsroverphotos.presentation.ui.MaterialSymbolIcon
 import com.sirelon.marsroverphotos.presentation.ui.NetworkImage
 import com.sirelon.marsroverphotos.presentation.ui.photoContentDescription
+import com.sirelon.marsroverphotos.presentation.ui.sharedPhoto
 import com.sirelon.marsroverphotos.presentation.viewmodels.DigUiState
 import com.sirelon.marsroverphotos.presentation.viewmodels.DigViewModel
 import com.sirelon.marsroverphotos.shared.resources.Res
@@ -104,6 +106,7 @@ private const val BACKDROP_SCRIM_ALPHA = 0.45f
 
 @Composable
 fun DigScreen(
+    onOpenPhoto: (photoId: String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: DigViewModel = koinViewModel(),
 ) {
@@ -113,6 +116,10 @@ fun DigScreen(
     LaunchedEffect(viewModel) {
         viewModel.keepNotices.collect { snackbarHostState.showSnackbar("Saved to Favorites") }
     }
+    val currentOnOpenPhoto by rememberUpdatedState(onOpenPhoto)
+    LaunchedEffect(viewModel) {
+        viewModel.openPhoto.collect { currentOnOpenPhoto(it) }
+    }
 
     DigContent(
         state = state,
@@ -120,6 +127,7 @@ fun DigScreen(
         onKeep = viewModel::keep,
         onSkip = viewModel::skip,
         onUndo = viewModel::undo,
+        onOpen = viewModel::open,
         onRetry = viewModel::retry,
         modifier = modifier,
     )
@@ -132,6 +140,7 @@ private fun DigContent(
     onKeep: () -> Unit,
     onSkip: () -> Unit,
     onUndo: () -> Unit,
+    onOpen: (DigUiState.Card) -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -161,6 +170,7 @@ private fun DigContent(
                 onKeep = onKeep,
                 onSkip = onSkip,
                 onUndo = onUndo,
+                onOpen = onOpen,
                 modifier = contentModifier,
             )
 
@@ -189,6 +199,7 @@ private fun DigDeck(
     onKeep: () -> Unit,
     onSkip: () -> Unit,
     onUndo: () -> Unit,
+    onOpen: (DigUiState.Card) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scope = rememberCoroutineScope()
@@ -267,6 +278,12 @@ private fun DigDeck(
                         val isTop = card.photo.id == top.photo.id
                         DigCard(
                             card = card,
+                            // Only the top card opens: the ones under it are covered.
+                            onOpen = if (isTop) {
+                                { if (!flying) onOpen(card) }
+                            } else {
+                                null
+                            },
                             dragProgress = {
                                 if (isTop) offset.value / (deckWidth * SWIPE_THRESHOLD).coerceAtLeast(1f) else 0f
                             },
@@ -335,16 +352,18 @@ private data class DeckSwipe(val photoId: String, val offset: Float)
 
 /**
  * One photo of the deck: the whole photo over a blurred copy of itself, with what it is under it.
+ * A tap calls [onOpen], which shows the photo full screen; null for the cards under the top one.
  * [dragProgress] is the drag toward Keep (positive) or Skip (negative), 1 at the swipe threshold;
  * it fades in the matching label. Read only in the draw phase.
  */
 @Composable
 private fun DigCard(
     card: DigUiState.Card,
+    onOpen: (() -> Unit)?,
     dragProgress: () -> Float,
     modifier: Modifier = Modifier,
 ) {
-    AppCard(modifier = modifier.fillMaxSize()) {
+    AppCard(modifier = modifier.fillMaxSize(), onClick = onOpen) {
         // A photo with labels over it: a permanently dark region, see DESIGN_SYSTEM.md › Color.
         MarsRoverPhotosTheme(darkTheme = true) {
             Box(
@@ -356,7 +375,8 @@ private fun DigCard(
             ) {
                 val photo = card.photo
                 val chain = remember(photo.imageUrl) { nasaImageLargeFallbackUrls(photo.imageUrl) }
-                val cacheKey = "dig_${photo.id}"
+                // The key the photo grids write too, so the viewer opens on this bitmap.
+                val cacheKey = "photo_${photo.id}"
                 // Fills the space the uncropped photo leaves; reads the photo's own bitmap as its
                 // placeholder so it appears with the photo instead of after it.
                 NetworkImage(
@@ -373,7 +393,8 @@ private fun DigCard(
                         .background(MaterialTheme.colorScheme.scrim.copy(alpha = BACKDROP_SCRIM_ALPHA)),
                 )
                 NetworkImage(
-                    modifier = Modifier.fillMaxSize(),
+                    // Grows into the full-screen viewer; only the top card can be opened.
+                    modifier = Modifier.fillMaxSize().sharedPhoto(photo.id, enabled = onOpen != null),
                     contentScale = ContentScale.Fit,
                     showPlaceholder = false,
                     imageUrl = chain.first(),
