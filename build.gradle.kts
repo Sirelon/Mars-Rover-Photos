@@ -10,7 +10,7 @@ buildscript {
             force(
                 "io.netty:netty-codec-http:4.2.19.Final",
                 "io.netty:netty-codec-http2:4.2.20.Final",
-                "io.netty:netty-codec:4.2.19.Final",
+                "io.netty:netty-codec:4.2.21.Final",
                 "io.netty:netty-common:4.2.19.Final",
                 "io.netty:netty-handler:4.2.19.Final",
                 "com.google.guava:guava:33.8.0-android",
@@ -68,7 +68,7 @@ allprojects {
                 // support mixing versions across its modules.
                 "io.netty:netty-codec-http:4.2.19.Final",
                 "io.netty:netty-codec-http2:4.2.20.Final",
-                "io.netty:netty-codec:4.2.19.Final",
+                "io.netty:netty-codec:4.2.21.Final",
                 "io.netty:netty-common:4.2.19.Final",
                 "io.netty:netty-handler:4.2.19.Final",
                 // Google libraries
