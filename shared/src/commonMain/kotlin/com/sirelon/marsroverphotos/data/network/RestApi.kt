@@ -134,7 +134,7 @@ class RestApi {
     }
 
     /**
-     * A random Ingenuity frame, for the widget.
+     * A random page of Ingenuity frames, for the widget and the Dig deck.
      *
      * Ingenuity's campaign closed in 2024, so there is no "latest" to track — a latest-photo
      * widget would show one frozen image forever. Like the Viking landers, it draws from the
@@ -151,6 +151,29 @@ class RestApi {
             page = Random.nextInt(0, INGENUITY_FEED_PAGES),
         )
         return response.photos.preveranceToUI(INGENUITY_ID)
+    }
+
+    /**
+     * The full frames one dense raw-feed mission (Perseverance, InSight, Curiosity) took on [sol],
+     * thumbnails excluded; empty for any other rover id or a sol without photos. For the Dig
+     * deck, which shows each photo large. Ingenuity is too sparse for a random sol to hit often;
+     * [getIngenuityRandomPhoto] serves it instead.
+     *
+     * A sol filter keeps this fast: the Mars 2020 feed answers a deep `page` with the full-frame
+     * filter in about 15 seconds, and a sol-filtered request in well under one (measured
+     * 2026-11-28). Never writes to [_perseveranceTotalImages]: the count is this sol's (SIR-80).
+     */
+    suspend fun getFullFramesForSol(roverId: Long, sol: Long): List<MarsImage> = when (roverId) {
+        PERSEVERANCE_ID -> nasaApi.getPerseveranceRawImages(sol = "$sol:sol:in", fullFramesOnly = true)
+            .photos.preveranceToUI(roverId)
+
+        INSIGHT_ID -> nasaApi.getRawImages("insight", from = "$sol:sol", to = "$sol:sol", fullFramesOnly = true)
+            .list.mapToUi(roverId)
+
+        CURIOSITY_ID -> nasaApi.getRawImages("msl", from = "$sol:sol", to = "$sol:sol", fullFramesOnly = true)
+            .list.mapToUiMsl(roverId)
+
+        else -> emptyList()
     }
 
     /**

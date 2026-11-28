@@ -15,11 +15,14 @@ import com.sirelon.marsroverphotos.domain.models.OPPORTUNITY_ID
 import com.sirelon.marsroverphotos.domain.models.PERSEVERANCE_ID
 import com.sirelon.marsroverphotos.domain.models.PHOENIX_ID
 import com.sirelon.marsroverphotos.domain.models.PhotosQueryRequest
+import com.sirelon.marsroverphotos.domain.models.Rover
 import com.sirelon.marsroverphotos.domain.models.VIKING_1_ID
 import com.sirelon.marsroverphotos.domain.models.VIKING_2_ID
+import com.sirelon.marsroverphotos.domain.models.mission.RoverMissionData
 import com.sirelon.marsroverphotos.domain.repositories.PhotosRepository
 import com.sirelon.marsroverphotos.utils.Logger
 import kotlinx.coroutines.CancellationException
+import kotlin.random.Random
 import kotlinx.datetime.LocalDate
 
 /**
@@ -37,6 +40,9 @@ private const val OPPORTUNITY_COVER_YEAR_START = 2018
 /** Candidate frames whose pixels are checked for a raw-feed cover, newest first. */
 private const val MAX_COVER_CHECKS = 6
 
+/** images.nasa.gov results per page drawn for the Dig deck. */
+private const val DIG_LIBRARY_PAGE_SIZE = 20
+
 class PhotosRepositoryImpl(
     private val api: RestApi,
     private val vikingCatalog: VikingCatalog,
@@ -46,7 +52,11 @@ class PhotosRepositoryImpl(
      * newest candidate unchecked.
      */
     private val isGoodCover: (suspend (MarsImage) -> Boolean)? = null,
+    private val random: Random = Random.Default,
 ) : PhotosRepository {
+
+    /** images.nasa.gov result count per page-feed rover, learned on its first Dig draw. */
+    private val libraryTotalHits = mutableMapOf<Long, Int>()
 
     override suspend fun refreshImages(query: PhotosQueryRequest): List<MarsImage> {
         return when (query.roverId) {
@@ -90,6 +100,50 @@ class PhotosRepositoryImpl(
             .toMarsImages(roverId)
             .firstOrNull()
         else -> latestGoodFullFrame(roverId)
+    }
+
+    /**
+     * Where a random point of the mission comes from, per source:
+     * - Perseverance, Curiosity, InSight: one random sol between the mission's first and its
+     *   [Rover.maxSol]. Many sols hold no full frame, and the caller then draws again.
+     * - Ingenuity: one random page of its closed archive. Its photos sit on 162 of 1,027 sols, so
+     *   a random sol would miss six times out of seven. Every frame in that feed is a full frame.
+     * - Viking and Phoenix: single frames from anywhere in the bundled catalogue.
+     * - Spirit and Opportunity: one random page of the images.nasa.gov search their feed runs.
+     *   The page count needs the result total, so the first draw per rover reads page 1 first.
+     */
+    override suspend fun randomPhotos(rover: Rover, count: Int): List<MarsImage> {
+        val pool = when {
+            rover.id == VIKING_1_ID || rover.id == VIKING_2_ID ->
+                List(count) { vikingCatalog.randomPhoto(rover.id) }.filterNotNull()
+            rover.id == PHOENIX_ID -> List(count) { phoenixCatalog.randomPhoto() }.filterNotNull()
+            rover.id == INGENUITY_ID -> api.getIngenuityRandomPhoto()
+            rover.id.usesPageFeed() -> randomLibraryPage(rover.id)
+            else -> {
+                val minSol = RoverMissionData.getMinSol(rover.id)
+                val sol = random.nextLong(minSol, rover.maxSol.coerceAtLeast(minSol) + 1)
+                api.getFullFramesForSol(rover.id, sol)
+            }
+        }
+        return pool.distinctBy { it.id }.shuffled(random).take(count)
+    }
+
+    private suspend fun randomLibraryPage(roverId: Long): List<MarsImage> {
+        suspend fun page(number: Int) = api.searchImages(
+            roverId.pageQuery(),
+            page = number,
+            pageSize = DIG_LIBRARY_PAGE_SIZE,
+            keywords = MER_KEYWORDS,
+        )
+
+        var firstPage: List<MarsImage>? = null
+        val totalHits = libraryTotalHits[roverId] ?: page(1).let { response ->
+            firstPage = response.toMarsImages(roverId)
+            (response.collection.metadata?.totalHits ?: 0).also { libraryTotalHits[roverId] = it }
+        }
+        val pages = ((totalHits + DIG_LIBRARY_PAGE_SIZE - 1) / DIG_LIBRARY_PAGE_SIZE).coerceAtLeast(1)
+        val target = random.nextInt(1, pages + 1)
+        return firstPage.takeIf { target == 1 } ?: page(target).toMarsImages(roverId)
     }
 
     /**

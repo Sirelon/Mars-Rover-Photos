@@ -270,6 +270,20 @@ tiers, `AppRow` without `onClick` for the supporter status, `AppOutlinedButton` 
 `AppSize` tokens: `iconBoxHero` (56dp screen-header icon tile) and `inlineProgressStroke` (2dp stroke
 for an icon-sized `CircularProgressIndicator`).
 
+**Dig deck (`screens/dig/DigScreen.kt`):** the second tab. An `AppCard` per photo: the photo
+uncropped (`ContentScale.Fit`) over a blurred `Crop` copy of itself (`AppSize.photoBackdropBlur`)
+and a `scrim` wash, inside `MarsRoverPhotosTheme(darkTheme = true)`; mission name and
+"camera · sol · date" under it. The top card follows a horizontal drag, tilts, and flies off past 30%
+of its width or on a fling (`AppMotion.CardSwipeMs`); the Keep / Skip buttons and the arrow keys
+fly it off the same way, and Undo flies the restored card back in from the side it left (ignored while a card is still flying off, so a pending swipe cannot land on the restored card). A "Keep" / "Skip" pill fades in while dragging and is hidden from screen
+readers, as are the cards under the top one. Two cards wait under the top one so their photos have
+loaded by the time they come up. The backdrop reads the photo's own bitmap through
+`placeholderCacheKey` (writer: the photo's `cacheKey` `photo_<id>`), so both appear together. A tap
+on the top card opens that one photo in the full-screen viewer (`Images` with a single id): the
+photo carries `sharedPhoto(id)` and the shared `photo_<id>` key, like the photo grids, and
+`DigViewModel.open` saves it to Room first, because the viewer reads photos from Room.
+Glyphs: `Style` (tab icon, a stack of cards), `Undo`.
+
 **New `AppSize` tokens (Rovers):** `roverThumbWidth` (112dp portrait-thumb fixed width),
 `roverInfoReserve` (40dp title-line trailing reserve clearing the overlaid info button),
 `cardElevationResting` (2dp) / `cardElevationHover` (6dp) for the hover-lift, `photoCardHeight`

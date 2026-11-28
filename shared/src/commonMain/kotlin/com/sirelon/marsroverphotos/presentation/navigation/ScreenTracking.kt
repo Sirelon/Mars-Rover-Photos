@@ -11,6 +11,7 @@ object ScreenNames {
     const val ROVERS = "rovers"
     const val PHOTOS = "photos"
     const val PHOTO_DETAIL = "photo_detail"
+    const val DIG = "dig"
     const val FAVORITE = "favorite"
     const val POPULAR = "popular"
     const val MISSION_INFO = "mission_info"
@@ -39,6 +40,7 @@ data class ScreenView(val name: String, val params: Map<String, String> = emptyM
  */
 fun AppDestination.toScreenView(): ScreenView = when (this) {
     AppDestination.Rovers -> ScreenView(ScreenNames.ROVERS)
+    AppDestination.Dig -> ScreenView(ScreenNames.DIG)
     AppDestination.Favorite -> ScreenView(ScreenNames.FAVORITE)
     AppDestination.Popular -> ScreenView(ScreenNames.POPULAR)
     AppDestination.About -> ScreenView(ScreenNames.ABOUT)

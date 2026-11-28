@@ -8,6 +8,7 @@ class ScreenTrackingTest {
 
     private val allDestinations = listOf(
         AppDestination.Rovers,
+        AppDestination.Dig,
         AppDestination.Favorite,
         AppDestination.Popular,
         AppDestination.About,

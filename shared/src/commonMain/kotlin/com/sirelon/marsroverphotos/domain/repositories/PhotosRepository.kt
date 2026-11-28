@@ -2,6 +2,7 @@ package com.sirelon.marsroverphotos.domain.repositories
 
 import com.sirelon.marsroverphotos.domain.models.DayPhotos
 import com.sirelon.marsroverphotos.domain.models.PhotosQueryRequest
+import com.sirelon.marsroverphotos.domain.models.Rover
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import kotlinx.datetime.LocalDate
 
@@ -33,6 +34,13 @@ interface PhotosRepository {
      * May throw on a network failure.
      */
     suspend fun latestPhoto(roverId: Long): MarsImage? = null
+
+    /**
+     * Up to [count] full frames from one random point of [rover]'s mission, in random order, for
+     * the Dig deck. A draw can land on a stretch with no photos, so an empty list is a normal
+     * answer: the caller draws again. May throw on a network failure.
+     */
+    suspend fun randomPhotos(rover: Rover, count: Int): List<MarsImage> = emptyList()
 
     /**
      * The full-frame photos the rover took on [date] (UTC), resolved by the shot date itself
