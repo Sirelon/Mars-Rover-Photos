@@ -13,7 +13,7 @@
       "scene": "rovers",
       "theme": "light",
       "copy": "missions",
-      "why": "The Missions screen reads '8 missions · 2 active' and lists Perseverance, Ingenuity, InSight, Curiosity and the rest, each with its photo count: eight missions in one app."
+      "why": "The Missions screen reads '9 missions · 2 active' and lists Perseverance, Ingenuity, InSight, Curiosity, Phoenix and the rest, each with its photo count: nine missions in one app."
     },
     {
       "id": "first-photo",
@@ -94,7 +94,7 @@
       "scene": "rovers",
       "theme": "light",
       "copy": "missions",
-      "why": "The Missions screen reads '8 missions · 2 active' and lists Perseverance, Ingenuity, InSight, Curiosity and the rest, each with its photo count: eight missions in one app."
+      "why": "The Missions screen reads '9 missions · 2 active' and lists Perseverance, Ingenuity, InSight, Curiosity, Phoenix and the rest, each with its photo count: nine missions in one app."
     },
     {
       "id": "date-jump",

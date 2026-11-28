@@ -69,5 +69,7 @@ or anything that reads as NASA's product.
 Read it live with `bundle exec ruby store/tools/upload-screenshots.rb status`. After the
 2026-11-28 upload: App Store 5.5.0 READY_FOR_SALE (locked, older set); draft 5.6.0
 PREPARE_FOR_SUBMISSION with en-US `APP_IPHONE_67` (8), `APP_IPHONE_65` (8) and
-`APP_IPAD_PRO_3GEN_129` (7), live with the next release. Play en-US: 8 phone, 7 seven-inch and
-7 ten-inch screenshots, live.
+`APP_IPAD_PRO_3GEN_129` (7), live with the next release; its Missions slot reads "Nine Mars
+missions" (Phoenix). Play en-US: 8 phone, 7 seven-inch and 7 ten-inch screenshots, live; its
+Missions slot still reads "Eight Mars missions", true until Phoenix ships. Once that release is on
+Play, re-render `rovers` for the Android devices and run `play --apply`.
