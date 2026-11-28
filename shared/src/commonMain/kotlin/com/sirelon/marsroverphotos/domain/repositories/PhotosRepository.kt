@@ -1,7 +1,9 @@
 package com.sirelon.marsroverphotos.domain.repositories
 
+import com.sirelon.marsroverphotos.domain.models.DayPhotos
 import com.sirelon.marsroverphotos.domain.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
+import kotlinx.datetime.LocalDate
 
 /**
  * Repository for fetching Mars rover photos from the API.
@@ -31,4 +33,11 @@ interface PhotosRepository {
      * May throw on a network failure.
      */
     suspend fun latestPhoto(roverId: Long): MarsImage? = null
+
+    /**
+     * The full-frame photos the rover took on [date] (UTC), resolved by the shot date itself
+     * rather than a sol estimate. Null when the source has no shot date to ask by (Spirit,
+     * Opportunity). May throw on a network failure.
+     */
+    suspend fun photosTakenOn(roverId: Long, date: LocalDate): DayPhotos? = null
 }

@@ -9,6 +9,7 @@ import com.sirelon.marsroverphotos.data.paging.usesPageFeed
 import com.sirelon.marsroverphotos.data.phoenix.PhoenixCatalog
 import com.sirelon.marsroverphotos.data.viking.VikingCatalog
 import com.sirelon.marsroverphotos.domain.models.CURIOSITY_ID
+import com.sirelon.marsroverphotos.domain.models.DayPhotos
 import com.sirelon.marsroverphotos.domain.models.INGENUITY_ID
 import com.sirelon.marsroverphotos.domain.models.OPPORTUNITY_ID
 import com.sirelon.marsroverphotos.domain.models.PERSEVERANCE_ID
@@ -19,6 +20,7 @@ import com.sirelon.marsroverphotos.domain.models.VIKING_2_ID
 import com.sirelon.marsroverphotos.domain.repositories.PhotosRepository
 import com.sirelon.marsroverphotos.utils.Logger
 import kotlinx.coroutines.CancellationException
+import kotlinx.datetime.LocalDate
 
 /**
  * Implementation of PhotosRepository.
@@ -88,6 +90,18 @@ class PhotosRepositoryImpl(
             .toMarsImages(roverId)
             .firstOrNull()
         else -> latestGoodFullFrame(roverId)
+    }
+
+    /**
+     * The raw feeds are asked by shot date directly; the bundled catalogues carry a date on every
+     * row. images.nasa.gov dates Spirit and Opportunity by press release, so they cannot answer.
+     */
+    override suspend fun photosTakenOn(roverId: Long, date: LocalDate): DayPhotos? = when {
+        roverId == VIKING_1_ID || roverId == VIKING_2_ID ->
+            vikingCatalog.photosTakenOn(roverId, date).let { DayPhotos(it, it.size) }
+        roverId == PHOENIX_ID -> phoenixCatalog.photosTakenOn(date).let { DayPhotos(it, it.size) }
+        roverId.usesPageFeed() -> null
+        else -> api.getPhotosTakenOn(roverId, date)
     }
 
     private suspend fun latestGoodFullFrame(roverId: Long): MarsImage? {

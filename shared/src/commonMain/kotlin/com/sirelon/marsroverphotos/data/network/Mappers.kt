@@ -45,7 +45,9 @@ fun List<MarsPhoto>.mapToUi(roverId: Long): List<MarsImage> {
             sol = marsPhoto.sol,
             name = marsPhoto.name,
             imageUrl = marsPhoto.imageUrl,
-            earthDate = marsPhoto.earthDate,
+            // The InSight raw feed has no `earth_date`, so [MarsPhoto.earthDate] holds `created_at`:
+            // when NASA stored the record, days after the shot. `date_taken` is the shot time.
+            earthDate = marsPhoto.dateTaken ?: marsPhoto.earthDate,
             roverId = roverId,
             camera = marsPhoto.camera,
             favorite = false,
