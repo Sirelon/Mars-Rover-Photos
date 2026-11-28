@@ -21,7 +21,7 @@ buildscript {
                 "com.google.protobuf:protobuf-javalite:3.25.9",
                 "org.apache.commons:commons-lang3:3.21.0",
                 "org.apache.httpcomponents:httpclient:4.5.14",
-                "org.bouncycastle:bcpkix-jdk18on:1.86",
+                "org.bouncycastle:bcpkix-jdk18on:1.87",
                 "org.bitbucket.b_c:jose4j:0.9.7",
                 "org.jdom:jdom2:2.0.6.1",
             )
@@ -82,7 +82,7 @@ allprojects {
                 "org.apache.commons:commons-lang3:3.21.0",
                 "org.apache.httpcomponents:httpclient:4.5.14",
                 // Crypto / auth / XML parsers
-                "org.bouncycastle:bcpkix-jdk18on:1.86",
+                "org.bouncycastle:bcpkix-jdk18on:1.87",
                 "org.bitbucket.b_c:jose4j:0.9.7",
                 "org.jdom:jdom2:2.0.6.1",
             )
