@@ -143,3 +143,21 @@ private fun fakeMarsPhoto(
     camera = null,
     instrument = instrument,
 )
+
+/** The InSight raw feed (mapped by [mapToUi]) has no `earth_date`; its shot time is `date_taken`. */
+class InsightDateMappingTest {
+
+    @Test
+    fun mapToUi_prefersDateTakenOverCreatedAt() {
+        val photo = com.sirelon.marsroverphotos.domain.models.MarsPhoto(
+            id = "i",
+            sol = 100L,
+            name = null,
+            imageUrl = "https://example.test/i.jpg",
+            earthDate = "2019-03-12T22:30:20.283Z", // created_at
+            dateTaken = "2019-03-09T17:06:50.418Z",
+        )
+
+        assertEquals("2019-03-09T17:06:50.418Z", listOf(photo).mapToUi(roverId = 4L).single().earthDate)
+    }
+}
