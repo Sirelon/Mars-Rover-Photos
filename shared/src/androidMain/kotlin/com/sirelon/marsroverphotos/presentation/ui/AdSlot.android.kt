@@ -2,6 +2,7 @@ package com.sirelon.marsroverphotos.presentation.ui
 
 import android.content.Context
 import android.os.Bundle
+import android.os.SystemClock
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
@@ -28,6 +29,7 @@ import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.OnPaidEventListener
 import com.sirelon.marsroverphotos.data.support.RevenueCatAdEvents
+import com.sirelon.marsroverphotos.platform.AdMobSdk
 import com.sirelon.marsroverphotos.platform.AndroidAdConsent
 import com.sirelon.marsroverphotos.platform.Tracker
 import org.koin.compose.koinInject
@@ -38,8 +40,35 @@ private const val AD_FORMAT = "banner"
 /** The Android SDK reports an impression's worth in millionths of a currency unit. */
 private const val MICROS_PER_CURRENCY_UNIT = 1_000_000.0
 
+/** Wait after the first failed load; doubles with each further failure in a row. */
+private const val RETRY_BASE_MS = 30_000L
+
+/** Longest wait between retries, so a long session still gets an ad once fill comes back. */
+private const val RETRY_MAX_MS = 10 * 60_000L
+
+/** Caps the doubling exponent: 30 s × 2^5 already passes [RETRY_MAX_MS]. */
+private const val RETRY_MAX_DOUBLINGS = 5
+
 @Composable
 actual fun AdSlot(modifier: Modifier) {
+    val context = LocalContext.current
+    val canRequestAds by AndroidAdConsent.canRequestAds.collectAsState()
+    val sdkReady by AdMobSdk.initialized.collectAsState()
+
+    LaunchedEffect(canRequestAds) {
+        if (canRequestAds) AdMobSdk.initialize(context)
+    }
+
+    // No SDK call on the main thread until initialization finished: see AdMobSdk.
+    if (sdkReady) {
+        Banner(modifier)
+    } else {
+        Box(modifier = modifier)
+    }
+}
+
+@Composable
+private fun Banner(modifier: Modifier) {
     val context = LocalContext.current
     val widthDp = LocalConfiguration.current.screenWidthDp
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -110,6 +139,12 @@ private object RetainedBanner {
     /** Personalization the loaded ad was requested with; `null` while a request is due. */
     private var loadedPersonalized: Boolean? = null
 
+    /** Failed loads in a row; drives the retry backoff. */
+    private var failuresInARow = 0
+
+    /** [SystemClock.elapsedRealtime] before which a failed banner does not ask again. */
+    private var retryNotBeforeMs = 0L
+
     fun obtain(context: Context, widthDp: Int, lifecycle: Lifecycle, tracker: Tracker): AdView {
         val current = view
         if (current != null && owner === context && this.widthDp == widthDp) return current
@@ -134,10 +169,16 @@ private object RetainedBanner {
         return created
     }
 
-    /** No-op unless the banner has never loaded, or consent changed under the loaded ad. */
+    /**
+     * No-op unless the banner has never loaded, or consent changed under the loaded ad. After a
+     * failure it also waits out the backoff: the slot re-enters composition on every photo the user
+     * opens and closes, and without a wait each re-entry was a new request (one user sent 74 in a
+     * day).
+     */
     fun load(personalized: Boolean) {
         val current = view ?: return
         if (loadedPersonalized == personalized) return
+        if (SystemClock.elapsedRealtime() < retryNotBeforeMs) return
         loadedPersonalized = personalized
         current.loadAd(buildAdRequest(personalized))
     }
@@ -179,6 +220,8 @@ private object RetainedBanner {
     /** Loads and failures are the fill rate; without both, an empty slot looks like no traffic. */
     private fun adListener(adView: AdView, tracker: Tracker) = object : AdListener() {
         override fun onAdLoaded() {
+            failuresInARow = 0
+            retryNotBeforeMs = 0L
             tracker.trackEvent("ad_loaded", mapOf("ad_format" to AD_FORMAT))
             RevenueCatAdEvents.loaded(BANNER_AD_UNIT_ID, adView.networkName(), adView.impressionId())
         }
@@ -193,9 +236,14 @@ private object RetainedBanner {
 
         override fun onAdFailedToLoad(error: LoadAdError) {
             RevenueCatAdEvents.failedToLoad(BANNER_AD_UNIT_ID, error.code)
-            // Let the next entry retry: otherwise one flaky request leaves the slot empty for the
-            // rest of the session, because the retained view never asks again.
+            // Let a later entry retry, once the backoff has passed: otherwise one flaky request
+            // leaves the slot empty for the rest of the session, because the retained view never
+            // asks again.
             loadedPersonalized = null
+            val doublings = failuresInARow.coerceAtMost(RETRY_MAX_DOUBLINGS)
+            failuresInARow++
+            val wait = (RETRY_BASE_MS shl doublings).coerceAtMost(RETRY_MAX_MS)
+            retryNotBeforeMs = SystemClock.elapsedRealtime() + wait
             tracker.trackEvent(
                 "ad_load_failed",
                 mapOf(

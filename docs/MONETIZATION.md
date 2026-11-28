@@ -46,6 +46,16 @@ list and a whole first visit before any sheet. The iOS order is fixed: UMP befor
 so the form is always testable; the `hideAds` launch argument (store screenshots) skips the ads and
 both prompts entirely.
 
+On Android the Mobile Ads SDK starts lazily: `AdSlot` calls `AdMobSdk.initialize()` once consent
+allows ads, and creates the `AdView` only after `AdMobSdk.initialized` turns true. Never start the SDK
+in `Application.onCreate`, and never touch it on the main thread while it initializes. Its worker
+thread brings up WebView, which waits on the main thread; a main-thread SDK call in that window
+deadlocks into an ANR. Google's ad inspector triggered exactly that by launching the process straight
+into the SDK's `OutOfContextTestingActivity` (Crashlytics `MarsRoverApplication$onCreate$7`, Pixel 8
+Pro robots on release days). A failed banner load retries with backoff (30 s, doubling, capped at
+10 min) in `RetainedBanner`, because the slot re-enters composition on every photo open/close and
+would otherwise re-request each time. Most failures are `No fill` (code 3): AdMob had no ad, not a bug.
+
 ### Ad revenue reporting
 Each banner reports to two places. Firebase gets the `ad_impression` event with its paid value
 (`Tracker.trackAdImpression`). RevenueCat's Ads dashboard gets the load, display, click, revenue
