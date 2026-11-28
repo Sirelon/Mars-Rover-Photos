@@ -11,21 +11,24 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
 import kotlinx.datetime.todayIn
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Answers "what did every mission photograph on this Earth date" through
  * [PhotosRepository.photosTakenOn], one request per mission, all missions in parallel.
  *
- * Answers are cached per date for the process, because the screen re-asks on every visit. Two
+ * Answers are cached per date for the process (the [CACHED_DATES] most recently asked), because a
+ * screen re-asks on every visit. Two
  * kinds are not cached, so the next ask goes to the network again: a date where any mission
  * failed, and a date in the last [RECENT_DAYS] days while an active rover covers it, because an
  * active rover downlinks a day's photos over the following days and weeks.
@@ -37,7 +40,9 @@ class DayOnMarsRepositoryImpl(
 ) : DayOnMarsRepository {
 
     private val mutex = Mutex()
-    private val cache = mutableMapOf<LocalDate, List<MissionDay>>()
+
+    /** Least recently used first; trimmed to [CACHED_DATES]. */
+    private val cache = LinkedHashMap<LocalDate, List<MissionDay>>()
 
     override suspend fun dateRange(): ClosedRange<LocalDate>? {
         val first = rovers().mapNotNull { parse(it.landingDate) }.minOrNull() ?: return null
@@ -45,14 +50,19 @@ class DayOnMarsRepositoryImpl(
     }
 
     override suspend fun missionsOn(date: LocalDate): List<MissionDay> {
-        mutex.withLock { cache[date] }?.let { return it }
+        mutex.withLock { cache.remove(date)?.also { cache[date] = it } }?.let { return it }
         val missions = coroutineScope {
             rovers()
-                .filter { date in it.photoDates() }
+                .filter { rover -> rover.photoDates()?.let { date in it } == true }
                 .map { rover -> async { MissionDay(rover, photosOf(rover, date)) } }
                 .awaitAll()
         }
-        if (missions.isCacheable(date)) mutex.withLock { cache[date] = missions }
+        if (missions.isCacheable(date)) {
+            mutex.withLock {
+                cache[date] = missions
+                while (cache.size > CACHED_DATES) cache.remove(cache.keys.first())
+            }
+        }
         return missions
     }
 
@@ -64,13 +74,15 @@ class DayOnMarsRepositoryImpl(
 
     private suspend fun photosOf(rover: Rover, date: LocalDate): MissionDay.Photos = try {
         val day = photosRepository.photosTakenOn(rover.id, date)
+        // A record without an image URL could never be shown.
+        val images = day?.images?.filter { it.imageUrl.isNotBlank() }.orEmpty()
         when {
             day == null -> MissionDay.Photos.NotDated
-            day.images.isEmpty() -> MissionDay.Photos.None
+            images.isEmpty() -> MissionDay.Photos.None
             else -> MissionDay.Photos.Found(
-                sols = day.images.map { it.sol }.distinct().sorted(),
-                images = day.images.sortedBy(MarsImage::earthDate),
-                total = maxOf(day.total, day.images.size),
+                sols = images.map { it.sol }.distinct().sorted(),
+                images = images.sortedBy(MarsImage::earthDate),
+                total = maxOf(day.total, images.size),
             )
         }
     } catch (e: CancellationException) {
@@ -80,16 +92,20 @@ class DayOnMarsRepositoryImpl(
         MissionDay.Photos.Failed
     }
 
-    /** The roster, waiting out the first launch's seeding instead of answering with nothing. */
-    private suspend fun rovers(): List<Rover> = roversRepository.getRovers().first { it.isNotEmpty() }
+    /**
+     * The roster, waiting up to [ROSTER_WAIT] for the first launch's seeding instead of answering
+     * with nothing. Empty when seeding never lands, so a caller gets an answer rather than hangs.
+     */
+    private suspend fun rovers(): List<Rover> =
+        withTimeoutOrNull(ROSTER_WAIT) { roversRepository.getRovers().firstOrNull { it.isNotEmpty() } }.orEmpty()
 
     /**
      * The dates this mission can have photos for: landing to its last date, or to today while it
      * is active (an active rover's stored `maxDate` trails its feed).
      */
-    private fun Rover.photoDates(): ClosedRange<LocalDate> {
-        val start = parse(landingDate) ?: return EMPTY_RANGE
-        val end = if (isActive) today() else parse(maxDate) ?: return EMPTY_RANGE
+    private fun Rover.photoDates(): ClosedRange<LocalDate>? {
+        val start = parse(landingDate) ?: return null
+        val end = if (isActive) today() else parse(maxDate) ?: return null
         return start..end
     }
 
@@ -99,6 +115,9 @@ class DayOnMarsRepositoryImpl(
         /** How long an active rover's day can still gain photos. */
         const val RECENT_DAYS = 30
 
-        val EMPTY_RANGE: ClosedRange<LocalDate> = LocalDate(1, 1, 2)..LocalDate(1, 1, 1)
+        /** Dates kept in the cache; each holds up to ~400 photo records. */
+        const val CACHED_DATES = 20
+
+        val ROSTER_WAIT = 10.seconds
     }
 }

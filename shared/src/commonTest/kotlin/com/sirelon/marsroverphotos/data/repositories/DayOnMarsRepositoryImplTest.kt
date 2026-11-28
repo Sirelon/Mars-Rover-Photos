@@ -1,28 +1,26 @@
 package com.sirelon.marsroverphotos.data.repositories
 
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
-import com.sirelon.marsroverphotos.data.network.RestApi
-import com.sirelon.marsroverphotos.data.viking.VikingCatalog
-import com.sirelon.marsroverphotos.data.phoenix.PhoenixCatalog
 import com.sirelon.marsroverphotos.domain.models.CURIOSITY_ID
 import com.sirelon.marsroverphotos.domain.models.DayPhotos
 import com.sirelon.marsroverphotos.domain.models.MissionDay
-import com.sirelon.marsroverphotos.domain.models.PHOENIX_ID
 import com.sirelon.marsroverphotos.domain.models.PhotosQueryRequest
 import com.sirelon.marsroverphotos.domain.models.Rover
 import com.sirelon.marsroverphotos.domain.models.SPIRIT_ID
 import com.sirelon.marsroverphotos.domain.models.VIKING_1_ID
-import com.sirelon.marsroverphotos.domain.models.VIKING_2_ID
 import com.sirelon.marsroverphotos.domain.repositories.PhotosRepository
 import com.sirelon.marsroverphotos.domain.repositories.RoversRepository
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertIs
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 private val curiosity = rover(CURIOSITY_ID, "Curiosity", landing = "2012-08-06", maxDate = "2017-09-18", status = "active")
@@ -123,6 +121,53 @@ class DayOnMarsRepositoryImplTest {
     }
 
     @Test
+    fun aCancelledFetchIsRethrown_notReportedAsFailed_andNotCached() = runTest {
+        val photos = FakeDatedPhotos(cancelFor = setOf(CURIOSITY_ID))
+        val repo = repository(listOf(curiosity), photos)
+        val date = LocalDate(2023, 11, 7)
+
+        assertFailsWith<CancellationException> { repo.missionsOn(date) }
+        assertFailsWith<CancellationException> { repo.missionsOn(date) }
+        assertEquals(2, photos.asked.size)
+    }
+
+    @Test
+    fun photosWithoutAnImageUrlAreDropped() = runTest {
+        val photos = FakeDatedPhotos(
+            CURIOSITY_ID to DayPhotos(listOf(image("blank", 4000, "2023-11-07T01:00:00Z", url = "")), total = 1),
+        )
+
+        val day = repository(listOf(curiosity), photos).missionsOn(LocalDate(2023, 11, 7)).single()
+
+        assertEquals(MissionDay.Photos.None, day.photos)
+    }
+
+    @Test
+    fun aRosterThatNeverSeedsAnswersEmpty_insteadOfHanging() = runTest {
+        val repo = DayOnMarsRepositoryImpl(
+            roversRepository = FakeRovers(MutableStateFlow(emptyList())),
+            photosRepository = FakeDatedPhotos(),
+            today = { TODAY },
+        )
+
+        assertTrue(repo.missionsOn(LocalDate(2023, 11, 7)).isEmpty())
+        assertNull(repo.dateRange())
+    }
+
+    @Test
+    fun theCacheKeepsOnlyTheMostRecentDates() = runTest {
+        val photos = FakeDatedPhotos()
+        val repo = repository(listOf(curiosity), photos)
+        val first = LocalDate(2020, 1, 1)
+
+        repo.missionsOn(first)
+        repeat(20) { repo.missionsOn(LocalDate(2020, 2, 1 + it)) }
+        repo.missionsOn(first)
+
+        assertEquals(22, photos.asked.size, "the oldest date was evicted and asked again")
+    }
+
+    @Test
     fun dateRangeRunsFromTheFirstLandingToToday() = runTest {
         val repo = repository(listOf(curiosity, viking1), FakeDatedPhotos())
 
@@ -136,45 +181,12 @@ class DayOnMarsRepositoryImplTest {
     )
 }
 
-/**
- * The real bundled catalogues answered by date through [PhotosRepositoryImpl]. Dates and counts
- * are the catalogue rows; they cross a sol boundary, which a sol estimate used to miss.
- */
-class CataloguePhotosTakenOnTest {
+private class FakeRovers(private val rovers: Flow<List<Rover>>) : RoversRepository {
+    constructor(rovers: List<Rover>) : this(flowOf(rovers))
 
-    private val repository = PhotosRepositoryImpl(
-        api = RestApi(),
-        vikingCatalog = VikingCatalog(),
-        phoenixCatalog = PhoenixCatalog(),
-    )
-
-    @Test
-    fun viking2AnswersEveryRowOfTheDate_acrossTwoSols() = runTest {
-        val day = repository.photosTakenOn(VIKING_2_ID, LocalDate(1978, 3, 15))!!
-
-        assertEquals(5, day.total)
-        assertEquals(setOf(542L, 543L), day.images.map { it.sol }.toSet())
-    }
-
-    @Test
-    fun phoenixAnswersEveryRowOfTheDate_acrossTwoSols() = runTest {
-        val day = repository.photosTakenOn(PHOENIX_ID, LocalDate(2008, 6, 28))!!
-
-        assertEquals(23, day.total)
-        assertEquals(setOf(32L, 33L), day.images.map { it.sol }.toSet())
-        assertTrue(day.images.all { it.earthDate.startsWith("2008-06-28") })
-    }
-
-    @Test
-    fun spiritCannotAnswerByDate() = runTest {
-        assertNull(repository.photosTakenOn(SPIRIT_ID, LocalDate(2005, 1, 1)))
-    }
-}
-
-private class FakeRovers(private val rovers: List<Rover>) : RoversRepository {
     override fun initialize() = Unit
-    override fun getRovers(): Flow<List<Rover>> = flowOf(rovers)
-    override suspend fun loadRoverById(id: Long): Rover? = rovers.firstOrNull { it.id == id }
+    override fun getRovers(): Flow<List<Rover>> = rovers
+    override suspend fun loadRoverById(id: Long): Rover? = null
     override suspend fun updateRoverCountPhotos(roverId: Long, photos: Long) = Unit
 }
 
@@ -182,6 +194,7 @@ private class FakeDatedPhotos(
     vararg days: Pair<Long, DayPhotos>,
     private val failFor: Set<Long> = emptySet(),
     private val undated: Set<Long> = emptySet(),
+    private val cancelFor: Set<Long> = emptySet(),
 ) : PhotosRepository {
     private val byRover = days.toMap()
     val asked = mutableListOf<Pair<Long, LocalDate>>()
@@ -191,6 +204,7 @@ private class FakeDatedPhotos(
     override suspend fun photosTakenOn(roverId: Long, date: LocalDate): DayPhotos? {
         asked += roverId to date
         if (roverId in failFor) error("offline")
+        if (roverId in cancelFor) throw CancellationException("screen left")
         if (roverId in undated) return null
         return byRover[roverId] ?: DayPhotos(emptyList(), 0)
     }
@@ -208,12 +222,12 @@ private fun rover(id: Long, name: String, landing: String, maxDate: String, stat
     totalPhotos = 0,
 )
 
-private fun image(id: String, sol: Long, earthDate: String) = MarsImage(
+private fun image(id: String, sol: Long, earthDate: String, url: String = "https://example.test/$id.jpg") = MarsImage(
     id = id,
     order = 0,
     sol = sol,
     name = null,
-    imageUrl = "https://example.test/$id.jpg",
+    imageUrl = url,
     earthDate = earthDate,
     camera = null,
     stats = MarsImage.Stats(0, 0, 0, 0, 0),

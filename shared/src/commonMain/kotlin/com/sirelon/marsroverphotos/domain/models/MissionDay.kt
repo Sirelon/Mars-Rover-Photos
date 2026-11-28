@@ -13,8 +13,8 @@ data class MissionDay(
     sealed interface Photos {
         /**
          * Photos taken that date, in the order they were taken. [images] can be a sample: [total]
-         * is how many the mission took that date. [sols] are the sols they belong to, ascending
-         * (a UTC date overlaps one or two sols).
+         * is how many the mission took that date. [sols] are the sols of [images], ascending (a UTC
+         * date overlaps one or two sols, and a sample can miss one of them).
          */
         data class Found(val sols: List<Long>, val images: List<MarsImage>, val total: Int) : Photos
 
@@ -33,7 +33,7 @@ data class MissionDay(
 }
 
 /**
- * One mission's photos taken on one Earth date: [images], at most one page of the source, and
- * [total], how many the source holds for that date.
+ * One mission's photos taken on one Earth date: [images], at most 100 for a raw feed and every
+ * row for a bundled catalogue, and [total], how many the source holds for that date.
  */
 data class DayPhotos(val images: List<MarsImage>, val total: Int)

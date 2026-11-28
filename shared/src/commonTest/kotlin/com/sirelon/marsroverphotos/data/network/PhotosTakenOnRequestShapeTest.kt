@@ -62,4 +62,13 @@ class PhotosTakenOnRequestShapeTest {
         assertEquals(listOf("2024-01-01:date_taken:lt"), params.getAll("condition_3"))
         assertEquals(listOf("thumbnail::sample_type::noteq"), params.getAll("extended"))
     }
+
+    @Test
+    fun mars2020Feed_readsTheDateTotalFromTotalResults_notTheFeedTotal() = runTest {
+        val response = apiRecording(mutableListOf(), """{"images":[],"total_images":1055871,"total_results":341}""")
+            .getMars2020RawImagesTakenOn("mars2020", LocalDate(2023, 11, 7))
+
+        assertEquals(341L, response.totalResults)
+        assertEquals(1055871L, response.totalImages)
+    }
 }
