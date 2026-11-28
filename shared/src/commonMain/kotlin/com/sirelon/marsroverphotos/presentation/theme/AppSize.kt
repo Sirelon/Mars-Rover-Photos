@@ -93,7 +93,4 @@ object AppSize {
 
     /** 200dp — height of a full-width photo card with text over it (the "Today on Mars" card). */
     val photoCardHeight: Dp = 200.dp
-
-    /** 120dp — square photo thumbnail in a mission's row on "A day on Mars". */
-    val dayOnMarsThumb: Dp = 120.dp
 }

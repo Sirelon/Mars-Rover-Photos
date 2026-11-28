@@ -2,7 +2,6 @@ package com.sirelon.marsroverphotos.di
 
 import com.sirelon.marsroverphotos.presentation.viewmodels.AboutViewModel
 import com.sirelon.marsroverphotos.presentation.viewmodels.AdminPhotosViewModel
-import com.sirelon.marsroverphotos.presentation.viewmodels.DayOnMarsViewModel
 import com.sirelon.marsroverphotos.presentation.viewmodels.FavoriteImagesViewModel
 import com.sirelon.marsroverphotos.presentation.viewmodels.ImageViewModel
 import com.sirelon.marsroverphotos.presentation.viewmodels.PhotosViewModel
@@ -22,7 +21,6 @@ val viewModelModule = module {
     // ViewModels - using Koin viewModelOf for automatic lifecycle management
     viewModelOf(::AboutViewModel)
     viewModelOf(::AdminPhotosViewModel)
-    viewModelOf(::DayOnMarsViewModel)
     viewModelOf(::FavoriteImagesViewModel)
     viewModelOf(::ImageViewModel)
     viewModelOf(::PhotosViewModel)

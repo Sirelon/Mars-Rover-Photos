@@ -17,7 +17,6 @@ object ScreenNames {
     const val ABOUT = "about"
     const val UKRAINE = "ukraine"
     const val ADMIN_PHOTOS = "admin_photos"
-    const val DAY_ON_MARS = "day_on_mars"
     const val PHOTOS_DATE_JUMP = "photos_date_jump"
     const val PHOTOS_FILTERS = "photos_filters"
     const val ALL_VERSIONS = "all_versions"
@@ -45,7 +44,6 @@ fun AppDestination.toScreenView(): ScreenView = when (this) {
     AppDestination.About -> ScreenView(ScreenNames.ABOUT)
     AppDestination.Ukraine -> ScreenView(ScreenNames.UKRAINE)
     AppDestination.AdminPhotos -> ScreenView(ScreenNames.ADMIN_PHOTOS)
-    AppDestination.DayOnMars -> ScreenView(ScreenNames.DAY_ON_MARS)
 
     is AppDestination.Photos -> ScreenView(ScreenNames.PHOTOS, roverParams(roverId))
     is AppDestination.Mission -> ScreenView(ScreenNames.MISSION_INFO, roverParams(roverId))

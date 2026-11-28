@@ -32,7 +32,7 @@ not show.
 |---|---|
 | A screen, ViewModel, domain model or repository | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
 | Any Compose UI | [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md), then run the `compose-design-system` skill on the diff |
-| Paging, `NasaApi`, a rover's photo source, the Viking or Phoenix catalogue | [docs/PHOTO_FEED.md](docs/PHOTO_FEED.md) |
+| Paging, `NasaApi`, a rover's photo source, the Viking or Phoenix catalogue, photos by Earth date (`DayOnMarsRepository`) | [docs/PHOTO_FEED.md](docs/PHOTO_FEED.md) |
 | Support screen, RevenueCat, feature flags, ads, UMP / ATT prompts | [docs/MONETIZATION.md](docs/MONETIZATION.md) |
 | Version number, release notes, fastlane lanes, Galaxy Store | [docs/RELEASE.md](docs/RELEASE.md); cut a release with the `store-release` skill |
 | Looking at or driving the UI | [docs/DESKTOP_HOT_RELOAD.md](docs/DESKTOP_HOT_RELOAD.md) |

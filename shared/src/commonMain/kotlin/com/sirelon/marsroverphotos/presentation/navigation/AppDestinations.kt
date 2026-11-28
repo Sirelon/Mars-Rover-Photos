@@ -64,10 +64,6 @@ sealed interface AppDestination : NavKey {
     @Serializable
     data object AdminPhotos : AppDestination
 
-    /** "A day on Mars": what every mission photographed on one Earth date. */
-    @Serializable
-    data object DayOnMars : AppDestination
-
     /** Dialog destination: combined sol+earth date or page jump picker. Shares PhotosViewModel with [Photos]. */
     @Serializable
     data class PhotosDateJumpPicker(val roverId: Long) : DialogDestination
