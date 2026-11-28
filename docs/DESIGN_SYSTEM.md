@@ -275,7 +275,7 @@ uncropped (`ContentScale.Fit`) over a blurred `Crop` copy of itself (`AppSize.ph
 and a `scrim` wash, inside `MarsRoverPhotosTheme(darkTheme = true)`; mission name and
 "camera · sol · date" under it. The top card follows a horizontal drag, tilts, and flies off past 30%
 of its width or on a fling (`AppMotion.CardSwipeMs`); the Keep / Skip buttons and the arrow keys
-fly it off the same way. A "Keep" / "Skip" pill fades in while dragging and is hidden from screen
+fly it off the same way, and Undo flies the restored card back in from the side it left (ignored while a card is still flying off, so a pending swipe cannot land on the restored card). A "Keep" / "Skip" pill fades in while dragging and is hidden from screen
 readers, as are the cards under the top one. Two cards wait under the top one so their photos have
 loaded by the time they come up. The backdrop reads the photo's own bitmap through
 `placeholderCacheKey` (writer: the photo's `cacheKey` `dig_<id>`), so both appear together.

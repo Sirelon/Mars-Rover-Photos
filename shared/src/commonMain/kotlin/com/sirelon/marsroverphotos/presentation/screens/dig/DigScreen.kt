@@ -180,7 +180,7 @@ private fun DigContent(
  * right under the top one shows; the rest sit behind it at the same scale so their photos load. The top card follows
  * a horizontal drag and tilts with it; past [SWIPE_THRESHOLD] (or on a quick fling) it flies off
  * and the swipe is reported, otherwise it springs back. The buttons and the arrow keys fly it off
- * the same way, so every path looks alike.
+ * the same way, so every path looks alike. Undo flies the card back in from the side it left.
  */
 @Composable
 private fun DigDeck(
@@ -193,10 +193,21 @@ private fun DigDeck(
 ) {
     val scope = rememberCoroutineScope()
     val top = cards.first()
-    val offset = remember(top.photo.id) { Animatable(0f) }
+    // The last card that flew off and where it stopped; Undo flies it back in from there.
+    var lastSwipe by remember { mutableStateOf<DeckSwipe?>(null) }
+    var returning by remember { mutableStateOf<DeckSwipe?>(null) }
+    val offset = remember(top.photo.id) {
+        Animatable(returning?.takeIf { it.photoId == top.photo.id }?.offset ?: 0f)
+    }
     var flying by remember(top.photo.id) { mutableStateOf(false) }
     var deckWidth by remember { mutableFloatStateOf(0f) }
     val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(top.photo.id) {
+        if (returning?.photoId != top.photo.id) return@LaunchedEffect
+        returning = null
+        offset.animateTo(0f, tween(AppMotion.CardSwipeMs, easing = AppMotion.Emphasized))
+    }
 
     fun swipe(keep: Boolean) {
         if (flying || deckWidth == 0f) return
@@ -204,8 +215,18 @@ private fun DigDeck(
         scope.launch {
             val target = deckWidth * FLY_OFF_WIDTHS * if (keep) 1f else -1f
             offset.animateTo(target, tween(AppMotion.CardSwipeMs, easing = AppMotion.Emphasized))
+            lastSwipe = DeckSwipe(top.photo.id, target)
             if (keep) onKeep() else onSkip()
         }
+    }
+
+    fun undo() {
+        // A card still flying off has not been reported yet; undoing now would restore the swipe
+        // before it, and then the pending Keep or Skip would land on the restored card.
+        if (flying) return
+        returning = lastSwipe
+        lastSwipe = null
+        onUndo()
     }
 
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
@@ -303,11 +324,14 @@ private fun DigDeck(
                 canUndo = canUndo,
                 onKeep = { swipe(keep = true) },
                 onSkip = { swipe(keep = false) },
-                onUndo = onUndo,
+                onUndo = ::undo,
             )
         }
     }
 }
+
+/** A card that left the deck: which photo, and the offset it flew off to. */
+private data class DeckSwipe(val photoId: String, val offset: Float)
 
 /**
  * One photo of the deck: the whole photo over a blurred copy of itself, with what it is under it.
