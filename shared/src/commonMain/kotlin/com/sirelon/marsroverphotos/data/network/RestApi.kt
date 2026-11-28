@@ -3,6 +3,7 @@ package com.sirelon.marsroverphotos.data.network
 import com.sirelon.marsroverphotos.data.database.entities.MarsImage
 import com.sirelon.marsroverphotos.data.network.models.NasaImagesSearchResponse
 import com.sirelon.marsroverphotos.domain.models.CURIOSITY_ID
+import com.sirelon.marsroverphotos.domain.models.DayPhotos
 import com.sirelon.marsroverphotos.domain.models.INGENUITY_ID
 import com.sirelon.marsroverphotos.domain.models.INSIGHT_ID
 import com.sirelon.marsroverphotos.domain.models.PERSEVERANCE_ID
@@ -16,6 +17,7 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlin.random.Random
@@ -213,6 +215,37 @@ class RestApi {
         ).list.mapToUiMsl(roverId).filterNot { "C00_" in it.imageUrl.substringAfterLast('/') }
 
         else -> emptyList()
+    }
+
+    /**
+     * Full frames a raw-feed mission took on [date] (UTC): one page (at most 100, newest sol
+     * first) and the date's total. Every raw feed filters by `date_taken` server-side, so no sol
+     * estimate is involved. Never writes to [_perseveranceTotalImages]: this total counts one date.
+     *
+     * @throws IllegalArgumentException for a rover with no raw-image feed.
+     */
+    suspend fun getPhotosTakenOn(roverId: Long, date: LocalDate): DayPhotos = when (roverId) {
+        PERSEVERANCE_ID -> mars2020TakenOn("mars2020", roverId, date)
+        INGENUITY_ID -> mars2020TakenOn("ingenuity", roverId, date)
+        INSIGHT_ID -> nasaApi.getRawImages(
+            "insight",
+            from = date.takenFromCondition(),
+            to = date.takenBeforeCondition(),
+            fullFramesOnly = true,
+        ).let { DayPhotos(it.list.mapToUi(roverId), it.total?.toInt() ?: it.list.size) }
+        CURIOSITY_ID -> nasaApi.getRawImages(
+            "msl",
+            from = date.takenFromCondition(),
+            to = date.takenBeforeCondition(),
+            fullFramesOnly = true,
+        ).let { DayPhotos(it.list.mapToUiMsl(roverId), it.total?.toInt() ?: it.list.size) }
+        else -> throw IllegalArgumentException("No raw-image feed for rover id: $roverId")
+    }
+
+    private suspend fun mars2020TakenOn(category: String, roverId: Long, date: LocalDate): DayPhotos {
+        val response = nasaApi.getMars2020RawImagesTakenOn(category, date)
+        val images = response.photos.preveranceToUI(roverId)
+        return DayPhotos(images, response.totalResults?.toInt() ?: images.size)
     }
 
     /** Raw bytes at [url], for the cover check that has to look at a frame's pixels. */

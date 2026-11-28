@@ -8,8 +8,13 @@ import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.FirebaseOptions
 import dev.gitlive.firebase.initialize
 import java.util.concurrent.ConcurrentHashMap
+import org.koin.core.module.Module
 
-fun initKoinDesktop() {
+/**
+ * [overrides] replace app bindings before anything resolves them: the store-screenshot renderer
+ * swaps in an in-memory database and its own preferences so a render never touches the user's data.
+ */
+fun initKoinDesktop(overrides: List<Module> = emptyList()) {
     FirebasePlatform.initializeFirebasePlatform(object : FirebasePlatform() {
         private val storage = ConcurrentHashMap<String, String>()
         override fun store(key: String, value: String) { storage[key] = value }
@@ -36,5 +41,6 @@ fun initKoinDesktop() {
     )
 
     val koinApplication = initKoin(listOf(platformModule, supportModule))
+    koinApplication.koin.loadModules(overrides, allowOverride = true)
     koinApplication.koin.get<RoversRepository>().initialize()
 }

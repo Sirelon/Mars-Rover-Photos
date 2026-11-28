@@ -10,6 +10,7 @@ photos. One owner; agents do most of the work and the owner checks builds on a d
 - `desktopApp/` — Desktop shell, wired for Compose Hot Reload
 - `iosApp/` — Swift/iOS shell, Xcode project, Firebase config
 - `webApp/` — experimental standalone WASM shell, not wired to `shared`
+- `store/` — store screenshot pipeline: compositor, captions, upload script (`mars-store-screenshots` skill)
 
 Shared code lives in `shared/src/commonMain/kotlin/com/sirelon/marsroverphotos/`. Screens go in
 `presentation/screens/` (a multi-file feature gets its own subpackage, like `screens/whatsnew/`), view
@@ -32,14 +33,15 @@ not show.
 |---|---|
 | A screen, ViewModel, domain model or repository | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
 | Any Compose UI | [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md), then run the `compose-design-system` skill on the diff |
-| Paging, `NasaApi`, a rover's photo source, the Viking or Phoenix catalogue | [docs/PHOTO_FEED.md](docs/PHOTO_FEED.md) |
+| Paging, `NasaApi`, a rover's photo source, the Viking or Phoenix catalogue, photos by Earth date (`DayOnMarsRepository`) | [docs/PHOTO_FEED.md](docs/PHOTO_FEED.md) |
 | Support screen, RevenueCat, feature flags, ads, UMP / ATT prompts | [docs/MONETIZATION.md](docs/MONETIZATION.md) |
 | Version number, release notes, fastlane lanes, Galaxy Store | [docs/RELEASE.md](docs/RELEASE.md); cut a release with the `store-release` skill |
 | Looking at or driving the UI | [docs/DESKTOP_HOT_RELOAD.md](docs/DESKTOP_HOT_RELOAD.md) |
 | iOS build, Xcode project, SwiftPM linkage | [iosApp/README.md](iosApp/README.md) |
 | Startup path, photo grid, the `roverCard` / `photoGrid` test tags | [baselineprofile/README.md](baselineprofile/README.md) |
 | Deep links, notification tap targets | [docs/DEEP_LINKING.md](docs/DEEP_LINKING.md), [docs/PUSH_NOTIFICATIONS.md](docs/PUSH_NOTIFICATIONS.md) |
-| Store screenshots | [.maestro/README.md](.maestro/README.md) |
+| Store screenshots (render, caption, upload) | the `mars-store-screenshots` skill, [its reference](.claude/skills/mars-store-screenshots/reference.md) |
+| Driving the app on a device with Maestro | [.maestro/README.md](.maestro/README.md) |
 | Web / WASM target | [docs/WASM_WEB_SUPPORT.md](docs/WASM_WEB_SUPPORT.md) |
 
 ## Commands

@@ -1,0 +1,39 @@
+{
+  "_readme": "Captions by key. English only: the app and its listings have no other language. A caption must be literally true of the screen it sits on; store/tools/scenes.json says why for each slot. The owner approves every new or reworded sentence before it ships.",
+  "hero": {
+    "headline": "Mars, up close",
+    "sub": "Real rover photos, full screen, pinch to zoom"
+  },
+  "missions": {
+    "headline": "Nine Mars missions\nin one app",
+    "sub": "Perseverance, Curiosity, Ingenuity, Viking and more"
+  },
+  "sol_by_sol": {
+    "headline": "Every sol, as the\nrover saw it",
+    "sub": "Raw images, labelled by camera, day by day"
+  },
+  "first_photo": {
+    "headline": "The first photo\ntaken on Mars",
+    "sub": "Viking 1, July 20, 1976"
+  },
+  "mission_story": {
+    "headline": "Each mission's story",
+    "sub": "Timeline and stats for every mission"
+  },
+  "date_jump": {
+    "headline": "Jump to any sol\nor Earth date",
+    "sub": "Pick a Martian day and see its photos"
+  },
+  "favorites": {
+    "headline": "Keep the shots\nyou love",
+    "sub": "Your saved photos, sorted by mission"
+  },
+  "popular": {
+    "headline": "The most-viewed\nMars photos",
+    "sub": "What people around the world look at most"
+  },
+  "filters": {
+    "headline": "Filter by camera",
+    "sub": "Hazcams, Navcam, Mastcam-Z, SuperCam and more"
+  }
+}

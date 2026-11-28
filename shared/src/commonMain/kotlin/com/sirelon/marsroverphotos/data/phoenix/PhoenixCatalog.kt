@@ -7,6 +7,7 @@ import com.sirelon.marsroverphotos.shared.resources.Res
 import com.sirelon.marsroverphotos.utils.Logger
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 /**
@@ -35,6 +36,12 @@ class PhoenixCatalog {
     suspend fun photosForSol(sol: Long, camera: String?): List<MarsImage> {
         val photos = catalog()[sol].orEmpty()
         return if (camera == null) photos else photos.filter { it.camera?.name == camera }
+    }
+
+    /** Photos taken on [date] (UTC), in the order they were taken. */
+    suspend fun photosTakenOn(date: LocalDate): List<MarsImage> {
+        val day = date.toString()
+        return catalog().entries.sortedBy { it.key }.flatMap { it.value }.filter { it.earthDate.startsWith(day) }
     }
 
     /** The last photo of the mission's last imaging sol. */

@@ -5,6 +5,7 @@ import com.sirelon.marsroverphotos.presentation.review.ReviewPrompter
 import com.sirelon.marsroverphotos.data.LastViewedPhotoStore
 import com.sirelon.marsroverphotos.data.paging.RoverFeedPager
 import com.sirelon.marsroverphotos.data.repositories.CoverFrameCheck
+import com.sirelon.marsroverphotos.data.repositories.DayOnMarsRepositoryImpl
 import com.sirelon.marsroverphotos.data.repositories.FactsRepositoryImpl
 import com.sirelon.marsroverphotos.data.repositories.ImagesRepositoryImpl
 import com.sirelon.marsroverphotos.data.repositories.PhotosRepositoryImpl
@@ -13,6 +14,7 @@ import com.sirelon.marsroverphotos.data.repositories.RoverCoversRepositoryImpl
 import com.sirelon.marsroverphotos.data.repositories.RoversRepositoryImpl
 import com.sirelon.marsroverphotos.data.phoenix.PhoenixCatalog
 import com.sirelon.marsroverphotos.data.viking.VikingCatalog
+import com.sirelon.marsroverphotos.domain.repositories.DayOnMarsRepository
 import com.sirelon.marsroverphotos.domain.repositories.FactsRepository
 import com.sirelon.marsroverphotos.domain.repositories.ImagesRepository
 import com.sirelon.marsroverphotos.domain.repositories.PhotosRepository
@@ -98,6 +100,14 @@ val repositoryModule = module {
         FactsRepositoryImpl(
             firebasePhotos = get(),
             factDisplayDao = get()
+        )
+    }
+
+    // Caches each date's answer for the process — see the class KDoc.
+    single<DayOnMarsRepository> {
+        DayOnMarsRepositoryImpl(
+            roversRepository = get(),
+            photosRepository = get(),
         )
     }
 
