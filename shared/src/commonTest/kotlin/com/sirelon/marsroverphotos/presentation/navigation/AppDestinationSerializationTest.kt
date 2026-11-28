@@ -27,6 +27,7 @@ class AppDestinationSerializationTest {
         AppDestination.About,
         AppDestination.Ukraine,
         AppDestination.AdminPhotos,
+        AppDestination.DayOnMars,
         AppDestination.PhotosDateJumpPicker(roverId = 5),
         AppDestination.PhotosFilters(roverId = 5),
         AppDestination.AllVersions,

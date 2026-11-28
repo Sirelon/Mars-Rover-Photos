@@ -370,6 +370,7 @@ private fun AppDestination.topLevelDestination(): AppDestination {
         // row, so the highlight has to stay on About while the user is inside them.
         AppDestination.About,
         AppDestination.AllVersions,
+        AppDestination.DayOnMars,
         AppDestination.Support,
         is AppDestination.WhatsNewStory -> AppDestination.About
     }
@@ -391,6 +392,7 @@ internal val navBackStackConfiguration = SavedStateConfiguration {
             subclass(AppDestination.PhotosDateJumpPicker::class, AppDestination.PhotosDateJumpPicker.serializer())
             subclass(AppDestination.PhotosFilters::class, AppDestination.PhotosFilters.serializer())
             subclass(AppDestination.AdminPhotos::class, AppDestination.AdminPhotos.serializer())
+            subclass(AppDestination.DayOnMars::class, AppDestination.DayOnMars.serializer())
             subclass(AppDestination.AllVersions::class, AppDestination.AllVersions.serializer())
             subclass(AppDestination.WhatsNewStory::class, AppDestination.WhatsNewStory.serializer())
             subclass(AppDestination.Support::class, AppDestination.Support.serializer())

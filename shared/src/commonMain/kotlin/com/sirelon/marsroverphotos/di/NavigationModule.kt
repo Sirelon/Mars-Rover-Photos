@@ -23,6 +23,7 @@ import com.sirelon.marsroverphotos.presentation.screens.RoverMissionInfoScreen
 import com.sirelon.marsroverphotos.presentation.screens.RoversScreen
 import com.sirelon.marsroverphotos.presentation.screens.UkraineScreen
 import com.sirelon.marsroverphotos.presentation.screens.whatsnew.AllVersionsScreen
+import com.sirelon.marsroverphotos.presentation.screens.dayonmars.DayOnMarsScreen
 import com.sirelon.marsroverphotos.presentation.screens.support.SupportScreen
 import com.sirelon.marsroverphotos.presentation.screens.whatsnew.WhatsNewStoryScreen
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -135,6 +136,11 @@ val navigationModule = module {
     navigation<AppDestination.AdminPhotos> {
         val navigator = LocalAppNavigator.current
         AdminPhotosScreen(onBack = dropUnlessResumed { navigator.goBack() })
+    }
+
+    navigation<AppDestination.DayOnMars> {
+        val navigator = LocalAppNavigator.current
+        DayOnMarsScreen(onBack = dropUnlessResumed { navigator.goBack() })
     }
 
     navigation<AppDestination.AllVersions> {

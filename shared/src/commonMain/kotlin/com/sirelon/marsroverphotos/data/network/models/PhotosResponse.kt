@@ -25,7 +25,10 @@ class PerseverancePhotosResponse(
     @SerialName("images")
     val photos: List<PerseverancePhotoItemResponse>,
     @SerialName("total_images")
-    val totalImages: Long?
+    val totalImages: Long?,
+    /** How many items match this query; [totalImages] is the whole feed's count. */
+    @SerialName("total_results")
+    val totalResults: Long? = null,
 )
 
 @OptIn(ExperimentalSerializationApi::class)

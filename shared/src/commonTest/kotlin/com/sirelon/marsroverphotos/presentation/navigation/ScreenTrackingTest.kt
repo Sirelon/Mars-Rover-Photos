@@ -13,6 +13,7 @@ class ScreenTrackingTest {
         AppDestination.About,
         AppDestination.Ukraine,
         AppDestination.AdminPhotos,
+        AppDestination.DayOnMars,
         AppDestination.Photos(roverId = 5),
         AppDestination.Mission(roverId = 5),
         AppDestination.PhotosDateJumpPicker(roverId = 5),

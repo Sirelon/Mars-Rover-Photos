@@ -116,6 +116,10 @@ fun AboutScreen() {
         onNavigateToAdmin = if (BuildInfo.isDebug) {
             dropUnlessResumed { navigator.navigate(AppDestination.AdminPhotos) }
         } else null,
+        // Debug-only until the activity is finished (SIR-208): its real home is still open.
+        onNavigateToDayOnMars = if (BuildInfo.isDebug) {
+            dropUnlessResumed { navigator.navigate(AppDestination.DayOnMars) }
+        } else null,
         onNavigateToSupport = if (supportEnabled) {
             dropUnlessResumed { navigator.navigate(AppDestination.Support) }
         } else null,
@@ -137,6 +141,7 @@ private fun AboutContent(
     appVersion: String,
     rateAppUrl: String,
     onNavigateToAdmin: (() -> Unit)?,
+    onNavigateToDayOnMars: (() -> Unit)?,
     /** Null while the Remote Config flag is off: the row is simply absent. */
     onNavigateToSupport: (() -> Unit)?,
 ) {
@@ -308,16 +313,31 @@ private fun AboutContent(
                     )
                 }
 
-                if (onNavigateToAdmin != null) {
+                if (onNavigateToAdmin != null || onNavigateToDayOnMars != null) {
                     AppSection(label = "Developer") {
-                        AppRow(
-                            icon = MaterialSymbol.BugReport,
-                            iconContainer = colors.errorContainer,
-                            iconTint = colors.onErrorContainer,
-                            label = "Admin: Popular Photos",
-                            sub = "Check and remove stale Firebase photos",
-                            onClick = onNavigateToAdmin
-                        )
+                        if (onNavigateToAdmin != null) {
+                            AppRow(
+                                icon = MaterialSymbol.BugReport,
+                                iconContainer = colors.errorContainer,
+                                iconTint = colors.onErrorContainer,
+                                label = "Admin: Popular Photos",
+                                sub = "Check and remove stale Firebase photos",
+                                onClick = onNavigateToAdmin
+                            )
+                        }
+                        if (onNavigateToAdmin != null && onNavigateToDayOnMars != null) {
+                            AppRowDivider()
+                        }
+                        if (onNavigateToDayOnMars != null) {
+                            AppRow(
+                                icon = MaterialSymbol.CalendarMonth,
+                                iconContainer = colors.errorContainer,
+                                iconTint = colors.onErrorContainer,
+                                label = "A day on Mars",
+                                sub = "Every mission's photos on one Earth date",
+                                onClick = onNavigateToDayOnMars
+                            )
+                        }
                     }
                 }
 

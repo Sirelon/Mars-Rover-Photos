@@ -7,6 +7,9 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.plus
 
 /**
  * NASA API client for fetching Mars rover data.
@@ -89,6 +92,23 @@ internal class NasaApi(private val ktor: HttpClient) {
     }
 
     /**
+     * Full frames of one Mars 2020 feed mission ([category]) taken on [date] (UTC), resolved by
+     * the feed's `date_taken` range conditions in one request. Its own `ktor.get` for the same
+     * reason as [getIngenuityNearestSolAtOrAfter]: [getPerseveranceRawImages] owns `condition_3`
+     * for its sol filter, and a duplicated parameter is discarded rather than overridden.
+     */
+    suspend fun getMars2020RawImagesTakenOn(category: String, date: LocalDate, count: Int = 100): PerseverancePhotosResponse {
+        return ktor.get("https://mars.nasa.gov/rss/api/?feed=raw_images&feedtype=json") {
+            parameter("category", category)
+            parameter("order", "sol desc")
+            parameter("num", count)
+            parameter("condition_2", date.takenFromCondition())
+            parameter("condition_3", date.takenBeforeCondition())
+            parameter("extended", "sample_type::full,")
+        }.body()
+    }
+
+    /**
      * First sol at or after [fromSol] that has an Ingenuity photo, resolved in a single request
      * via the feed's undocumented `gte` range operator, or null when there is none.
      *
@@ -108,3 +128,11 @@ internal class NasaApi(private val ktor: HttpClient) {
         }.body<PerseverancePhotosResponse>().photos.firstOrNull()?.sol
     }
 }
+
+/**
+ * The raw-image feeds filter a range by `<value>:<field>:<operator>`. Both feeds compare
+ * `date_taken` in UTC, so a calendar date is "taken at or after its midnight, before the next".
+ */
+internal fun LocalDate.takenFromCondition(): String = "$this:date_taken:gte"
+
+internal fun LocalDate.takenBeforeCondition(): String = "${plus(1, DateTimeUnit.DAY)}:date_taken:lt"
